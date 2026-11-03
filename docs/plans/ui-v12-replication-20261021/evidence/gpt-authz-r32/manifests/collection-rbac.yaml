@@ -1,0 +1,91 @@
+# r32 collection RBAC: namespaced kinds are readable only inside the task
+# namespace; only the six cluster-scoped kinds required by the locked 17-GVR
+# contract are readable at cluster scope. No Secret, no write verb.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: r32-sp04-collect
+  namespace: ops-native-v12-r24-20261026
+  labels:
+    ops.platform/task: r32-collect-scope
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services", "configmaps", "persistentvolumeclaims", "events"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets", "statefulsets", "daemonsets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["batch"]
+  resources: ["jobs"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["discovery.k8s.io"]
+  resources: ["endpointslices"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: r32-sp04-collect
+  namespace: ops-native-v12-r24-20261026
+  labels:
+    ops.platform/task: r32-collect-scope
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: r32-sp04-collect
+subjects:
+- kind: ServiceAccount
+  name: ops-worker
+  namespace: ops-native-v12-r24-20261026
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ops-native-v12-r24-20261026-r32-sp04-cluster-read
+  labels:
+    ops.platform/task: r32-collect-scope
+rules:
+# Node inventory is required for Pod->Node relations and node metrics.
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "list", "watch"]
+# PV/VolumeAttachment link the in-scope PVCs to storage. They are cluster-scoped
+# API objects; only metadata references are projected, never volume contents.
+- apiGroups: [""]
+  resources: ["persistentvolumes"]
+  verbs: ["get", "list", "watch"]
+# Storage capability context: no tenant objects, no Secrets.
+- apiGroups: ["storage.k8s.io"]
+  resources: ["storageclasses", "csidrivers", "csinodes", "volumeattachments"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: ops-native-v12-r24-20261026-r32-sp04-cluster-read
+  labels:
+    ops.platform/task: r32-collect-scope
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: ops-native-v12-r24-20261026-r32-sp04-cluster-read
+subjects:
+- kind: ServiceAccount
+  name: ops-worker
+  namespace: ops-native-v12-r24-20261026
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: r32-sp04-lease
+  namespace: ops-native-v12-r24-20261026
+  labels:
+    ops.platform/task: r32-collect-scope
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: r31-sp04-lease
+subjects:
+- kind: ServiceAccount
+  name: ops-worker
+  namespace: ops-native-v12-r24-20261026

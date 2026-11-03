@@ -1,0 +1,28 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "checks": [
+    "cross-origin and origin-less login attempts are refused with 403 before any credential check",
+    "missing, wrong and foreign-origin CSRF tokens are refused with 403; the session-bound token is accepted once",
+    "the deployment entry limiter answers 429 with Retry-After and refuses even a valid login inside the window",
+    "the entry limit is time bounded: the same valid login succeeds after the window"
+  ],
+  "states": {
+    "sameOrigin": {
+      "crossOrigin": 403,
+      "missingOrigin": 403
+    },
+    "csrf": {
+      "missing": 403,
+      "wrong": 403,
+      "foreignOrigin": 403,
+      "authorized": 200
+    },
+    "entryLimit": {
+      "index": 60,
+      "retryAfter": "59",
+      "blockedRealLogin": 429,
+      "recovered": 201
+    }
+  },
+  "status": "passed"
+}

@@ -5,7 +5,7 @@ import { Status } from "../../components/Status";
 import { verifyAuditPage, type AuditProofResult } from "./auditProof";
 import { useQuery } from "@tanstack/react-query";
 import { Table, Input, Button, Space, Alert, Drawer } from "antd";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { getAuditRecords, getAuditRecord } from "../../api/generated/platform";
 import { checked, requestOptions } from "../../api/client";
 import { QueryState } from "../../components/QueryState";
@@ -123,6 +123,11 @@ export function AuditPage({
       {!embedded && (
         <PageHeading
           title="审计记录"
+          extra={
+            <Link to="/settings/audit/assistant">
+              <Button>审计问数</Button>
+            </Link>
+          }
           description="建议、实际命令、风险确认、执行和后检查保留独立事件与关联标识。"
         />
       )}

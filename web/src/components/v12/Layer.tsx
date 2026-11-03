@@ -53,15 +53,36 @@ function useLayer(
     if (!open || !api) return;
     const previous = document.activeElement as HTMLElement | null;
     api.push({ id, close: () => closeRef.current() });
-    const timer = window.setTimeout(() => {
-      const node = containerRef.current;
-      const target = node?.querySelector<HTMLElement>(
-        "[data-autofocus],button,[href],input,select,textarea,[tabindex]:not([tabindex='-1'])",
-      );
-      target?.focus();
-    }, 0);
+    // The fixed prototype layers are native <dialog> elements, so the first
+    // focusable control - the header close button - takes the initial focus.
+    // A control that opts in with data-autofocus still wins, and a layer with
+    // neither falls back to its first body control.
+    const focusInitial = () => {
+      const body = containerRef.current;
+      const root = body?.closest<HTMLElement>(".ant-modal, .ant-drawer") ?? body;
+      const target =
+        root?.querySelector<HTMLElement>("[data-autofocus]") ??
+        root?.querySelector<HTMLElement>(".ant-modal-close, .ant-drawer-close") ??
+        body?.querySelector<HTMLElement>(
+          "button,[href],input,select,textarea,[tabindex]:not([tabindex='-1'])",
+        );
+      target?.focus({ preventScroll: true });
+    };
+    const timer = window.setTimeout(focusInitial, 0);
+    // The overlay only parks focus on its own container (for screen readers)
+    // while it finishes mounting, so re-assert the initial control when focus
+    // is outside this layer or still sits on the container itself. That keeps
+    // the prototype's "close button focused" state instead of a lost focus.
+    const settle = window.setTimeout(() => {
+      const body = containerRef.current;
+      const root = body?.closest<HTMLElement>(".ant-modal, .ant-drawer") ?? body;
+      if (!root) return;
+      const active = document.activeElement;
+      if (!root.contains(active) || active === root) focusInitial();
+    }, 120);
     return () => {
       window.clearTimeout(timer);
+      window.clearTimeout(settle);
       api.pop(id);
       previous?.focus?.();
     };
@@ -74,9 +95,9 @@ export function V12Modal({
   onClose,
   children,
   footer,
-  width = 520,
+  width = 660,
   rootClassName,
-  centered = false,
+  centered = true,
   closeDisabled = false,
 }: {
   open: boolean;
@@ -118,7 +139,7 @@ export function V12Drawer({
   onClose,
   children,
   footer,
-  width = 460,
+  width = 540,
 }: {
   open: boolean;
   title: ReactNode;

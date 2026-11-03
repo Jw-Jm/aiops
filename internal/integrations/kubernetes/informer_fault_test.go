@@ -38,7 +38,7 @@ func TestStreamingInitialSnapshotAndTerminalDelete(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
 	defer cancel()
 	deleted, rebuilt := false, false
-	if err := client.Run(ctx, GVR{Version: "v1", Resource: "pods"}, func(s Snapshot) error {
+	if err := client.Run(ctx, GVR{Version: "v1", Resource: "pods"}, []string{"apps"}, func(s Snapshot) error {
 		if s.ObservationOnly || !s.State.WatchContinuous {
 			return nil
 		}
@@ -81,7 +81,7 @@ func TestPermissionAndThrottleRemainStaleAndShareBudget(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), 300*time.Millisecond)
 			defer cancel()
 			seen := false
-			a.Run(ctx, GVR{Version: "v1", Resource: "pods"}, func(s Snapshot) error {
+			a.Run(ctx, GVR{Version: "v1", Resource: "pods"}, []string{"apps"}, func(s Snapshot) error {
 				if s.State.WatchContinuous || s.State.WatchConnected {
 					t.Fatal("unavailable API fresh")
 				}
@@ -126,7 +126,7 @@ func TestSilentWatchAuthorizationProbeFailsClosed(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
 	fresh, stale := false, false
-	client.Run(ctx, GVR{Version: "v1", Resource: "pods"}, func(s Snapshot) error {
+	client.Run(ctx, GVR{Version: "v1", Resource: "pods"}, []string{"apps"}, func(s Snapshot) error {
 		if s.State.WatchContinuous {
 			fresh = true
 		}

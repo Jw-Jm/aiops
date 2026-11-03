@@ -1,0 +1,36 @@
+// Real owned preview only; one bounded query and authorized history reads.
+import {chromium} from '/data/ops-ui-v12-http-20261022-r1/preview-r1/playwright-core/index.mjs';
+import {readFileSync,writeFileSync} from 'node:fs';
+import {safeErrorMessage} from '../r37/safe-error.mjs';
+const root='/data/ops-v12-native-visual-r24-20261026',work=root+'/r39',origin='https://192.168.0.63:30471';
+const account=JSON.parse(readFileSync(root+'/private/r31-operator-account.json','utf8')),snapshot=JSON.parse(readFileSync(root+'/r37/source-snapshot.json','utf8'));
+const receipt={at:new Date().toISOString(),origin,checks:[],requests:[]};
+const assert=(ok,message)=>{if(!ok)throw Error(message)};
+const browser=await chromium.launch({executablePath:'/opt/ops-assistant-browser-20261014/chrome-linux64/chrome',headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
+try{
+ const context=await browser.newContext({ignoreHTTPSErrors:true,viewport:{width:1440,height:960},locale:'zh-CN',timezoneId:'Asia/Shanghai'}),page=await context.newPage();await context.grantPermissions(['clipboard-read','clipboard-write'],{origin});
+ page.on('response',r=>{const path=new URL(r.url()).pathname;if(path.startsWith('/api/'))receipt.requests.push({path,method:r.request().method(),status:r.status(),requestId:r.headers()['x-request-id']})});
+ await page.goto(origin+'/login');await page.getByLabel('用户名',{exact:true}).fill(account.loginName);await page.getByLabel('密码',{exact:true}).fill(account.password);await page.getByRole('button',{name:/^登\s*录/}).click();await page.waitForURL(u=>u.pathname!='/login');
+ receipt.outcome=await page.evaluate(async(snapshot)=>{
+  const assert=(ok,m)=>{if(!ok)throw Error(m)},params=new URLSearchParams({clusterUid:snapshot.cluster.clusterUid}),base='/api/v1/observability/';
+  const session=await (await fetch('/api/v1/auth/session')).json(),csrf=session.data.csrf.token;
+  const call=async(method,suffix,body)=>{const r=await fetch(base+suffix,{method,credentials:'same-origin',cache:'no-store',headers:body?{'Content-Type':'application/json','X-CSRF-Token':csrf,'Idempotency-Key':crypto.randomUUID()}:undefined,body:body?JSON.stringify(body):undefined});return{status:r.status,body:await r.json(),requestId:r.headers.get('x-request-id')}};
+  const caps=await call('GET','capabilities?'+params);assert(caps.status===200,'capabilities '+caps.status);const res=caps.body.data.resources.find(r=>r.uid===snapshot.podUID);assert(res,'snapshot Pod missing');
+  const selected=new URLSearchParams(params);selected.set('canonicalId',res.canonicalId);const qualified=await call('GET','capabilities?'+selected);assert(qualified.status===200&&qualified.body.data.sources.length,'qualified source unavailable');
+  const resource={canonicalId:res.canonicalId,uid:res.uid,clusterUid:res.clusterUid,namespaceScope:res.namespaceScope};const body={schemaVersion:'ui-v12-observability-query/v1',queryKind:'logs',templateId:'logs.records',templateVersion:'logs.records/v1',resource,source:qualified.body.data.sources[0].source,window:{...snapshot.window,timezone:'Asia/Shanghai',bounds:'[from,to)'},filters:[],budget:{...qualified.body.data.budget,maxRows:7}};
+  const made=await call('POST','queries?'+params,body);assert(made.status===202,'budget7 create '+made.status);const queryId=made.body.data.queryId;let view=made.body.data;
+  for(let n=0;n<16&&['accepted','running','cancel_requested'].includes(view.state);n++){await new Promise(r=>setTimeout(r,750));const got=await call('GET','queries/'+queryId+'?'+params);assert(got.status===200,'query read '+got.status);view=got.body.data}
+  assert(view.state==='completed'&&view.request.budget.maxRows===7&&view.request.templateVersion===body.templateVersion,'persisted complete request not returned');
+  const result=await call('GET','queries/'+queryId+'/results?'+params);assert(result.status===200&&result.body.data.population.count===snapshot.records&&result.body.data.samples.returned===7,'bounded result budget ignored');
+  const first=await call('GET','queries?'+params+'&limit=2');assert(first.status===200&&Array.isArray(first.body.data)&&first.body.nextCursor,'first cursor page not available');
+  const second=await call('GET','queries?'+params+'&limit=2&cursor='+first.body.nextCursor);assert(second.status===200,'second page rejected');const ids=[...first.body.data,...second.body.data].map(x=>x.queryId);assert(ids.length>=3&&new Set(ids).size===ids.length,'cursor lost or duplicated readable rows');
+  const invalid=await call('GET','queries?'+params+'&cursor='+crypto.randomUUID());assert(invalid.status===400,'unowned cursor accepted');for(const limit of [0,51])assert((await call('GET','queries?'+params+'&limit='+limit)).status===400,'invalid limit accepted');
+  return{queryId,sourceId:body.source.registrationId,resourceUid:resource.uid,window:body.window,currentBudgetMaxRows:qualified.body.data.budget.maxRows,savedBudgetMaxRows:view.request.budget.maxRows,population:result.body.data.population,returned:result.body.data.samples.returned,resultDigest:result.body.data.resultDigest,pageIds:ids,nextCursor:first.body.nextCursor,unownedCursorStatus:invalid.status};
+ },snapshot);
+ receipt.checks.push('real query persists budget7 independently of current capability20, total186/sample7','history data array plus cursor paginates without duplicate IDs; unowned cursor and limits rejected');
+ await page.goto(origin+'/observe/logs');await page.getByRole('heading',{name:'日志查询',exact:true}).waitFor();await page.getByRole('button',{name:/查询历史/}).click();const history=page.getByRole('dialog',{name:'查询历史',exact:true});await history.getByRole('button',{name:/查\s*看/}).first().waitFor();
+ const before=await history.locator('tbody tr').count();if(await history.getByRole('button',{name:'加载更多',exact:true}).isEnabled()){await history.getByRole('button',{name:'加载更多',exact:true}).click();await page.waitForFunction(count=>document.querySelectorAll('.ant-modal-body tbody tr').length>count,before);receipt.checks.push('production history dialog appends next page')}
+ await history.getByRole('button',{name:/查\s*看/}).first().click();await page.getByText(/来源总体 186 条 · 本次脱敏样例 7 条/).waitFor({timeout:20000});await page.getByRole('button',{name:'查询检查',exact:true}).click();const inspector=page.getByRole('dialog',{name:'查询检查',exact:true});await inspector.getByRole('tab',{name:'查询条件',exact:true}).click();const saved=JSON.parse(await inspector.locator('[role=tabpanel][aria-hidden=false] pre').innerText());assert(saved.budget.maxRows===7&&saved.queryKind==='logs'&&saved.templateVersion==='logs.records/v1','inspector copied current budget or incomplete request');await inspector.locator('.ant-typography-copy').click();assert((await page.evaluate(()=>navigator.clipboard.readText()))===JSON.stringify(saved,null,2),'copied request differs from persisted request');receipt.checks.push('history restores actual seven-sample result; inspector and clipboard retain full saved template/budget');
+ receipt.status='passed';
+}catch(error){receipt.status='failed';receipt.failure=safeErrorMessage(error,[account.password]);process.exitCode=1}
+finally{await browser.close();writeFileSync(work+'/browser-history.json',JSON.stringify(receipt,null,2));console.log(JSON.stringify({status:receipt.status,checks:receipt.checks,outcome:receipt.outcome,failure:receipt.failure}))}

@@ -1,0 +1,49 @@
+{
+  "phase": "before",
+  "origin": "https://192.168.0.63:30471",
+  "checks": [
+    "saved native cookie and independent admin role restore; real clusters200; persisted confirmed MFA200"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ac1-132f-797a-872d-35e870bd0739"
+    },
+    {
+      "path": "/api/v1/admin/clusters?limit=100",
+      "status": 200,
+      "requestId": "01a17ac1-13fb-7b3d-ae70-e0873fc0c461"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a17ac1-150b-795e-8f06-be1768b6b83d"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ac1-1674-7a1e-bfe2-adecd7632c27"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a17ac1-1779-754f-801b-738dbc483cae"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a17ac1-177a-798a-add5-a06dd96f3d56"
+    }
+  ],
+  "session": {
+    "sessionRef": "session:01a17abc-587a-7491-9a3f-7e9bdb2641cd",
+    "subject": "user:01a177f1-372c-7f0f-a9de-85df928fbe31",
+    "mode": "full",
+    "roles": [
+      "platform_admin"
+    ]
+  },
+  "cookieSHA256": "6d6e35ac27b38b2342f6aef0aa67146294467338891983dbaffc4a76fe1d5fba",
+  "status": "passed"
+}

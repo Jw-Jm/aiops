@@ -1,6 +1,7 @@
 package source
 
 import (
+	"fmt"
 	"maps"
 	"ops-platform/internal/datascope"
 	"slices"
@@ -53,6 +54,42 @@ func validScopeBinding(backend string, mapping DataScopeMapping) bool {
 func validScopeLiteral(value string) bool {
 	return validOpaqueName(value, 512) && !strings.ContainsAny(value, "*|~[]{}()^$\\") &&
 		strings.IndexFunc(value, unicode.IsControl) < 0
+}
+
+// validateTypeScope is the single write-boundary check that keeps every
+// registration entry point identical to the runtime collection model.
+//
+// A Kubernetes source is collected only from an explicit cluster/namespace
+// scope: resourcestore.FilterSnapshot and the SP-04 collector both reject a
+// native tenant, and the collector lists namespaced resources inside the
+// registered namespaces. Accepting a native tenant here would store a
+// declaration that can never collect, and would misrepresent it as merely
+// "verification pending".
+func validateTypeScope(sourceType, backend string, mapping DataScopeMapping, clusterUID string) error {
+	if !validScopeBinding(backend, mapping) {
+		return ErrInvalidInput
+	}
+	if sourceType != "kubernetes" {
+		return nil
+	}
+	if mapping.NativeTenant != "" {
+		return fmt.Errorf("%w: Kubernetes sources have no native tenant isolation", ErrScopeIncompatible)
+	}
+	for dimension := range mapping.Scopes {
+		if dimension != "cluster" && dimension != "namespace" {
+			return fmt.Errorf("%w: Kubernetes sources support only cluster and namespace scope", ErrScopeIncompatible)
+		}
+	}
+	if clusterUID == "" {
+		return fmt.Errorf("%w: Kubernetes sources require an active cluster registration", ErrScopeIncompatible)
+	}
+	if len(mapping.Scopes["cluster"]) != 1 || mapping.Scopes["cluster"][0] != clusterUID {
+		return fmt.Errorf("%w: Kubernetes cluster scope must be exactly the registered cluster", ErrScopeIncompatible)
+	}
+	if len(mapping.Scopes["namespace"]) == 0 {
+		return fmt.Errorf("%w: Kubernetes sources require an explicit namespace scope", ErrScopeIncompatible)
+	}
+	return nil
 }
 
 func sameDataScope(a, b DataScopeMapping) bool {

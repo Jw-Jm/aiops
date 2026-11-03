@@ -1,0 +1,136 @@
+{
+  "mode": "cancel",
+  "at": "2026-10-28T03:22:19.585Z",
+  "origin": "https://192.168.0.63:30471",
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a18087-b584-7921-b1fe-72d533ce67d3"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a18087-b60d-7eb6-a48f-10f83d4b1c02"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18087-c195-7f18-90d3-58fa02eff2be"
+    },
+    {
+      "path": "/api/v1/capabilities",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18087-c1be-74e3-b9e8-8ac147eb5720"
+    },
+    {
+      "path": "/api/v1/overview",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18087-c1bd-7ccb-88e3-f347d446eef0"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18087-c2ef-7932-bc45-dd17add6ec0e"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18087-c749-78f1-8d12-7be7b938f50c"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "method": "POST",
+      "status": 202,
+      "requestId": "01a18087-ca37-72e7-8fb4-b8c4c6f5ce9d"
+    },
+    {
+      "path": "/api/v1/observability/queries/30fc42ec-54bc-4e4a-b8e8-20172a779ea7",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18087-cd25-71fb-ae8b-f1637c38ceb4"
+    },
+    {
+      "path": "/api/v1/observability/queries/30fc42ec-54bc-4e4a-b8e8-20172a779ea7:cancel",
+      "method": "POST",
+      "status": 200,
+      "requestId": "01a18087-d104-7687-85db-8465f7d8488d"
+    },
+    {
+      "path": "/api/v1/observability/queries/30fc42ec-54bc-4e4a-b8e8-20172a779ea7",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18087-d7fb-7e30-bcb8-db178146a319"
+    },
+    {
+      "path": "/api/v1/observability/queries/30fc42ec-54bc-4e4a-b8e8-20172a779ea7/results",
+      "method": "GET",
+      "status": 409,
+      "requestId": "01a18087-d9de-792a-97fa-767488ab0016"
+    }
+  ],
+  "outcome": {
+    "queryId": "30fc42ec-54bc-4e4a-b8e8-20172a779ea7",
+    "source": {
+      "collectorVersion": "kubernetes-log-snapshot/v1",
+      "credentialRevision": 1,
+      "qualificationDigest": "sha256:11c359037ae2aad14aa47cc35d0a1b6607d433f417e8bb0b2376352ab78f6008",
+      "registrationId": "01a1805f-2214-7373-82a4-c20276c68d43",
+      "registrationRevision": 1
+    },
+    "resource": {
+      "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+      "uid": "0e648683-1088-4032-9b39-0a122ff475be",
+      "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+      "namespaceScope": {
+        "kind": "namespaced",
+        "namespace": "ops-native-v12-r24-20261026",
+        "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+      }
+    },
+    "window": {
+      "from": "2026-10-28T10:06:13.150326+08:00",
+      "to": "2026-10-28T10:36:13.150326+08:00",
+      "timezone": "Asia/Shanghai",
+      "bounds": "[from,to)"
+    },
+    "events": [
+      {
+        "state": "accepted",
+        "revision": 1,
+        "requestId": "01a18087-ca37-72e7-8fb4-b8c4c6f5ce9d"
+      },
+      {
+        "state": "running",
+        "revision": 2,
+        "requestId": "01a18087-cd25-71fb-ae8b-f1637c38ceb4"
+      },
+      {
+        "state": "cancel_requested",
+        "requestId": "01a18087-d104-7687-85db-8465f7d8488d"
+      },
+      {
+        "state": "terminated",
+        "revision": 4,
+        "requestId": "01a18087-d7fb-7e30-bcb8-db178146a319"
+      }
+    ],
+    "finalState": "terminated",
+    "resultStatus": 409,
+    "termination": {
+      "deliveredAt": "2026-10-28T03:22:27.921810924Z",
+      "receiptDigest": "sha256:f7e6eaa8ec28f64326bfb43eebcb212069acf093ae4e120861b16831c42f9210",
+      "requestedAt": "2026-10-28T03:22:27.735680715Z",
+      "sourceStopped": false
+    },
+    "failure": null
+  },
+  "status": "passed"
+}

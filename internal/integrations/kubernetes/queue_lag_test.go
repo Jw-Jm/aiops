@@ -38,7 +38,7 @@ func TestSlowProjectionPreservesWatchReceiveTimeAndMeasuresQueueLag(t *testing.T
 	measured := false
 	completedPublication := false
 	recovered := false
-	c.Run(ctx, GVR{Version: "v1", Resource: "pods"}, func(s Snapshot) error {
+	c.Run(ctx, GVR{Version: "v1", Resource: "pods"}, []string{"apps"}, func(s Snapshot) error {
 		t.Logf("snapshot objects=%d error=%s continuous=%t", len(s.Objects), s.State.LastError, s.State.WatchContinuous)
 		if s.ObservationOnly && s.State.ProjectionQueueLag >= 100*time.Millisecond {
 			completedPublication = true

@@ -1,0 +1,125 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a17c47-487c-7818-bfdc-fb2991d5ee8c"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a17c47-4917-72c8-83e6-bcc977480ed2"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17c47-49ce-79eb-be8f-61515f502e4a"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a17c47-4a2e-76f0-8f6a-71de407ad1f6"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a17c47-4a2d-72c9-911d-8154f8c1dc41"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17c47-4a95-7407-b961-a94673844b54"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a17c47-4aa2-7983-b0a9-c01d028c07b3"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17c47-4ac2-7172-844d-d6c66aa2afe2"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c47-4ad5-77bf-aa68-570ebae9bbc3:verify",
+      "status": 200,
+      "requestId": "01a17c47-4ae2-7766-ba99-59281011ef32"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c47-4ad5-77bf-aa68-570ebae9bbc3:verify",
+      "status": 200,
+      "requestId": "01a17c47-4b4e-759c-ae86-af9f1bebd4f6"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/admin/role-bindings/01a177f1-3733-7d05-8030-52c880213ef8/status",
+      "status": 409,
+      "requestId": "01a17c47-4b82-7d49-9806-cf5644963e09"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17c47-4b9a-7f13-8930-dba492bab8f8"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/resources",
+      "status": 403,
+      "requestId": "01a17c47-4ba8-75e5-9e49-45ca3d9f8109"
+    }
+  ],
+  "checks": [
+    "removing the only active administrator grant was refused with 409 CONFLICT through the same authenticated and step-up verified write path the UI uses",
+    "after the refusal the account still holds platform_admin, activeAdministrators is still 1, and the administrator still cannot read resources (403), so the refusal did not grant anything"
+  ],
+  "failure": null,
+  "steps": {
+    "identity": {
+      "sessionStatus": 200,
+      "subject": "user:01a177f1-372c-7f0f-a9de-85df928fbe31",
+      "accountId": "01a177f1-372c-7f0f-a9de-85df928fbe31",
+      "activeAdministrators": 1
+    },
+    "challenge": {
+      "status": 201,
+      "challengeId": "01a17c47-4ad5-77bf-aa68-570ebae9bbc3",
+      "code": null
+    },
+    "password": {
+      "status": 200,
+      "code": null
+    },
+    "totp": {
+      "status": 200,
+      "code": null
+    },
+    "revoke": {
+      "status": 409,
+      "code": "CONFLICT",
+      "message": "不能停用或撤销最后一名有效管理员",
+      "requestId": "01a17c47-4b82-7d49-9806-cf5644963e09"
+    },
+    "after": {
+      "sessionStatus": 200,
+      "roles": [
+        "platform_admin"
+      ],
+      "activeAdministrators": 1,
+      "isLastActiveAdministrator": true,
+      "resourceReadStatus": 403
+    }
+  },
+  "status": "passed"
+}

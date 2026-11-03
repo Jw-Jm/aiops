@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-27",
+  "status": "auth_failure_state_batch_scoped_passed",
+  "source": "source.json",
+  "runtime": "runtime/web-runtime-r9.json",
+  "origin": "https://192.168.0.63:30471",
+  "changes": [
+    "SL-002 source form-error text/background/spacing/no-icon replaced Ant Design alert;400/401 share constant credential rejection; password policy and backend unchanged",
+    "MFA binding409 or expired/revoked outcome clears pending URI/forms/completed proof, aborts old request generation and allows restart; no stale wrong-password/pending notice"
+  ],
+  "tests": {
+    "frontend": "184 Vitest+6 SSE and TypeScript/Vite build passed; stronger restart-click assertions added afterwards and final9 MFA checks passed separately",
+    "remoteLogin": "real401 held response for loading/disable; retry; actual network abort; no business prefetch; real400 same prototype5-character password",
+    "visual": "existing SL-002 reference reused; stable no-mask1440x960 comparison: error strip14200 pixels exact0 differences; whole image6259 changed pixels/4218 max-channel delta>20; no full visual pass",
+    "remoteMFA": "exact task-owned pending challenge forward-set expired; actualAPI409/UI removes URI/proof and permits new challenge/cancel; existing confirmed factor/time/recovery count unchanged; not natural wall-clock expiry"
+  },
+  "evidence": [
+    "runtime/login-browser.json",
+    "runtime/stable-capture-r8.json",
+    "visual-comparison-stable.json",
+    "runtime/mfa-expiry-browser.json",
+    "runtime/mfa-expired.png",
+    "auth-full-final.log",
+    "auth-build-final.log",
+    "mfa-restart-final.log"
+  ],
+  "failuresPreserved": [
+    "initial capture expected401 for prototype5-character password, real contract returned400; no policy loosened",
+    "loading icon changes accessible names; initial browser/unit exact button match failed; tests now use stable semantic target and enabled/click assertion",
+    "first MFA script counted all code tags, including cluster header; refined to pending otpauth URI only",
+    "early screenshot included control CSS transition; stable capture now waits finite animations and neutral pointer; initial diagnostic retained"
+  ],
+  "acceptancePromotions": 0,
+  "productComplete": false,
+  "remaining": "whole login/first-password/account/permissions/MFA visual and supplementary states; natural time expiry and broader security paths; native formal installation/cutover; P3 resource/log full sample and P4-P8"
+}

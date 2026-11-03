@@ -1,0 +1,41 @@
+{
+ "at": "2026-10-27T15:36:24+08:00",
+ "binarySha256": "5b76c78633ff2324114487faa02b45b1df6af173cc0538f07ff6a18de3f193f1",
+ "source": "current working tree (platform/main 082f87d66c5b + r23..r31 uncommitted changes), test/integration/native_historical_read_test.go",
+ "database": "real PostgreSQL 17.11 on the task instance (127.0.0.1:15454); each test created its own disposable sp03_mig_* database and migrated 1..70",
+ "tests": [
+  {
+   "name": "TestNativeMappedHistoricalOwnerRead",
+   "result": "PASS",
+   "seconds": 3.33
+  },
+  {
+   "name": "TestNativeMappedHistoricalTurnRead",
+   "result": "PASS",
+   "seconds": 3.8
+  }
+ ],
+ "covered": [
+  "an explicitly mapped historical owner can read the frozen conversation/turn; owner id, summary and policy stay byte-identical",
+  "an unmapped subject and a different native subject are refused",
+  "revoking the mapping/authorization stops the read",
+  "the read grant never mints job/worker authority: submit/worker rechecks still apply"
+ ],
+ "notCovered": [
+  "mechanism verification on disposable databases, not a migration of any real legacy user",
+  "the live task database contains no legacy subjects, so no business history could be retained or re-owned there"
+ ],
+ "retainedDisposableDatabases": [
+  "sp03_mig_a5679d388e9d4303bce9a83069dac3ef",
+  "sp03_mig_f3815240b5204bf1943fa55b2c890971"
+ ],
+ "tail": [
+  "2026/10/27 15:36:24 OK   00069_action_command_step_up_proof.sql (24.79ms)",
+  "2026/10/27 15:36:24 OK   00070_native_stepup_budget_window.sql (16.46ms)",
+  "2026/10/27 15:36:24 goose: successfully migrated database to version: 70",
+  "    migrations_test.go:511: retained owned integration database=sp03_mig_a5679d388e9d4303bce9a83069dac3ef test=TestNativeMappedHistoricalTurnRead reason=audit.records; no automatic protected cleanup",
+  "--- PASS: TestNativeMappedHistoricalTurnRead (3.80s)",
+  "PASS"
+ ],
+ "probeRole": "a one-off SUPERUSER login r31_migration_probe existed only for the migration duty of these disposable databases; after the run its objects were reassigned to postgres and the role was dropped. Its password was never stored in the repository."
+}

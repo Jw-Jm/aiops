@@ -1,0 +1,17 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "scope": "real native browser status read; controlled network abort, then actual API retry; no enrollment mutation",
+  "checks": [
+    "pending status shows skeleton, no invented disabled factor/zero recovery codes/enrollment action",
+    "network abort produces explicit read error and retry, no fabricated factor state",
+    "retry reads actual MFA status200 and restores confirmed factor"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a17af1-7fea-7c85-bcac-2d466e0aa589"
+    }
+  ],
+  "status": "passed"
+}

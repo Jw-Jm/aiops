@@ -9,6 +9,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"net/http"
 	"ops-platform/internal/auth"
+	"ops-platform/internal/identity"
 	"ops-platform/internal/investigation"
 	"ops-platform/internal/persistence"
 	"strconv"
@@ -68,7 +69,17 @@ func (h *InvestigationHandlers) history(w http.ResponseWriter, r *http.Request, 
 	defer cancel()
 	ids := []uuid.UUID{}
 	err = persistence.WithTenantTx(ctx, h.Repository.Pool, a.TenantID, func(tx pgx.Tx) error {
-		rows, e := tx.Query(ctx, `SELECT job_id FROM investigation.jobs WHERE tenant_id=$1 AND incident_id=$2 AND requesting_subject=$3 AND schema_version='investigation-job/v2' AND ($4::uuid IS NULL OR job_id<$4) ORDER BY job_id DESC LIMIT $5`, a.TenantID, id, a.Subject, before, limit+1)
+		subjects := []string{a.Subject}
+		if native, ok := auth.NativeSessionFromContext(ctx); ok {
+			mappings, e := identity.MappedLegacySubjectsTx(ctx, tx, a.TenantID, native.Session.UserID)
+			if e != nil {
+				return investigation.ErrDenied
+			}
+			for _, mapping := range mappings {
+				subjects = append(subjects, mapping.LegacySubject)
+			}
+		}
+		rows, e := tx.Query(ctx, `SELECT job_id FROM investigation.jobs WHERE tenant_id=$1 AND incident_id=$2 AND requesting_subject=ANY($3) AND schema_version='investigation-job/v2' AND ($4::uuid IS NULL OR job_id<$4) ORDER BY job_id DESC LIMIT $5`, a.TenantID, id, subjects, before, limit+1)
 		if e != nil {
 			return e
 		}
@@ -98,8 +109,8 @@ func (h *InvestigationHandlers) history(w http.ResponseWriter, r *http.Request, 
 		next = base64.RawURLEncoding.EncodeToString(b) + "." + base64.RawURLEncoding.EncodeToString(ed25519.Sign(h.CursorKey, b))
 	}
 	for _, jobID := range ids {
-		job, e := h.Repository.Get(ctx, a.TenantID, jobID)
-		if e != nil || job.Subject != a.Subject {
+		job, _, e := h.Repository.Events(ctx, a.TenantID, jobID, a.Subject, 0)
+		if e != nil {
 			investigationError(w, investigation.ErrDenied, a.RequestID)
 			return
 		}

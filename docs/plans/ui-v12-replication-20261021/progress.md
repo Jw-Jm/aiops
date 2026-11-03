@@ -1,3 +1,133 @@
+## 2026-10-29 r48 实际 Kubernetes 原生日志来源（GPT直接执行）
+
+用户明确要求“接通实际日志/来源改成实际的”。30471现为r48b API/Worker+r48 Web（index b05931cb…）、schema72；已登记Kubernetes源revision3、原CA/自动投射身份、原用户授权不变。PodLogs显式启用，通过当前Pod/Namespace UID和单运行容器指纹、实际pods/log零行权限探针，再按固定窗口直接读真实日志。当前runtime不再路由r37导入快照，旧容器/存储/登记/结果保留；不续期或导入日志。页面显示“Kubernetes 原生日志（当前容器）”和刷新来源，轮转与总体未知保留partial/not_measured，不以空样例冒充零。
+
+真实浏览器两条查询各20条样例；刷新新窗口后3条自然产生在第一窗口截止之后，未插入测试消息。原结果摘要不变，重载历史恢复、外集群canonical403通过。独立kubectl按纳秒时间/脱敏内容核对40条样例，READ ONLY PG与实际PodUID/NamespaceUID/来源revision/credential/schema72及旧快照摘要吻合；r48→r48b组件重建后按原摘要读取通过。30项UI/构建、Native/Chart/原观测定向检查、远程独立PG生命周期及原生来源授权通过。
+
+真实问题已保留并修复：任务Bao CRL于15:18:07(+08)到期导致组件启动拒绝；正常轮换并启用原生auto_rebuild、expiry仍72h，签名/CRL/TLS检查均保留。历史列表对退役快照重复探测native来源导致503，r48b提前拒绝不受runtime支持的来源，真实历史复验通过；已有Lease/路由慢日志不称永久消除。脚本/fixture/定位失败见evidence/gpt-native-logs-r48/README.md与分层记录，后续恢复没有重复创建新查询。
+
+本轮是实际按需读取当前单容器日志，不是持续转发/集中归档，不覆盖轮转前/前次或多容器。模型仍data_query、SP05未启用、30472不改；两个真实集群、完整视觉/全栈重启、持续归档和P3其余/P4～P8仍未完成，六维不提升。无模型调用/提交/推送，不恢复虚拟化/Trace/生产。
+
+## 2026-10-29 r47 资源筛选候选与重置（GPT直接执行）
+
+30471 API/Worker/Web前滚r47（index441b5e97…），schema71、来源/模型配置与30472不改；r44后端和r46d静态Web保留。C002新增可选includeFilterOptions，由同一已授权图快照生成完整类型/namespace/集群级存在标记，不受本页和业务筛选限制；候选不扩大授权，旧请求默认无新字段，flag绑定签名/游标。namespace=__cluster__仅匹配已授权的空namespace。前端下拉/搜索和URL筛选接通，读取失败清掉AntD缓存候选；重置清筛选/游标/排序，保留集群和每页条数。
+
+25定向UI与构建通过；新增namespace选择清游标及精确资源范围候选断言最终单独复核通过。图回归（排除既有20k容量构图）、HTTP及合同通过。首次广跑卡在既有20k构图，终止后有界90秒再跑同处超时；原失败证据保留，不称整包或容量通过，不为本轮修改容量实现/豁免。
+
+真实Chrome确认6Kind/1namespace来自38条完整授权资源，limit1/无匹配/未授权namespace筛选不截断或扩权候选；集群级无授权返回空且不出现候选，非法flag400；页面下拉/重置/刷新和选Pod实查通过。READ ONLY PG核对38个身份，Kubernetes核对Pod/Service/StatefulSet UID，源码制品哈希/PodUID/schema71、旧日志摘要及模型/SP05原门禁一致。0业务写入/0页面异常；首轮弹层离场动画造成定位混入旧下拉的失败保留，按对应list控件定位后通过。
+
+证据evidence/gpt-resource-filters-r47/README.md。未截新图或重采参考、未提升六维/P3；第二授权namespace和集群级正例仅fixture，完整视觉/双集群/持续来源/模型资源排查/事件运行与P4～P8仍未完成。无提交/推送。
+
+## 2026-10-29 r46 资源详情、来源追溯与日志深链（GPT直接执行）
+
+30471最终Web为r46d（index3ffed369…），API/Worker仍r44、schema71，30472未改。详情以当前cluster C002精确根核对后读取C003，scope/id绑定与非首节点定位，无权限/缺失不回退；四原型页签、来源登记版本/覆盖、共享关系图与新读邻居抽屉、范围链接、日志canonical深链、精确事件过滤/独立分页已接入。日志无当前资格或读取失败时禁用查询，失败复查不保留“资格已核对”。旧高级图入口保留。
+
+62定向Vitest与最终构建通过。真实Chrome概况/版本/复制/关系抽屉、日志cap200 sources=[]且无POST、跨集群403/缺失无C003回退通过，0业务写入/0页面异常。READ ONLY PG与Kubernetes核对真实UID/active来源revision3/schema71及旧日志摘要，r44后端Pod未变。安全取得概况viewport/fullpage截图；实际长标签不再侵入值列，头60/内边距20/双栏间隔20核对。
+
+真实阻塞：C029/C031均409 CAPABILITY_DISABLED，API/Worker的SP04配置实际无SP05块，保留“未启用/未取得读取结果”，未用DB0行冒充空列表，未绕门禁。图卡片/截图不等于完整视觉；全部Kind、非空SP05/双集群/持续来源/重启、AI资源排查与P4～P8仍未完成，六维不提升。原日志快照已到期、没有续期或新查询。源码/制品/分层证据见evidence/gpt-resource-detail-r46/README.md、source.json、web-runtime-r46d.json、browser-detail.json、runtime-oracle.json与visual-review.json。未提交/推送。
+
+## 2026-10-29 r45 资源选择、对比与本页导出（GPT直接执行）
+
+**10:48(+08)只读资格复核：原r37日志快照10:45截止已自然经过，同Pod capabilities真实200/sources=[]，不再提供该source。未POST新日志查询、未延长资格；此为来源资格到期，不是保存结果30天TTL自然到期验收。当前新的日志查询缺合格来源，仍可独立推进资源及其他模块。证据evidence/gpt-resource-controls-r45/source-expiry.json。**
+
+30471 Web前滚r45，API/Worker仍r44、schema71，30472未改。目录选择2～4个本页资源，对比前复用C002同过滤条件+规范ID精确重读；关闭/重开重新核对，失权或成员缺失不回退旧表。导出点击时固定本页ID与匹配总数，先C002重新授权读，再输出当前投影CSV；记录UID/集群/来源/观测/读取时间/图版本/请求ID/时效/部分覆盖，明确仅本页，资源变更/错误拒绝下载，切换集群丢弃迟到响应，文本公式前缀/引号按纯文本处理。
+
+33定向Vitest与正式构建通过。真实浏览器2资源新读对比、下载5行/点击时匹配10行通过；独立CSV解析/当前Kubernetes/READ ONLY PG证实5个规范ID/UID/namespace一致，CSV来源为新读取且保留部分覆盖警告，原日志摘要和r44后端Pod不变，0业务写入/0页面异常。无模型调用、来源资格变更或新迁移。详见evidence/gpt-resource-controls-r45/README.md、browser-controls.json、export-oracle.json。
+
+P3-01/SL008仅追加实证，六维不提升。完整目录/详情/总览视觉、筛选候选/责任归属、完整来源追溯/持续来源、两真实集群与完整重启、r42实际AI创建执行及P4～P8仍未完成；原日志快照截止10:45(+08)未延长。没有长期负载/提交/推送。
+
+## 2026-10-29 r44 资源目录搜索、健康投影与速览（GPT直接执行）
+
+30471 API/Worker/Web前滚r44，schema71不变，旧r39c二进制/r43Web保留；调查器与模型Profile、30472未改。补q搜索合同（名称/类型/稳定UID，不区分大小写，≤256Unicode字符），授权过滤、汇总、排序和游标复用同一条件；保留原name精确筛选。修复健康过滤按真实状态、页面却读不到health的共享投影缺陷，列表/详情/拓扑统一返回health和resourceDomain（不改canonical domain），不修改不可变底层属性或历史结果。目录补UID/领域/命名空间/来源观测/速览与详情、每页10/5/20/50及URL恢复，速览重新GET C003，拒绝隐藏旧内容/链接。
+
+Go graph/httpapi/contract通过；最终分类增量定向Go、28UI+最终4目录回归及正式构建通过。真实浏览器大写UID精确1条/匹配汇总1/正常Pod+Kubernetes领域、速览和刷新恢复、未授权namespace零汇总、257字400、拓扑正常状态通过，0业务写入/0页面异常。独立KubernetesReady/UID、READ ONLY PG/schema71、原日志摘要及实际二进制哈希核对通过。两次拓扑状态文本定位误报（圆点参与文本）与静态部署旧容器名错误均保留；无数据伪造，无模型调用或资格延长。
+
+证据见evidence/gpt-resource-catalog-r44/README.md及分层JSON。完整视觉/目录剩余交互、资源详情、预置/持续日志来源、两真实集群与完整重启、r42实际AI创建执行及P4～P8仍未完成；六维不提升，P3-01保持in_progress。未做长期负载、提交或推送。
+
+## 2026-10-29 r43 模型门禁实核与正式关系拓扑（GPT直接执行）
+
+30471 Web前滚r43（index559e621a…），API/Worker r39c/schema71及30472未改。开放正式关系拓扑，复用C002/C004/C003，当前集群精确根核对/分页、1或2层、200节点400边、图列表/缩放/重置/键盘节点/重新读取详情与URL刷新接通；指定根拒绝或缺失不回退，跨范围迟到隔离。24定向Vitest及构建通过；真实Chrome5节点4边/一层4节点、真实缩放与刷新、跨集群403、真实B命名空间空根无回退、未授权集群无请求通过。独立PG与Kubernetes5UID/4关系oracle一致，0业务写入/0页面异常。
+
+真实Pod挂载与Profile/材料/已发布策略交叉核对：taskKinds仍仅data_query，现有签名策略已支持受限operator/agent只读工具，但r28评测摘要只指向协议探针，缺资源排查专项评测与准入实证；不直接放开或绕门禁。原r41/r42摘要未改、资格未延长，无模型调用。截图探针拒绝，整页视觉不提升。详见evidence/gpt-topology-r43/README.md、model-gate-audit.json、browser-topology.json及oracle-persistence.json。P3-01改in_progress，六维不提升；总览目录/完整视觉、预置/持续来源/两真实集群/完整重启、r42实际创建执行与P4～P8仍未完成。无提交/推送。
+
+## 2026-10-29 r42 日志到AI范围联动（GPT直接执行）
+
+30471 Web前滚r42b，API/Worker/schema与30472未改。日志成功结果通过clusterUid+logQuery跳转助手，重新核对持久结果后显示精确资源/来源版本/微秒窗口，锁定运维域/资源排查/集群/命名空间；创建前再GET结果，随后复用既有create与事务内资源授权。403/410不回填旧缓存，切换集群丢弃迟到引用，保留模型门禁；不自动发送消息或把日志样例充作AI证据。
+
+36项定向UI与构建通过。真实浏览器已通过日志→助手范围锁定、过期410/未知404拒绝；当前模型能力仅data_query，资源排查创建被门禁阻止。READ ONLY确认原结果摘要未改、0条r42会话；真实创建/持久化/执行尚未验证，不能把单位夹具通过当作运行通过。原快照资格未延长。详见evidence/gpt-log-ai-handoff-r42/README.md；P3/P5/六维不提升，完整视觉/预置/持续来源/两集群等继续待办。无提交/推送。
+
+## 2026-10-29 r41 精确窗口选择与样例导出（GPT直接执行）
+
+30471 Web更新r41b；API/Worker仍r39c、schema71，30472未改。双日期输入改为单窗口选择（合格来源/已保存历史窗口），原始RFC3339微秒字符串直接传递，删除手填日期专用重复校验。查询检查与导出移到结果头部，修正旧span选择器把按钮文字染灰的问题。
+
+导出先复检C168结果，成功后只把点击时可见的脱敏样例生成CSV，不建新查询；保留UID/命名空间/来源版本/半开窗口/queryId/resultDigest及总体/返回/导出三种数量。CSV引用转义与公式前缀按纯文本；403/410/失败不下载旧缓存，资源切换丢弃迟到导出，空可见样例禁用。15项UI/正式构建通过；真实浏览器下载、数据库和CSV解析证实186总体/20返回/1导出，重新GET一次、无额外create。最新r41b只读截图0新查询通过。
+
+证据见evidence/gpt-log-window-export-r41/README.md及implementation-bindings.json。P0 query-export local行仍为原型阶段基准，实际logs分支明确增加C168前置读取，未把其他观测模块宣称实现。整页仍缺AI范围/预置入口与间距/公共壳核对，P3/视觉/六维不提升；固定快照资格未延长，持续来源/两集群等仍未完。无提交/推送。
+
+## 2026-10-29 r40 日志时间桶、字段侧栏与列表（GPT直接执行）
+
+30471 Web已更新r40b，API/Worker仍r39c、schema71，30472未改。复用现有返回快照实现5分钟样例分桶、本地时间筛选/清除、级别分布/资源字段侧栏和可点击日志列表；按源CSS采用190px侧栏、64px日志行。侧栏级别查询复用保存请求，仅改filters；局部筛选不发新来源请求、不修改总体。
+
+10项UI与正式构建通过；真实浏览器/SQL验证总体186与样例20分离、6柱合计20、空桶不是来源无日志、排序/换行/详情身份不变，以及INFO真实查询总体6/样例6。对应默认/换行/关键词空态的产品截图已回收；旧截图检测误判公开UUID，本轮仅排除明确授权元数据中的完整UUID，保留未知标识/恢复码/URI/OTP输入及前后探针，5项捕获协议用例通过。首次本地helper导入错误保留，捕获前修正。
+
+完整证据见evidence/gpt-log-layout-r40/README.md、browser-layout.json、persistence.json、capture-states-r40b.json及visual-review.json。整页仍有AI/预置/导出入口、双日期控件和顶部间距差异，视觉不提升；来源仍是单Pod固定窗口快照（资格未延长），资源聚合拓扑、AI与预置视图、持续来源和两集群等仍待完成。P3保持in_progress，未提交/推送。
+
+## 2026-10-28 r39 历史分页、完整请求与过期（GPT直接接续）
+
+当前30471：API/Worker=r39c、Web=r39b、PG17.11/schema71；30472未改。保持data数组，增加owner/tenant/cluster限定的UUID游标和limit(1..50，默认20)，界面追加分页且逐页重新核对权限/来源。读取从不可变request列返回完整模板与budget，旧View也补齐；历史级别再查只改filters，不丢微秒窗口或改用当前预算。真实浏览器/SQL证实capability20、保存预算7、总体186/样例7，历史加载更多与复制通过。
+
+过期：当前授权/来源登记复检在前；状态200返回expired且隐藏结果，results/cancel为410 RESULT_EXPIRED。排队过期不发来源，执行中到期停止平台接收，Finish保留授权复检且拒绝过期发布。独立真实PG覆盖旧View补齐/游标/撤权/过期读取、领取/停止/迟到；预览HTTP过期使用明确标记的元数据fixture，不代表实际业务等待30天到期。9项UI、定向Go/合同、生成和构建通过。
+
+远程6443曾拒绝连接，未修改共享服务；后续只读复查已恢复。r39c重启首轮读取503保留，随后过期接口200/410通过；未声称永久消除间歇性503。详见evidence/gpt-log-history-r39/README.md、source.json及分层证据。完整视觉/时间桶/字段侧面/AI与预置视图/两集群等仍未完；P3与六维不提升，未提交/推送。
+
+## 2026-10-28 r38 日志查询检查与详情（GPT直接执行）
+
+30471 Web前滚r38，API/Worker/schema与30472未改。补查询检查三页签和持久化元数据复制、日志字段/脱敏原始内容、相邻样例、时间排序/自动换行、按级别真实再查；读取拒绝时隐藏旧缓存与抽屉。6项Vitest/正式构建通过。真实浏览器与剪贴板通过；SQL确认186总体/20样例的新结果摘要，以及同UID/来源/窗口/budget仅增加ERROR后的真实总体180/20，排序/换行/检查不重发。
+
+完整证据见evidence/gpt-log-detail-r38/README.md、source.json、browser-details.json、persistence.json、web-runtime.json。测试定位/时间字符串误报失败保留。截图探针拒绝仍保留，完整视觉不提升；资源聚合/拓扑、时间桶/字段侧面、AI范围/预置视图、历史分页/过期、完整预算读取和两集群等仍未完，P3继续in_progress，无整体通过。
+
+## 2026-10-28 日志工作台恢复与正式页面（GPT直接接续）
+
+30471 Web已前滚r37j（API r37/Worker r37g/schema71）；30472未改。日志导航开放。真实来源恢复后的新查询186总体/20样例已持久化；SQL复查旧摘要不变、终止查询仍无迟到结果，资源/Namespace UID一致。正式浏览器成功、测得零空态、本地筛选不重发、脱敏原文、来源说明、个人历史恢复通过；来源故障与运行中取消界面均已通过，来源已恢复；SQL确认失败/终止记录均无结果，终止不伪造来源已停止。
+
+实际浏览器发现并修复两处：秒级表单向资格窗外截断微秒导致503，改为开始向上/结束向下取整；accepted→running版本竞争导致取消409，改为取消前读最新回执，冲突只刷新并提示再次核对，不自动重复写。4项定向Vitest和正式构建通过。失败与部署轮次均保留。截图严格安全探针命中疑似恢复码，相关状态保留JSON断言，未放宽探针/未提升视觉通过。
+
+P3仍进行中：时间桶/字段检查、排序换行与相邻样例、精确范围AI/预置监控、历史分页/明确过期、两物理集群与完整视觉未完成；来源仍单PodUID固定窗口真实快照，不是持续日志采集。详见 evidence/gpt-log-workbench-r37/README.md；无提交/推送/主分支切换，无长期负载测试。
+
+## 2026-10-28 当前运行/账号增量
+
+用户转问全页面账号，已新建v12.fullview并独立授予两种角色，真实首改密与总览/资源/助手/用户管理页面通过；密码只在远程private文件并直接交付用户。现有保护账号未变。30471 API=r37、Worker=r37g、schema71，Web仍r36b。P3实际API已通过186/20成功、测得零空态、跨范围拒绝、真实来源故障与运行中取消；恢复后的新查询、SQL复查、正式日志Web部署/浏览器/视觉和完整合同仍待继续。证据/安全接续点见 evidence/gpt-log-workbench-r37/README.md；没有提升完整六维或整体任务完成。
+
+## 2026-10-28 r36/r37 当前接续（GPT直接执行，进行中）
+
+r36补齐受控历史query-result/固定RCA与处置建议引用的映射/收窄/来源失效/版本/撤权组合，远程真实PG与HTTP通过；不代表真实旧库迁移。核对原生登录/首改密/MFA状态/用户授权安全画面，修复公共壳、状态条、表格、标签和按钮；34定向用例/构建通过，完整视觉仍未通过，未重采736参考。30471/30472 Web先更新r36b。
+
+r37开始P3：独立持久化查询/原生事务复检/来源与UID资格/租约/取消/历史/结果及正式日志工作台已实现；远程一次性库schema71生命周期通过，3项工作台机制测试、生成/构建通过。30471 API/Worker已前滚schema71，真实任务日志快照已登记/测量，当前继续实际API及浏览器验收。范围仅单PodUID、固定窗口，不宣称全量持续日志采集；Kubernetes原持续采集未停。管理员和运维角色独立，已登录任务operator核实总览/资源/助手页面存在。详见 evidence/gpt-references-visual-r36/README.md 与 evidence/gpt-log-workbench-r37/README.md。P3、P1/P2完整视觉、P4～P8及正式发行仍未完成；不因准备工作提升六维。
+
+## 2026-10-28 r35 最新接续（GPT直接执行）
+
+本轮按用户两项授权补齐legacy v2调查映射只读入口/列表/步骤/SSE逐事件复检及前端只读取消禁用；真实PG/HTTP同时验证旧执行输出、审计独立授权、证据引用、流中撤权和旧归属不变。来源revision变更复用旧UID/RV归档ID的问题已修为投影v3，旧证据保留。真实无效采集凭据→拒绝503→恢复原投射身份→漏采更新/新更新持久化，以及第二namespace实际只读RBAC、同名资源独立UID、用户范围A+B后收窄A/撤权拒绝通过。完整证据见evidence/gpt-history-recovery-r35/README.md、result.json、source.json、runtime-final.json。
+
+30471现为r35 Web/API/Worker/source3双任务namespace；30472为r35 Web/API+原r34 Worker。原r24 admin/member密码/MFA/授权未改，r31测试operator已恢复原A范围（授权版本正常递增、测试会话失效）。新迁移无，仍70；无新模型调用。稳定窗口12次200不代表启动/故障窗口永无503。实际旧库实迁、历史query-result/formal-reference全组合、P1/P2完整视觉与正式Bundle/离线发行仍未关；P2-04/05及六维状态不提升。下一步补剩余引用组合和P1/P2视觉，再按依赖SL049；不重复736参考或本轮已验证的凭据/范围演练。
+
+## 2026-10-28 r34 最新接续（GPT直接执行）
+
+完成受控历史inventory真实CLI导入、管理UI显式映射/再次验证/错误摘要拒绝/旧会话失效，以及新namespace/新库无OIDC的Web/API/Worker/调查器/CLI启动与进程重建；历史会话只读前端修复已部署独立30472。原30471与既有用户不变。详见 evidence/gpt-coldstart-r34/README.md、result.json、source.json、runtime-final.json。会话重启有效，但故障502后页面需刷新恢复，未保证原路径。新库0 Jobs/0模型调用；受控旧主体不是实际旧库。P2-04/05和六维状态不提升。
+
+下一步：历史执行/审计/证据引用及双角色组合；采集真实凭据失效恢复、第二namespace实际授权；P1/P2视觉收尾，再按依赖P3资源日志样板及P4～P8。独立源码冷启动已验证；正式不可变OCI/Bundle/离线安装切换仍缺合格材料。中断前脚本泄露的单个r34测试会话已自然过期401，失败回执已脱敏，未改其他会话，见session-containment.json。用户新增代码约束：入口一次校验；不重复判空或滥用try/catch；单次逻辑不乱抽函数；低概率防御先征求同意。
+
+## GPT r23 接续（2026-10-26，优先于下方历史版本说明）
+
+本轮用户授权完成四项：MFA 缺陷、集中失败定位、P1/P2 收尾、P3 资源日志样板。由 GPT 直接执行，无 CodeBuddy。当前基线 main/082f87d，未提交工作树；前三轮 r13/r22 与 2026-10-25 主分支评审/部署记录按各自版本保留。
+
+- MFA：新增向前迁移 70，窗口重置时清除过期锁，保留仍有效锁，单一 attempt_at 保证窗口判定一致；1～69 原文未改。远程独立 PostgreSQL 六种窗口/阈值边界通过。70 已在临时集成库及新 ui_v12_r23_preview 副本执行，原 r15 库仍69，原共享库仍57；不能再原地改70。
+- 集中验收：原 11 项顶层失败已逐项到达正式边界并通过，最终35项顶层PASS/无SKIP。修正夹具：重复operator授权改为收窄现有grant；来源实例用完整UUID；已有policy activation使用真实revision；变更目标前创建挑战；发布真实profile v2再验证绑定；Finding恢复后读取新Incident revision；挑战证据由受控owner读取不扩大runtime权限；过期fixture保持created<idle；管理proof用实际管理员密码；无客户端证书断言TLS拒绝。旧RPC的无效请求/虚构task工厂由有效graph.Query和既有真实Submit任务200回归取代，保留窄权限反例。
+- 追加P2机制：10项真实PG/HTTP回归通过，覆盖原生Action后检查、取消/unknown恢复、撤权、助手取消、source-step读回、first-tenant、映射历史、HTTP会话及迟到写拒绝。以上均为受控集成，不是安装态来源验收。
+- 登录页：实测pending按钮未disabled且重复submit会abort旧登录并新发请求，已加inFlight单次保护及Form/Button disabled。18项前端定向/正式构建通过；新独立30470/API18091/metrics19091、任务专属runtime LOGIN、数据库副本57→69→70（原副本从69导出后前滚70）启动成功，真实浏览器pending禁用/401错误显示通过。未更新30469或旧预览，不把当前截图当成新黄金图。
+- 原生来源能力读取修复：交互capabilities无持久JobID，旧实现只取nativeTaskProof会丢失当前session并签成legacy。现仅无Job的交互读使用服务端nativeProofFromContext；真实native任务仍须持久证明，未知来源拒绝。原实现overlay真实PG/HTTPS复现失败，修复后正向/撤权/非法来源通过；没有伪造任何来源资格。
+- MFA现场：首次真实浏览器503，确认旧task TokenReview reviewer JWT已于10-23过期；在核对既有SA、audience、角色和CA后只续签任务凭据，角色/信任配置/Transit key/策略未改。30470真实Transit设置→刷新持久→恢复撤销→重新登录强制重设且业务403→新因子确认恢复原有管理员200全部通过；原账号与旧数据库未改。恢复码截图仅对10个秘密标签最小遮罩。新JWT仍为1小时测试凭据，不是自动投射轮换。
+- 尚在推进：P1/P2全部视觉/安全补充状态、完整API+Worker无OIDC冷启动/重启/切换；P3六项合同及SL-049全组独立查询/历史/取消/来源链尚未实现，不能关闭P2或进入“样板已通过”。本轮证据 evidence/gpt-completion-r23/，原集中失败日志与本轮两次定向失败保留。
+
 # V1.2 实施进度
 
 ## P2-05 阶段返修 r22：审计投影名、共享锁死锁、Action 来源严格性（2026-10-23；本段优先于下方历史记录）
@@ -380,3 +510,119 @@ SL-005补齐真实关闭/Escape/加载禁用与退出失败网络故障、刷新
 历史归属读取仍未实现：助手会话/列表/结果分别过滤旧主体，冻结grant摘要及Job输入/权限/策略校验横跨消息/引用/事件/Worker；不能只放开WHERE、改写旧主体或覆盖摘要。operational Job未持久化native authority source/user/version仍是P2-05缺口（本轮静态核实，不是运行验证）。命令历史资源域读取使用当前operator范围，不应误改为个人主体过滤。具体位置见evidence/gpt-admin-r17/history-read-review.md。
 
 本轮只新增测试、复审与证据，没有修改Go业务实现、迁移或部署；1～57冻结，下一SQL58+。产品六维未提升；P2-04仍in_progress，保留历史读取/映射并发/其他故障/产品视觉、P2-05及SL-049完整样板等剩余项。证据见evidence/gpt-admin-r17/result.json；原生执行/取消/再次验证凭据不因映射放宽。
+
+
+## 2026-10-26 r24：原生全栈/账号用户视觉收尾（远程阻塞，未完成1/2整体验收）
+
+补SL-003我的账号、SL-004自助改密入口，服务端姓名/登录名投影同步OpenAPI/镜像Schema/生成客户端；复用真实会话轮换，等待禁止重复提交及关闭。用户页表格/筛选/详情抽屉/弹窗和公共层按固定HTML尺寸修正，保留安全扩展。正式Bao新增显式已有MFA key的API-only encrypt/decrypt授权与只读status漂移核对，不隐式创建/轮换key，不修改foreign role。
+
+本地172 Vitest+6 SSE、最终7项账号/用户增量、Go OpenBao/httpapi/opsctl race、app/contract、生成一致性/来源检查及正式构建通过。27主状态+补充状态见evidence/gpt-native-visual-r24/state-review.json，未提升六维验收。新任务Bao实际初始化/配置通过；旧任务PG新空库迁移1被有限owner权限拒绝，未升权。准备全隔离PG15454并接续时mssc-direct再次超时，执行结果未回收。30471未确认可用；轮换、独立Worker/CLI/全栈冷启、重启接管、撤权取消前滚和新版截图均未通过。恢复须先查实际对象，不盲重跑一次性脚本、不覆盖原账号/回执。详见evidence/gpt-native-visual-r24/README.md与result.json。
+
+
+## 2026-10-27 r24续接：独立原生运行与账号安全验证（覆盖上节远程阻塞描述）
+
+远程已恢复并重新核对mssc身份。现用独立namespace `ops-native-v12-r24-20261026`、目录 `/data/ops-v12-native-visual-r24-20261026`、PostgreSQL17.11/15454/schema70、预览 https://192.168.0.63:30471/login。真实first-tenant CLI与API/独立审计Worker/Web/OpenBao/Archive无OIDC启动通过；MFA只授API，Worker访问403；同Pod API/Worker/reviewer投射凭据自动续取后仍有效。10月27日再次重建API/Worker后，同会话保持有效，退出后旧Cookie401；旧签名段未变，生产S3读/解密/摘要/签名/前驱链验证范围1～49共7段通过。
+
+真实浏览器已验证登录/首次改密/自助改密、MFA注册/恢复/重新绑定、管理员密码与MFA重置、零角色自助安全和业务拒绝、独立管理员授权撤销、禁用持久化与迟到结果恢复。MFA enrollment owner pending/confirmed GET200不泄露秘密、其他管理员GET404。测试为最终178 Vitest+6 SSE、Go race/contract/生成及构建通过，范围以r24结果为准。SL-003稳定前景660×424/header76与固定切片尺寸一致；内容/背景/完整逐状态像素仍不通过，不提升458项整体验收。
+
+实际版本为API/Worker final二进制、Web-r4、`source-final-2/`，源码归档哈希71a4480aa1d67094585c2507689a5f179d693e047a71e93abd375c6b9a431a74。当前是挂载源码制品canary，不是新OCI准入或不可变Bundle验收。SP06业务dispatcher未配置，不能用审计Worker归档冒充业务Job签名Context/工具结果/接管/取消。1/2与P1/P2保持未完成，P3～P8剩余不变。所有早期失败、动画帧误采和脚本导出失败保留；凭据仅远程private，不导入仓库。
+
+详见 [r24记录](evidence/gpt-native-visual-r24/README.md) 与 [结果](evidence/gpt-native-visual-r24/result.json)。
+
+本轮收尾校验：validate-progress.py通过458状态/177合同结构核对；新增evidence/contract-adaptations.json登记真实原生账号合同增量，原slice-map不改。移除原基准合同或加入未登记合同的负向自检均拒绝。结构检查不代表产品六维通过；失败记录已保留。
+
+
+## r25（2026-10-27）：运行中Dispatcher边界与MFA读取状态
+
+新增正式Dispatcher原生运行中取消/撤权/停机接管回归，远程任务PG15454独立随机库/schema70三项通过；旧上下文拒绝、平台取消部分结果不被迟到成功覆盖、新generation可发布。签名器与调查器仍fixture，不算真实SP06业务Worker运行。失败测试假设及数据库审计保留。
+
+修复MFA未知读取状态被显示成未启用/恢复码0，改React Query+QueryState并覆盖加载、失败、重试；180 Vitest+6 SSE/TypeScript/Vite通过，远程浏览器网络中断→真实GET200重试通过。30471当前Web为ops-v12-native-r25-web-r5/web-r5；r24旧容器停止保留，API/Worker/PG/Bao不改。来源为r24 source-final-2加r25 source-delta-2，见evidence/gpt-dispatcher-r25/source.json。
+
+下一步仍为SP06真实独立Worker/来源与工具链、完整P1/P2视觉及正式Bundle；随后按依赖P3～P8。本轮未提升产品六维，不重跑一次性初始化/首租户/MFA重置。详见evidence/gpt-dispatcher-r25/README.md、result.json。
+
+
+## r26（2026-10-27）：MiniMax真实连接402，第一项未完成
+
+用户提供MiniMax-M3.1-Flash及https://api.minimax.cn/anthropic/v1/messages并授权真实验证。凭据仅远程任务private/minimax-m31-api-key，0600，续接直接读取，不输出或写Git。一次最小请求在mssc-direct返回HTTP402 insufficient_balance_error，请求ID072f36eff225abdaaf349c18d2fab315，未获得模型回答，不重复重试。
+
+另核实Go Profile限制内部/v1、Python只准内部OpenAI llama3.1:8b-16k、Schema费用固定zero-charge并要求自托管权重证据，需显式扩展外部Anthropic/计费/来源合同，不能伪造材料或绕过准入。第一项真实业务Worker仍未完成；额度恢复后再验证协议/工具/usage并接真实固定Profile业务链路。局部阻塞不阻止其他视觉和独立任务。30471/r25 Web-r5及API/Worker/PG未改。证据见evidence/gpt-minimax-r26/result.json、connectivity.json。
+
+
+## r28（2026-10-27）：真实原生审计业务Worker链路完成
+
+按用户明确指示将DeepSeek作为本任务受信内部模型，使用实际deepseek-flash官方OpenAI接口。原生会话/CSRF/幂等→真实签名策略与登记Context→独立Worker→真实投射身份/OpenBao Transit/PKI双向TLS→锁定Holmes→真实DeepSeek→真实audit.events工具统计→持久化/事实引用→浏览器和刷新回显通过。首个完成Job01a17b2e-7857-7d6b-973b-205c44bb3912。
+
+真实模型运行中取消、临时独立管理员撤权（用户失权，AUTHORIZATION_REVOKED无结果）以及Worker/调查器进程崩溃、实际租约过期epoch1→2接管成功，均有独立实证，不使用fixture签名器/模型/工具、不修改租约SQL。临时授权已撤销。修复控制面查询工具在Worker侧仍用浏览器/legacy授权的遗漏；修复JSON模式未提供精确输出Schema。新增管理审计页审计问数入口，管理员无需operator，运维资源API仍403。
+
+30 Python、Go相关包/contract与真实PG查询回归、181 Vitest+6 SSE/正式构建通过。旧失败/原始任务保留。30471现Web-r6；API r28-worker/ops-api-query，Worker r28-worker/ops-worker，调查器source-4，PG15454/schema70不变；准确源码/manifest/恢复见evidence/gpt-worker-r28/README.md、source-final.json、runtime/final-runtime.json。凭据仅远程private/任务Secret，不进入报告。
+
+这是审计data_query业务链路通过，不是所有业务工具、回答质量、全部视觉或签名Bundle验收。P2-05仍in_progress，下一步继续原P1/P2视觉与正式安装切换、P3资源日志SL-049及P4～P8；原额度中断剩余与虚拟化延期不变。不重跑一次性初始化/首租户/已发布策略，不回滚身份数据。
+
+
+## r29（2026-10-27）：认证失败态复刻与MFA409恢复
+
+SL-002错误条按原HTML复刻，400/401统一不枚举账号的凭据错误；后台12～256密码校验、同源/限流未改。真实401等待/禁用/重试、网络abort通过，稳定真实400使用原型相同短错误输入。原r3参考无重采/无掩码，错误条14200像素完全一致；整图仍6259像素不同，不提升整体visual。
+
+补MFA失效恢复：409/expired/revoked清除待绑定URI、旧表单/证明与过时提示，并更新请求代次。真实单挑战state=expired故障注入→API409→重新创建/取消通过，既有MFA确认时间和恢复码数量不变；自然计时到期仍不算本次验证。184 Vitest+6 SSE、构建及最终9项MFA增强restart点击检查通过，失败测试/捕获假设保留。
+
+30471现Web-r9（ops-v12-native-r29-web-r9/web-r9），API/Worker/调查器r28和PG15454/schema70不改。来源、版本范围、恢复及证据见evidence/gpt-login-r29/README.md、source.json、runtime/web-runtime-r9.json。本轮无模型调用、无真实账号改密/角色变更，不重跑已通过Worker链路。P1/P2全量视觉与安全补充/正式安装仍未完成；下一步继续这些缺口，再按依赖P3资源日志与P4～P8。六维状态未提升。
+
+
+## r30（2026-10-27）：P2-02/P2-03 原生认证与账号安全整组复刻及真实验收
+
+用户要求整组交付而非局部小修。本轮用 Web-r14（`ops-v12-native-r30-web-r14`，index SHA256 `8465ddec2b4632b7cc5ac518f39506255c9a65b17b7a58e085fd217377075ba8`）在 30471 完成登录/首次改密/自助改密/退出撤销/MFA 全生命周期/限流锁定/同源与 CSRF/零权限的真实浏览器与真实 PG 验收；API/Worker/investigator 仍 r28，PG15454/schema70 未改，无迁移、无模型调用。
+
+修复的真实缺陷：登录与改密在传输/5xx 失败时回显 API 客户端通用文案「请先核对持久记录」（登录不写记录，且可能被读成凭据结论），改为各自的可重试说明；登录成功后必须重新绑定 MFA 时，Login 页的会话重定向与提交处理的目标不一致，存在落到普通首页的竞态，现两处统一为 `/account/security`；账号安全页面包屑曾为「未匹配页面」且顶层页面模块名重复，现扩展页登记为「账号 / 账号安全」、`navModule` 只对子项返回模块名；焦点环由旧 V1 的 `#208f89/3px` 改为原型 `#aaa7ef/2px`，`V12Modal/V12Drawer` 初始焦点按原型原生 dialog 语义落到关闭控件（`[data-autofocus]` 仍优先）。
+
+真实证据要点：真实 401 统一常量文案且不禁用重试；请求挂起时唯一提交控件 `aria-busy` 且 disabled；真实 abort 显示服务不可用；5 次失败后正确密码返回与错误密码完全相同的 401（不暴露锁定），15 分钟后同一密码 201；入口限流第 60 次 429+`Retry-After` 且窗口内正确密码同样 429，窗口后恢复；首改密会话对业务/MFA/管理员接口一律 403，取消/改密均撤销旧 Cookie；MFA 挑战闲置 660s 后用正确动态码仍返回真实 409 并清除旧密钥；恢复码一次性消费撤销全部会话且整套恢复码删除；再绑定推进 `confirmedAt` 并拒绝旧恢复码；账号菜单退出 200 且旧 Cookie 401、刷新不回会话。DB 侧 session 撤销原因、challenge `expired`（created→idle 恰好 600s）、enrollment 状态与 audit 事件数一致。
+
+视觉：复用 r3 参考、无掩码。SL-003 对话 660×423.8125/头 76/关闭 31×31 与参考一致，前景按参考滚动条 -7px 对齐后 12651/279840（>20 者 7278）；SL-004 对话 660×492.625，前景对齐后 9257/325380（>20 者 5235）；SL-001/002 差异全部落在演示凭据预填、演示标签/页脚与真实账号名文本，SL-002 错误条逐像素相同；SL-005 因登记的安全扩展字段「当前密码」比参考高 84.6px，整页不通过。故只提升已有充分实证的 interaction/api/persistence/authorization/live，SL-001/002/005 的 visual 仍未通过；同时记录 operator 真实运行仍缺合法集群范围（未伪造集群注册），不以本组通过宣称 P1/P2 或 V1.2 完成。
+
+证据：`evidence/gpt-auth-r30/`（README、result.json、runs/、shots/、visual-comparisons.json、db-evidence.json）。validate-progress.py 通过 458 状态/177 合同；六维 passed：visual 1、interaction 5、api 5、persistence 5、authorization 3、live 5（复审后 SL-001 visual 纠正为 not_verified，现为 visual 0，见下一节）。
+
+## r30 返修（2026-10-27，依据独立复审 changes_required）
+
+集中处理复审五项，不重跑已通过的改密/MFA 重置/r28 审计 Worker，不改迁移、不放松身份语义。
+
+1. 敏感截图：17 张 `mfa-*`（另有 3 张 `mfa-status-*` 与 2 张不确定的安全页图）已从远程可浏览目录移入 `private-evidence-quarantine`（0700/0600），仓库内不留该批次；本轮未打开、未展示、未复制回 Git。因无法逐图判定，9 个 `r30.accept.*` 全部经真实管理员 UI 重置 MFA → `mfa_reset_required=t`、活动登记 0、未用恢复码 0、活动会话 0，隔离图片中的任何 URI/恢复码/动态码均已失效；`v12.r24.admin`、`r24.member.*` 未动。新增 `harness/safe-capture.mjs` + `harness/screenshot-policy.md`：截图前探测 otpauth/恢复码/动态码/base32，命中即拒绝出图；含秘密状态只记录机检断言。安全重采 3 张（已启用、取消绑定后、管理员安全页）并替换了原不确定图。
+2. SL-001 `visual` 由旧 PASS 纠正为 `not_verified`（旧 PASS 属更早基线双遮罩历史，r30 整图不一致），全表 visual passed 归零，汇总同步。
+3. `04` 脚本"提交已确认因子正确码"的结论撤回：该 409 发生在密码步、服务端未评估任何因子；DB 时间表述改为"最后活动起 600s"（created→idle 601s）。改由 `12-idle-expiry-confirmed.mjs`（独立身份+自生成确认因子：无活动 11 分钟后 409 且 challenge `expired`、idle 恰 600s；随后同身份新挑战用同一因子的正确码达到 LoA2）实证。
+4. 补 `10-absolute-expiry.mjs`（真实墙钟：t+9min 完成 password 把闲置窗口刷到 t+19min，t+15.8min 提交确认因子的正确动态码仍 409，绝对窗口 `900s` 恒定，全程无 SQL 改时间/状态）与 `11-cross-account-concurrency.mjs`（跨账号挑战不可验证、同 revision 并发恰一个 200 一个 409、一次性码不可重放、他人恢复码无效）。
+5. 运行手册补 r30 段（Web-r14、安全前滚/恢复边界、截图策略、身份语义不回滚、数据库恢复后须重跑）；剩余范围纠偏为"SP06 未完成限于资源/业务工具路径，审计 data_query 真实链路 r28 已通过"。
+
+证据：`evidence/gpt-auth-r30/repair.md`、`containment.json`、`runs/{absolute-expiry,idle-expiry-confirmed,cross-account-concurrency,safe-captures,quarantine-reset*}.json`、`harness/`、`shots/security-*.png`。validate-progress.py 通过，六维 visual 0/interaction 5/api 5/persistence 5/authorization 3/live 5；P2 整组与 V1.2 继续 in_progress。
+
+## r31（2026-10-27）：原生授权／历史主体保留／全栈一致性闭环
+
+先修上一轮复审余项，再做实体业务闭环。余项：绝对上限改为微秒断言（实测 `idle=absolute-1µs`，此前 `to_char` 毫秒截断显示相等，脚本改 `US` 精度并改数值比较，未重等窗口）；r30 九身份会话按「物理行已撤销」与「会话现已失效」分开陈述（第 9 个身份有 1 条未撤销行但 idle 已到期）；`safe-capture` 改为 settle→探测→截图→再探测（命中即删图），新增假秘密自检 3 例（等待期出现 URI 拒绝且不写图、探测后出现 OTP 删除已写文件、无秘密正常保留）。
+
+A（关键改观）：核实任务库 `cluster_registrations/source_registrations/resource_entities` 均为 0 后，新建任务专属只读身份 `ops-r31-sp04-read`（17 个核心 Kind 只读、无 secrets、无写动词；仅 `r31-graph-lease` 可 get/update 用于图所有权续约；24h TokenRequest 令牌只存 Secret 并只读挂载），以真实 `kube-system` UID `79014400-9453-4cb4-9678-0fae47981d79`、真实 endpoint/CA、实测发行版与版本、实测能力标志，经真实管理员会话+绑定本次请求 method/path/bodyDigest 的密码+TOTP step-up，调 `POST /api/v1/admin/clusters`（201）与 `POST /api/v1/admin/source-registrations`（201）登记；首次 `nativeTenant` 声明被采集器按契约拒绝（`source_scope_unverified`），用真实 `PATCH` 收窄为 clusterUid+任务 namespace 后 revision=2，SP04 采集 17 个 GVR 全部 list/watch 成功，图所有权 epoch=1 续约，资源实体 0→72。未伪造 UID/来源，未改共享集群配置与第三方组件。
+
+B：管理员 `v12.r24.admin` 无 operator 授权、`authorizedClusters=0`，`/api/v1/resources` 与 `/overview` 均 403（管理员角色不自动获 operator）；经真实 UI 创建 `r31.op.1793086009209`（201、行内「尚未授权」）并经授权弹层授予 operator（单集群+任务 namespace，201），整页刷新后复读仍一条 active 且 scope 一致。该用户首次登录被限制 `first_password_only`，强制改密后 `/api/v1/resources` 200 返回 39 条真实资源且全部在任务 namespace，`/overview` 200，未授权 namespace 过滤 0 条，浏览器页头显示集群名。界面收窄到 `default` 后旧会话 401、重登读取 0 条任务 ns 记录；界面撤权后重登 403；再授权后重登恢复 39 条；以同一受控写路径尝试撤销唯一管理员 → 409「不能停用或撤销最后一名有效管理员」，之后 `platform_admin` 与 `activeAdministrators=1` 不变、资源仍 403。观察到瞬时 503 `GRAPH_NOT_READY`（租约续约与归属镜像过期窗口），按原样记录每次尝试。
+
+C：当前工作树集成测试在任务实例一次性库迁移 1→70，`TestNativeMappedHistoricalOwnerRead`/`TestNativeMappedHistoricalTurnRead` 均 PASS（映射后可读且冻结字段不变、未映射/异主体拒绝、撤权拒绝、历史读取不产生 Job/Worker 授权）；一次性 SUPERUSER 探针角色用后删除（保留库所有权转回 postgres）。想为不存在的旧主体造映射时被真实守卫拒绝（`import_subject_inventory` 要求该主体已在本租户历史中），映射表仍 0 行——这是「机制验证+拒绝编造」，不是旧用户全业务迁移。
+
+D：API/Worker/调查器/Web/CLI 的来源哈希、env（无任何 OIDC/Keycloak/issuer 变量）、Web `runtime-config.json` `auth.mode=native` 与 `/oidc/...` 仅落 SPA 外壳均已核对；重建 API Pod 后用重启前的同一 operator 会话回放仍 200 并读到 43 条真实资源（会话在 PG 而非进程内存）；`go test ./test/contract -run Native` 通过。正式不可变 OCI/Bundle/离线切换仍缺合格物料，保持阻塞。
+
+证据：`evidence/gpt-authz-r31/`（README 与各 JSON/日志）。六维未提升（visual 仍 0）；P2-04/P2-05 继续 in_progress；operator 真实范围已由「无合法集群」变为「已登记并有正反例」，但仍未做整页视觉，不据此关闭 P1/P2 或 V1.2。
+## r32（2026-10-27）：采集收敛／短期凭据自动轮换／503 根因修复与原生管理接续
+
+针对 r31 独立复审 5 项的集中返修，全部在 `ssh mssc-direct` 真实环境完成；API/Worker 升级为本轮源码构建的 r32 二进制（Worker `2752842d…`、API `5057b8d3…`），清单与配置见 `evidence/gpt-authz-r32/README.md`。无迁移（1～70 不变）、无模型调用、不涉及虚拟化；`v12.r24.admin`/`r24.member.*`/共享服务未动。
+
+1. 采集 RBAC 收敛：删除 r31 全局 ClusterRole/Binding 与专用 SA，改为 Worker 自身 SA + 命名空间 Role（任务 ns 11 类 namespaced Kind）+ 仅 6 类无命名空间 API 的受限 ClusterRole（保留原因与差异已在 README 声明）；`kubectl auth can-i` 正反例实测；采集端 `Namespaces` 必填并与登记 scope 启动期严格校验，namespaced GVR 走真实 namespaced list/watch 路径；chart（sp04.yaml/deployments.yaml/values.schema.json）同步为同一模型并新增合同测试。
+2. 短期凭据自动轮换：Worker 采集凭据改为 600s 投射 ServiceAccount 令牌（kubelet 自动轮换、逐请求读、异常文件拒绝），实测三次轮换摘要（2545bbc4→ee3622d6→df0b6b85）与跨轮换连续 22 次资源读全 200（08:28→08:33，覆盖 08:31 轮换边界），不再需要手工续 24h 令牌。
+3. 503 根因实测修复：探针构建实测 60 连读 3×503 + worker `gate_timeout`×4 + 续约分段耗时（lease_read≈230ms/lease_cas≈252ms，10s 探测叠加时全程 ~500ms > Confirm gate 300ms）；最小修复后（查询路径脱离续约栅栏、所有权快照一次捕获、Confirm 复检 UID/epoch/holder/renewTime 不变）60 连读 0 失败、0 confirm 失败；所有权变更/断开/过期仍 fail-closed，租约 SQL 未改。
+4. kubernetes 来源 nativeTenant 登记不一致：`ErrScopeIncompatible` 统一 Register/Update/Rotate/Rollback 校验，存量不兼容行以 `queryCapability.reason=incompatible_data_scope_mapping` 呈现并经 update 修复，rotation 拒绝重新激活不可采集来源；OpenAPI/单测/HTTP 用例同步。
+5. 原生管理接续：B 完成——新零角色身份 `r32.acc.1793091626814` 停用→登录 401 UNAUTHENTICATED、恢复→登录+首改密 201+会话 200、并发 disable/restore 与并发同向写（同 expectedRevision、独立 step-up）恰好一个 200 一个 409 CONFLICT、TOTP 每 30s 步只消费一次（`evidence/gpt-authz-r32/runtime/account-lifecycle.json`）。C 历史主体正反例的 API/UI 路径与 D 无 OIDC 隔离冷启动仍未执行（需一次性独立测试库/整栈环境）；chart 渲染/配置一致性本轮完成。
+
+证据：`evidence/gpt-authz-r32/`（README、manifests/、runtime/ 的 live RBAC、探针/修复后读数、跨轮换读数、账号生命周期）。本地 `go test ./internal/{graph,source,httpapi,app}`、`./test/contract`（含新增 SP04 渲染用例）全部通过。六维未提升（visual 仍 0）；P2-04/P2-05 继续 in_progress。
+
+## r33（2026-10-27）：GPT 直接接续、采集与历史 HTTP 返修
+
+用户撤销 CodeBuddy 执行，交接1d91d497已取消；本轮 GPT 直接实现/自测/远程验收，保留全部未提交改动。修正 Lease nil Graph 崩溃、chart 多 Namespaces 只授权发布 namespace、LIST(float64)/WATCH(int64)导致同 UID/RV 数字投影不一致、归档v2首观察并发未归一及冲突告警被其他队列完成清除；来源兼容 reason 同步 Go/TS 生成物。远程真实 PG 的来源登记/修复/轮换/回滚与归档全组回归通过，失败保留。
+
+C 增量：真实 PG + 正式 Cookie 登录/中间件/历史 HTTP 回归发现详情200但消息分页404；只读预检改 GetReadable 后会话/消息/轮次200，同名未映射/撤权拒绝，追加任务拒绝且 Job 不增加，冻结历史归属/input/scope/binding 不变。受控历史 fixture 不冒充真实旧库迁移；完整 inventory/mapping API/UI 和执行审计引用未验。
+
+真实采集：专属无秘密 ConfigMap UID85711746-8bbe-4411-9620-f683d5acf665，轮换前 RV1863416→自动短令牌更替后 RV1863556→Worker重启重连后 RV1864069，三版实际PG保留，API回显标签two/three（200）。API/Worker已部署r33，Web仍r14，schema70不变；来源及制品见 evidence/gpt-authz-r33/source.json/runtime-final.json。没有手工续签、模型调用、共享配置/用户账号更改或迁移。
+
+尚未关闭：C完整管理UI/API与D独立无OIDC整栈冷启动、真实凭据故障恢复、第二namespace实际授权/冲突UI及P1/P2完整视觉；正式Bundle材料门禁另记，不把未执行称外部阻塞。P2-04/05仍in_progress，六维通过数不变（visual0）。详细边界、失败和接续见 evidence/gpt-authz-r33/README.md。

@@ -117,9 +117,30 @@ type nativeMFAVerifyOutcome struct {
 	done    time.Time
 }
 
+// Evidence reads use the controlled owner, never broaden the migration/API duty.
+func nativeMFAHardeningOwnerInt(t *testing.T, f *nativeMFAHardeningFixture, query string, args ...any) int {
+	t.Helper()
+	tx, err := f.adminDB.BeginTx(f.ctx, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = tx.Rollback() }()
+	if _, err = tx.ExecContext(f.ctx, "SET LOCAL ROLE schema_owner"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = tx.ExecContext(f.ctx, "SELECT set_config('app.tenant_id',$1,true)", f.tenantA.String()); err != nil {
+		t.Fatal(err)
+	}
+	var value int
+	if err = tx.QueryRowContext(f.ctx, query, args...).Scan(&value); err != nil {
+		t.Fatal(err)
+	}
+	return value
+}
+
 func nativeMFAHardeningAttempts(t *testing.T, f *nativeMFAHardeningFixture, challengeID string) int {
 	t.Helper()
-	return mfaTenantInt(t, f.ctx, f.bootstrapPool, f.tenantA, `
+	return nativeMFAHardeningOwnerInt(t, f, `
 		SELECT attempts FROM identity.step_up_challenges
 		WHERE tenant_id=$1 AND challenge_id=$2
 	`, f.tenantA, challengeID)
@@ -127,7 +148,7 @@ func nativeMFAHardeningAttempts(t *testing.T, f *nativeMFAHardeningFixture, chal
 
 func nativeMFAHardeningRevision(t *testing.T, f *nativeMFAHardeningFixture, challengeID string) int {
 	t.Helper()
-	return mfaTenantInt(t, f.ctx, f.bootstrapPool, f.tenantA, `
+	return nativeMFAHardeningOwnerInt(t, f, `
 		SELECT revision FROM identity.step_up_challenges
 		WHERE tenant_id=$1 AND challenge_id=$2
 	`, f.tenantA, challengeID)
@@ -341,7 +362,8 @@ func TestNativeStepUpRefusalsNeverCompare(t *testing.T) {
 	expiredID, expiredRevision := nativeMFAHardeningChallenge(t, f.client, &session)
 	nativeMFAHardeningOwnerExec(t, f, f.tenantA, `
 		UPDATE identity.step_up_challenges
-		SET idle_expires_at = clock_timestamp() - interval '1 minute'
+		SET created_at = clock_timestamp() - interval '2 minutes',
+		    idle_expires_at = clock_timestamp() - interval '1 minute'
 		WHERE tenant_id=$1 AND challenge_id=$2
 	`, f.tenantA, expiredID)
 	mark = f.sealerA.mark()
@@ -651,7 +673,7 @@ func TestNativeMFABrokenAccountDiagnosticAndRecovery(t *testing.T) {
 		"expectedCredentialVersion": credential,
 	}
 	path := "/api/v1/admin/users/" + userID.String() + "/password:reset"
-	nativeAdminWriteProof(t, f.ctx, f.apiPool, f.client, f.tenantA, &admin, f.adminSecret, http.MethodPost, path, body)
+	nativeAdminWriteProofWithPassword(t, f.ctx, f.apiPool, f.client, f.tenantA, &admin, f.adminPassword, f.adminSecret, http.MethodPost, path, body)
 	status, payload, message := f.client.do(t, http.MethodPost, path, body, &admin)
 	admin.stepUpChallenge = ""
 	if status != http.StatusOK {

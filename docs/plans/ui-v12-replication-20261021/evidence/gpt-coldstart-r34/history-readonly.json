@@ -1,0 +1,56 @@
+{
+  "origin": "https://192.168.0.63:30472",
+  "checks": [
+    "post-restart mapped history renders read-only with zero owner SSE requests"
+  ],
+  "eventsRequested": 0,
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a17ff3-39a1-762e-b8b4-0ec3e532c27f"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a17ff3-3a4a-7a46-8eeb-455399578d97"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ff3-3b49-7cff-9308-3a19bb68abc3"
+    },
+    {
+      "path": "/api/v1/assistant/capabilities",
+      "status": 200,
+      "requestId": "01a17ff3-3bbf-7ac8-8efe-eb6be025e797"
+    },
+    {
+      "path": "/api/v1/assistant/conversations/01a17d0e-b207-7311-909a-9ec12bcbca2f",
+      "status": 200,
+      "requestId": "01a17ff3-3bbf-72ab-b606-db175d437f8a"
+    },
+    {
+      "path": "/api/v1/assistant/conversations",
+      "status": 200,
+      "requestId": "01a17ff3-3bc0-753a-9ec3-78a1d7eaa518"
+    },
+    {
+      "path": "/api/v1/assistant/conversations/01a17d0e-b207-7311-909a-9ec12bcbca2f/messages",
+      "status": 200,
+      "requestId": "01a17ff3-3bc1-716b-9538-cc0d600062e2"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a17ff3-3bc4-703b-b67d-5178757ea0a6"
+    }
+  ],
+  "capture": {
+    "file": "/data/ops-v12-native-cold-r34-20261027/evidence/history-read-only.png",
+    "probes": [],
+    "postProbes": [],
+    "capturedAt": "2026-10-28T00:40:10.606Z"
+  },
+  "status": "passed"
+}

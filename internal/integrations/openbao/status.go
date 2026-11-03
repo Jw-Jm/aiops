@@ -31,8 +31,8 @@ var (
 	// which no recovery material was received. The dedicated volume has to be
 	// reset; retrying initialization cannot recover it.
 	ErrRecoveryUnavailable = errors.New("OPENBAO_RECOVERY_UNAVAILABLE")
-	ErrConfigurationDrift = errors.New("OPENBAO_CONFIGURATION_DRIFT")
-	ErrNoDefaultIssuer    = errors.New("OPENBAO_PKI_DEFAULT_ISSUER_MISSING")
+	ErrConfigurationDrift  = errors.New("OPENBAO_CONFIGURATION_DRIFT")
+	ErrNoDefaultIssuer     = errors.New("OPENBAO_PKI_DEFAULT_ISSUER_MISSING")
 )
 
 type ClientConfig struct {
@@ -44,6 +44,7 @@ type ClientConfig struct {
 	BundleDirectory string
 	ServiceDomain   string
 	ExpectedVersion string
+	NativeMFAKey    string
 }
 
 type Status struct {
@@ -64,6 +65,7 @@ type Client struct {
 	bundleDirectory string
 	serviceDomain   string
 	expectedVersion string
+	nativeMFAKey    string
 	token           string
 	http            *http.Client
 }
@@ -90,6 +92,9 @@ func (e *apiError) Error() string {
 }
 
 func NewClient(config ClientConfig) (*Client, error) {
+	if config.NativeMFAKey != "" && (!transitNamePattern.MatchString(config.NativeMFAKey) || config.NativeMFAKey == "evidence-archive" || config.NativeMFAKey == "audit-signing" || config.NativeMFAKey == "investigation-signing") {
+		return nil, errors.New("native MFA requires a distinct Transit key name")
+	}
 	parsed, err := url.Parse(config.Address)
 	if err != nil || parsed.Scheme != "https" || parsed.Host == "" {
 		return nil, errors.New("OpenBao address must be an HTTPS URL")
@@ -125,6 +130,7 @@ func NewClient(config ClientConfig) (*Client, error) {
 		bundleDirectory: config.BundleDirectory,
 		serviceDomain:   config.ServiceDomain,
 		expectedVersion: config.ExpectedVersion,
+		nativeMFAKey:    config.NativeMFAKey,
 		token:           config.Token,
 		http: &http.Client{
 			Transport: transport,

@@ -1,0 +1,134 @@
+{
+  "mode": "normal",
+  "at": "2026-10-28T04:17:11.472Z",
+  "origin": "https://192.168.0.63:30471",
+  "viewport": {
+    "width": 1440,
+    "height": 960
+  },
+  "checks": [
+    "real population 186 / bounded samples 20",
+    "local filter preserves population and Enter does not resubmit",
+    "sanitized sample modal opens",
+    "source revision qualification and incomplete coverage shown",
+    "persisted personal history restores result",
+    "measured zero renders empty state"
+  ],
+  "captures": [
+    {
+      "name": "logs-idle",
+      "captured": false,
+      "probes": [
+        "recovery-code"
+      ]
+    },
+    {
+      "name": "logs-success",
+      "captured": false,
+      "probes": [
+        "recovery-code"
+      ]
+    },
+    {
+      "name": "logs-sample",
+      "captured": false,
+      "probes": [
+        "recovery-code"
+      ]
+    },
+    {
+      "name": "logs-source",
+      "captured": false,
+      "probes": [
+        "recovery-code"
+      ]
+    },
+    {
+      "name": "logs-empty",
+      "captured": false,
+      "probes": [
+        "recovery-code"
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "method": "GET",
+      "requestId": "01a180b9-f07c-7292-bf3e-3f6ddc53315e"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "method": "POST",
+      "requestId": "01a180b9-f11c-76f3-bf48-09c4ac9704b0"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b9-f1e5-762b-8867-c2f04bfe1952"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b9-f249-74a5-bfc2-17be4ded2aba"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b9-f5b8-7c59-a8a1-cf3f69bd7d7f"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "status": 202,
+      "method": "POST",
+      "requestId": "01a180b9-f939-78d6-aeda-0ea1f98bbdee"
+    },
+    {
+      "path": "/api/v1/observability/queries/14d3cebd-91f0-4657-8444-e4047b57eecc",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180ba-02da-7491-8052-9df18ce3a78b"
+    },
+    {
+      "path": "/api/v1/observability/queries/14d3cebd-91f0-4657-8444-e4047b57eecc/results",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180ba-08ee-7e8e-bd3d-9b73a4e8a7e9"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180ba-16a4-7743-b3e0-a76032cbe2cd"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "status": 202,
+      "method": "POST",
+      "requestId": "01a180ba-2944-76c5-abf5-d32cdfeabf61"
+    },
+    {
+      "path": "/api/v1/observability/queries/76dc2b88-78c7-475d-86f4-8cc15308c62d",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180ba-3256-701f-93ae-5f9ecaec01f8"
+    },
+    {
+      "path": "/api/v1/observability/queries/76dc2b88-78c7-475d-86f4-8cc15308c62d/results",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180ba-36e2-7c76-a59a-f309b50f354c"
+    }
+  ],
+  "windowInputs": [
+    "2026-10-28T10:06:14",
+    "2026-10-28T10:36:13"
+  ],
+  "historyLength": 13,
+  "status": "passed"
+}

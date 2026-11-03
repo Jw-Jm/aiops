@@ -589,6 +589,16 @@
         "mustReenrollMfa": {
           "type": "boolean",
           "description": "Server-enforced MFA setup restriction; no business authorization until a new factor is confirmed."
+        },
+        "loginName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
         }
       },
       "required": [

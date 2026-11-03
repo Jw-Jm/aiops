@@ -1,0 +1,142 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a17c43-e272-78fa-82b1-81a71839d61c"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a17c43-e2f0-7654-b613-aabd49c14817"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17c43-e37b-7db6-b018-dc0718ca85de"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17c43-e3c3-7e86-9550-65a138229b25"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/password:change",
+      "status": 201,
+      "requestId": "01a17c43-e5b2-74a7-94af-9b0cbcc06080"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/resources",
+      "status": 200,
+      "requestId": "01a17c43-e6a1-729e-ad8d-28949ad069e2"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/capabilities",
+      "status": 200,
+      "requestId": "01a17c43-e6dc-756a-9110-5a8d821a663c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/overview",
+      "status": 200,
+      "requestId": "01a17c43-e6db-7c61-b138-2545366666a1"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/overview",
+      "status": 200,
+      "requestId": "01a17c43-e828-76e1-831a-4fb710c2baac"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/resources",
+      "status": 200,
+      "requestId": "01a17c43-eaac-7cfc-bcb6-0aa28d2f130b"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17c43-ebbd-738e-9684-6a1450d22e08"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/capabilities",
+      "status": 200,
+      "requestId": "01a17c43-ebec-79ff-8efa-75b6c352c3c1"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/overview",
+      "status": 200,
+      "requestId": "01a17c43-ebec-710a-8090-50ae88214000"
+    }
+  ],
+  "checks": [
+    "first sign-in was restricted to the forced password change (session mode first_password_only), and the change completed with a real server response",
+    "the authorized operator received 39 real resources for the registered cluster; every returned namespace is the granted task namespace",
+    "a filter for an ungranted namespace returned an empty set instead of data, and /api/v1/overview answered 200 for the same scope"
+  ],
+  "failure": null,
+  "afterLoginPath": "/auth/first-password",
+  "beforeChange": {
+    "status": 200,
+    "mode": "first_password_only",
+    "roles": [],
+    "clusters": []
+  },
+  "reads": {
+    "list": {
+      "status": 200,
+      "requestId": "01a17c43-e6a1-729e-ad8d-28949ad069e2",
+      "count": 39,
+      "kinds": [
+        "StatefulSet",
+        "ConfigMap",
+        "Event",
+        "Pod",
+        "Service",
+        "EndpointSlice"
+      ],
+      "sample": [
+        {
+          "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/apps/StatefulSet/28b06281-5bfa-4d50-ab0f-880af7269fd2",
+          "namespace": "ops-native-v12-r24-20261026",
+          "name": "ops-seaweedfs"
+        },
+        {
+          "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/apps/StatefulSet/c822e351-3af4-4aac-bcac-c8aa418edecf",
+          "namespace": "ops-native-v12-r24-20261026",
+          "name": "ops-openbao"
+        },
+        {
+          "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/ConfigMap/234e166e-b1e9-4a24-8994-d9170edb9c5b",
+          "namespace": "ops-native-v12-r24-20261026",
+          "name": "ops-openbao-config"
+        }
+      ],
+      "outsideScope": 0
+    },
+    "overview": {
+      "status": 200,
+      "requestId": "01a17c43-e828-76e1-831a-4fb710c2baac"
+    },
+    "otherNamespace": {
+      "status": 200,
+      "count": 0
+    }
+  },
+  "ui": {
+    "path": "/overview",
+    "text": "跳到主要内容\nO\nOPS\n智能运维工作台\n工作空间\n运行总览\n智能助手\n运行与处置\n资源管理\n›\n监控与观测\n›\n事件响应\n›\n运维作业\n›\n经验沉淀\n知识管理\n›\n证据先行 · 人工授权\nAsia/Shanghai · UTC+08:00\n工作空间 / 运行总览\n运行集群\nmssc 开发集群 r31\n79014400-9453-4cb4-9678-0fae47981d79\n切换\nr31 运维操作员\n运维操作员\n账号安全\n退出\n运行总览\n\n先确认异常资源，再进入故障处理查看原因和处置进度。\n\n刷新观测\n运行集群\nmssc 开发集群 r31 · 79014400-9453-4cb4-9678-0fae47981d79\n此查询返回部分或来源降级结果\nscope_limited\n●\n最新观测\n观测：2026年10月27日 15:29:48 UTC+08:00\n活动告警\n0\n当前集群\n1\n严重未确"
+  },
+  "status": "passed"
+}

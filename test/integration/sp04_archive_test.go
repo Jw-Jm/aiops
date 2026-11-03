@@ -39,6 +39,13 @@ func TestSP04ArchiveRecoveryIntegrityAndRetention(t *testing.T) {
 	if err := goose.UpToContext(ctx, db, dir, 1); err != nil {
 		t.Fatal(err)
 	}
+	var database string
+	if err := db.QueryRowContext(ctx, `SELECT current_database()`).Scan(&database); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := db.ExecContext(ctx, `GRANT CREATE ON DATABASE "`+database+`" TO schema_owner`); err != nil {
+		t.Fatal(err)
+	}
 	if err := runRemainingMigrationsAsMigrationRole(t, ctx, db, dsn, dir); err != nil {
 		t.Fatal(err)
 	}
@@ -71,7 +78,8 @@ func TestSP04ArchiveRecoveryIntegrityAndRetention(t *testing.T) {
 	plain := []byte(`[{"value":"bounded-sanitized-fact"}]`)
 	canonical := resource.CanonicalID{Domain: "k8s", Tenant: tenant.String(), Scope: "cluster-a", APIGroup: "core", Kind: "Pod", StableID: "p1"}.String()
 	e := evidence.Evidence{SourceScopeDigest: evidence.BindingScopeDigest(evidence.Binding{Revision: 1, BackendLogicalID: "metrics-sp04", SourceType: "victoriametrics"}), SchemaVersion: "evidence/v2", Type: "metric", DataClass: "D1", IndependenceGroup: source.String(), EvidenceID: uuid.NewString(), TenantID: tenant.String(), ResourceCanonicalID: canonical, SourceRegistrationID: source.String(), SourceRevision: 1, SourceSystem: "victoriametrics", BackendLogicalID: "metrics-sp04", QueryTemplateVersion: "pod-phase/v1", QueryHash: evidence.Digest([]byte("query")), EffectiveScope: graph.Scope{Tenant: tenant.String(), Cluster: "cluster-a", Namespaces: []string{"apps"}, AuthorizationRevision: "test-revision"}, EvaluatedAt: now, ObservedFrom: now.Add(-time.Minute), ObservedTo: now, SourceRetentionUntil: now, ContentDigest: evidence.Digest(plain), Data: plain, DerivationEvidenceRefs: []string{}}
-	retain := now.Add(180 * 24 * time.Hour)
+	// Leave the same margin as the collector when PostgreSQL stores microsecond timestamps.
+	retain := now.Add(181 * 24 * time.Hour)
 	id := uuid.MustParse(e.EvidenceID)
 	if err = service.Capture(ctx, e, "apps", retain); err == nil {
 		t.Fatal("uncertain upload falsely committed")
@@ -115,69 +123,71 @@ func TestSP04ArchiveRecoveryIntegrityAndRetention(t *testing.T) {
 			t.Fatalf("withdrawn fact created metadata/intent: %d %v", count, err)
 		}
 	})
-	t.Run("concurrent-first-resource-observations", func(t *testing.T) {
-		projectionSource := uuid.New()
-		if _, err := db.ExecContext(ctx, `INSERT INTO platform.source_registrations(tenant_id,source_id,source_type,instance_key,auth_ref,backend_logical_id,cluster_id) VALUES($1,$2,'kubernetes','projection-race','openbao://test/collector','collector-race',$3)`, tenant, projectionSource, cluster); err != nil {
-			t.Fatal(err)
-		}
-		projection := e
-		projection.SourceRegistrationID = projectionSource.String()
-		projection.SourceSystem = "kubernetes"
-		projection.BackendLogicalID = "collector-race"
-		projection.SourceScopeDigest = evidence.BindingScopeDigest(evidence.Binding{Revision: 1, BackendLogicalID: "collector-race", SourceType: "kubernetes"})
-		projection.Type = "resource_state"
-		projection.DataClass = "D0"
-		projection.QueryTemplateVersion = "kubernetes-projection/v1"
-		projection.EvidenceID = uuid.NewString()
-		projection.IndependenceGroup = projectionSource.String()
-		projection.EffectiveScope.AuthorizationRevision = "collector/" + projectionSource.String() + "/1"
-		var workers sync.WaitGroup
-		failures := make(chan error, 16)
-		start := make(chan struct{})
-		for i := 0; i < 16; i++ {
-			workers.Add(1)
-			go func(index int) {
-				defer workers.Done()
-				<-start
-				fact := projection
-				fact.EvaluatedAt = now.Add(time.Duration(index) * time.Millisecond)
-				fact.ObservedFrom = fact.EvaluatedAt
-				fact.ObservedTo = fact.EvaluatedAt
-				fact.SourceRetentionUntil = fact.EvaluatedAt
-				failures <- service.Prepare(ctx, fact, "apps", fact.EvaluatedAt.Add(181*24*time.Hour))
-			}(i)
-		}
-		close(start)
-		workers.Wait()
-		close(failures)
-		for err := range failures {
-			if err != nil {
-				t.Fatalf("same immutable UID/RV/content first-observation race not idempotent: %v", err)
+	for _, template := range []string{"kubernetes-projection/v1", "kubernetes-projection/v2", "kubernetes-projection/v3"} {
+		t.Run("concurrent-first-resource-observations/"+template, func(t *testing.T) {
+			projectionSource := uuid.New()
+			if _, err := db.ExecContext(ctx, `INSERT INTO platform.source_registrations(tenant_id,source_id,source_type,instance_key,auth_ref,backend_logical_id,cluster_id) VALUES($1,$2,'kubernetes','projection-race-' || $4,'openbao://test/collector','collector-race',$3)`, tenant, projectionSource, cluster, template); err != nil {
+				t.Fatal(err)
 			}
-		}
-		original, err := (evidence.Repository{Pool: pool}).Get(ctx, tenant, uuid.MustParse(projection.EvidenceID), projection.EffectiveScope)
-		if err != nil {
-			t.Fatal(err)
-		}
-		changed := projection
-		changed.Data = []byte(`{"changed":true}`)
-		changed.ContentDigest = evidence.Digest(changed.Data)
-		if err := service.Prepare(ctx, changed, "apps", retain); err == nil {
-			t.Fatal("projection race normalization accepted a changed payload")
-		}
-		later := projection
-		later.EvaluatedAt = now.Add(time.Second)
-		later.ObservedFrom = later.EvaluatedAt
-		later.ObservedTo = later.EvaluatedAt
-		later.SourceRetentionUntil = later.EvaluatedAt
-		if err := service.Prepare(ctx, later, "apps", later.EvaluatedAt.Add(181*24*time.Hour)); err != nil {
-			t.Fatal(err)
-		}
-		after, err := (evidence.Repository{Pool: pool}).Get(ctx, tenant, uuid.MustParse(projection.EvidenceID), projection.EffectiveScope)
-		if err != nil || !after.EvaluatedAt.Equal(original.EvaluatedAt) || !after.ObservedFrom.Equal(original.ObservedFrom) {
-			t.Fatal("later query renewed immutable observation")
-		}
-	})
+			projection := e
+			projection.SourceRegistrationID = projectionSource.String()
+			projection.SourceSystem = "kubernetes"
+			projection.BackendLogicalID = "collector-race"
+			projection.SourceScopeDigest = evidence.BindingScopeDigest(evidence.Binding{Revision: 1, BackendLogicalID: "collector-race", SourceType: "kubernetes"})
+			projection.Type = "resource_state"
+			projection.DataClass = "D0"
+			projection.QueryTemplateVersion = template
+			projection.EvidenceID = uuid.NewString()
+			projection.IndependenceGroup = projectionSource.String()
+			projection.EffectiveScope.AuthorizationRevision = "collector/" + projectionSource.String() + "/1"
+			var workers sync.WaitGroup
+			failures := make(chan error, 16)
+			start := make(chan struct{})
+			for i := 0; i < 16; i++ {
+				workers.Add(1)
+				go func(index int) {
+					defer workers.Done()
+					<-start
+					fact := projection
+					fact.EvaluatedAt = now.Add(time.Duration(index) * time.Millisecond)
+					fact.ObservedFrom = fact.EvaluatedAt
+					fact.ObservedTo = fact.EvaluatedAt
+					fact.SourceRetentionUntil = fact.EvaluatedAt
+					failures <- service.Prepare(ctx, fact, "apps", fact.EvaluatedAt.Add(181*24*time.Hour))
+				}(i)
+			}
+			close(start)
+			workers.Wait()
+			close(failures)
+			for err := range failures {
+				if err != nil {
+					t.Fatalf("same immutable UID/RV/content first-observation race not idempotent: %v", err)
+				}
+			}
+			original, err := (evidence.Repository{Pool: pool}).Get(ctx, tenant, uuid.MustParse(projection.EvidenceID), projection.EffectiveScope)
+			if err != nil {
+				t.Fatal(err)
+			}
+			changed := projection
+			changed.Data = []byte(`{"changed":true}`)
+			changed.ContentDigest = evidence.Digest(changed.Data)
+			if err := service.Prepare(ctx, changed, "apps", retain); err == nil {
+				t.Fatal("projection race normalization accepted a changed payload")
+			}
+			later := projection
+			later.EvaluatedAt = now.Add(time.Second)
+			later.ObservedFrom = later.EvaluatedAt
+			later.ObservedTo = later.EvaluatedAt
+			later.SourceRetentionUntil = later.EvaluatedAt
+			if err := service.Prepare(ctx, later, "apps", later.EvaluatedAt.Add(181*24*time.Hour)); err != nil {
+				t.Fatal(err)
+			}
+			after, err := (evidence.Repository{Pool: pool}).Get(ctx, tenant, uuid.MustParse(projection.EvidenceID), projection.EffectiveScope)
+			if err != nil || !after.EvaluatedAt.Equal(original.EvaluatedAt) || !after.ObservedFrom.Equal(original.ObservedFrom) {
+				t.Fatal("later query renewed immutable observation")
+			}
+		})
+	}
 	// Even retries of verified metadata must recheck ciphertext/plaintext digests.
 	backend.mu.Lock()
 	original := backend.objects[ref.Object.Key]

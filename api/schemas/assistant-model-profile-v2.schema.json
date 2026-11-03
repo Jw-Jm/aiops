@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ops.local/schemas/assistant-model-profile/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "assistant-model-profile/v2"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/-]{0,95}$"
+    },
+    "modelID": {
+      "const": "deepseek-flash"
+    },
+    "modelVersion": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]{0,127}$"
+    },
+    "baseURL": {
+      "const": "https://api.deepseek.com/v1"
+    },
+    "apiKeyRef": {
+      "const": "secret://model/api-key"
+    },
+    "contextWindow": {
+      "type": "integer",
+      "minimum": 1024,
+      "maximum": 1000000
+    },
+    "outputTokenLimit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 8192
+    },
+    "tokenAccounting": {
+      "const": "reserve-context-bound"
+    },
+    "costPolicy": {
+      "const": "provider-metered-token-bounded"
+    },
+    "toolCalling": {
+      "const": true
+    },
+    "structuredOutput": {
+      "const": true
+    },
+    "taskKinds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "data_query",
+          "resource_troubleshooting",
+          "incident_followup"
+        ]
+      }
+    },
+    "timeoutSeconds": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 120
+    },
+    "retries": {
+      "const": 0
+    },
+    "evaluationVersion": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/-]{0,95}$"
+    },
+    "evaluationDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "admissionEvidenceDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "admissionState": {
+      "enum": [
+        "pending",
+        "admitted"
+      ]
+    },
+    "hosted": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider": {
+          "const": "deepseek"
+        },
+        "protocol": {
+          "const": "openai-chat-completions"
+        },
+        "revisionPolicy": {
+          "const": "provider-managed-alias"
+        },
+        "documentationURL": {
+          "const": "https://api-docs.deepseek.com/"
+        },
+        "documentationDigest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "protocolEvidenceDigest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "provider",
+        "protocol",
+        "revisionPolicy",
+        "documentationURL",
+        "documentationDigest",
+        "protocolEvidenceDigest"
+      ]
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "version",
+    "modelID",
+    "modelVersion",
+    "baseURL",
+    "apiKeyRef",
+    "contextWindow",
+    "outputTokenLimit",
+    "tokenAccounting",
+    "costPolicy",
+    "toolCalling",
+    "structuredOutput",
+    "taskKinds",
+    "timeoutSeconds",
+    "retries",
+    "evaluationVersion",
+    "evaluationDigest",
+    "admissionEvidenceDigest",
+    "admissionState",
+    "hosted"
+  ]
+}

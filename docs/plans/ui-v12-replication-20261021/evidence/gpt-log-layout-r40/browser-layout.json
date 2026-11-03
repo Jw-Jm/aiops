@@ -1,0 +1,238 @@
+{
+  "at": "2026-10-29T00:09:31.470Z",
+  "origin": "https://192.168.0.63:30471",
+  "viewport": {
+    "width": 1440,
+    "height": 960
+  },
+  "checks": [
+    "six time buckets sum to 20 samples, population stays 186; list sort/wrap and 190px facet",
+    "empty sample bucket and clear filter stay local without claiming source has no logs",
+    "list opens the exact saved sample after sorting",
+    "level facet creates a real persisted INFO query with the original UID/source/window"
+  ],
+  "captures": [
+    {
+      "name": "logs-results",
+      "file": "/data/ops-v12-native-visual-r24-20261026/r40/shots/logs-results.png",
+      "at": "2026-10-29T00:09:42.330Z",
+      "probes": [],
+      "postProbes": [],
+      "publicUuidCount": 8
+    },
+    {
+      "name": "logs-results-full",
+      "file": "/data/ops-v12-native-visual-r24-20261026/r40/shots/logs-results-full.png",
+      "at": "2026-10-29T00:09:44.192Z",
+      "probes": [],
+      "postProbes": [],
+      "publicUuidCount": 8
+    },
+    {
+      "name": "logs-empty-bucket",
+      "file": "/data/ops-v12-native-visual-r24-20261026/r40/shots/logs-empty-bucket.png",
+      "at": "2026-10-29T00:09:44.293Z",
+      "probes": [],
+      "postProbes": [],
+      "publicUuidCount": 8
+    },
+    {
+      "name": "logs-info",
+      "file": "/data/ops-v12-native-visual-r24-20261026/r40/shots/logs-info.png",
+      "at": "2026-10-29T00:09:49.327Z",
+      "probes": [],
+      "postProbes": [],
+      "publicUuidCount": 10
+    }
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "method": "GET",
+      "requestId": "01a184fd-905c-723e-a435-445e07a0f2a9"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "method": "POST",
+      "requestId": "01a184fd-90f1-7558-a367-b50f9ebac366"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a184fd-96bc-7f31-a447-72685c340cbb"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a184fd-9743-7b5c-808d-8bf0b23e311e"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a184fd-9aad-7d2e-a064-fe9bdcbab242"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "status": 202,
+      "method": "POST",
+      "requestId": "01a184fd-9e81-7d27-9da6-37000d8d1e0c"
+    },
+    {
+      "path": "/api/v1/observability/queries/6a17ed38-2932-4f26-a96a-924a80f5bbac",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a184fd-a5bf-7dac-83f6-c5d00b7606d0"
+    },
+    {
+      "path": "/api/v1/observability/queries/6a17ed38-2932-4f26-a96a-924a80f5bbac/results",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a184fd-ab96-7038-9130-eb3136c10227"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "status": 202,
+      "method": "POST",
+      "requestId": "01a184fd-c0be-7066-820f-7b569a9e330b"
+    },
+    {
+      "path": "/api/v1/observability/queries/6cedb60d-09ea-4d85-9e0a-4e23cdad349d",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a184fd-c6de-7800-a47e-63ffa96a5115"
+    },
+    {
+      "path": "/api/v1/observability/queries/6cedb60d-09ea-4d85-9e0a-4e23cdad349d/results",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a184fd-cc5d-7848-b123-3aae97b8e1fe"
+    }
+  ],
+  "indexSHA256": "56f3716f223b165d2d83b8232c010d08d2e6e7b3678628de6a24440c7b9ef9ea",
+  "qualificationUntil": "2026-10-29T02:45:00.720238Z",
+  "original": {
+    "queryId": "6a17ed38-2932-4f26-a96a-924a80f5bbac",
+    "resultDigest": "sha256:7880ae84392cc4cee0f27f1020922455544602cdcf1d756fd09de1b9f72b7d64",
+    "resource": {
+      "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+      "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+      "namespaceScope": {
+        "kind": "namespaced",
+        "namespace": "ops-native-v12-r24-20261026",
+        "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+      },
+      "uid": "0e648683-1088-4032-9b39-0a122ff475be"
+    },
+    "source": {
+      "collectorVersion": "kubernetes-log-snapshot/v1",
+      "credentialRevision": 1,
+      "qualificationDigest": "sha256:11c359037ae2aad14aa47cc35d0a1b6607d433f417e8bb0b2376352ab78f6008",
+      "registrationId": "01a1805f-2214-7373-82a4-c20276c68d43",
+      "registrationRevision": 1
+    },
+    "window": {
+      "bounds": "[from,to)",
+      "from": "2026-10-28T02:06:14Z",
+      "timezone": "Asia/Shanghai",
+      "to": "2026-10-28T02:36:13Z"
+    },
+    "population": {
+      "basis": "exact",
+      "count": 186,
+      "method": "source_total"
+    },
+    "returned": 20
+  },
+  "bucketCounts": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    20
+  ],
+  "geometry": {
+    ".v12-log-histogram": {
+      "x": 269,
+      "y": 574.375,
+      "width": 1140,
+      "height": 151.4375,
+      "font": "13px / 21.45px Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif"
+    },
+    ".v12-log-layout": {
+      "x": 269,
+      "y": 725.8125,
+      "width": 1140,
+      "height": 1381.5,
+      "font": "13px / 21.45px Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif"
+    },
+    ".v12-log-facets": {
+      "x": 269,
+      "y": 725.8125,
+      "width": 190,
+      "height": 1381.5,
+      "font": "13px / 21.45px Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif"
+    },
+    ".v12-log-entry": {
+      "x": 459,
+      "y": 782.8125,
+      "width": 950,
+      "height": 64,
+      "font": "11px Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", sans-serif"
+    }
+  },
+  "legacyProbe": [
+    "recovery-code"
+  ],
+  "filtered": {
+    "queryId": "6cedb60d-09ea-4d85-9e0a-4e23cdad349d",
+    "resultDigest": "sha256:746db78dbda8961137ca2e6a2bd6e234d686ffc4014686d474cf393398996a61",
+    "resource": {
+      "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+      "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+      "namespaceScope": {
+        "kind": "namespaced",
+        "namespace": "ops-native-v12-r24-20261026",
+        "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+      },
+      "uid": "0e648683-1088-4032-9b39-0a122ff475be"
+    },
+    "source": {
+      "collectorVersion": "kubernetes-log-snapshot/v1",
+      "credentialRevision": 1,
+      "qualificationDigest": "sha256:11c359037ae2aad14aa47cc35d0a1b6607d433f417e8bb0b2376352ab78f6008",
+      "registrationId": "01a1805f-2214-7373-82a4-c20276c68d43",
+      "registrationRevision": 1
+    },
+    "window": {
+      "bounds": "[from,to)",
+      "from": "2026-10-28T02:06:14Z",
+      "timezone": "Asia/Shanghai",
+      "to": "2026-10-28T02:36:13Z"
+    },
+    "population": {
+      "basis": "exact",
+      "count": 6,
+      "method": "source_total"
+    },
+    "returned": 6
+  },
+  "publicIds": [
+    "01a177f1-372f-75b7-be90-e8121d1445f5",
+    "79014400-9453-4cb4-9678-0fae47981d79",
+    "01a17c3c-80db-783b-9388-c6eee037f89b",
+    "0e648683-1088-4032-9b39-0a122ff475be",
+    "6a17ed38-2932-4f26-a96a-924a80f5bbac",
+    "4a450951-9262-45c0-9d01-c7b95e8a3a1b",
+    "731f0e88-1893-4836-844b-a29374c1ca11",
+    "01a1805f-2214-7373-82a4-c20276c68d43",
+    "6cedb60d-09ea-4d85-9e0a-4e23cdad349d",
+    "04c59806-3728-41b1-95a6-655958e83170"
+  ],
+  "status": "passed"
+}

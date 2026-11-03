@@ -1,0 +1,100 @@
+{
+  "status": "in_progress_scoped_runtime_passed",
+  "head": "082f87d66c5b1336b4cd32c48ebbe59e4093144b",
+  "branch": "main",
+  "uncommitted": true,
+  "requested": [
+    "native full-stack cold start/recovery",
+    "per-state HTML visual alignment"
+  ],
+  "completed_local": [
+    "server-owned own account name projection + generated contracts",
+    "MyAccount / self-password reuse existing server session rotation",
+    "native MFA existing-key API-only least privilege + read-only status drift validation",
+    "users table/filters/detail/edit/reset dialogs and common modal/drawer geometry",
+    "native role-denied UI with current-account/self-password; zero-grant own security access while business routes remain denied",
+    "MFA admin reset selects an actual account; binds server-owned account/credential versions; raw identifiers/versions removed from inputs"
+  ],
+  "tests": {
+    "web": "178 Vitest +6 SSE passed; final account/users/layer delta14 passed; MFA target-selector delta5 passed",
+    "go": "OpenBao/httpapi/opsctl race passed; app + full contract passed",
+    "generated": "passed",
+    "runtime_source": "passed",
+    "build": "passed; existing chunk size warning",
+    "progress": "458 states/177 contracts tracking validation passed; negative self-check rejects baseline removal and unaudited additions; no product acceptance certification",
+    "package_scan": "go list ./... passed; explicit-file Linux audit verifier build passed",
+    "privacy": "30 exported runtime JSON files passed conservative secret-key/JWT/private-key/otpauth scan"
+  },
+  "remote": {
+    "host": "mssc-direct -> root@10.10.10.2, bound10.10.10.1; hostname mssc reverified 2026-10-27",
+    "namespace": "ops-native-v12-r24-20261026",
+    "root": "/data/ops-v12-native-visual-r24-20261026",
+    "verified": [
+      "new isolated PostgreSQL17.11 container loopback15454; dedicated database ui_v12_r24_native schema70; actual native first-tenant CLI committed",
+      "API/independent audit Worker/Web/OpenBao/Archive start without OIDC using dedicated credentials and source canary",
+      "same-Pod API/Worker/reviewer JWT fingerprints changed; real API200 and Worker403 for dedicated MFA key after rotation",
+      "real browser login/first-password/self-password/MFA enrollment/recovery/re-enrollment and native admin operations",
+      "fresh active target cookie200 -> administrator MFA reset200 -> old cookie401; relogin reset_required/recovery count0/forced enrollment/admin403",
+      "fresh actor cookie and same sessionRef survive actual API/Worker recreation; independent admin role and clusters200 persist; logout200 -> replay old-cookie401",
+      "prior signed segments unchanged across restarts; real S3 read/decrypt/digest/signature/predecessor verification passed for range1-49 across7 signed segments",
+      "administrator reset target re-enrollment clears forced MFA; owner pending/confirmed enrollment GET200 excludes secrets; cross-user administrator GET404",
+      "stable SL-003 foreground 660x423.8125/header76; close passed; whole-image visual remains unverified"
+    ],
+    "failed": [
+      "new empty database on existing task PG migration1 refused ALTER ROLE with limited owner; no privilege elevation to existing roles",
+      "SSH timeout while starting fully isolated PostgreSQL container and resuming setup"
+    ],
+    "unknown": [],
+    "not_verified": [
+      "full immutable Bundle/offline installation, OCI rebuild admission and PVC/HA",
+      "SP06 business Worker signed Context/tool output/Job takeover/cancellation: this task runtime enables independent audit Worker, not SP06 dispatcher",
+      "whole-image per-state visual acceptance and remaining safety supplementary states"
+    ],
+    "historicalObservations": [
+      "new task-owned OpenBao 2.7.0 pod Ready; initialization/unseal/base CLI configure/status",
+      "new existing-key native MFA configure returned successfully",
+      "root /data disk availability checked",
+      "19:16 SSH restored to same host after reboot; runtime attempt3 did not run; new15454 PG container absent",
+      "existing WiFi SZ333287-5G with192.168.0.63/24 disconnected; API6443 refused"
+    ],
+    "origin": "https://192.168.0.63:30471",
+    "currentVersion": {
+      "api": "bin/ops-r24-api-final",
+      "worker": "bin/ops-r24-worker-final",
+      "web": "web-r4 / ops-v12-native-r24-web-r4",
+      "sourceSnapshot": "source-final-2.json; remote source-final-2/; archive SHA256 71a4480aa1d67094585c2507689a5f179d693e047a71e93abd375c6b9a431a74"
+    }
+  },
+  "failure_notes": [
+    "First base configure transient mount500 then identical retry and status succeeded; never reinitialized",
+    "Initial local modal tests used fixed Ant Design test IDs: added selects collide with aria-labelledby=test-id. Query single dialog after async mount; production unique-ID accessibility still requires browser",
+    "Attempted nonexistent npm test:sse; actual npm test already ran six SSE successfully. No new script added",
+    "MFA reset browser business assertions all passed; final chmodSync export failed. Original failed output kept; import fixed and private0600 independently validated without repeating reset",
+    "OpenBao2.7 declarative audit devices reject API enable; no audit device enabled; projected-check is read-only and no longer tries this",
+    "Modal screenshots taken during entrance animation were withheld from final visual conclusions; later shots wait for stable transform",
+    "One OIDC recovery concurrency test failed once in mixed run, passed isolated and in final full178; failure retained for traceability",
+    "Tracking validator initially rejected SL-003 native contract additions because it required equality with pre-implementation slice-map; original mapping preserved, explicit documented additions now validated; negative checks reject unrecorded changes"
+  ],
+  "product_complete": false,
+  "six_dimension_promotions": 0,
+  "evidence": [
+    "runtime/mfa-admin-reset-validation.json",
+    "runtime/restart-browser-before.json",
+    "runtime/restart-browser-after.json",
+    "runtime/restart-20261027-after.json",
+    "runtime/audit-archive-verification.json",
+    "runtime/projected-samples.json",
+    "runtime/account-browser.json",
+    "runtime/member-account-browser.json",
+    "runtime/mfa-browser.json",
+    "runtime/member-mfa-browser.json",
+    "runtime/users-browser.json",
+    "runtime/users-followup.json",
+    "runtime/zero-role-browser.json",
+    "runtime/reenroll-after-admin-reset.json",
+    "runtime/account-stable-capture.json",
+    "runtime/final-environment.json",
+    "source-final-2.json"
+  ],
+  "date": "2026-10-27"
+}

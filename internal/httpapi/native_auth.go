@@ -535,6 +535,8 @@ func nativeIssuedSessionView(session issuedNativeSession, csrfToken string, idle
 	return map[string]any{
 		"sessionRef":         "session:" + session.SessionID.String(),
 		"subject":            session.Subject,
+		"loginName":          session.LoginName,
+		"displayName":        session.DisplayName,
 		"tenantId":           session.TenantID,
 		"mode":               session.Mode,
 		"authMethods":        []string{"password"},

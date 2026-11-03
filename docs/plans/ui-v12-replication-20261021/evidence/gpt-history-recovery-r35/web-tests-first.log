@@ -1,0 +1,492 @@
+
+ RUN  v5.0.3 /Users/mssc/Documents/Code/ops/platform/web
+
+ ❯ tests/investigation_history.test.tsx (1 test | 1 failed) 1114ms
+   × retains the mapped investigation result and evidence while refusing cancellation of the old owner task 1113ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/investigation_history.test.tsx > retains the mapped investigation result and evidence while refusing cancellation of the old owner task
+TestingLibraryElementError: Unable to find an element with the text: 历史调查只读. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-alert ant-alert-info ant-alert-outlined ant-alert-with-description css-var-root css-dev-only-do-not-override-oc1rc0"[39m
+      [33mdata-show[39m=[32m"true"[39m
+      [33mrole[39m=[32m"alert"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"ant-alert-icon"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33maria-label[39m=[32m"info-circle"[39m
+          [33mclass[39m=[32m"anticon anticon-info-circle"[39m
+          [33mrole[39m=[32m"img"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mdata-icon[39m=[32m"info-circle"[39m
+            [33mfill[39m=[32m"currentColor"[39m
+            [33mfocusable[39m=[32m"false"[39m
+            [33mheight[39m=[32m"1em"[39m
+            [33mviewBox[39m=[32m"64 64 896 896"[39m
+            [33mwidth[39m=[32m"1em"[39m
+          [36m>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm32 664c0 4.4-3.6 8-8 8h-48c-4.4 0-8-3.6-8-8V456c0-4.4 3.6-8 8-8h48c4.4 0 8 3.6 8 8v272zm-32-344a48.01 48.01 0 010-96 48.01 48.01 0 010 96z"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+        [36m</span>[39m
+      [36m</span>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-alert-section"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert-title"[39m
+        [36m>[39m
+          [0m智能调查会读取证据，不会执行命令[0m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert-description"[39m
+        [36m>[39m
+          [0m调查用于整理证据和提出可能原因。处置命令需要你在人工处置中单独输入并确认。页面关闭后，可从历史记录继续查看进度。[0m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-oc1rc0 ant-space-horizontal ant-space-align-center ant-space-gap-row-small ant-space-gap-col-small status-note css-var-root"[39m
+      [33mstyle[39m=[32m"flex-wrap: wrap;"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-space-item"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-primary ant-btn-color-primary ant-btn-variant-solid"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m开始智能调查[0m
+          [36m</span>[39m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-space-item"[39m
+      [36m>[39m
+        [36m<details[39m
+          [33mclass[39m=[32m"inline-details"[39m
+        [36m>[39m
+          [36m<summary>[39m
+            [0m通过编号查找调查[0m
+          [36m</summary>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-oc1rc0 ant-space-horizontal ant-space-align-center ant-space-gap-row-small ant-space-gap-col-small css-var-root"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-space-item"[39m
+            [36m>[39m
+              [36m<input[39m
+                [33maria-label[39m=[32m"持久调查 Job ID"[39m
+                [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-oc1rc0 ant-input-outlined css-var-root ant-input-css-var"[39m
+                [33mplaceholder[39m=[32m"输入完整调查编号"[39m
+                [33mstyle[39m=[32m"width: 240px;"[39m
+                [33mtype[39m=[32m"text"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-space-item"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+                [33mdisabled[39m=[32m""[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0m查看调查记录[0m
+                [36m</span>[39m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</details>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-space-item"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-dangerous ant-btn-color-dangerous ant-btn-variant-outlined"[39m
+          [33mdisabled[39m=[32m""[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m取消调查[0m
+          [36m</span>[39m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<h3>[39m
+      [0m历史调查[0m
+    [36m</h3>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-alert ant-alert-error ant-alert-outlined ant-alert-with-description css-var-root css-dev-only-do-not-override-oc1rc0"[39m
+      [33mdata-show[39m=[32m"true"[39m
+      [33mrole[39m=[32m"alert"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"ant-alert-icon"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33maria-label[39m=[32m"close-circle"[39m
+          [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+          [33mrole[39m=[32m"img"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mdata-icon[39m=[32m"close-circle"[39m
+            [33mfill[39m=[32m"currentColor"[39m
+            [33mfill-rule[39m=[32m"evenodd"[39m
+            [33mfocusable[39m=[32m"false"[39m
+            [33mheight[39m=[32m"1em"[39m
+            [33mviewBox[39m=[32m"64 64 896 896"[39m
+            [33mwidth[39m=[32m"1em"[39m
+          [36m>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+        [36m</span>[39m
+      [36m</span>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-alert-section"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert-title"[39m
+        [36m>[39m
+          [0m接口暂时不可用[0m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert-description"[39m
+        [36m>[39m
+          [36m<p>[39m
+            [0mUNAUTHENTICATED · 请登录[0m
+          [36m</p>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span>[39m
+              [0m重新加载[0m
+            [36m</span>[39m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [0m [0m
+    [0m [0m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-alert ant-alert-error ant-alert-outlined ant-alert-with-description css-var-root css-dev-only-do-not-override-oc1rc0"[39m
+      [33mdata-show[39m=[32m"true"[39m
+      [33mrole[39m=[32m"alert"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"ant-alert-icon"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33maria-label[39m=[32m"close-circle"[39m
+          [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+          [33mrole[39m=[32m"img"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mdata-icon[39m=[32m"close-circle"[39m
+            [33mfill[39m=[32m"currentColor"[39m
+            [33mfill-rule[39m=[32m"evenodd"[39m
+            [33mfocusable[39m=[32m"false"[39m
+            [33mheight[39m=[32m"1em"[39m
+            [33mviewBox[39m=[32m"64 64 896 896"[39m
+            [33mwidth[39m=[32m"1em"[39m
+          [36m>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+        [36m</span>[39m
+      [36m</span>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-alert-section"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert-title"[39m
+        [36m>[39m
+          [0m接口暂时不可用[0m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert-description"[39m
+        [36m>[39m
+          [36m<p>[39m
+            [0mUNAUTHENTICATED · 请登录[0m
+          [36m</p>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span>[39m
+              [0m重新加载[0m
+            [36m</span>[39m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-alert ant-alert-info ant-alert-outlined ant-alert-with-description css-var-root css-dev-only-do-not-override-oc1rc0"[39m
+      [33mdata-show[39m=[32m"true"[39m
+      [33mrole[39m=[32m"alert"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"ant-alert-icon"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33maria-label[39m=[32m"info-circle"[39m
+          [33mclass[39m=[32m"anticon anticon-info-circle"[39m
+          [33mrole[39m=[32m"img"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mdata-icon[39m=[32m"info-circle"[39m
+            [33mfill[39m=[32m"currentColor"[39m
+            [33mfocusable[39m=[32m"false"[39m
+            [33mheight[39m=[32m"1em"[39m
+            [33mviewBox[39m=[32m"64 64 896 896"[39m
+            [33mwidth[39m=[32m"1em"[39m
+          [36m>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm32 664c0 4.4-3.6 8-8 8h-48c-4.4 0-8-3.6-8-8V456c0-4.4 3.6-8 8-8h48c4.4 0 8 3.6 8 8v272zm-32-344a48.01 48.01 0 010-96 48.01 48.01 0 010 96z"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+        [36m</span>[39m
+      [36m</span>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-alert-section"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert-title"[39m
+        [36m>[39m
+          [0m智能调查会读取证据，不会执行命令[0m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert-description"[39m
+        [36m>[39m
+          [0m调查用于整理证据和提出可能原因。处置命令需要你在人工处置中单独输入并确认。页面关闭后，可从历史记录继续查看进度。[0m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-oc1rc0 ant-space-horizontal ant-space-align-center ant-space-gap-row-small ant-space-gap-col-small status-note css-var-root"[39m
+      [33mstyle[39m=[32m"flex-wrap: wrap;"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-space-item"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-primary ant-btn-color-primary ant-btn-variant-solid"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m开始智能调查[0m
+          [36m</span>[39m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-space-item"[39m
+      [36m>[39m
+        [36m<details[39m
+          [33mclass[39m=[32m"inline-details"[39m
+        [36m>[39m
+          [36m<summary>[39m
+            [0m通过编号查找调查[0m
+          [36m</summary>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-space css-dev-only-do-not-override-oc1rc0 ant-space-horizontal ant-space-align-center ant-space-gap-row-small ant-space-gap-col-small css-var-root"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-space-item"[39m
+            [36m>[39m
+              [36m<input[39m
+                [33maria-label[39m=[32m"持久调查 Job ID"[39m
+                [33mclass[39m=[32m"ant-input css-dev-only-do-not-override-oc1rc0 ant-input-outlined css-var-root ant-input-css-var"[39m
+                [33mplaceholder[39m=[32m"输入完整调查编号"[39m
+                [33mstyle[39m=[32m"width: 240px;"[39m
+                [33mtype[39m=[32m"text"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-space-item"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+                [33mdisabled[39m=[32m""[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0m查看调查记录[0m
+                [36m</span>[39m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</details>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-space-item"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-dangerous ant-btn-color-dangerous ant-btn-variant-outlined"[39m
+          [33mdisabled[39m=[32m""[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m取消调查[0m
+          [36m</span>[39m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<h3>[39m
+      [0m历史调查[0m
+    [36m</h3>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-alert ant-alert-error ant-alert-outlined ant-alert-with-description css-var-root css-dev-only-do-not-override-oc1rc0"[39m
+      [33mdata-show[39m=[32m"true"[39m
+      [33mrole[39m=[32m"alert"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"ant-alert-icon"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33maria-label[39m=[32m"close-circle"[39m
+          [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+          [33mrole[39m=[32m"img"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mdata-icon[39m=[32m"close-circle"[39m
+            [33mfill[39m=[32m"currentColor"[39m
+            [33mfill-rule[39m=[32m"evenodd"[39m
+            [33mfocusable[39m=[32m"false"[39m
+            [33mheight[39m=[32m"1em"[39m
+            [33mviewBox[39m=[32m"64 64 896 896"[39m
+            [33mwidth[39m=[32m"1em"[39m
+          [36m>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+        [36m</span>[39m
+      [36m</span>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-alert-section"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert-title"[39m
+        [36m>[39m
+          [0m接口暂时不可用[0m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert-description"[39m
+        [36m>[39m
+          [36m<p>[39m
+            [0mUNAUTHENTICATED · 请登录[0m
+          [36m</p>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span>[39m
+              [0m重新加载[0m
+            [36m</span>[39m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [0m [0m
+    [0m [0m
+    [36m<div[39m
+      [33mclass[39m=[32m"ant-alert ant-alert-error ant-alert-outlined ant-alert-with-description css-var-root css-dev-only-do-not-override-oc1rc0"[39m
+      [33mdata-show[39m=[32m"true"[39m
+      [33mrole[39m=[32m"alert"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"ant-alert-icon"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33maria-label[39m=[32m"close-circle"[39m
+          [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+          [33mrole[39m=[32m"img"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mdata-icon[39m=[32m"close-circle"[39m
+            [33mfill[39m=[32m"currentColor"[39m
+            [33mfill-rule[39m=[32m"evenodd"[39m
+            [33mfocusable[39m=[32m"false"[39m
+            [33mheight[39m=[32m"1em"[39m
+            [33mviewBox[39m=[32m"64 64 896 896"[39m
+            [33mwidth[39m=[32m"1em"[39m
+          [36m>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+        [36m</span>[39m
+      [36m</span>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ant-alert-section"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert-title"[39m
+        [36m>[39m
+          [0m接口暂时不可用[0m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert-description"[39m
+        [36m>[39m
+          [36m<p>[39m
+            [0mUNAUTHENTICATED · 请登录[0m
+          [36m</p>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span>[39m
+              [0m重新加载[0m
+            [36m</span>[39m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/investigation_history.test.tsx:58:23
+     56|     </QueryClientProvider>,
+     57|   );
+     58|   expect(await screen.findByText("历史调查只读")).toBeInTheDocument();
+       |                       ^
+     59|   expect(screen.getByRole("button", { name: "取消调查" })).toBeDisabled();
+     60|   fireEvent.click(screen.getByRole("button", { name: "取消调查" }));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 7 passed (8)
+   Start at  08:55:32
+   Duration  2.57s (tests 47%, environment 23%, import 19%, setup 7%, transform 3%)
+

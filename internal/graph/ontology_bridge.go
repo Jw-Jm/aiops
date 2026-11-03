@@ -3,6 +3,7 @@ package graph
 import (
 	"github.com/aalpar/ariadne"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"maps"
 	"ops-platform/internal/resource"
 	api "ops-platform/internal/upstream/ontology/api"
 	"ops-platform/internal/upstream/ontology/model"
@@ -223,17 +224,19 @@ func (g *Graph) projectEntity(id string, attributes map[string]any) resource.Ent
 		sources = append(sources, source)
 	}
 	canonical, _ := resource.ParseCanonicalID(id)
-	if canonical.Domain == "hardware" && g.degraded[o.GetAnnotations()["ops.internal/source-id"]] != "" && g.degraded[o.GetAnnotations()["ops.internal/source-id"]] != "hardware_fixture_only" {
-		safe := map[string]any{}
-		for k, v := range attributes {
-			safe[k] = v
-		}
-		safe["health"] = "unknown"
-		attributes = safe
-	}
 	name := o.GetName()
 	if display := o.GetAnnotations()["ops.internal/display-name"]; display != "" {
 		name = display
 	}
-	return resource.Entity{CanonicalID: id, Kind: canonical.Kind, Name: name, Namespace: o.GetNamespace(), Labels: o.GetLabels(), Attributes: attributes, SourceRefs: sources, FirstObservedAt: first, UpdatedAt: observed}
+	entity := resource.Entity{CanonicalID: id, Kind: canonical.Kind, Name: name, Namespace: o.GetNamespace(), Labels: o.GetLabels(), Attributes: maps.Clone(attributes), SourceRefs: sources, FirstObservedAt: first, UpdatedAt: observed}
+	if entity.Attributes == nil {
+		entity.Attributes = map[string]any{}
+	}
+	if canonical.Domain == "hardware" && g.degraded[o.GetAnnotations()["ops.internal/source-id"]] != "" && g.degraded[o.GetAnnotations()["ops.internal/source-id"]] != "hardware_fixture_only" {
+		entity.Attributes["health"] = "unknown"
+	} else {
+		entity.Attributes["health"] = entityHealth(entity)
+	}
+	entity.Attributes["resourceDomain"] = entityDomain(entity)
+	return entity
 }

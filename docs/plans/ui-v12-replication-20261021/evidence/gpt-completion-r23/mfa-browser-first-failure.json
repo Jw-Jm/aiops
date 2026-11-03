@@ -1,0 +1,40 @@
+{
+  "origin": "https://192.168.0.63:30470",
+  "database": "ui_v12_r23_preview",
+  "scope": "real native MFA UI with existing task OpenBao Transit; database copy only",
+  "checks": [],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a176e3-5611-7016-af46-923ec89bcc6d"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a176e3-56bc-739d-8a74-08c704cf39f7"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a176e3-5838-75e3-aa8e-82d2795e2f6e"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a176e3-58a4-74ec-b747-98fe73640c2e"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a176e3-58a6-7309-8f30-e5934816985f"
+    },
+    {
+      "path": "/api/v1/auth/mfa/enrollments",
+      "status": 503,
+      "requestId": "01a176e3-58d9-776e-a727-b31228e8edc6"
+    }
+  ],
+  "status": "failed",
+  "failure": "locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByLabel('当前密码', { exact: true }) to be visible\n"
+}

@@ -1,0 +1,147 @@
+{
+  "mode": "failure",
+  "at": "2026-10-28T03:22:05.731Z",
+  "origin": "https://192.168.0.63:30471",
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a18087-85dd-7f25-b873-83563ebef022"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a18087-8676-783d-9272-cf016e19e690"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18087-8785-7cfd-a4d1-88071e5c6467"
+    },
+    {
+      "path": "/api/v1/capabilities",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18087-87ad-7ee8-a82c-a70c199e2670"
+    },
+    {
+      "path": "/api/v1/overview",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18087-87ad-7868-a7d6-e45ae7c8bca9"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18087-87b4-7f03-a745-9210fd494814"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18087-8d52-7bec-955f-93c790541ead"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "method": "POST",
+      "status": 202,
+      "requestId": "01a18087-95ca-78d2-8559-ed7f5a3d5bb5"
+    },
+    {
+      "path": "/api/v1/observability/queries/1caf2788-04a2-49cf-8bde-444abafea38d",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18087-9c87-719c-9203-a4509f2131b8"
+    },
+    {
+      "path": "/api/v1/observability/queries/1caf2788-04a2-49cf-8bde-444abafea38d",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18087-a20f-7edb-a876-fc746ab9c867"
+    },
+    {
+      "path": "/api/v1/observability/queries/1caf2788-04a2-49cf-8bde-444abafea38d",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18087-a75e-703e-b83f-fbd1dd117b1d"
+    },
+    {
+      "path": "/api/v1/observability/queries/1caf2788-04a2-49cf-8bde-444abafea38d",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18087-ad9d-722d-9467-2882dde24949"
+    },
+    {
+      "path": "/api/v1/observability/queries/1caf2788-04a2-49cf-8bde-444abafea38d/results",
+      "method": "GET",
+      "status": 409,
+      "requestId": "01a18087-b092-72d0-abc7-0f179810deec"
+    }
+  ],
+  "outcome": {
+    "queryId": "1caf2788-04a2-49cf-8bde-444abafea38d",
+    "source": {
+      "collectorVersion": "kubernetes-log-snapshot/v1",
+      "credentialRevision": 1,
+      "qualificationDigest": "sha256:11c359037ae2aad14aa47cc35d0a1b6607d433f417e8bb0b2376352ab78f6008",
+      "registrationId": "01a1805f-2214-7373-82a4-c20276c68d43",
+      "registrationRevision": 1
+    },
+    "resource": {
+      "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+      "uid": "0e648683-1088-4032-9b39-0a122ff475be",
+      "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+      "namespaceScope": {
+        "kind": "namespaced",
+        "namespace": "ops-native-v12-r24-20261026",
+        "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+      }
+    },
+    "window": {
+      "from": "2026-10-28T10:06:13.150326+08:00",
+      "to": "2026-10-28T10:36:13.150326+08:00",
+      "timezone": "Asia/Shanghai",
+      "bounds": "[from,to)"
+    },
+    "events": [
+      {
+        "state": "accepted",
+        "revision": 1,
+        "requestId": "01a18087-95ca-78d2-8559-ed7f5a3d5bb5"
+      },
+      {
+        "state": "running",
+        "revision": 2,
+        "requestId": "01a18087-9c87-719c-9203-a4509f2131b8"
+      },
+      {
+        "state": "running",
+        "revision": 2,
+        "requestId": "01a18087-a20f-7edb-a876-fc746ab9c867"
+      },
+      {
+        "state": "running",
+        "revision": 2,
+        "requestId": "01a18087-a75e-703e-b83f-fbd1dd117b1d"
+      },
+      {
+        "state": "failed",
+        "revision": 3,
+        "requestId": "01a18087-ad9d-722d-9467-2882dde24949"
+      }
+    ],
+    "finalState": "failed",
+    "resultStatus": 409,
+    "termination": null,
+    "failure": {
+      "code": "SOURCE_UNAVAILABLE",
+      "message": "来源查询未成功；没有发布结果。",
+      "retryable": true
+    }
+  },
+  "status": "passed"
+}

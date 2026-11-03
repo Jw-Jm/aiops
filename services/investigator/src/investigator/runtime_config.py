@@ -21,7 +21,7 @@ class RuntimeConfig(BaseModel):
     modelAPIKeyFile: str
     assistantModelProfileVersion: str | None = None
     assistantModelProfile: AssistantModelProfile | None = None
-    model: ModelContract
+    model: ModelContract | None = None
 
     @field_validator("jobAPI","mcpEndpoint")
     @classmethod
@@ -47,7 +47,12 @@ class RuntimeConfig(BaseModel):
             p=self.assistantModelProfile
             if p is None or not p.usable(self.listenAddress) or p.reference()!=self.assistantModelProfileVersion:
                 raise ValueError("assistant model profile is unavailable or changed")
+            if p.schemaVersion=='assistant-model-profile/v2':
+                if self.model is not None:raise ValueError('hosted assistant must not enable a legacy model fallback')
+                return self.model_dump()
+            if self.model is None:raise ValueError('legacy model configuration is required')
             if p.timeoutSeconds!=self.model.timeout:raise ValueError("profile timeout must match the shared locked Holmes runtime")
             if p.baseURL!=self.model.base_url:raise ValueError("assistant must use the approved model egress endpoint")
         elif self.assistantModelProfile is not None:raise ValueError("assistant profile reference is required")
+        if self.model is None:raise ValueError('model configuration is required')
         return self.model_dump()

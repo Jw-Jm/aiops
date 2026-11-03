@@ -1,0 +1,176 @@
+{
+  "at": "2026-10-29T02:01:13.016793+00:00",
+  "status": "passed",
+  "databaseTransaction": "READ ONLY",
+  "verifiedNodes": 5,
+  "verifiedEdges": 4,
+  "oracle": [
+    {
+      "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+      "uid": "0e648683-1088-4032-9b39-0a122ff475be",
+      "resourceVersion": "1773922",
+      "kind": "Pod",
+      "namespace": "ops-native-v12-r24-20261026",
+      "name": "ops-seaweedfs-0",
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "blockOwnerDeletion": true,
+          "controller": true,
+          "kind": "StatefulSet",
+          "name": "ops-seaweedfs",
+          "uid": "28b06281-5bfa-4d50-ab0f-880af7269fd2"
+        }
+      ],
+      "labels": {
+        "app.kubernetes.io/name": "ops-seaweedfs",
+        "apps.kubernetes.io/pod-index": "0",
+        "controller-revision-hash": "ops-seaweedfs-6fff566b58",
+        "ops.platform.io/component": "seaweedfs",
+        "ops.platform.io/mode": "bundled",
+        "ops.platform.io/release": "ops-r24",
+        "statefulset.kubernetes.io/pod-name": "ops-seaweedfs-0"
+      },
+      "selector": null,
+      "configMapVolumes": [
+        "ops-seaweedfs-master-config"
+      ]
+    },
+    {
+      "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/apps/StatefulSet/28b06281-5bfa-4d50-ab0f-880af7269fd2",
+      "uid": "28b06281-5bfa-4d50-ab0f-880af7269fd2",
+      "resourceVersion": "1773921",
+      "kind": "StatefulSet",
+      "namespace": "ops-native-v12-r24-20261026",
+      "name": "ops-seaweedfs",
+      "ownerReferences": [],
+      "labels": {
+        "app.kubernetes.io/name": "ops-seaweedfs",
+        "ops.platform.io/component": "seaweedfs",
+        "ops.platform.io/mode": "bundled",
+        "ops.platform.io/release": "ops-r24"
+      },
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "ops-seaweedfs"
+        }
+      },
+      "configMapVolumes": []
+    },
+    {
+      "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/ConfigMap/e2d7038d-79f4-491b-aca3-598522e9f039",
+      "uid": "e2d7038d-79f4-491b-aca3-598522e9f039",
+      "resourceVersion": "1772970",
+      "kind": "ConfigMap",
+      "namespace": "ops-native-v12-r24-20261026",
+      "name": "ops-seaweedfs-master-config",
+      "ownerReferences": [],
+      "labels": {
+        "ops.platform.io/component": "seaweedfs",
+        "ops.platform.io/mode": "bundled",
+        "ops.platform.io/release": "ops-r24"
+      },
+      "selector": null,
+      "configMapVolumes": []
+    },
+    {
+      "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Service/eb2e67c6-221e-4178-a757-cdc652775c98",
+      "uid": "eb2e67c6-221e-4178-a757-cdc652775c98",
+      "resourceVersion": "1772972",
+      "kind": "Service",
+      "namespace": "ops-native-v12-r24-20261026",
+      "name": "ops-seaweedfs-s3",
+      "ownerReferences": [],
+      "labels": {
+        "app.kubernetes.io/name": "ops-seaweedfs",
+        "ops.platform.io/component": "seaweedfs",
+        "ops.platform.io/mode": "bundled",
+        "ops.platform.io/release": "ops-r24"
+      },
+      "selector": {
+        "app.kubernetes.io/name": "ops-seaweedfs"
+      },
+      "configMapVolumes": []
+    },
+    {
+      "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/discovery.k8s.io/EndpointSlice/587b6e4f-ca8a-474b-a2e9-75216471b0a4",
+      "uid": "587b6e4f-ca8a-474b-a2e9-75216471b0a4",
+      "resourceVersion": "1773920",
+      "kind": "EndpointSlice",
+      "namespace": "ops-native-v12-r24-20261026",
+      "name": "ops-seaweedfs-s3-qztbx",
+      "ownerReferences": [
+        {
+          "apiVersion": "v1",
+          "blockOwnerDeletion": true,
+          "controller": true,
+          "kind": "Service",
+          "name": "ops-seaweedfs-s3",
+          "uid": "eb2e67c6-221e-4178-a757-cdc652775c98"
+        }
+      ],
+      "labels": {
+        "app.kubernetes.io/name": "ops-seaweedfs",
+        "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+        "kubernetes.io/service-name": "ops-seaweedfs-s3",
+        "ops.platform.io/component": "seaweedfs",
+        "ops.platform.io/mode": "bundled",
+        "ops.platform.io/release": "ops-r24"
+      },
+      "selector": null,
+      "configMapVolumes": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+      "to": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/apps/StatefulSet/28b06281-5bfa-4d50-ab0f-880af7269fd2",
+      "kind": "managed_by",
+      "verifiedAgainst": "Kubernetes UID/ownerReference/selector/volume fields; independently read from API"
+    },
+    {
+      "from": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+      "to": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/ConfigMap/e2d7038d-79f4-491b-aca3-598522e9f039",
+      "kind": "related_to",
+      "verifiedAgainst": "Kubernetes UID/ownerReference/selector/volume fields; independently read from API"
+    },
+    {
+      "from": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Service/eb2e67c6-221e-4178-a757-cdc652775c98",
+      "to": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+      "kind": "selects_pod",
+      "verifiedAgainst": "Kubernetes UID/ownerReference/selector/volume fields; independently read from API"
+    },
+    {
+      "from": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/discovery.k8s.io/EndpointSlice/587b6e4f-ca8a-474b-a2e9-75216471b0a4",
+      "to": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Service/eb2e67c6-221e-4178-a757-cdc652775c98",
+      "kind": "managed_by",
+      "verifiedAgainst": "Kubernetes UID/ownerReference/selector/volume fields; independently read from API"
+    }
+  ],
+  "components": [
+    {
+      "component": "ops-api",
+      "podUID": "58243f28-0c90-44c1-ac9b-2880e4c70e49",
+      "modelMaterialMount": "r28-runtime:/etc/r28",
+      "runtimeFile": "sp06.json"
+    },
+    {
+      "component": "ops-worker",
+      "podUID": "1fb58083-0310-4952-98b6-4e8d1f1663e2",
+      "modelMaterialMount": "r28-runtime:/etc/r28",
+      "runtimeFile": "sp06.json"
+    },
+    {
+      "component": "ops-investigator",
+      "podUID": "bf5652b7-84b2-48bc-81f2-bd9e66eb38b3",
+      "modelMaterialMount": "r28-runtime:/etc/r28",
+      "runtimeFile": "investigator.json"
+    }
+  ],
+  "savedLogDigestUnchanged": true,
+  "limitations": [
+    "No Worker/full-stack restart this round",
+    "Current resource rows and live Kubernetes objects; not historical topology reconstruction or source continuity proof",
+    "UI storage is URL parameters; no new business mutation or migration"
+  ]
+}

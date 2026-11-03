@@ -1,0 +1,66 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "checks": [
+    "real pending login disables duplicate submit; API401 remains inline",
+    "server-owned own account / independent grants; self cancel/error/201; rotated session survives reload"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a177fc-9819-7471-8f09-0748e27829e8"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 401,
+      "requestId": "01a177fc-9934-7bb6-9c7c-94c279f3acf7"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a177fc-9c6b-73f1-9bc9-be8c8e1c20ed"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a177fc-9cc6-726a-aff8-6d0fb8898e96"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a177fc-9dca-749d-9b98-e53e20d8b762"
+    },
+    {
+      "path": "/api/v1/auth/password:change",
+      "status": 401,
+      "requestId": "01a177fc-a22c-7051-991f-4006a72309fc"
+    },
+    {
+      "path": "/api/v1/auth/password:change",
+      "status": 201,
+      "requestId": "01a177fc-abc8-70e1-8e4d-6617463771ca"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a177fc-b2a7-7af5-b944-7b1d1bd6dd24"
+    }
+  ],
+  "screenshots": [
+    "login-current",
+    "login-pending",
+    "login-error",
+    "my-account",
+    "self-password",
+    "self-password-error"
+  ],
+  "geometry": {
+    "account": {
+      "x": 390,
+      "y": 262.421875,
+      "width": 660,
+      "height": 435.140625
+    }
+  },
+  "status": "passed"
+}

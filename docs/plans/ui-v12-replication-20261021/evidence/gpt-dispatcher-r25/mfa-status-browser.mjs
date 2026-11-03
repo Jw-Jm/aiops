@@ -1,0 +1,46 @@
+import {chromium} from '/data/ops-ui-v12-http-20261022-r1/preview-r1/playwright-core/index.mjs';
+import {readFileSync,writeFileSync} from 'node:fs';
+import assert from 'node:assert/strict';
+const root='/data/ops-v12-native-visual-r24-20261026';
+const out=root+'/r25-dispatcher-20261027/attempt-2';
+const origin='https://192.168.0.63:30471';
+const account=JSON.parse(readFileSync(root+'/private/browser-account.json','utf8'));
+const browser=await chromium.launch({executablePath:'/opt/ops-assistant-browser-20261014/chrome-linux64/chrome',headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
+const context=await browser.newContext({ignoreHTTPSErrors:true,viewport:{width:1440,height:960},locale:'zh-CN',timezoneId:'Asia/Shanghai'});
+const page=await context.newPage();page.setDefaultTimeout(15000);
+const result={origin,scope:'real native browser status read; controlled network abort, then actual API retry; no enrollment mutation',checks:[],requests:[]};
+page.on('response',async r=>{if(r.url().endsWith('/api/v1/auth/mfa/status'))result.requests.push({path:'/api/v1/auth/mfa/status',status:r.status(),requestId:r.headers()['x-request-id']??null});});
+try {
+ await page.goto(origin+'/login');
+ await page.getByLabel('用户名',{exact:true}).fill(account.loginName);
+ await page.getByLabel('密码',{exact:true}).fill(account.password);
+ await page.getByRole('button',{name:/^登\s*录/}).click();
+ await page.waitForURL(u=>u.pathname!=='/login');
+ let seen, release;
+ const entered=new Promise(r=>seen=r), held=new Promise(r=>release=r);
+ let fail=true;
+ await page.route('**/api/v1/auth/mfa/status',async route=>{if(fail){seen();await held;await route.abort('failed');}else await route.continue();});
+ await page.goto(origin+'/account/security');
+ await entered;
+ const card=page.locator('.ant-card').filter({has:page.getByText('双因素状态',{exact:true})});
+ await card.locator('.ant-skeleton').waitFor();
+ assert.equal(await card.getByText('未启用',{exact:true}).count(),0);
+ assert.equal(await card.getByText('剩余恢复码',{exact:true}).count(),0);
+ assert.equal(await card.getByRole('button',{name:'启用双因素',exact:true}).count(),0);
+ await page.screenshot({path:out+'/mfa-status-loading.png'});
+ result.checks.push('pending status shows skeleton, no invented disabled factor/zero recovery codes/enrollment action');
+ release();
+ await card.getByRole('button',{name:'重新加载',exact:true}).waitFor();
+ assert.equal(await card.getByText('未启用',{exact:true}).count(),0);
+ assert.equal(await card.getByText('剩余恢复码',{exact:true}).count(),0);
+ await page.screenshot({path:out+'/mfa-status-network-failure.png'});
+ result.checks.push('network abort produces explicit read error and retry, no fabricated factor state');
+ fail=false;
+ await card.getByRole('button',{name:'重新加载',exact:true}).click();
+ await card.getByRole('button',{name:'重新绑定双因素',exact:true}).waitFor();
+ await card.getByText('已启用',{exact:true}).waitFor();
+ await page.screenshot({path:out+'/mfa-status-retry.png'});
+ assert(result.requests.some(r=>r.status===200));
+ result.checks.push('retry reads actual MFA status200 and restores confirmed factor');result.status='passed';
+} catch(error){result.status='failed';result.failure=String(error.message).replaceAll(account.password,'[REDACTED]');process.exitCode=1;}
+finally{await browser.close();writeFileSync(out+'/mfa-status-browser.json',JSON.stringify(result,null,2));console.log(JSON.stringify(result));}

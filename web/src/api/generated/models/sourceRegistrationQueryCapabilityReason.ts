@@ -10,4 +10,5 @@ export type SourceRegistrationQueryCapabilityReason = typeof SourceRegistrationQ
 
 export const SourceRegistrationQueryCapabilityReason = {
   adapter_scope_verification_pending: 'adapter_scope_verification_pending',
+  incompatible_data_scope_mapping: 'incompatible_data_scope_mapping',
 } as const;

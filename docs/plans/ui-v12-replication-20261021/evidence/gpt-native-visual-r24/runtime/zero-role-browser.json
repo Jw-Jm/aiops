@@ -1,0 +1,50 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "checks": [
+    "zero-role native account changes initial password and reaches own MFA settings",
+    "both role routes denied; actual admin API403; current identity and self-password remain available without granting roles"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a1780b-b25d-7d28-9aa7-ed39b698829d"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a1780b-b2f0-736b-944f-28d1e5eb0e49"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a1780b-b3a4-7b7f-9d68-c200b26dc485"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a1780b-b3e4-7ef2-8511-fa93cbfc2ed6"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a1780b-b3f0-73d0-b0fd-1b4a2fadb134"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a1780b-b94a-74d0-b2d6-8676eeff91e9"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 403,
+      "requestId": "01a1780b-b991-779f-9411-e52ba85de1a7"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a1780b-bd02-71f9-b02c-be80773d2507"
+    }
+  ],
+  "status": "passed"
+}

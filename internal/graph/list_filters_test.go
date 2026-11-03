@@ -9,6 +9,7 @@ import (
 	"ops-platform/internal/contract"
 	"ops-platform/internal/integrations/kubernetes"
 	"ops-platform/internal/resource"
+	"strings"
 	"testing"
 	"time"
 )
@@ -177,5 +178,100 @@ func TestResourceDomainDoesNotBorrowPodOrVirtualizationSemantics(t *testing.T) {
 		if actual := entityDomain(e); actual != item.want {
 			t.Fatal(item, actual)
 		}
+	}
+}
+
+func TestResourceSearchSharesAuthorizationSummaryAndCursor(t *testing.T) {
+	gvr := kubernetes.GVR{Version: "v1", Resource: "pods"}
+	g := New("tenant-a", "cluster-a", "instance", []kubernetes.GVR{gvr})
+	g.SetOwner(1, time.Now().Add(time.Minute))
+	objects := []unstructured.Unstructured{object("Pod", "apps", "支付-Gateway", "uid-visible", nil), object("Pod", "foreign", "支付-Gateway", "uid-foreign", nil), object("Pod", "apps", "database", "uid-other", nil)}
+	objects[0].Object["status"] = map[string]any{"phase": "Running"}
+	if err := g.Replace(context.Background(), 1, kubernetes.Snapshot{GVR: gvr, Objects: objects, State: kubernetes.GVRState{LastListCompletedAt: time.Now(), LastConnectivityProbeAt: time.Now(), WatchConnected: true, WatchContinuous: true}}); err != nil {
+		t.Fatal(err)
+	}
+	q := Query{QueryKind: "list", ExpectedOwnerEpoch: 1, MaxDepth: 1, MaxNodes: 1, MaxEdges: 2, Scope: Scope{Tenant: "tenant-a", Cluster: "cluster-a", Namespaces: []string{"apps"}}, Search: "支付-gAtE", Health: "normal"}
+	for _, search := range []string{"支付-gAtE", "VISIBLE", "pod"} {
+		q.Search = search
+		out, err := g.Query(context.Background(), q)
+		if err != nil || len(out.Nodes) != 1 || out.Nodes[0].Name != "支付-Gateway" || out.Summary.Total != 1 || out.Nodes[0].Attributes["health"] != "normal" || out.Nodes[0].Attributes["resourceDomain"] != "kubernetes" {
+			t.Fatalf("search %q: %+v %v", search, out, err)
+		}
+	}
+	digest := QueryDigest(q)
+	q.Search = "foreign"
+	if digest == QueryDigest(q) {
+		t.Fatal("search not bound to cursor")
+	}
+	out, err := g.Query(context.Background(), q)
+	if err != nil || len(out.Nodes) != 0 || out.Summary.Total != 0 {
+		t.Fatalf("foreign search leaked result/summary: %+v %v", out, err)
+	}
+	q.Search = strings.Repeat("字", 257)
+	if _, err = g.Query(context.Background(), q); err == nil {
+		t.Fatal("oversized search accepted")
+	}
+	q.Search = strings.Repeat("字", 256)
+	if _, err = g.Query(context.Background(), q); err != nil {
+		t.Fatal("256 Unicode codepoints rejected", err)
+	}
+	entityQ := q
+	entityQ.Search = ""
+	entityQ.QueryKind = "entity"
+	entityQ.CanonicalID = resource.CanonicalID{Domain: "k8s", Tenant: "tenant-a", Scope: "cluster-a", APIGroup: "core", Kind: "Pod", StableID: "uid-visible"}.String()
+	entity, err := g.Query(context.Background(), entityQ)
+	if err != nil || len(entity.Nodes) != 1 || entity.Nodes[0].Attributes["health"] != "normal" {
+		t.Fatalf("detail health differs from list/filter: %+v %v", entity, err)
+	}
+}
+
+func TestResourceFilterOptionsUseWholeAuthorizedSnapshot(t *testing.T) {
+	gvr := kubernetes.GVR{Version: "v1", Resource: "pods"}
+	g := New("tenant-a", "cluster-a", "instance", []kubernetes.GVR{gvr})
+	g.SetOwner(1, time.Now().Add(time.Minute))
+	objects := []unstructured.Unstructured{object("Pod", "apps", "a", "01", nil), object("Service", "second", "b", "02", nil), object("Secret", "foreign", "hidden", "03", nil), object("Node", "", "node", "04", nil)}
+	if err := g.Replace(t.Context(), 1, kubernetes.Snapshot{GVR: gvr, Objects: objects, State: kubernetes.GVRState{LastListCompletedAt: time.Now(), WatchConnected: true, WatchContinuous: true, LastConnectivityProbeAt: time.Now()}}); err != nil {
+		t.Fatal(err)
+	}
+	q := Query{QueryKind: "list", IncludeFilterOptions: true, Search: "nonexistent", Kind: "Pod", Namespace: "apps", ExpectedOwnerEpoch: 1, MaxDepth: 1, MaxNodes: 1, MaxEdges: 2, Scope: Scope{Tenant: "tenant-a", Cluster: "cluster-a", Namespaces: []string{"apps", "second"}}}
+	got, err := g.Query(t.Context(), q)
+	if err != nil || got.Summary.Total != 0 {
+		t.Fatalf("filtered results: %+v %v", got, err)
+	}
+	options := got.Summary.FilterOptions
+	if options == nil || strings.Join(options.Kinds, ",") != "Pod,Service" || strings.Join(options.Namespaces, ",") != "apps,second" || options.ClusterScoped {
+		t.Fatalf("scope leaked or candidates paged/filtered: %+v", options)
+	}
+	wire, _ := json.Marshal(got)
+	if err := contract.Validate("https://ops.local/schemas/resource-graph/v2", wire); err != nil {
+		t.Fatal(err)
+	}
+	legacy := q
+	legacy.IncludeFilterOptions = false
+	if QueryDigest(legacy) == QueryDigest(q) {
+		t.Fatal("flag not cursor bound")
+	}
+	old, err := g.Query(t.Context(), legacy)
+	if err != nil || old.Summary.FilterOptions != nil {
+		t.Fatal("legacy acquired candidates", err)
+	}
+	q.Search = ""
+	q.Kind = ""
+	q.Namespace = "__cluster__"
+	q.Scope.ClusterScoped = true
+	got, err = g.Query(t.Context(), q)
+	if err != nil || len(got.Nodes) != 1 || got.Nodes[0].Kind != "Node" || !got.Summary.FilterOptions.ClusterScoped {
+		t.Fatalf("cluster scope selector: %+v %v", got, err)
+	}
+	q.Scope.ClusterScoped = false
+	got, err = g.Query(t.Context(), q)
+	if err != nil || len(got.Nodes) != 0 || got.Summary.FilterOptions.ClusterScoped {
+		t.Fatalf("cluster scope authorization: %+v %v", got, err)
+	}
+	q.Namespace = ""
+	q.Scope.Resources = []string{resource.CanonicalID{Domain: "k8s", Tenant: "tenant-a", Scope: "cluster-a", APIGroup: "core", Kind: "Service", StableID: "02"}.String()}
+	got, err = g.Query(t.Context(), q)
+	if err != nil || len(got.Nodes) != 1 || strings.Join(got.Summary.FilterOptions.Kinds, ",") != "Service" || strings.Join(got.Summary.FilterOptions.Namespaces, ",") != "second" {
+		t.Fatalf("exact resource scope leaked candidates: %+v %v", got, err)
 	}
 }

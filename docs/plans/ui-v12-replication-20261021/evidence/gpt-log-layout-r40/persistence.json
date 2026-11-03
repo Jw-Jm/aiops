@@ -1,0 +1,111 @@
+{
+  "at": "2026-10-29T00:13:24.542245+00:00",
+  "status": "passed",
+  "database": "ui_v12_r24_native",
+  "checks": [
+    "only level filter changes between original and INFO requests",
+    "both digests and actual populations agree with browser",
+    "local query POST count is verified by browser-layout.json; this SQL comparison covers the two recorded queries"
+  ],
+  "queries": [
+    {
+      "queryId": "6a17ed38-2932-4f26-a96a-924a80f5bbac",
+      "state": "completed",
+      "request": {
+        "budget": {
+          "maxRows": 20,
+          "maxBytes": 131072,
+          "maxSourceCalls": 2,
+          "maxDurationSeconds": 8
+        },
+        "source": {
+          "registrationId": "01a1805f-2214-7373-82a4-c20276c68d43",
+          "collectorVersion": "kubernetes-log-snapshot/v1",
+          "credentialRevision": 1,
+          "qualificationDigest": "sha256:11c359037ae2aad14aa47cc35d0a1b6607d433f417e8bb0b2376352ab78f6008",
+          "registrationRevision": 1
+        },
+        "window": {
+          "to": "2026-10-28T02:36:13Z",
+          "from": "2026-10-28T02:06:14Z",
+          "bounds": "[from,to)",
+          "timezone": "Asia/Shanghai"
+        },
+        "resource": {
+          "uid": "0e648683-1088-4032-9b39-0a122ff475be",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+          "namespaceScope": {
+            "kind": "namespaced",
+            "namespace": "ops-native-v12-r24-20261026",
+            "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+          }
+        },
+        "queryKind": "logs",
+        "templateId": "logs.records",
+        "schemaVersion": "ui-v12-observability-query/v1",
+        "templateVersion": "logs.records/v1"
+      },
+      "resultDigest": "sha256:7880ae84392cc4cee0f27f1020922455544602cdcf1d756fd09de1b9f72b7d64",
+      "population": {
+        "basis": "exact",
+        "count": 186,
+        "method": "source_total"
+      },
+      "returned": "20"
+    },
+    {
+      "queryId": "6cedb60d-09ea-4d85-9e0a-4e23cdad349d",
+      "state": "completed",
+      "request": {
+        "budget": {
+          "maxRows": 20,
+          "maxBytes": 131072,
+          "maxSourceCalls": 2,
+          "maxDurationSeconds": 8
+        },
+        "source": {
+          "registrationId": "01a1805f-2214-7373-82a4-c20276c68d43",
+          "collectorVersion": "kubernetes-log-snapshot/v1",
+          "credentialRevision": 1,
+          "qualificationDigest": "sha256:11c359037ae2aad14aa47cc35d0a1b6607d433f417e8bb0b2376352ab78f6008",
+          "registrationRevision": 1
+        },
+        "window": {
+          "to": "2026-10-28T02:36:13Z",
+          "from": "2026-10-28T02:06:14Z",
+          "bounds": "[from,to)",
+          "timezone": "Asia/Shanghai"
+        },
+        "filters": [
+          {
+            "field": "level",
+            "value": "info",
+            "operator": "eq"
+          }
+        ],
+        "resource": {
+          "uid": "0e648683-1088-4032-9b39-0a122ff475be",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+          "namespaceScope": {
+            "kind": "namespaced",
+            "namespace": "ops-native-v12-r24-20261026",
+            "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+          }
+        },
+        "queryKind": "logs",
+        "templateId": "logs.records",
+        "schemaVersion": "ui-v12-observability-query/v1",
+        "templateVersion": "logs.records/v1"
+      },
+      "resultDigest": "sha256:746db78dbda8961137ca2e6a2bd6e234d686ffc4014686d474cf393398996a61",
+      "population": {
+        "basis": "exact",
+        "count": 6,
+        "method": "source_total"
+      },
+      "returned": "6"
+    }
+  ]
+}

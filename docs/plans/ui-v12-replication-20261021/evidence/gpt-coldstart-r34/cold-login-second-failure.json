@@ -1,0 +1,119 @@
+{
+  "origin": "https://192.168.0.63:30472",
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a17d0b-5802-79c3-859a-83cd1d47e3ac"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a17d0b-5881-77a1-a966-35e3da31a26b"
+    },
+    {
+      "path": "/api/v1/auth/password:change",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a17d0b-5b29-7a21-a932-2f00ffbbcd35"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d0b-5c73-7992-933e-269424155046"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d0b-5cdb-7b02-86d1-5af630a285b6"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d0b-5cdb-72f9-9f7a-309decbf54aa"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d0b-5cde-7da9-80ad-57df1d812fbb"
+    },
+    {
+      "path": "/api/v1/auth/mfa/enrollments",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a17d0b-5d6e-7367-bf46-b011f86bdc0d"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a17d0b-5f1a-7d46-a6af-3df36f9e2e61"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a17d0b-5f32-7962-86e7-ccf8ef946a4b:verify",
+      "method": "POST",
+      "status": 200,
+      "requestId": "01a17d0b-60d2-7ce9-b72d-aa517b2187e2"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a17d0b-5f32-7962-86e7-ccf8ef946a4b:verify",
+      "method": "POST",
+      "status": 200,
+      "requestId": "01a17d0b-620e-7608-8c2f-96b2437f5915"
+    },
+    {
+      "path": "/api/v1/auth/mfa/enrollments/01a17d0b-5d88-7ddb-938f-5dcce900dea4:verify",
+      "method": "POST",
+      "status": 200,
+      "requestId": "01a17d0b-6295-74a9-8f16-84c67b769731"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d0b-62c7-7e70-a3a8-29a633bc6c7a"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d0b-6334-7258-81c5-ae6c588f976b"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d0b-63a6-7d1c-84b6-a422515e2731"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d0b-63a8-7467-b07d-0cdff1ebfcaf"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d0b-63a6-7829-9c58-6cd729709b77"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d0b-6417-753c-ab17-d38385bd8c29"
+    }
+  ],
+  "checks": [
+    "fresh first-tenant CLI identity logs in and changes initial password through UI",
+    "new namespace projected identity uses its own Transit; real MFA setup persists without redisclosing factor"
+  ],
+  "status": "failed",
+  "failure": "page.evaluate: TypeError: r.status is not a function\n    at eval (eval at evaluate (:370:30), <anonymous>:1:94)\n    at async <anonymous>:396:30"
+}

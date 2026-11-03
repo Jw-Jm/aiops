@@ -1,0 +1,150 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "account": "r30.accept.1793073230556",
+  "checks": [
+    "pending secret is displayed once; a reload shows the server pending state without the secret",
+    "enrolment, server-raised LoA2, confirmation and recovery codes are persisted and re-read after a reload"
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a17b7e-4679-7cc0-a7c0-cb6e071f04d6"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a17b7e-470e-7578-b1b8-e377378902a7"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17b7e-47cc-7f2c-adb0-b96e8f8f0297"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a17b7e-480f-7dcb-8e2e-2a9640459134"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/mfa/enrollments",
+      "status": 201,
+      "requestId": "01a17b7e-4887-7212-818e-a36d7bc3eaa9"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17b7e-48ae-727f-9ac0-dd59abc3f936"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17b7e-5138-7637-91d2-e5efaa356590"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a17b7e-5175-7444-85b9-a2ffb2d47696"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/mfa/enrollments",
+      "status": 201,
+      "requestId": "01a17b7e-5229-71b3-b5d0-01c8e764c6e5"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17b7e-5260-7d77-957e-a43054f125ca"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17b7e-526f-7b93-9faf-654b1f850199:verify",
+      "status": 200,
+      "requestId": "01a17b7e-55e5-7e05-adc8-7cd5dab5cd78"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17b7e-526f-7b93-9faf-654b1f850199:verify",
+      "status": 200,
+      "requestId": "01a17b7e-5934-7436-9888-5856b2bd0797"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17b7e-526f-7b93-9faf-654b1f850199:verify",
+      "status": 200,
+      "requestId": "01a17b7e-61a9-7f21-8a59-2acad2d76632"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/mfa/enrollments/01a17b7e-5245-7c82-8b59-908f0267cf62:verify",
+      "status": 200,
+      "requestId": "01a17b7e-6a20-704e-acd3-9c7e2c84b34d"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a17b7e-6e98-7ef5-bea6-6e7cdff4c579"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17b7e-6eb1-7b0a-8536-c8ce8a02ad49"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17b7e-6f22-713e-b726-ec90aac16ba6"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a17b7e-6f53-785b-ad1b-793ca9dd79fd"
+    }
+  ],
+  "screenshots": [
+    "mfa-status-none",
+    "mfa-enrollment-pending",
+    "mfa-pending-after-reload",
+    "mfa-stepup-password-done",
+    "mfa-stepup-loa2",
+    "mfa-confirmed-recovery-codes",
+    "mfa-confirmed-reloaded"
+  ],
+  "states": {
+    "beforeEnrolment": "none",
+    "initial": {
+      "breadcrumb": "账号 / 账号安全",
+      "status": [
+        "状态未启用",
+        "当前保证级别LoA 1（仅密码）",
+        "剩余恢复码0",
+        "确认时间—"
+      ]
+    },
+    "enrolment": {
+      "expiresAt": "2026-10-27T04:03:56.124648Z"
+    },
+    "acrAfterStepUp": "urn:ops:loa:2",
+    "confirmed": {
+      "state": "confirmed",
+      "remaining": 10,
+      "confirmedAt": "2026-10-27T03:54:05.801459Z"
+    }
+  },
+  "failure": null,
+  "status": "passed"
+}

@@ -1,0 +1,50 @@
+{
+  "origin": "https://192.168.0.63:30472",
+  "namespace": "ops-native-v12-r34-20261027",
+  "checks": [],
+  "modelRequests": 0,
+  "beforeSession": {
+    "status": 200,
+    "sessionRef": "session:01a17d1a-8e6c-780d-821f-2c707c6a2fb7",
+    "subject": "user:01a17d06-243d-7290-9687-8795b0c3fb1a",
+    "roles": [
+      "platform_admin"
+    ],
+    "requestId": "01a17d1a-8fb2-7387-999c-e8ab20e20ad0"
+  },
+  "beforePods": [
+    {
+      "name": "ops-api",
+      "uid": "afa1098a-4552-4231-8d33-dad509a506ab",
+      "phase": "Running",
+      "restarts": [
+        0
+      ]
+    },
+    {
+      "name": "ops-worker",
+      "uid": "e036044a-c95d-4255-aed8-e50790e05c4e",
+      "phase": "Running",
+      "restarts": [
+        0
+      ]
+    },
+    {
+      "name": "ops-investigator",
+      "uid": "956314c4-fcaf-4005-bcdd-020b67c21a57",
+      "phase": "Running",
+      "restarts": [
+        1
+      ]
+    }
+  ],
+  "status": "failed",
+  "failure": "apiRequestContext.get: connect ECONNREFUSED 192.168.0.63:30472\nCall log:\n  - \u2192 GET https://192.168.0.63:30472/api/v1/auth/session\n    - user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36\n    - accept: */*\n    - accept-encoding: gzip,deflate,br\n    - cookie: [REDACTED]\n",
+  "containment": {
+    "at": "2026-10-28T00:33:17.886813+00:00",
+    "scope": "one r34 test session only",
+    "logoutStatus": null,
+    "oldSessionStatus": 401,
+    "credentialRedacted": true
+  }
+}

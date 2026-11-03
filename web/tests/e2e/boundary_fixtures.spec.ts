@@ -57,6 +57,17 @@ test("fixture cyclic graph, isolated node, Unicode identifiers and keyboard navi
     rankedEvidence: null,
     conflicts: null,
   };
+  await page.route("**/api/v1/resources?*", async (route) => {
+    const ids = new URL(route.request().url()).searchParams.getAll(
+      "canonicalIds",
+    );
+    await route.fulfill({
+      json: {
+        data: nodes.filter((node) => ids.includes(node.canonicalId)),
+        meta: {},
+      },
+    });
+  });
   await page.route("**/api/v1/resources/neighbors?*", async (route) => {
     const p = new URL(route.request().url()).searchParams;
     expect(p.get("canonicalId")).toBe(nodes[0]!.canonicalId);
@@ -69,7 +80,7 @@ test("fixture cyclic graph, isolated node, Unicode identifiers and keyboard navi
   );
   await page.goto(
     config.baseURL +
-      "/resources/detail?tab=graph&canonicalId=" +
+      "/resources/detail?tab=graph&graphDepth=2&canonicalId=" +
       encodeURIComponent(nodes[0]!.canonicalId),
   );
   await expect(page.locator(".graph-canvas canvas").first()).toBeVisible();

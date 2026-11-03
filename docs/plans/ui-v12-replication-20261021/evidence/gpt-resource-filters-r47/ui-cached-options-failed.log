@@ -1,0 +1,52 @@
+
+ RUN  v5.0.3 /Users/mssc/Documents/Code/ops/platform/web
+
+stderr | tests/resource_catalog.test.tsx > drops candidate options when a previously successful catalog refresh is denied
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/resource_catalog.test.tsx > drops candidate options when a previously successful catalog refresh is denied
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/resource_catalog.test.tsx > drops candidate options when a previously successful catalog refresh is denied
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/resource_catalog.test.tsx > drops candidate options when a previously successful catalog refresh is denied
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+ ❯ tests/resource_catalog.test.tsx (11 tests | 1 failed) 3744ms
+   × drops candidate options when a previously successful catalog refresh is denied 301ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/resource_catalog.test.tsx > drops candidate options when a previously successful catalog refresh is denied
+AssertionError: expected <div aria-label="PrivateKind" …(3)></div> to be null
+
+- Expected:
+null
+
++ Received:
+<div
+  aria-label="PrivateKind"
+  aria-selected="false"
+  id="resource-kind_list_0"
+  role="option"
+>
+  PrivateKind
+</div>
+
+ ❯ tests/resource_catalog.test.tsx:369:65
+    367|   expect(screen.getByLabelText("资源类型")).toBeDisabled();
+    368|   expect(screen.getByLabelText("命名空间")).toBeDisabled();
+    369|   expect(screen.queryByRole("option", { name: "PrivateKind" })).toBeNu…
+       |                                                                 ^
+    370| });
+    371|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 24 passed (25)
+   Start at  12:40:27
+   Duration  5.39s (tests 57%, import 25%, environment 13%, setup 3%, transform 2%)
+

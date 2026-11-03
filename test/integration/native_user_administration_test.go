@@ -274,6 +274,11 @@ func nextNativeAdminTOTP(t *testing.T, ctx context.Context, pool *pgxpool.Pool, 
 // Native writes are proven through real password and TOTP HTTP verification.
 func nativeAdminWriteProof(t *testing.T, ctx context.Context, pool *pgxpool.Pool, client mfaClient, tenant uuid.UUID, admin *mfaSession, secret, method, path string, body map[string]any) {
 	t.Helper()
+	nativeAdminWriteProofWithPassword(t, ctx, pool, client, tenant, admin, "mfa-rotated-password", secret, method, path, body)
+}
+
+func nativeAdminWriteProofWithPassword(t *testing.T, ctx context.Context, pool *pgxpool.Pool, client mfaClient, tenant uuid.UUID, admin *mfaSession, password, secret, method, path string, body map[string]any) {
+	t.Helper()
 
 	copied := map[string]any{}
 	for key, value := range body {
@@ -295,7 +300,7 @@ func nativeAdminWriteProof(t *testing.T, ctx context.Context, pool *pgxpool.Pool
 		t.Fatalf("native user challenge=%d %s", status, message)
 	}
 	id := mfaData(t, payload)["challengeId"].(string)
-	status, _, message = client.do(t, http.MethodPost, "/api/v1/auth/step-up-challenges/"+id+":verify", map[string]any{"method": "password", "credential": "mfa-rotated-password", "expectedChallengeRevision": 1}, admin)
+	status, _, message = client.do(t, http.MethodPost, "/api/v1/auth/step-up-challenges/"+id+":verify", map[string]any{"method": "password", "credential": password, "expectedChallengeRevision": 1}, admin)
 	if status != 200 {
 		t.Fatalf("native user password=%d %s", status, message)
 	}

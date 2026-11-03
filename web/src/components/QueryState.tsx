@@ -2,6 +2,11 @@ import { Alert, Button, Empty, Skeleton } from "antd";
 import type { ReactNode } from "react";
 import { ApiError } from "../api/client";
 const explanations: Record<string, { title: string; description: string }> = {
+  RESULT_EXPIRED: {
+    title: "查询结果已过期",
+    description:
+      "请返回日志页重新查询；过期结果不能继续导出或用于创建排查会话。",
+  },
   SOURCE_DEGRADED: {
     title: "数据来源暂不可用",
     description:
@@ -32,10 +37,22 @@ const explanations: Record<string, { title: string; description: string }> = {
     title: "模型暂不可用",
     description: "智能调查暂时无法继续；仍可查看已有故障、证据和规则诊断结果。",
   },
-  RISK_ACK_REQUIRED: { title: "需要确认命令风险", description: "请核对当前命令和执行范围后完成风险确认。" },
-  RISK_ACK_EXPIRED: { title: "风险确认已过期", description: "请重新评估并确认当前执行请求。" },
-  RISK_ACK_SCOPE_MISMATCH: { title: "执行范围与风险确认不一致", description: "请按当前目标和选项重新确认风险。" },
-  RISK_ACK_COMMAND_MISMATCH: { title: "命令与风险确认不一致", description: "请按当前命令重新评估并确认风险。" },
+  RISK_ACK_REQUIRED: {
+    title: "需要确认命令风险",
+    description: "请核对当前命令和执行范围后完成风险确认。",
+  },
+  RISK_ACK_EXPIRED: {
+    title: "风险确认已过期",
+    description: "请重新评估并确认当前执行请求。",
+  },
+  RISK_ACK_SCOPE_MISMATCH: {
+    title: "执行范围与风险确认不一致",
+    description: "请按当前目标和选项重新确认风险。",
+  },
+  RISK_ACK_COMMAND_MISMATCH: {
+    title: "命令与风险确认不一致",
+    description: "请按当前命令重新评估并确认风险。",
+  },
   NETWORK_UNAVAILABLE: {
     title: "服务连接中断",
     description:

@@ -1,0 +1,39 @@
+{
+  "kind": "route-scoped runtime binding; supplements P0 prototype-stage inventory",
+  "bindings": [
+    {
+      "act_id": "window selection",
+      "route": "/observe/logs",
+      "stages": [
+        "local"
+      ],
+      "fields": [
+        "source.coverageFrom",
+        "source.coverageTo",
+        "source.maxWindowSeconds",
+        "history.window.from",
+        "history.window.to"
+      ],
+      "request": "none until explicit query submit",
+      "behavior": "controlled exact RFC3339 window tuple; no manual date inputs; raw fractional precision retained"
+    },
+    {
+      "act_id": "query-export",
+      "route": "/observe/logs",
+      "prototypeStage": "local",
+      "runtimeStages": [
+        "prefetch",
+        "local"
+      ],
+      "request": "GET /api/v1/observability/queries/{queryId}/results?clusterUid=...",
+      "contract": "C-168",
+      "handler": "internal/httpapi/observation_handlers.go:serveObservation -> internal/app/observation_queries.go:serveObservationRequest",
+      "service": "internal/observationquery.Service.Read -> Repository.Read/AuthorizeTx -> Validate -> Repository.Read/AuthorizeTx",
+      "storage": "immutable investigation.observation_queries.result plus current native session/grants/source checks; no export store or source query",
+      "projection": "CSV of click-time visible sanitized rows; explicit total/returned/exported counts and fixed identity/window/digest",
+      "failure": "403/410/read failure prevents Blob creation; resource generation change drops late download; no cached success fallback",
+      "observedReadRequestId": "01a18522-5d9d-706d-aeb8-d563b30480a0",
+      "otherRoutes": "no claim for metrics/network/hardware exporters"
+    }
+  ]
+}

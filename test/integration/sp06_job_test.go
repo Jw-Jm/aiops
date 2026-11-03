@@ -162,7 +162,11 @@ func sp06Policy(t *testing.T, ctx context.Context, db *sql.DB, pool *pgxpool.Poo
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err = activateRegistryVersion(ctx, apiPool, service, actor, version, configregistry.KindPolicy, "sp06-read-only", configregistry.Scope{Type: configregistry.ScopeTenant}, 0); err != nil {
+	var activationRevision int64
+	if err = db.QueryRowContext(ctx, `SELECT COALESCE(max(revision),0) FROM platform.registry_activations WHERE tenant_id=$1 AND kind='policy' AND logical_name='sp06-read-only' AND scope_type='tenant'`, tenant).Scan(&activationRevision); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = activateRegistryVersion(ctx, apiPool, service, actor, version, configregistry.KindPolicy, "sp06-read-only", configregistry.Scope{Type: configregistry.ScopeTenant}, activationRevision); err != nil {
 		t.Fatal(err)
 	}
 	return version.VersionID.String()

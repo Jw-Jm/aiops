@@ -1,0 +1,51 @@
+{
+  "at": "2026-10-28T00:40:09.299806+00:00",
+  "namespace": "ops-native-v12-r34-20261027",
+  "database": "ui_v12_r34_native",
+  "schema": 70,
+  "preview": "https://192.168.0.63:30472/login",
+  "components": [
+    {
+      "name": "ops-api",
+      "podUID": "3538a4cb-d7dc-4ed8-8413-b3635de34a28",
+      "phase": "Running",
+      "image": "ops.local/verification-20261019/platform-api@sha256:494817ba463482a5959c1c3e10968b3e28db1affc458dbdbe2cec0be5d4878a7",
+      "command": [
+        "/data/ops-v12-native-cold-r34-20261027/bin/ops-r34-api"
+      ],
+      "serviceAccount": "ops-api"
+    },
+    {
+      "name": "ops-worker",
+      "podUID": "21746af7-ac8e-468d-a391-9469be53fe83",
+      "phase": "Running",
+      "image": "ops.local/verification-20261019/platform-worker@sha256:48d3700cd7595781e5384821b07e8fa38aaf172ada0fe2b55832fedd661a92ad",
+      "command": [
+        "/data/ops-v12-native-cold-r34-20261027/bin/ops-r34-worker"
+      ],
+      "serviceAccount": "ops-worker"
+    },
+    {
+      "name": "ops-investigator",
+      "podUID": "1b74ce2e-3d9e-4236-85de-f2d691a3fcb5",
+      "phase": "Running",
+      "image": "ops.local/verification-20261019/holmesgpt@sha256:7ecb3550a6cbff97b243ffbad07f80b8f640c63ac9b9531ffec4e8f8b8655ae3",
+      "command": [
+        "python",
+        "-c",
+        "import json; from investigator.worker import serve; serve(json.load(open(\"/etc/r34/investigator.json\")))"
+      ],
+      "serviceAccount": "ops-investigator"
+    }
+  ],
+  "hashes": {
+    "bin/opsctl": "ba7f7ee1367d3152812a33714b54cbbe2847802be26e0028c1cca1afee1e84cc",
+    "bin/ops-r34-api": "a5f2bf74f27b02237e6d7c843c8c321151a7c073d639e20b17e0468f57936ab3",
+    "bin/ops-r34-worker": "c6cecaee5dc38a2fe404977e802ed71f45cd5e243ce9b93d7cf501c1d309477e",
+    "web-r15/index.html": "e2e0c3994d188e23a7d89bb3e5a60a5025fb76d81c4fcb8b0dee66b3b3576ea0"
+  },
+  "oidcEnvironment": false,
+  "modelCalls": 0,
+  "formalBundleAcceptance": false,
+  "existing30471Unchanged": true
+}

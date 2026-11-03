@@ -100,3 +100,31 @@ r10新增平台chart原生配置及执行配置读取授权修复，只本地测
 - PostgreSQL17.11/15453/schema56；55/56已执行冻结，后续57+。Bao沿用r6 TLS/Raft/Transit，不重新初始化；任务JWT只续期1小时，正式自动轮换/安装冷启动未验证。
 - 新用户创建经真实操作证明与Transit验证，持久化且无默认角色；同一账号首次改密错误/成功、旧Cookie拒绝、无权限及退出已核验。首次改密脚本尾部定位中断由独立退出脚本接完，未重置账号或重建数据。详细版本/截图/请求ID和失败见evidence/gpt-resume-r13/result.json。
 - 这不是V1.2整体验收：SL-005当前是独立首次改密页，与固定HTML对话框尚未像素比对；历史业务归属、异步Worker、安装冷启动、SL-049真实来源及其他模块仍未完成。安装器r12只本地实现与定向测试，不是运行于本预览的正式安装结果。
+
+
+## 2026-10-29 r43 静态Web接续
+
+30471当前为ops-v12-native-r43-web-30471、目录web-r43，index SHA256 `559e621aa885c1504ec19822efe787d7125ad565e14f5f66eaeded53b409c8be`；r42b容器停止保留。API/Worker仍r39c、PG15454/schema71，30472的r36b静态Web与r35/r34后端未改。r43只开放正式关系拓扑及目录入口，未新增业务写入或模型调用。用evidence/gpt-topology-r43/web-runtime.json和source.json定位当前代码/制品，完整像素、持续来源/重启与模型资源排查仍未通过。恢复只按任务静态Web挂载操作，不降级API/身份或恢复整库。
+
+
+## 2026-10-29 r44 资源目录与后端投影
+
+30471 Web更新ops-v12-native-r44-web-30471/web-r44（index `2f0fdde5a1c90583d6f463fce8597fbe21406cc2f85eb06a2c2cfeac90e54957`）；API/Worker更新r44，精确制品/PodUID/前一版本见evidence/gpt-resource-catalog-r44/backend-runtime.json与web-runtime.json。PG15454仍schema71，无迁移；调查器/模型Profile及30472未改。q为新增可选内部字段，先Worker后API；新API不得退配不识别q的旧Worker。原身份/撤销/结果不回滚。目录搜索、健康投影、速览和URL恢复有分层实证，完整视觉与P3/P4～P8未通过。
+
+
+## 2026-10-29 r45 当前静态Web与日志资格
+
+30471当前ops-v12-native-r45-web-30471/web-r45，index `4e9b16b6a513eee4f87c00052f6fbed13171bdf2a3ae98d78d9e263638af21be`；API/Worker仍r44，schema71，30472未改。精确制品/范围见evidence/gpt-resource-controls-r45/source.json与web-runtime.json。新增当前页对比/导出及重读保护，无模型/来源变更。原r37快照资格10:45自然到期；10:48能力API返回sources=[]，当前没有该Pod可用的合格日志查询来源，未续期。不能把过去的186/20日志运行结论当作现在可新查；历史结果按自身授权/保留机制读取。
+
+
+## 2026-10-29 r46 当前运行
+
+30471当前ops-v12-native-r46d-web-30471/web-r46d，index `3ffed369a43a00562c57e4a6e8af42c527ac9c29398ee9ae9afbf1d6d98ab1b2`。r46/b/c及r45静态容器停止保留；API/Worker仍r44、schema71、调查器/模型与30472不改。新详情以当前集群C002入口核对→C003/来源版本，事件查询真实409 SP05未启用，日志cap200无合格来源，未续期或查询。当前SP04实际配置/r44 PodUID和PG来源版本由evidence/gpt-resource-detail-r46/runtime-oracle.json核对；源码、最终静态制品与截图关联该目录source.json/web-runtime-r46d.json/visual-review.json。仅按任务静态挂载前滚，不回滚原生身份/整库或自动开启SP05/模型任务。
+
+## 2026-10-29 r47
+
+30471 Web容器ops-v12-native-r47-web-30471，index SHA256 441b5e97f64d0d1b3edd40a95405f5f8902277ec0ca00fa361b08259fe30e80a；API/Worker为r47原生兼容前滚，分别PodUID33227902-8ece-41d9-9705-f5cd209d6172、3f2d3536-de3b-404a-b304-9b33df153b03。schema71；配置、模型任务准入、SP05禁用、来源资格与30472不改。原r44二进制/r46d静态Web保留。详情见evidence/gpt-resource-filters-r47/{backend-runtime,web-runtime,oracle-persistence}.json。仅资源候选/重置分层验收，不代表整页视觉/来源持续性/全栈重启。
+
+## 2026-10-29 r48 实际日志
+
+30471 Web=ops-v12-native-r48-web-30471，index SHA256 b05931cb456937624fc41e221bbb77b3e09bd827791c6167dbbbf40f029f3e1d；API/Worker最终r48b，PodUID分别4975f864-5724-4722-80f6-80e1181b270e、71de47ce-99f8-4c91-b1de-8ad9c44a4ee6；schema72。来源为原已登记Kubernetes revision3/credential1，直接读取当前单容器pods/log；Sources中退出r37快照路由，旧快照原样保留。任务Bao CRL正常轮换+auto_rebuild，72h expiry未扩大，未跳过TLS/CRL。模型/SP05及30472不改。证据evidence/gpt-native-logs-r48/{backend-runtime-r48b,web-runtime,crl-repair,browser-native-logs,native-log-oracle}.json；不是持续归档/完整视觉/双集群或全栈重启验收。

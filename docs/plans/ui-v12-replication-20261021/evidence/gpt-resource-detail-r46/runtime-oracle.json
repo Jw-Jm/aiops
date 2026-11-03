@@ -1,0 +1,71 @@
+{
+  "at": "2026-10-29T04:03:25.904180+00:00",
+  "status": "passed_scoped_identity_source_runtime_oracle",
+  "transaction": "READ ONLY",
+  "database": "ui_v12_r24_native",
+  "browserIndexSHA256": "3ffed369a43a00562c57e4a6e8af42c527ac9c29398ee9ae9afbf1d6d98ab1b2",
+  "schema": 71,
+  "kubernetesIdentity": {
+    "uid": "0e648683-1088-4032-9b39-0a122ff475be",
+    "resourceVersion": "1773922",
+    "name": "ops-seaweedfs-0",
+    "namespace": "ops-native-v12-r24-20261026"
+  },
+  "rows": [
+    {
+      "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+      "name": "ops-seaweedfs-0",
+      "kind": "Pod",
+      "namespace": "ops-native-v12-r24-20261026",
+      "deletedAt": null
+    },
+    {
+      "sourceId": "01a17c3c-ef66-70cf-9ff1-cad25a8bee34",
+      "revision": 3,
+      "status": "active"
+    },
+    {
+      "findingRecords": 0
+    },
+    {
+      "incidentRecords": 0
+    },
+    {
+      "schema": 71
+    },
+    {
+      "queryId": "e630a865-c1c8-49f4-b3f5-5685ed117df4",
+      "resultDigest": "sha256:14f0d1e40f283dc68fcaebb0b71d82014d97aa1b6325b77a65af4f3387dd21dd"
+    }
+  ],
+  "components": [
+    {
+      "component": "ops-worker",
+      "podUID": "0d6f8af8-73da-4672-a3f7-b12cdffaef58",
+      "runtime": {
+        "variable": "SP04_RUNTIME_FILE",
+        "runtimeFile": "/etc/r28/sp04.json",
+        "configMap": "r28-runtime"
+      },
+      "SP05Present": false,
+      "SP05Enabled": false
+    },
+    {
+      "component": "ops-api",
+      "podUID": "9199208f-9117-4453-8395-828697c42972",
+      "runtime": {
+        "variable": "SP04_RUNTIME_FILE",
+        "runtimeFile": "/etc/r28/sp04.json",
+        "configMap": "r28-runtime"
+      },
+      "SP05Present": false,
+      "SP05Enabled": false
+    }
+  ],
+  "eventRuntime": "SP05 not enabled in both API/Worker SP04 configuration; actual public read409 CAPABILITY_DISABLED; DB counts do not replace the gated API",
+  "limits": [
+    "resource identity and current source registration revision only; no continuity or all-source qualification claim",
+    "no real nonempty SP05 event read; no enabling SP05 or model task expansion",
+    "no migration, model call, full restart, long load or natural saved-result TTL acceptance"
+  ]
+}

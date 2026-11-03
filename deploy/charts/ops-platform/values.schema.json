@@ -252,6 +252,20 @@
               },
               "Burst": {
                 "type": "integer"
+              },
+              "Namespaces": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+                },
+                "minItems": 1,
+                "description": "Explicit namespace scope: the collector lists and watches only the declared namespaces"
+              },
+              "PodLogs": {
+                "type": "boolean",
+                "default": false,
+                "description": "Opt in to bounded current-container logs via the registered Kubernetes source; requires namespace-scoped get on pods/log."
               }
             },
             "additionalProperties": false

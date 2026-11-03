@@ -1,0 +1,72 @@
+
+ RUN  v5.0.3 /Users/mssc/Documents/Code/ops/platform/web
+
+stderr | tests/topology.test.tsx > queries an authorized root then bounded neighbors; local view changes do not read sources again
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/topology.test.tsx > queries an authorized root then bounded neighbors; local view changes do not read sources again
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/topology.test.tsx > queries an authorized root then bounded neighbors; local view changes do not read sources again
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/topology.test.tsx > queries an authorized root then bounded neighbors; local view changes do not read sources again
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/topology.test.tsx > queries an authorized root then bounded neighbors; local view changes do not read sources again
+Warning: [antd: Table] `index` parameter of `rowKey` function is deprecated. There is no guarantee that it will work as expected.
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/topology.test.tsx > keeps same-name roots distinct by canonical UID and namespace, and rereads detail
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/topology.test.tsx > keeps same-name roots distinct by canonical UID and namespace, and rereads detail
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/topology.test.tsx > keeps same-name roots distinct by canonical UID and namespace, and rereads detail
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/topology.test.tsx > keeps same-name roots distinct by canonical UID and namespace, and rereads detail
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+ ❯ tests/topology.test.tsx (8 tests | 2 failed) 461ms
+   × queries an authorized root then bounded neighbors; local view changes do not read sources again 229ms
+   × keeps same-name roots distinct by canonical UID and namespace, and rereads detail 47ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/topology.test.tsx > queries an authorized root then bounded neighbors; local view changes do not read sources again
+ FAIL  tests/topology.test.tsx > queries an authorized root then bounded neighbors; local view changes do not read sources again
+ FAIL  tests/topology.test.tsx > queries an authorized root then bounded neighbors; local view changes do not read sources again
+ FAIL  tests/topology.test.tsx > queries an authorized root then bounded neighbors; local view changes do not read sources again
+TypeError: Cannot read properties of undefined (reading 'addEventListener')
+ ❯ node_modules/.pnpm/antd@6.6.5_react-dom@19.3.0_react@19.3.0__react@19.3.0/node_modules/antd/lib/_util/responsiveObserver.js:105:39
+ ❯ Object.register node_modules/.pnpm/antd@6.6.5_react-dom@19.3.0_react@19.3.0__react@19.3.0/node_modules/antd/lib/_util/responsiveObserver.js:95:39
+ ❯ Object.subscribe node_modules/.pnpm/antd@6.6.5_react-dom@19.3.0_react@19.3.0__react@19.3.0/node_modules/antd/lib/_util/responsiveObserver.js:81:16
+ ❯ node_modules/.pnpm/antd@6.6.5_react-dom@19.3.0_react@19.3.0__react@19.3.0/node_modules/antd/lib/grid/hooks/useBreakpoint.js:18:38
+ ❯ node_modules/.pnpm/@rc-component+util@1.13.0_react-dom@19.3.0_react@19.3.0__react@19.3.0/node_modules/@rc-component/util/lib/hooks/useLayoutEffect.js:19:12
+ ❯ Object.react_stack_bottom_frame node_modules/.pnpm/react-dom@19.3.0_react@19.3.0/node_modules/react-dom/cjs/react-dom-client.development.js:28656:20
+ ❯ runWithFiberInDEV node_modules/.pnpm/react-dom@19.3.0_react@19.3.0/node_modules/react-dom/cjs/react-dom-client.development.js:1048:13
+ ❯ commitHookEffectListMount node_modules/.pnpm/react-dom@19.3.0_react@19.3.0/node_modules/react-dom/cjs/react-dom-client.development.js:13748:29
+ ❯ commitHookPassiveMountEffects node_modules/.pnpm/react-dom@19.3.0_react@19.3.0/node_modules/react-dom/cjs/react-dom-client.development.js:13835:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/topology.test.tsx > keeps same-name roots distinct by canonical UID and namespace, and rereads detail
+AssertionError: expected [ 'Node / same-name · ns-a', …(3) ] to include 'Pod / same-name · ns-a'
+ ❯ tests/topology.test.tsx:153:19
+    151|     .getAllByRole("option")
+    152|     .map((option) => option.textContent);
+    153|   expect(options).toContain("Pod / same-name · ns-a");
+       |                   ^
+    154|   expect(options).toContain("Pod / same-name · ns-b");
+    155|   fireEvent.change(screen.getByLabelText("根资源"), {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  2 failed | 11 passed (13)
+   Start at  09:51:24
+   Duration  2.23s (import 37%, environment 26%, tests 25%, setup 7%, transform 4%)
+

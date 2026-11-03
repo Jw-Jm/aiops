@@ -1,0 +1,176 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "scope": "cross-account and concurrent reuse of a challenge, a proof and a one-time code",
+  "checks": [
+    "a challenge belongs to one session: a second identity is refused and the owner is unaffected",
+    "two concurrent submissions of the same one-time code produce exactly one LoA2; the other is refused",
+    "a concurrent second submission at the same revision is refused with a real 409; exactly one advance is applied",
+    "a recovery code issued to one identity is refused for another identity"
+  ],
+  "steps": [
+    {
+      "label": "B verifies A challenge",
+      "status": 404,
+      "code": "NOT_FOUND",
+      "message": "the requested object is unavailable"
+    },
+    {
+      "label": "A completes password",
+      "status": 200,
+      "revision": 2
+    },
+    {
+      "label": "concurrent identical one-time code",
+      "statuses": [
+        200,
+        409
+      ],
+      "acrs": [
+        "urn:ops:loa:2",
+        null
+      ]
+    },
+    {
+      "label": "replay on the used challenge",
+      "status": 409,
+      "code": "CONFLICT"
+    },
+    {
+      "label": "B concurrent password",
+      "statuses": [
+        200,
+        409
+      ]
+    },
+    {
+      "label": "B recovery code on A challenge",
+      "status": 200,
+      "verified": false
+    }
+  ],
+  "requests": [
+    {
+      "at": "2026-10-27T07:01:31.231Z",
+      "method": "POST",
+      "path": "/api/v1/auth/mfa/enrollments",
+      "status": 201,
+      "code": null,
+      "message": null,
+      "requestId": "01a17c2a-05c1-7143-b793-046fdaeec647"
+    },
+    {
+      "at": "2026-10-27T07:01:31.276Z",
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "code": null,
+      "message": null,
+      "requestId": "01a17c2a-05ec-7780-b941-918527687962"
+    },
+    {
+      "at": "2026-10-27T07:01:31.296Z",
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c2a-05fe-7841-8bca-a14deb07d693:verify",
+      "status": 404,
+      "code": "NOT_FOUND",
+      "message": "the requested object is unavailable",
+      "requestId": "01a17c2a-060d-76ad-947b-56d15c593b6f"
+    },
+    {
+      "at": "2026-10-27T07:01:31.412Z",
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c2a-05fe-7841-8bca-a14deb07d693:verify",
+      "status": 200,
+      "code": null,
+      "message": null,
+      "requestId": "01a17c2a-0622-708e-b81f-87adbf39bce6"
+    },
+    {
+      "at": "2026-10-27T07:02:00.839Z",
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c2a-05fe-7841-8bca-a14deb07d693:verify",
+      "status": 409,
+      "code": "CONFLICT",
+      "message": "session, credential or challenge version is stale",
+      "requestId": "01a17c2a-7965-7124-916c-1902fbb0a716"
+    },
+    {
+      "at": "2026-10-27T07:02:00.851Z",
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c2a-05fe-7841-8bca-a14deb07d693:verify",
+      "status": 200,
+      "code": null,
+      "message": null,
+      "requestId": "01a17c2a-7962-7d18-b70e-b61d22466062"
+    },
+    {
+      "at": "2026-10-27T07:02:00.863Z",
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c2a-05fe-7841-8bca-a14deb07d693:verify",
+      "status": 409,
+      "code": "CONFLICT",
+      "message": "the challenge is not pending at this revision",
+      "requestId": "01a17c2a-7994-79d8-8cd3-5012d2a06e63"
+    },
+    {
+      "at": "2026-10-27T07:02:00.900Z",
+      "method": "POST",
+      "path": "/api/v1/auth/mfa/enrollments",
+      "status": 201,
+      "code": null,
+      "message": null,
+      "requestId": "01a17c2a-79a0-7e83-a518-0db747b66f42"
+    },
+    {
+      "at": "2026-10-27T07:02:00.936Z",
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "code": null,
+      "message": null,
+      "requestId": "01a17c2a-79d1-788c-9ff5-7daed05fc960"
+    },
+    {
+      "at": "2026-10-27T07:02:01.056Z",
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c2a-79db-7e67-9aab-fa4d127ef28e:verify",
+      "status": 200,
+      "code": null,
+      "message": null,
+      "requestId": "01a17c2a-79e9-75f7-8aaf-010163881cc5"
+    },
+    {
+      "at": "2026-10-27T07:02:01.056Z",
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c2a-79db-7e67-9aab-fa4d127ef28e:verify",
+      "status": 409,
+      "code": "CONFLICT",
+      "message": "session, credential or challenge version is stale",
+      "requestId": "01a17c2a-79eb-713a-934b-0ec8025b7204"
+    },
+    {
+      "at": "2026-10-27T07:02:01.089Z",
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "code": null,
+      "message": null,
+      "requestId": "01a17c2a-7a61-7cc4-a729-57e9da04a5c6"
+    },
+    {
+      "at": "2026-10-27T07:02:01.114Z",
+      "method": "POST",
+      "path": "/api/v1/auth/mfa/recovery-codes:verify",
+      "status": 200,
+      "code": null,
+      "message": null,
+      "requestId": "01a17c2a-7a82-7abd-9c13-c354dcabd3cd"
+    }
+  ],
+  "failure": null,
+  "states": {
+    "a": "r30.accept.1793079339743",
+    "b": "r30.accept.1793079525800"
+  },
+  "status": "passed"
+}

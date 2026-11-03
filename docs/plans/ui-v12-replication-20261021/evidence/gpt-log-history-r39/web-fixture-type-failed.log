@@ -1,0 +1,10 @@
+
+> build
+> tsc --noEmit && vite build
+
+tests/logs_workspace.test.tsx(356,5): error TS2322: Type 'Promise<{ data: { revision: number; state: string; source: { registrationId: string; registrationRevision: number; credentialRevision: number; qualificationDigest: string; collectorVersion: string; }; ... 5 more ...; resource: { ...; }; }[]; nextCursor: null; } | { ...; }>' is not assignable to type 'Promise<{ data: ObservationView[]; nextCursor?: string | null | undefined; }>'.
+  Type '{ data: { revision: number; state: string; source: { registrationId: string; registrationRevision: number; credentialRevision: number; qualificationDigest: string; collectorVersion: string; }; ... 5 more ...; resource: { ...; }; }[]; nextCursor: null; } | { ...; }' is not assignable to type '{ data: ObservationView[]; nextCursor?: string | null | undefined; }'.
+    Type '{ data: { revision: number; state: string; source: { registrationId: string; registrationRevision: number; credentialRevision: number; qualificationDigest: string; collectorVersion: string; }; window: { from: string; to: string; timezone: string; bounds: string; }; ... 4 more ...; resource: { ...; }; }[]; nextCursor...' is not assignable to type '{ data: ObservationView[]; nextCursor?: string | null | undefined; }'.
+      Types of property 'data' are incompatible.
+        Type '{ revision: number; state: string; source: { registrationId: string; registrationRevision: number; credentialRevision: number; qualificationDigest: string; collectorVersion: string; }; window: { ...; }; ... 4 more ...; resource: { ...; }; }[]' is not assignable to type 'ObservationView[]'.
+          Type '{ revision: number; state: string; source: { registrationId: string; registrationRevision: number; credentialRevision: number; qualificationDigest: string; collectorVersion: string; }; window: { from: string; to: string; timezone: string; bounds: string; }; ... 4 more ...; resource: { ...; }; }' is missing the following properties from type 'ObservationView': createdAt, expiresAt

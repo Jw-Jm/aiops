@@ -1,0 +1,17 @@
+{
+  "status": "failed",
+  "checks": [
+    "cancel issues no MFA request, removes the secret and keeps the confirmed factor",
+    "a wrong TOTP keeps the challenge open and never reports success",
+    "a naturally idle-expired challenge returns 409, clears the pending secret and offers a restart",
+    "after a natural expiry the page can create a new binding"
+  ],
+  "states": {
+    "naturalExpiry": {
+      "status": 409,
+      "requestId": "01a17bad-3c09-7a79-8a33-ece00261a6fd",
+      "idleMs": 660184
+    }
+  },
+  "failure": "locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByText(/本人身份已验证/) to be visible\n"
+}

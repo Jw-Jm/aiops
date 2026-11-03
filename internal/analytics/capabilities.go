@@ -38,17 +38,22 @@ func (v *Victoria) Capabilities(ctx context.Context, scope graph.Scope) ([]Sourc
 			return out, nil
 		}
 	}
+	uids := []string{}
 	for _, id := range scope.Resources {
 		parsed, err := resource.ParseCanonicalID(id)
 		if err != nil || parsed.Domain != "k8s" || !slices.Contains([]string{"Pod", "Node"}, parsed.Kind) || parsed.Tenant != scope.Tenant || parsed.Scope != scope.Cluster {
 			return out, nil
 		}
+		uids = append(uids, parsed.StableID)
 	}
 	catalog, err := Catalog()
 	if err != nil {
 		return out, err
 	}
 	for _, q := range v.qualifications {
+		if !qualifiedUIDsAllow(q.ResourceUIDs, uids) {
+			continue
+		}
 		if q.SourceRevision != v.binding.Revision || q.BindingDigest != evidence.BindingScopeDigest(v.binding) || !q.VerifiedUntil.After(time.Now()) || !regexp.MustCompile(`^sha256:[a-f0-9]{64}$`).MatchString(q.EvidenceDigest) || q.CollectorVersion == "" || q.MaxWindowSeconds < 1 || !q.CoverageTo.After(q.CoverageFrom) {
 			continue
 		}
@@ -91,4 +96,20 @@ func (v *Victoria) Capabilities(ctx context.Context, scope graph.Scope) ([]Sourc
 		return out[i].DatasetID < out[j].DatasetID
 	})
 	return out, nil
+}
+
+// A proof for one captured UID cannot qualify an unobserved or recreated Pod.
+func qualifiedUIDsAllow(qualified, selected []string) bool {
+	if len(qualified) == 0 {
+		return true
+	}
+	if len(selected) == 0 {
+		return false
+	}
+	for _, uid := range selected {
+		if !slices.Contains(qualified, uid) {
+			return false
+		}
+	}
+	return true
 }

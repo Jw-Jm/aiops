@@ -1,0 +1,76 @@
+{
+  "at": "2026-10-28T01:10:51.389158+00:00",
+  "artifacts": [
+    {
+      "component": "API",
+      "namespace": "ops-native-v12-r24-20261026",
+      "binarySHA256": "775cde51c04ac281d3de83cbf4295f311eefd543aa17c4dd890cc8e98b96885e"
+    },
+    {
+      "component": "API",
+      "namespace": "ops-native-v12-r34-20261027",
+      "binarySHA256": "775cde51c04ac281d3de83cbf4295f311eefd543aa17c4dd890cc8e98b96885e"
+    },
+    {
+      "component": "Web",
+      "container": "ops-v12-native-r35-web-30471",
+      "previousStoppedPreserved": "ops-v12-native-r30-web-r14",
+      "preview": "https://192.168.0.63:30471/login",
+      "indexSHA256": "c37bbeccdb93a741d205567cb3af49173c90f9c07a2b4a4c6d5d38d7f4028ac3"
+    },
+    {
+      "component": "Web",
+      "container": "ops-v12-native-r35-web-30472",
+      "previousStoppedPreserved": "ops-v12-native-r34-web-r4",
+      "preview": "https://192.168.0.63:30472/login",
+      "indexSHA256": "c37bbeccdb93a741d205567cb3af49173c90f9c07a2b4a4c6d5d38d7f4028ac3"
+    }
+  ],
+  "workerSHA256": "3c778b3ad5ee3cd34ea38b741aa35dfa46ebe168185caf3beb2049545fa47c7e",
+  "schema": 70,
+  "immutableRelease": false,
+  "databaseVerified": {
+    "database": "ui_v12_r24_native",
+    "postgres": "17.11 (Debian 17.11-1.pgdg12+2)",
+    "schema": 70
+  },
+  "processes": [
+    {
+      "namespace": "ops-native-v12-r24-20261026",
+      "name": "ops-api",
+      "uid": "cc1d1a32-2f98-46a1-99e8-f65790819036",
+      "image": "ops.local/verification-20261019/platform-api@sha256:494817ba463482a5959c1c3e10968b3e28db1affc458dbdbe2cec0be5d4878a7",
+      "command": "/data/ops-v12-native-visual-r24-20261026/r35/ops-v12-r35-api",
+      "sha256": "775cde51c04ac281d3de83cbf4295f311eefd543aa17c4dd890cc8e98b96885e"
+    },
+    {
+      "namespace": "ops-native-v12-r24-20261026",
+      "name": "ops-worker",
+      "uid": "2d897875-4e0b-4de9-9866-4f0ec8d95834",
+      "image": "ops.local/verification-20261019/platform-worker@sha256:48d3700cd7595781e5384821b07e8fa38aaf172ada0fe2b55832fedd661a92ad",
+      "command": "/data/ops-v12-native-visual-r24-20261026/r35/ops-v12-r35-worker",
+      "sha256": "3c778b3ad5ee3cd34ea38b741aa35dfa46ebe168185caf3beb2049545fa47c7e"
+    },
+    {
+      "namespace": "ops-native-v12-r34-20261027",
+      "name": "ops-api",
+      "uid": "33318794-aca7-45e8-9aaa-60879ba30870",
+      "image": "ops.local/verification-20261019/platform-api@sha256:494817ba463482a5959c1c3e10968b3e28db1affc458dbdbe2cec0be5d4878a7",
+      "command": "/data/ops-v12-native-visual-r24-20261026/r35/ops-v12-r35-api",
+      "sha256": "775cde51c04ac281d3de83cbf4295f311eefd543aa17c4dd890cc8e98b96885e"
+    },
+    {
+      "namespace": "ops-native-v12-r34-20261027",
+      "name": "ops-worker",
+      "uid": "21746af7-ac8e-468d-a391-9469be53fe83",
+      "image": "ops.local/verification-20261019/platform-worker@sha256:48d3700cd7595781e5384821b07e8fa38aaf172ada0fe2b55832fedd661a92ad",
+      "command": "/data/ops-v12-native-cold-r34-20261027/bin/ops-r34-worker",
+      "sha256": "c6cecaee5dc38a2fe404977e802ed71f45cd5e243ce9b93d7cf501c1d309477e"
+    }
+  ],
+  "workerReadiness": {
+    "r24": 200,
+    "r34": 200
+  },
+  "scope": "source canary mechanisms; credentials private; no immutable release or whole product acceptance"
+}

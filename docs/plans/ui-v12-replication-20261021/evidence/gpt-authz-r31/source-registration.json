@@ -1,0 +1,124 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a17c3c-e602-7e53-aa39-8c68c2335ba3"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a17c3c-e69a-736e-b2cd-4df50ce991dc"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17c3c-e960-793c-b299-25c311c81edc"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a17c3c-ea68-7788-a0c1-71ac471d0c15"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a17c3c-ea67-732f-b0ca-611e58df24a4"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17c3c-ee69-71e2-9db6-2095cd55f6b8"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17c3c-ee7f-785b-8b53-aa52b8a7a185"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c3c-ee91-716d-ab7a-684c6d3e87e7:verify",
+      "status": 200,
+      "requestId": "01a17c3c-ee9e-7691-bd31-a84c752af019"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c3c-ee91-716d-ab7a-684c6d3e87e7:verify",
+      "status": 200,
+      "requestId": "01a17c3c-ef12-73e5-81f1-ecf1a6dd4cf2"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/source-registrations",
+      "status": 201,
+      "requestId": "01a17c3c-ef4f-705e-9cf6-10401d8336d0"
+    }
+  ],
+  "checks": [
+    "registered through the real POST /api/v1/admin/source-registrations route with a step-up bound to the exact request",
+    "the declared scope is one cluster UID (live kube-system UID) plus the task namespace; query capability stays disabled/unverified in the registration response"
+  ],
+  "failure": null,
+  "steps": {
+    "challenge": {
+      "status": 201,
+      "challengeId": "01a17c3c-ee91-716d-ab7a-684c6d3e87e7"
+    },
+    "password": {
+      "status": 200,
+      "completed": [
+        "password"
+      ]
+    },
+    "totp": {
+      "status": 200,
+      "completed": [
+        "password",
+        "totp"
+      ]
+    },
+    "create": {
+      "status": 201,
+      "requestId": "01a17c3c-ef4f-705e-9cf6-10401d8336d0",
+      "code": null
+    }
+  },
+  "source": {
+    "sourceId": "01a17c3c-ef66-70cf-9ff1-cad25a8bee34",
+    "sourceType": "kubernetes",
+    "instanceKey": "r31-native-dev-cluster",
+    "clusterId": "01a17c3c-80db-783b-9388-c6eee037f89b",
+    "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+    "backendLogicalId": "r31-native-dev-cluster",
+    "dataScopeMapping": {
+      "nativeTenant": "01a177f1-372f-75b7-be90-e8121d1445f5",
+      "scopes": {
+        "cluster": [
+          "79014400-9453-4cb4-9678-0fae47981d79"
+        ],
+        "namespace": [
+          "ops-native-v12-r24-20261026"
+        ]
+      }
+    },
+    "allowedSchemas": [
+      "finding-envelope/v1"
+    ],
+    "status": "active",
+    "revision": 1,
+    "queryCapability": {
+      "reason": "adapter_scope_verification_pending",
+      "state": "disabled",
+      "verification": "unverified"
+    }
+  },
+  "status": "passed"
+}

@@ -3,6 +3,7 @@ package httpapi
 import (
 	"context"
 	"encoding/json"
+	"github.com/google/uuid"
 	"ops-platform/internal/analytics"
 	"ops-platform/internal/evidence"
 	"ops-platform/internal/graph"
@@ -31,6 +32,21 @@ func (h *SP04Handlers) AssistantCapabilityDetails(ctx context.Context, j investi
 	if h == nil || h.Client == nil || h.EndpointAllowed == nil || j.Assistant == nil {
 		return nil, investigation.ErrNoJob
 	}
+	proof := nativeTaskProof(j)
+	switch j.Assistant.AuthorizationSource {
+	case investigation.AuditSourceNative:
+		if proof == nil {
+			return nil, investigation.ErrDenied
+		}
+	case investigation.AuditSourceLegacy, "":
+		// Interactive capability reads have no persisted task. Retain their
+		// server-derived session proof instead of signing a legacy context.
+		if j.JobID == uuid.Nil {
+			proof = nativeProofFromContext(ctx)
+		}
+	default:
+		return nil, investigation.ErrDenied
+	}
 	ctx, cancel := context.WithTimeout(ctx, capabilityDetailDeadline)
 	defer cancel()
 	route, err := (graph.Repository{Pool: h.Pool}).Load(ctx, j.TenantID.String(), j.Scope.Cluster)
@@ -41,7 +57,7 @@ func (h *SP04Handlers) AssistantCapabilityDetails(ctx context.Context, j investi
 	// strictly below tools.DeadlineFor("get_assistant_context") so a slow or
 	// fenced worker degrades the capability status instead of consuming the
 	// whole tool deadline and failing the follow-up turn.
-	reply, err := h.callWithGrantDigest(ctx, route.Endpoint, "/internal/v1/analysis:query", "platform-analysis-query", j.Subject, j.Scope, rawJSON(map[string]any{"capabilities": true, "ownerEpoch": route.Epoch}), j.Assistant.GrantSnapshotDigest, nativeTaskProof(j))
+	reply, err := h.callWithGrantDigest(ctx, route.Endpoint, "/internal/v1/analysis:query", "platform-analysis-query", j.Subject, j.Scope, rawJSON(map[string]any{"capabilities": true, "ownerEpoch": route.Epoch}), j.Assistant.GrantSnapshotDigest, proof)
 	if err != nil {
 		return nil, err
 	}

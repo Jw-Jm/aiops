@@ -1,4 +1,6 @@
 export const stateLabels: Record<string, string> = {
+  scope_limited: "结果受当前授权范围限制",
+  source_continuity_unverified: "来源连续性尚未验证",
   unknown: "未知",
   idle: "尚未连接",
   permission_changed: "授权已变化",

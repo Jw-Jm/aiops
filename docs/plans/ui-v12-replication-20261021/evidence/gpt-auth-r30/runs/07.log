@@ -1,0 +1,34 @@
+{
+  "status": "passed",
+  "checks": [
+    "the forced state is cleared by a real re-enrolment and survives a reload",
+    "wrong current password 401, mismatch is client-side, the real change returns 201 and the rotated session survives a reload",
+    "a zero-grant identity is refused for administrator and business reads while keeping its own security status",
+    "the dialog logout is confirmed by the server, the old cookie is 401 and a reload stays signed out"
+  ],
+  "states": {
+    "accountRows": [
+      "用户名r30.accept.1793075578401",
+      "姓名r30验收账号",
+      "账号类型平台内置账号",
+      "运维操作员未授权",
+      "平台管理员未授权",
+      "可操作集群未授予运维数据权限"
+    ],
+    "afterSelfChange": {
+      "mode": "full",
+      "acr": "urn:ops:loa:1",
+      "requestId": "01a17ba2-dd82-73a8-a066-ce1613713102"
+    },
+    "permissions": {
+      "adminUsers": 403,
+      "resources": 403,
+      "ownMfa": 200
+    },
+    "logout": {
+      "status": 200,
+      "requestId": "01a17ba2-e108-7bae-a15a-a6129f9012fb"
+    }
+  },
+  "failure": null
+}

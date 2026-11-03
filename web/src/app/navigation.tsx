@@ -41,8 +41,18 @@ export const NAV: NavGroup[] = [
     label: "工作空间",
     role: "operator",
     items: [
-      { name: "运行总览", icon: <DashboardOutlined />, path: "/overview", available: true },
-      { name: "智能助手", icon: <RobotOutlined />, path: "/assistant", available: true },
+      {
+        name: "运行总览",
+        icon: <DashboardOutlined />,
+        path: "/overview",
+        available: true,
+      },
+      {
+        name: "智能助手",
+        icon: <RobotOutlined />,
+        path: "/assistant",
+        available: true,
+      },
     ],
   },
   {
@@ -54,7 +64,7 @@ export const NAV: NavGroup[] = [
         icon: <DatabaseOutlined />,
         children: [
           { path: "/resources", name: "资源目录", available: true },
-          { path: "/resources/topology", name: "关系拓扑", available: false },
+          { path: "/resources/topology", name: "关系拓扑", available: true },
         ],
       },
       {
@@ -62,7 +72,7 @@ export const NAV: NavGroup[] = [
         icon: <LineChartOutlined />,
         children: [
           { path: "/observe/metrics", name: "指标查询", available: false },
-          { path: "/observe/logs", name: "日志查询", available: false },
+          { path: "/observe/logs", name: "日志查询", available: true },
           { path: "/observe/network", name: "网络观测", available: false },
           { path: "/observe/hardware", name: "硬件健康", available: false },
         ],
@@ -117,9 +127,17 @@ export const NAV: NavGroup[] = [
         name: "系统管理",
         icon: <SettingOutlined />,
         children: [
-          { path: "/settings/permissions", name: "用户与权限", available: true },
+          {
+            path: "/settings/permissions",
+            name: "用户与权限",
+            available: true,
+          },
           { path: "/settings/policies", name: "诊断策略", available: true },
-          { path: "/settings/execution", name: "命令执行配置", available: true },
+          {
+            path: "/settings/execution",
+            name: "命令执行配置",
+            available: true,
+          },
           { path: "/settings/deployment", name: "部署信息", available: true },
           { path: "/settings/audit", name: "操作审计", available: true },
         ],
@@ -140,37 +158,83 @@ export const NAV_ITEMS = NAV.flatMap((group) =>
           icon: item.icon,
           module: item.name,
         }))
-      : [{ path: item.path!, name: item.name, icon: item.icon, available: !!item.available, module: item.name }],
+      : [
+          {
+            path: item.path!,
+            name: item.name,
+            icon: item.icon,
+            available: !!item.available,
+            module: item.name,
+          },
+        ],
   ),
 );
 
-export function navItem(pathname: string) {
-  return NAV_ITEMS.find(
-    (item) =>
-      pathname === item.path ||
-      (item.path !== "/resources" && pathname.startsWith(item.path + "/")) ||
-      (item.path === "/resources" &&
-        pathname.startsWith("/resources/") &&
-        pathname !== "/resources/topology") ||
-      (item.path === "/events/incidents" &&
-        pathname.startsWith("/events/incidents/")),
+// The frozen prototype navigation has no entry for the native account
+// lifecycle pages, but the shell still has to name them: an unregistered route
+// previously rendered the breadcrumb as "未匹配页面". These pages are reached
+// from the account menu, not from the side navigation, so they stay out of NAV.
+export const EXTENDED_PAGES: { path: string; name: string; group: string }[] = [
+  { path: "/account/security", name: "账号安全", group: "账号" },
+];
+
+export type NavItemMatch = {
+  path: string;
+  name: string;
+  icon: ReactNode;
+  available: boolean;
+  module?: string;
+};
+
+function matches(registered: string, pathname: string) {
+  return (
+    pathname === registered ||
+    (registered !== "/resources" && pathname.startsWith(registered + "/")) ||
+    (registered === "/resources" &&
+      pathname.startsWith("/resources/") &&
+      pathname !== "/resources/topology") ||
+    (registered === "/events/incidents" &&
+      pathname.startsWith("/events/incidents/"))
   );
 }
 
+export function navItem(pathname: string): NavItemMatch | undefined {
+  const item = NAV_ITEMS.find((entry) => matches(entry.path, pathname));
+  if (item) return item;
+  const extended = EXTENDED_PAGES.find((page) => matches(page.path, pathname));
+  return extended
+    ? {
+        path: extended.path,
+        name: extended.name,
+        icon: null,
+        available: true,
+      }
+    : undefined;
+}
+
 export function navGroup(pathname: string) {
-  return NAV.find((group) =>
-    group.items.some((item) =>
+  const group = NAV.find((entry) =>
+    entry.items.some((item) =>
       item.children
         ? item.children.some((child) => child.path === navItem(pathname)?.path)
         : item.path === navItem(pathname)?.path,
     ),
   );
+  if (group) return group;
+  const extended = EXTENDED_PAGES.find(
+    (page) => page.path === navItem(pathname)?.path,
+  );
+  return extended
+    ? { label: extended.group, items: [] as NavEntry[] }
+    : undefined;
 }
 
+// Only a child entry has a module name; a top-level route is already named by
+// its own item, so returning it here would repeat it in the breadcrumb.
 export function navModule(pathname: string) {
   const path = navItem(pathname)?.path;
   for (const group of NAV)
     for (const item of group.items)
       if (item.children?.some((child) => child.path === path)) return item.name;
-  return navItem(pathname)?.name;
+  return undefined;
 }

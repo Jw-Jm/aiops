@@ -7,10 +7,12 @@ export function ConversationContext({
   binding,
   domain,
   cluster,
+  readOnly = false,
 }: {
   binding: Record<string, unknown>;
   domain: string;
   cluster?: string;
+  readOnly?: boolean;
 }) {
   const scope = record(binding.executionScope);
   const context = record(binding.resourceContext);
@@ -58,7 +60,9 @@ export function ConversationContext({
             </Typography.Text>
           )}
           <Typography.Text type="secondary">
-            本轮使用已确认的范围和资源身份。可明确调整后续轮次的目标、范围或时间；查询中的“现在”需要重新读取事实。
+            {readOnly
+              ? "此为原主体冻结的历史范围，不会转为新任务授权。"
+              : "本轮使用已确认的范围和资源身份。可明确调整后续轮次的目标、范围或时间；查询中的“现在”需要重新读取事实。"}
           </Typography.Text>
         </Space>
       }

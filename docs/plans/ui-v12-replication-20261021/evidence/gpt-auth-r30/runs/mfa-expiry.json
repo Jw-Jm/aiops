@@ -1,0 +1,254 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "account": "r30.accept.1793075578401",
+  "checks": [
+    "cancel issues no MFA request, removes the secret and keeps the confirmed factor",
+    "a wrong TOTP keeps the challenge open and never reports success",
+    "a naturally idle-expired challenge returns 409, clears the pending secret and offers a restart",
+    "after a natural expiry the page can create a new binding"
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a17ba3-08ac-78c0-bd92-6aa6801f53bd"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a17ba3-093b-748e-9ce9-8466d90efb06"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ba3-0a68-79e6-a5ad-54354b456c4f"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a17ba3-0e52-714a-9915-5d976932ee22"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/mfa/enrollments",
+      "status": 201,
+      "requestId": "01a17ba3-0f84-7de0-93e8-ba7cb0ecd6e4"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17ba3-0fa5-7f3e-992d-05342db20093"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/mfa/enrollments",
+      "status": 201,
+      "requestId": "01a17ba3-182b-7803-ab18-ec259a63726a"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17ba3-1cfa-71c6-bca4-53c2568dcf4b"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17ba3-1d31-7e95-861b-e600fa9503f3:verify",
+      "status": 200,
+      "requestId": "01a17ba3-2052-7197-b64e-dd7fa59c8f4f"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17ba3-1d31-7e95-861b-e600fa9503f3:verify",
+      "status": 200,
+      "requestId": "01a17ba3-214c-75cd-bea0-88ae11cdafec"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ba3-8383-78fb-995b-3f854a8d7984"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ba3-f8c9-7cb0-a938-3d2b88b55e6e"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ba4-6e10-7c74-b0ba-7823ed809aa7"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ba4-e355-7f37-93be-11ef47e7e7aa"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ba5-58a3-7118-afde-6f1554c9fd36"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ba5-cde4-79d6-b325-da23140c5363"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ba6-4329-7993-9f42-6529b88fbde8"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ba6-b87b-7a2e-ba35-2299b0b18ab5"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ba7-2dc3-72f3-b2b6-35839514b8c8"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ba7-a315-7e7c-9df5-8237b9838b58"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ba8-185d-7669-a879-cf21ace8da1a"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ba8-8da1-7300-9996-dd9b5960fdfd"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ba9-02f2-7621-8e6a-337dbd15e248"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ba9-786a-7307-a464-8223867961bb"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ba9-edb4-7b88-8e27-f9679dc9dd56"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17baa-6308-7a71-a1ff-bb500f355bab"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17baa-d85e-7129-b7ab-6988b71967a0"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17bab-4f58-7e65-ab7a-7c81ec217901"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17bab-c49c-74f2-98cf-ec56abf0dbbe"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17bac-39ee-7d2b-bbc0-440bfe51ba3f"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17bac-af35-759b-91eb-88f4114bba16"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17bad-249a-78b4-a300-c3c21133aba4"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17ba3-1d31-7e95-861b-e600fa9503f3:verify",
+      "status": 409,
+      "requestId": "01a17bad-3c09-7a79-8a33-ece00261a6fd"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/mfa/enrollments",
+      "status": 201,
+      "requestId": "01a17bad-3cac-7c12-9b37-a2b917bf7906"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17bad-3de4-70c4-9dc2-c53deb2831f9"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17bad-3dee-79b3-9aa5-fdbaba302df2:verify",
+      "status": 200,
+      "requestId": "01a17bad-3fe1-7323-9620-a87aa96929fe"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17bad-3dee-79b3-9aa5-fdbaba302df2:verify",
+      "status": 200,
+      "requestId": "01a17bad-410d-76ce-95b6-19100295fef7"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17bad-99de-7ae2-8303-d9c976327cdc"
+    }
+  ],
+  "screenshots": [
+    "mfa-binding-cancelled",
+    "mfa-stepup-wrong-totp",
+    "mfa-stepup-natural-expiry"
+  ],
+  "states": {
+    "naturalExpiry": {
+      "status": 409,
+      "requestId": "01a17bad-3c09-7a79-8a33-ece00261a6fd",
+      "idleMs": 660184
+    }
+  },
+  "failure": "locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByText(/本人身份已验证/) to be visible\n",
+  "status": "failed"
+}

@@ -283,9 +283,7 @@ export function GraphView({
         >
           适配窗口
         </Button>
-        <span>
-          虚线=动态关系（含未过期）；过期边额外淡化并标注已过期
-        </span>
+        <span>虚线=动态关系（含未过期）；过期边额外淡化并标注已过期</span>
       </Space>
       {mode === "graph" && allowed && !stale && (
         <div
@@ -354,8 +352,11 @@ export function GraphView({
             render: (_, n) => (
               <Link
                 to={
-                  "/resources/detail?canonicalId=" +
-                  encodeURIComponent(n.canonicalId)
+                  "/resources/detail?" +
+                  new URLSearchParams({
+                    clusterUid: n.scope,
+                    canonicalId: n.canonicalId,
+                  })
                 }
               >
                 {n.name}

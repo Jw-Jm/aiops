@@ -1,0 +1,39 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "scope": "secret-free re-captures of the account-security states",
+  "checks": [
+    "the confirmed account-security state is captured only after the page probe finds no secret",
+    "the helper refuses to capture a state that shows the enrolment URI, and the state is asserted instead",
+    "the cancelled state is secret free and is captured with the same guard",
+    "the administrator security page is re-captured with the guard and without any factor secret"
+  ],
+  "captures": [
+    {
+      "file": "/data/ops-v12-native-visual-r24-20261026/r30-auth/shots-safe/security-confirmed-no-secret.png",
+      "probes": [],
+      "capturedAt": "2026-10-27T06:23:05.169Z"
+    },
+    {
+      "file": "/data/ops-v12-native-visual-r24-20261026/r30-auth/shots-safe/security-binding-cancelled.png",
+      "probes": [],
+      "capturedAt": "2026-10-27T06:23:07.473Z"
+    },
+    {
+      "file": "/data/ops-v12-native-visual-r24-20261026/r30-auth/shots-safe/security-admin-no-secret.png",
+      "probes": [],
+      "capturedAt": "2026-10-27T06:23:08.634Z"
+    }
+  ],
+  "skipped": [
+    {
+      "state": "pending-enrolment-uri",
+      "hasOtpauthUri": true,
+      "recoveryCodeCount": 0,
+      "otpFilledInputs": 0,
+      "captured": false,
+      "reason": "secret-bearing state is asserted, never captured"
+    }
+  ],
+  "failure": null,
+  "status": "passed"
+}

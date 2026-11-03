@@ -17,7 +17,8 @@ export const tokens = {
   colorErrorBg: "#fdf0f1",
   colorErrorBorder: "#f0cbd1",
   borderRadius: 10,
-  fontSize: 14,
+  fontSize: 13,
+  lineHeight: 1.65,
   fontFamily:
     'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif',
   controlHeight: 36,

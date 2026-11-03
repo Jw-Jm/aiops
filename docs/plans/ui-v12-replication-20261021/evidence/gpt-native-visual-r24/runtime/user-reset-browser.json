@@ -1,0 +1,63 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "checks": [
+    "actual password+TOTP operation after projected rotation; password reset200 and old user cookie401"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a1780b-bfd6-73d2-b06c-88dc3f09a4c3"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a1780b-c06a-767e-aaa5-1733a7220b9b"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a1780b-c275-74d0-8b63-895d18a56f5c"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a1780b-c2ca-770a-96df-722856f08f1b"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a1780b-c2cb-7b94-9610-575a39792f24"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a1780b-c7af-72b4-a855-cc5dc6fe0e1b"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a1780b-c7bd-7b38-aaf0-5fc0bd293436:verify",
+      "status": 200,
+      "requestId": "01a1780b-c7e7-74b7-91e3-f6900fe20f42"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a1780b-c7bd-7b38-aaf0-5fc0bd293436:verify",
+      "status": 200,
+      "requestId": "01a1780b-c85f-7857-b222-bc3bee84ad5f"
+    },
+    {
+      "path": "/api/v1/admin/users/01a177fe-c4ed-7b86-9e45-5ec3d167a26c/password:reset",
+      "status": 200,
+      "requestId": "01a1780b-cac1-712a-a01c-5fa5eef31134"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a1780b-cb42-734b-903b-3c5064274c05"
+    }
+  ],
+  "screenshots": [
+    "user-reset-verified"
+  ],
+  "geometry": {},
+  "status": "passed"
+}

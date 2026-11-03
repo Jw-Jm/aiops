@@ -1,0 +1,168 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "account": "r30.accept.1793073230556",
+  "checks": [
+    "precondition: the acceptance identity starts this run with a confirmed factor",
+    "administrator reset binds the real target revision and returns the revoked session count"
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a17b98-f87d-72a0-ad99-e30f98b7a37f"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a17b98-f906-7805-bfc5-c4acd35873ff"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17b98-f9cc-7daa-b391-9daff5d4e0d9"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a17b98-fa08-7855-bfbd-f7bc6d3733a9"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/mfa/enrollments",
+      "status": 201,
+      "requestId": "01a17b98-fa5e-7751-a424-3131ec24b83e"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17b98-faa1-766a-9b58-079e4d387e8f"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17b98-fab8-7cca-9e5d-1885c0e7cd7c:verify",
+      "status": 200,
+      "requestId": "01a17b98-fe17-70f4-820f-0684e2d5f695"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17b98-fab8-7cca-9e5d-1885c0e7cd7c:verify",
+      "status": 200,
+      "requestId": "01a17b98-ffb7-79f2-937e-1df629cc3b8b"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/mfa/enrollments/01a17b98-fa86-7696-a9dc-c9881a78d0b0:verify",
+      "status": 200,
+      "requestId": "01a17b99-003d-754f-81fd-3b084069aa27"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a17b99-0074-7b7b-aa92-cb90630f2491"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17b99-0086-74f7-8dc9-09457e6c7d7d"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a17b99-014a-75a0-ad61-50f2a670e050"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a17b99-01c0-760c-b033-53a38ba69a07"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17b99-027e-7667-a7f1-a4737a41034c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a17b99-02d8-75ba-9312-1ec158d8cd67"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a17b99-02da-7169-adca-555ee0d638f3"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a17b99-02d7-7cf2-a3a5-8b7a653f49b4"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17b99-0557-78a6-9b7e-9c0c0021fb6a"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17b99-056d-7b56-a787-869b29e72f43:verify",
+      "status": 200,
+      "requestId": "01a17b99-0580-7642-b469-21192d0a5b73"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17b99-056d-7b56-a787-869b29e72f43:verify",
+      "status": 200,
+      "requestId": "01a17b99-05fc-7a6e-9232-5e2c5c01813f"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/users/01a17b7e-39d6-7299-af68-57117d4adb69/mfa:reset",
+      "status": 200,
+      "requestId": "01a17b99-063f-7a79-9d09-053c9ac3c144"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a17b99-0671-7665-b13c-8b58472c3c2d"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a17b99-0e72-79b2-b473-060e4a78cc3b"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a17b99-0ee5-732d-a179-177a01cc1461"
+    }
+  ],
+  "screenshots": [
+    "mfa-admin-reset"
+  ],
+  "states": {
+    "startingStatus": "reset_required",
+    "adminReset": {
+      "status": 200,
+      "requestId": "01a17b99-063f-7a79-9d09-053c9ac3c144",
+      "sessionsRevoked": 2,
+      "credentialVersion": 5
+    }
+  },
+  "failure": "reset identity was not forced to re-enrol: /access/sources",
+  "status": "failed"
+}

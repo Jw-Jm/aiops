@@ -1,0 +1,127 @@
+{
+  "at": "2026-10-29T00:49:37.062Z",
+  "origin": "https://192.168.0.63:30471",
+  "viewport": {
+    "width": 1440,
+    "height": 960
+  },
+  "checks": [
+    "single window selector submits the exact qualified microsecond window",
+    "visible-sample CSV downloads after one fresh result read, with no new query",
+    "empty visible sample set disables export without inventing source no_data"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "method": "GET",
+      "requestId": "01a18522-4293-7ca3-9b2c-9d750a361fe4"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "method": "POST",
+      "requestId": "01a18522-4324-7c40-8b59-19dd2be44b50"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a18522-4400-715a-adbd-cf861095d187"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a18522-4462-7761-ad80-44676794da03"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a18522-47c2-78b3-94bf-af5fb7ed4663"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "status": 202,
+      "method": "POST",
+      "requestId": "01a18522-4b52-7b7f-9ed9-92a018e80180"
+    },
+    {
+      "path": "/api/v1/observability/queries/e630a865-c1c8-49f4-b3f5-5685ed117df4",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a18522-5552-7995-9e70-d91c1997e6d4"
+    },
+    {
+      "path": "/api/v1/observability/queries/e630a865-c1c8-49f4-b3f5-5685ed117df4/results",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a18522-59bf-7476-b981-4d3242637e33"
+    },
+    {
+      "path": "/api/v1/observability/queries/e630a865-c1c8-49f4-b3f5-5685ed117df4/results",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a18522-5d9d-706d-aeb8-d563b30480a0"
+    }
+  ],
+  "captures": [
+    {
+      "name": "logs-default",
+      "file": "/data/ops-v12-native-visual-r24-20261026/r41/shots/logs-default.png",
+      "at": "2026-10-29T00:49:44.283Z",
+      "probes": [],
+      "postProbes": [],
+      "publicUuidCount": 8
+    }
+  ],
+  "indexSHA256": "dced565d514ed01458e911e4a5c712ce0e8dffe5c45d1d30e5d3a085bccd5a6c",
+  "qualificationUntil": "2026-10-29T02:45:00.720238Z",
+  "result": {
+    "queryId": "e630a865-c1c8-49f4-b3f5-5685ed117df4",
+    "resultDigest": "sha256:14f0d1e40f283dc68fcaebb0b71d82014d97aa1b6325b77a65af4f3387dd21dd",
+    "resource": {
+      "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+      "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+      "namespaceScope": {
+        "kind": "namespaced",
+        "namespace": "ops-native-v12-r24-20261026",
+        "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+      },
+      "uid": "0e648683-1088-4032-9b39-0a122ff475be"
+    },
+    "source": {
+      "collectorVersion": "kubernetes-log-snapshot/v1",
+      "credentialRevision": 1,
+      "qualificationDigest": "sha256:11c359037ae2aad14aa47cc35d0a1b6607d433f417e8bb0b2376352ab78f6008",
+      "registrationId": "01a1805f-2214-7373-82a4-c20276c68d43",
+      "registrationRevision": 1
+    },
+    "window": {
+      "bounds": "[from,to)",
+      "from": "2026-10-28T10:06:13.150326+08:00",
+      "timezone": "Asia/Shanghai",
+      "to": "2026-10-28T10:36:13.150326+08:00"
+    },
+    "population": {
+      "basis": "exact",
+      "count": 186,
+      "method": "source_total"
+    },
+    "returned": 20
+  },
+  "download": {
+    "filename": "logs-e630a865-c1c8-49f4-b3f5-5685ed117df4-samples.csv",
+    "visibleCount": 1,
+    "visibleTimestamps": [
+      "2026-10-28T02:36:12.150326687Z"
+    ],
+    "keywordSHA256": "e7952f270dbd1cb68a15c83c2decb1a0c27fdcc8c9188c88cd591ace4f2ab0c3",
+    "readRequestId": "01a18522-5d9d-706d-aeb8-d563b30480a0",
+    "readsBefore": 1,
+    "readsAfter": 2,
+    "createCount": 1
+  },
+  "status": "passed"
+}

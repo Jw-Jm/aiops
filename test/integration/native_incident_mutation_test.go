@@ -98,20 +98,24 @@ func TestNativeIncidentMutationAuthority(t *testing.T) {
 
 	// The linked Findings resolve, so an expired suppression may close the Incident.
 	f.resolveFindings(t, seed)
+	resolvedRevision := f.incidentRevision(t, seed.IncidentID)
+	if resolvedRevision <= seed.Revision+2 {
+		t.Fatal("finding recovery did not advance the incident revision")
+	}
 	until := time.Now().UTC().Add(2 * time.Second)
-	suppress := map[string]any{"expectedRevision": seed.Revision + 2, "state": "suppressed", "reason": "native suppress", "suppressedUntil": until}
+	suppress := map[string]any{"expectedRevision": resolvedRevision, "state": "suppressed", "reason": "native suppress", "suppressedUntil": until}
 	status, body = call("POST", path, suppress, uuid.NewString())
 	if status != 200 {
 		t.Fatalf("native suppress = %d %s", status, body)
 	}
 	time.Sleep(2100 * time.Millisecond)
-	closeBody := map[string]any{"expectedRevision": seed.Revision + 3, "state": "closed", "reason": "native close"}
+	closeBody := map[string]any{"expectedRevision": resolvedRevision + 1, "state": "closed", "reason": "native close"}
 	status, body = call("POST", path, closeBody, uuid.NewString())
 	if status != 200 {
 		t.Fatalf("native close = %d %s", status, body)
 	}
-	if got := f.incidentRevision(t, seed.IncidentID); got != seed.Revision+4 {
-		t.Fatalf("final revision = %d want %d", got, seed.Revision+4)
+	if got := f.incidentRevision(t, seed.IncidentID); got != resolvedRevision+2 {
+		t.Fatalf("final revision = %d want %d", got, resolvedRevision+2)
 	}
 
 	// Audit and timeline are written under the native subject.

@@ -24,6 +24,7 @@ import { Status } from "../../components/Status";
 import { BudgetSummary } from "./BudgetSummary";
 import { StepLedger } from "./StepLedger";
 import { useInvestigationStream } from "./useInvestigationStream";
+import { useAuth } from "../../auth/AuthProvider";
 export function InvestigationPanel({
   incident,
   onEvidence,
@@ -31,6 +32,7 @@ export function InvestigationPanel({
   incident: IncidentV2;
   onEvidence?: (id: string) => void;
 }) {
+  const { session } = useAuth();
   const [url, setUrl] = useSearchParams();
   const client = useQueryClient();
   const [input, setInput] = useState("");
@@ -63,6 +65,7 @@ export function InvestigationPanel({
         : false,
   });
   const data = (job.data as InvestigationSuccessV2 | undefined)?.data;
+  const historicalReadOnly = !!data && data.subject !== session?.subject;
   const steps = useQuery({
     queryKey: ["investigation-steps", jobId],
     enabled: !!jobId,
@@ -150,7 +153,11 @@ export function InvestigationPanel({
           <Button
             danger
             loading={cancel.isPending}
-            disabled={!data || !["queued", "running"].includes(data.state)}
+            disabled={
+              !data ||
+              historicalReadOnly ||
+              !["queued", "running"].includes(data.state)
+            }
             onClick={() => cancel.mutate()}
           >
             取消调查
@@ -231,6 +238,13 @@ export function InvestigationPanel({
         >
           {data && (
             <>
+              {historicalReadOnly && (
+                <Alert
+                  type="info"
+                  title="历史调查只读"
+                  description="此调查保留原主体归属。可查看已授权的结果和证据，不能取消原主体任务。"
+                />
+              )}
               <Space wrap>
                 <Status value={data.state} />
                 <span>

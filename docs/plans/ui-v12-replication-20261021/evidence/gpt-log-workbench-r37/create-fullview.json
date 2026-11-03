@@ -1,0 +1,75 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "checks": [
+    "real create 201 with password+TOTP operation proof; zero implicit role; mustChange forced server-side"
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a1808b-a546-76e9-a7a3-dd5cb7e9b113"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a1808b-a5d2-7c96-8c8a-6126930ec407"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a1808b-a6cc-7caf-b767-dbf93a086900"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a1808b-a727-724a-be0b-c4af119647d2"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a1808b-a728-767f-9158-3b0b4d3b5a00"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a1808b-aac7-7448-aa44-90c814602ba9"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a1808b-aadd-7b60-86cb-37a578ba3224:verify",
+      "status": 200,
+      "requestId": "01a1808b-aaf7-7ce4-9264-6f84036f0289"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a1808b-aadd-7b60-86cb-37a578ba3224:verify",
+      "status": 200,
+      "requestId": "01a1808b-ab8d-78fe-9e9b-df21d5ba5576"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/users",
+      "status": 201,
+      "requestId": "01a1808b-ad30-7577-aea9-b723a316f0a6"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a1808b-ade6-76c6-b3b9-1fa233bf9635"
+    }
+  ],
+  "screenshots": [],
+  "failure": null,
+  "account": {
+    "loginName": "v12.fullview",
+    "userId": "01a1808b-ad44-7bfe-a7bd-7dd74cb4eef5"
+  },
+  "status": "passed"
+}

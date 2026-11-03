@@ -1,0 +1,141 @@
+{
+  "mode": "success",
+  "at": "2026-10-28T03:05:45.671Z",
+  "origin": "https://192.168.0.63:30471",
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a18078-8b2d-7228-a84b-e41b72b45d73"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a18078-8bb8-7a3b-8c8e-d4d6a42d9c82"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18078-8c48-7c0d-9ba0-b94b4913936d"
+    },
+    {
+      "path": "/api/v1/capabilities",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18078-8c76-7d55-a28c-9809b02d2f46"
+    },
+    {
+      "path": "/api/v1/overview",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18078-8c76-766d-b4a2-ed19974767e5"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18078-8c7e-72f4-9a81-58e914af561d"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18078-90bf-7799-a15b-684047243cb1"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "method": "POST",
+      "status": 202,
+      "requestId": "01a18078-9a1a-713f-91fe-95a6c17b2d4f"
+    },
+    {
+      "path": "/api/v1/observability/queries/febbe8b4-f5b5-49e0-9d5e-4584d9732ed1",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18078-a07c-715f-85fc-ea7d8caba514"
+    },
+    {
+      "path": "/api/v1/observability/queries/febbe8b4-f5b5-49e0-9d5e-4584d9732ed1/results",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18078-a5eb-75f5-adab-f787565ea990"
+    }
+  ],
+  "outcome": {
+    "queryId": "febbe8b4-f5b5-49e0-9d5e-4584d9732ed1",
+    "source": {
+      "collectorVersion": "kubernetes-log-snapshot/v1",
+      "credentialRevision": 1,
+      "qualificationDigest": "sha256:11c359037ae2aad14aa47cc35d0a1b6607d433f417e8bb0b2376352ab78f6008",
+      "registrationId": "01a1805f-2214-7373-82a4-c20276c68d43",
+      "registrationRevision": 1
+    },
+    "resource": {
+      "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+      "uid": "0e648683-1088-4032-9b39-0a122ff475be",
+      "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+      "namespaceScope": {
+        "kind": "namespaced",
+        "namespace": "ops-native-v12-r24-20261026",
+        "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+      }
+    },
+    "window": {
+      "from": "2026-10-28T10:06:13.150326+08:00",
+      "to": "2026-10-28T10:36:13.150326+08:00",
+      "timezone": "Asia/Shanghai",
+      "bounds": "[from,to)"
+    },
+    "events": [
+      {
+        "state": "accepted",
+        "revision": 1,
+        "requestId": "01a18078-9a1a-713f-91fe-95a6c17b2d4f"
+      },
+      {
+        "state": "completed",
+        "revision": 3,
+        "requestId": "01a18078-a07c-715f-85fc-ea7d8caba514"
+      }
+    ],
+    "finalState": "completed",
+    "resultStatus": 200,
+    "termination": null,
+    "failure": null,
+    "result": {
+      "resultId": "7bac90ca-a3e2-46e9-9bad-d19259e2175a",
+      "resultDigest": "sha256:d1ca2968dc7cccfcffa1a144299a38c776c4600edb3fc19c9c74afae8fd74e28",
+      "status": "partial",
+      "population": {
+        "basis": "exact",
+        "count": 186,
+        "method": "source_total"
+      },
+      "sampleCount": 20,
+      "truncation": {
+        "reasons": [
+          "sample_limit"
+        ],
+        "truncated": true
+      },
+      "coverage": {
+        "basis": "unknown",
+        "complete": false,
+        "coveredFrom": "2026-10-28T10:06:13.150326+08:00",
+        "coveredTo": "2026-10-28T10:36:13.150326+08:00",
+        "gaps": []
+      },
+      "reauthorization": {
+        "authorizationVersion": 12,
+        "checkedAt": "2026-10-28T03:05:53.364115195Z",
+        "denialCode": null,
+        "result": "allowed",
+        "sourceRegistrationRevision": 1
+      }
+    }
+  },
+  "status": "passed"
+}

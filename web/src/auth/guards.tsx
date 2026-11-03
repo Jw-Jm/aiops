@@ -3,6 +3,62 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { ApiError } from "../api/client";
 import { useAuth } from "./AuthProvider";
 import { login } from "./oidc";
+import { useState } from "react";
+import { MyAccount } from "./MyAccount";
+import { PageHeader, Surface } from "../components/v12/primitives";
+
+function NativeRoleDenied({ role }: { role: "operator" | "platform_admin" }) {
+  const auth = useAuth();
+  const [account, setAccount] = useState(false);
+  const [error, setError] = useState<string>();
+  return (
+    <div className="v12-denied-page">
+      <PageHeader
+        title="访问范围受限"
+        description="角色权限分别授予，平台管理员不自动获得运维数据权限。"
+      />
+      <Surface
+        title={`需要${role === "operator" ? "运维操作员" : "平台管理员"}权限`}
+      >
+        <div className="v12-denied-body">
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          >
+            <circle cx="10" cy="10" r="6" />
+            <path d="m15 15 6 6" />
+          </svg>
+          <strong>当前身份没有此功能权限</strong>
+          <p>请使用账户菜单退出后，以拥有对应授权的平台账号登录。</p>
+          <Button type="primary" onClick={() => setAccount(true)}>
+            查看当前身份
+          </Button>
+        </div>
+      </Surface>
+      {error ? <Alert type="error" title={error} /> : null}
+      {account ? (
+        <MyAccount
+          onClose={() => setAccount(false)}
+          onLogout={() => {
+            setAccount(false);
+            void auth
+              .logout()
+              .catch((cause) =>
+                setError(
+                  cause instanceof Error
+                    ? cause.message
+                    : "退出未得到服务器确认，请重试。",
+                ),
+              );
+          }}
+        />
+      ) : null}
+    </div>
+  );
+}
 export function hasRole(
   roles: readonly string[],
   role: "operator" | "platform_admin",
@@ -103,9 +159,13 @@ export function Guard({ role }: { role?: "operator" | "platform_admin" }) {
     );
   }
   if (auth.nativeSession?.mustReenrollMfa) {
-    return location.pathname === "/account/security" ? <Outlet /> : <Navigate to="/account/security" replace />;
+    return location.pathname === "/account/security" ? (
+      <Outlet />
+    ) : (
+      <Navigate to="/account/security" replace />
+    );
   }
-  if (auth.session.roles.length === 0)
+  if (auth.session.roles.length === 0 && auth.authMode !== "native")
     return (
       <Result
         status="403"
@@ -114,7 +174,8 @@ export function Guard({ role }: { role?: "operator" | "platform_admin" }) {
         extra={<Button onClick={() => void auth.logout()}>退出</Button>}
       />
     );
-  if (role && !hasRole(auth.session.roles, role))
+  if (role && !hasRole(auth.session.roles, role)) {
+    if (auth.authMode === "native") return <NativeRoleDenied role={role} />;
     return (
       <Result
         status="403"
@@ -122,5 +183,6 @@ export function Guard({ role }: { role?: "operator" | "platform_admin" }) {
         subTitle="运维操作员与平台管理员分别授权；管理权限不会自动赋予执行权限。"
       />
     );
+  }
   return <Outlet />;
 }

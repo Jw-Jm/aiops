@@ -17,9 +17,20 @@ import { NativeLoginLayout } from "../components/NativeLoginLayout";
 function loginMessage(error: unknown) {
   if (!(error instanceof ApiError)) return "登录服务暂时不可用，请稍后重试。";
   if (error.status === 429) return "尝试次数过多，登录暂时不可用。请稍后再试。";
-  if (error.status === 401) return "登录名或密码不正确。";
+  if (error.status === 400 || error.status === 401)
+    return "用户名或密码错误，或账号不可用。";
   if (error.status === 403)
     return "浏览器请求未通过同源检查。请从本站登录页重新提交。";
+  // A dropped connection or an unreadable envelope never says anything about
+  // the credential, and the shared client copy ("请先核对持久记录") describes a
+  // write that this request did not make, so the login form states its own
+  // retryable condition instead of echoing it.
+  if (
+    error.code === "NETWORK_UNAVAILABLE" ||
+    error.code === "INVALID_RESPONSE" ||
+    error.status >= 500
+  )
+    return "登录服务暂时不可用，请稍后重试。";
   return error.message;
 }
 
@@ -96,12 +107,18 @@ export function Login() {
     return <Navigate to="/auth/first-password" replace />;
   }
   if (auth.session) {
+    // A successful login re-renders this page before the submit handler has
+    // navigated, so this redirect has to agree with the destination the login
+    // itself returns. Otherwise a forced second-factor setup can be raced into
+    // the ordinary home page.
     return (
       <Navigate
         to={
-          auth.session.roles.includes("operator")
-            ? "/overview"
-            : "/access/sources"
+          auth.nativeSession?.mustReenrollMfa
+            ? "/account/security"
+            : auth.session.roles.includes("operator")
+              ? "/overview"
+              : "/access/sources"
         }
         replace
       />
@@ -150,8 +167,9 @@ export function Login() {
       <Form
         layout="vertical"
         requiredMark={false}
+        disabled={submitting}
         onFinish={async (values) => {
-          inFlight.current?.abort();
+          if (inFlight.current) return;
           const controller = new AbortController();
           inFlight.current = controller;
           setSubmitting(true);
@@ -193,10 +211,8 @@ export function Login() {
             visibilityToggle={false}
           />
         </Form.Item>
-        <div className="v12-login-error">
-          {error ? (
-            <Alert type="error" showIcon title={loginMessage(error)} />
-          ) : null}
+        <div className="v12-login-error" role={error ? "alert" : undefined}>
+          {error ? loginMessage(error) : null}
         </div>
         <Button
           type="primary"
@@ -204,6 +220,7 @@ export function Login() {
           htmlType="submit"
           block
           loading={submitting}
+          disabled={submitting}
           aria-busy={submitting}
         >
           登录

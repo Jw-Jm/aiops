@@ -1,0 +1,67 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "checks": [
+    "real pending login disables duplicate submit; API401 remains inline",
+    "first-password Escape revokes session; relogin; wrong current401 remains; real201 rotates credentials"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a177f8-9000-75de-97eb-40f36127daf5"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 401,
+      "requestId": "01a177f8-9116-7170-a980-994f54f295bf"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a177f8-a1cc-7bf1-9106-c09a6b63bdc5"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a177f8-a234-79e3-9767-36d54f1ffcf9"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a177f8-bc43-769a-bc49-bb7268b10592"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a177f8-cf2e-76bb-8898-8c3af0e97d6f"
+    },
+    {
+      "path": "/api/v1/auth/password:change",
+      "status": 401,
+      "requestId": "01a177f8-e301-710a-bd3c-f7e5f453e960"
+    },
+    {
+      "path": "/api/v1/auth/password:change",
+      "status": 201,
+      "requestId": "01a177f9-0333-7f31-9801-818f45aadeca"
+    }
+  ],
+  "screenshots": [
+    "login-current",
+    "login-pending",
+    "login-error",
+    "first-password",
+    "first-password-error",
+    "my-account"
+  ],
+  "geometry": {
+    "account": {
+      "x": 964.4000244140625,
+      "y": 81.28437805175781,
+      "width": 132,
+      "height": 87.02812194824219
+    }
+  },
+  "status": "failed",
+  "failure": "account modal width differs from slice"
+}

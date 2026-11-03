@@ -27,12 +27,14 @@ import type {
   AssistantTurnEnvelopeV1,
   AuthSessionSuccessV1,
   CancelInvestigationBody,
+  CancelObservationQueryParams,
   CapabilitiesSuccessV1,
   ClusterRegistrationRequest,
   CommandExecutionRequest,
   CommandRiskAcknowledgementRequest,
   CommandRiskAssessmentRequest,
   CreateInvestigationV2,
+  CreateObservationQueryParams,
   CreateStepUpSessionBody,
   CurrentRCASuccessV2,
   DiagnosticGraphBuildRequest,
@@ -59,6 +61,9 @@ import type {
   GetLegalHoldsParams,
   GetNativeSubjectMappingsParams,
   GetNativeUsersParams,
+  GetObservationCapabilitiesParams,
+  GetObservationQueryParams,
+  GetObservationQueryResultsParams,
   GetOverviewParams,
   GetPolicyBundlesParams,
   GetRCARevisionsParams,
@@ -90,6 +95,7 @@ import type {
   LegalHoldResultV1,
   ListAssistantConversationsParams,
   ListAssistantMessagesParams,
+  ListObservationQueriesParams,
   NativeAccountSuccessV1,
   NativeAdminMFAResetRequestV1,
   NativeAdminMFAResetSuccessV1,
@@ -121,6 +127,13 @@ import type {
   NativeSubjectMappingSuccessV1,
   NativeSubjectMappingsPageV1,
   NativeUsersPageV1,
+  ObservationCancelRequestV1,
+  ObservationCancelResultV1Envelope,
+  ObservationCapabilitiesEnvelopeV1,
+  ObservationCreateRequestV1,
+  ObservationHistoryEnvelopeV1,
+  ObservationQueryViewV1Envelope,
+  ObservationResultViewV1Envelope,
   OnboardExecutionHostRequest,
   OperatorRoleBindingStatusUpdateRequest,
   PageEnvelope,
@@ -152,6 +165,366 @@ export type HTTPStatusCode3xx = 300 | 301 | 302 | 303 | 304 | 305 | 307 | 308;
 export type HTTPStatusCode4xx = 400 | 401 | 402 | 403 | 404 | 405 | 406 | 407 | 408 | 409 | 410 | 411 | 412 | 413 | 414 | 415 | 416 | 417 | 418 | 419 | 420 | 421 | 422 | 423 | 424 | 426 | 428 | 429 | 431 | 451;
 export type HTTPStatusCode5xx = 500 | 501 | 502 | 503 | 504 | 505 | 507 | 511;
 export type HTTPStatusCodes = HTTPStatusCode1xx | HTTPStatusCode2xx | HTTPStatusCode3xx | HTTPStatusCode4xx | HTTPStatusCode5xx;
+
+export type getObservationCapabilitiesResponse200 = {
+  data: ObservationCapabilitiesEnvelopeV1
+  status: 200
+}
+
+export type getObservationCapabilitiesResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type getObservationCapabilitiesResponseSuccess = (getObservationCapabilitiesResponse200) & {
+  headers: Headers;
+};
+export type getObservationCapabilitiesResponseError = (getObservationCapabilitiesResponseDefault) & {
+  headers: Headers;
+};
+
+export type getObservationCapabilitiesResponse = (getObservationCapabilitiesResponseSuccess | getObservationCapabilitiesResponseError)
+
+export const getGetObservationCapabilitiesUrl = (params: GetObservationCapabilitiesParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/observability/capabilities?${stringifiedParams}` : `/api/v1/observability/capabilities`
+}
+
+export const getObservationCapabilities = async (params: GetObservationCapabilitiesParams, options?: RequestInit): Promise<getObservationCapabilitiesResponse> => {
+
+  const res = await fetch(getGetObservationCapabilitiesUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getObservationCapabilitiesResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getObservationCapabilitiesResponse
+}
+
+
+
+export type listObservationQueriesResponse200 = {
+  data: ObservationHistoryEnvelopeV1
+  status: 200
+}
+
+export type listObservationQueriesResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type listObservationQueriesResponseSuccess = (listObservationQueriesResponse200) & {
+  headers: Headers;
+};
+export type listObservationQueriesResponseError = (listObservationQueriesResponseDefault) & {
+  headers: Headers;
+};
+
+export type listObservationQueriesResponse = (listObservationQueriesResponseSuccess | listObservationQueriesResponseError)
+
+export const getListObservationQueriesUrl = (params: ListObservationQueriesParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/observability/queries?${stringifiedParams}` : `/api/v1/observability/queries`
+}
+
+export const listObservationQueries = async (params: ListObservationQueriesParams, options?: RequestInit): Promise<listObservationQueriesResponse> => {
+
+  const res = await fetch(getListObservationQueriesUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: listObservationQueriesResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as listObservationQueriesResponse
+}
+
+
+
+export type createObservationQueryResponse202 = {
+  data: ObservationQueryViewV1Envelope
+  status: 202
+}
+
+export type createObservationQueryResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 202>
+}
+
+export type createObservationQueryResponseSuccess = (createObservationQueryResponse202) & {
+  headers: Headers;
+};
+export type createObservationQueryResponseError = (createObservationQueryResponseDefault) & {
+  headers: Headers;
+};
+
+export type createObservationQueryResponse = (createObservationQueryResponseSuccess | createObservationQueryResponseError)
+
+export const getCreateObservationQueryUrl = (params: CreateObservationQueryParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/observability/queries?${stringifiedParams}` : `/api/v1/observability/queries`
+}
+
+export const createObservationQuery = async (observationCreateRequestV1: ObservationCreateRequestV1,
+    params: CreateObservationQueryParams, options?: RequestInit): Promise<createObservationQueryResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getCreateObservationQueryUrl(params),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(observationCreateRequestV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: createObservationQueryResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as createObservationQueryResponse
+}
+
+
+
+export type getObservationQueryResponse200 = {
+  data: ObservationQueryViewV1Envelope
+  status: 200
+}
+
+export type getObservationQueryResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type getObservationQueryResponseSuccess = (getObservationQueryResponse200) & {
+  headers: Headers;
+};
+export type getObservationQueryResponseError = (getObservationQueryResponseDefault) & {
+  headers: Headers;
+};
+
+export type getObservationQueryResponse = (getObservationQueryResponseSuccess | getObservationQueryResponseError)
+
+export const getGetObservationQueryUrl = (queryId: string,
+    params: GetObservationQueryParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/observability/queries/${queryId}?${stringifiedParams}` : `/api/v1/observability/queries/${queryId}`
+}
+
+export const getObservationQuery = async (queryId: string,
+    params: GetObservationQueryParams, options?: RequestInit): Promise<getObservationQueryResponse> => {
+
+  const res = await fetch(getGetObservationQueryUrl(queryId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getObservationQueryResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getObservationQueryResponse
+}
+
+
+
+export type getObservationQueryResultsResponse200 = {
+  data: ObservationResultViewV1Envelope
+  status: 200
+}
+
+export type getObservationQueryResultsResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type getObservationQueryResultsResponseSuccess = (getObservationQueryResultsResponse200) & {
+  headers: Headers;
+};
+export type getObservationQueryResultsResponseError = (getObservationQueryResultsResponseDefault) & {
+  headers: Headers;
+};
+
+export type getObservationQueryResultsResponse = (getObservationQueryResultsResponseSuccess | getObservationQueryResultsResponseError)
+
+export const getGetObservationQueryResultsUrl = (queryId: string,
+    params: GetObservationQueryResultsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/observability/queries/${queryId}/results?${stringifiedParams}` : `/api/v1/observability/queries/${queryId}/results`
+}
+
+export const getObservationQueryResults = async (queryId: string,
+    params: GetObservationQueryResultsParams, options?: RequestInit): Promise<getObservationQueryResultsResponse> => {
+
+  const res = await fetch(getGetObservationQueryResultsUrl(queryId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getObservationQueryResultsResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getObservationQueryResultsResponse
+}
+
+
+
+export type cancelObservationQueryResponse200 = {
+  data: ObservationCancelResultV1Envelope
+  status: 200
+}
+
+export type cancelObservationQueryResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type cancelObservationQueryResponseSuccess = (cancelObservationQueryResponse200) & {
+  headers: Headers;
+};
+export type cancelObservationQueryResponseError = (cancelObservationQueryResponseDefault) & {
+  headers: Headers;
+};
+
+export type cancelObservationQueryResponse = (cancelObservationQueryResponseSuccess | cancelObservationQueryResponseError)
+
+export const getCancelObservationQueryUrl = (queryId: string,
+    params: CancelObservationQueryParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/observability/queries/${queryId}:cancel?${stringifiedParams}` : `/api/v1/observability/queries/${queryId}:cancel`
+}
+
+export const cancelObservationQuery = async (queryId: string,
+    observationCancelRequestV1: ObservationCancelRequestV1,
+    params: CancelObservationQueryParams, options?: RequestInit): Promise<cancelObservationQueryResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getCancelObservationQueryUrl(queryId,params),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(observationCancelRequestV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: cancelObservationQueryResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as cancelObservationQueryResponse
+}
+
+
 
 export type setAssistantLegalHoldResponse200 = {
   data: AssistantMutationEnvelopeV1
@@ -5444,7 +5817,8 @@ export const getGetIncidentInvestigationsUrl = (incidentId: string,
 }
 
 /**
- * @summary List currently authorized investigations requested by this subject
+ * Reviewed mappings allow read-only history. They do not copy roles or permit cancelling the original owner task. Native jobs are not transferable through legacy mappings.
+ * @summary List owned or explicitly mapped legacy investigations under current operator scope
  */
 export const getIncidentInvestigations = async (incidentId: string,
     params?: GetIncidentInvestigationsParams, options?: RequestInit): Promise<getIncidentInvestigationsResponse> => {
@@ -5974,6 +6348,7 @@ export const getGetInvestigationUrl = (jobId: string,) => {
 }
 
 /**
+ * Read an owned investigation or an explicitly mapped legacy investigation after current operator scope and reference checks. Historical owner and frozen scope remain unchanged; mapping grants no cancellation or Worker authority.
  * @summary getInvestigation
  */
 export const getInvestigation = async (jobId: string, options?: RequestInit): Promise<getInvestigationResponse> => {
@@ -6024,6 +6399,7 @@ export const getStreamInvestigationEventsUrl = (jobId: string,) => {
 }
 
 /**
+ * Read an owned investigation or an explicitly mapped legacy investigation after current operator scope and reference checks. Historical owner and frozen scope remain unchanged; mapping grants no cancellation or Worker authority.
  * @summary streamInvestigationEvents
  */
 export const streamInvestigationEvents = async (jobId: string, options?: RequestInit): Promise<streamInvestigationEventsResponse> => {
@@ -6074,6 +6450,7 @@ export const getGetInvestigationStepsUrl = (jobId: string,) => {
 }
 
 /**
+ * Read an owned investigation or an explicitly mapped legacy investigation after current operator scope and reference checks. Historical owner and frozen scope remain unchanged; mapping grants no cancellation or Worker authority.
  * @summary getInvestigationSteps
  */
 export const getInvestigationSteps = async (jobId: string, options?: RequestInit): Promise<getInvestigationStepsResponse> => {

@@ -1,0 +1,99 @@
+{
+  "mode": "cancel",
+  "at": "2026-10-28T04:19:16.516Z",
+  "origin": "https://192.168.0.63:30471",
+  "viewport": {
+    "width": 1440,
+    "height": 960
+  },
+  "checks": [
+    "real pending state visible",
+    "running cancel waits for persisted termination without claiming source stopped"
+  ],
+  "captures": [
+    {
+      "name": "logs-idle",
+      "captured": false,
+      "probes": [
+        "recovery-code"
+      ]
+    },
+    {
+      "name": "logs-cancel-loading",
+      "captured": false,
+      "probes": [
+        "recovery-code"
+      ]
+    },
+    {
+      "name": "logs-cancel-terminal",
+      "captured": false,
+      "probes": [
+        "recovery-code"
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "method": "GET",
+      "requestId": "01a180bb-d90f-72e0-854a-6c9906144b00"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "method": "POST",
+      "requestId": "01a180bb-d9a2-790a-a849-3e01ab4343da"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180bb-db4d-7ecd-a5fa-40f2b55c4d23"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180bb-dbf0-7b04-aa46-e232c134004f"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180bb-e341-78ec-a2e2-d29965c4679f"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "status": 202,
+      "method": "POST",
+      "requestId": "01a180bb-e895-7ab9-9da4-bedb92f3f80a"
+    },
+    {
+      "path": "/api/v1/observability/queries/f877412d-fdf5-454d-a7fe-78bf7b17d2c7",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180bb-ebd4-7411-a763-db0114d12021"
+    },
+    {
+      "path": "/api/v1/observability/queries/f877412d-fdf5-454d-a7fe-78bf7b17d2c7",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180bb-ee9a-7a51-9bd3-ab0d77ec521e"
+    },
+    {
+      "path": "/api/v1/observability/queries/f877412d-fdf5-454d-a7fe-78bf7b17d2c7:cancel",
+      "status": 200,
+      "method": "POST",
+      "requestId": "01a180bb-ef38-7189-bf41-599d5ad761df"
+    },
+    {
+      "path": "/api/v1/observability/queries/f877412d-fdf5-454d-a7fe-78bf7b17d2c7",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180bb-f6a3-746c-a1d8-9162523e49f5"
+    }
+  ],
+  "status": "passed"
+}

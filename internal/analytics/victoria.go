@@ -25,9 +25,10 @@ import (
 // supplied by trusted deployment configuration, never by a QueryIntent. Legacy
 // evidence scope proofs do not qualify a new aggregate template by themselves.
 type Qualification struct {
-	ObservationPoint         string `json:"observationPoint,omitempty"`
-	CoverageComplete         bool   `json:"coverageComplete,omitempty"`
-	Operation                string `json:"operation,omitempty"`
+	ResourceUIDs             []string `json:"resourceUids,omitempty"`
+	ObservationPoint         string   `json:"observationPoint,omitempty"`
+	CoverageComplete         bool     `json:"coverageComplete,omitempty"`
+	Operation                string   `json:"operation,omitempty"`
 	DatasetID                string
 	SourceRevision           int64
 	BindingDigest            string
@@ -58,7 +59,11 @@ func NewVictoria(b evidence.Binding, client *http.Client, authorize evidence.Aut
 	if json.Unmarshal(rawIntentBinding(b), &frozen) != nil {
 		return nil, ErrInvalid
 	}
-	return &Victoria{frozen, &copyClient, authorize, slices.Clone(qualifications), make(chan struct{}, 4)}, nil
+	proofs := slices.Clone(qualifications)
+	for i := range proofs {
+		proofs[i].ResourceUIDs = slices.Clone(proofs[i].ResourceUIDs)
+	}
+	return &Victoria{frozen, &copyClient, authorize, proofs, make(chan struct{}, 4)}, nil
 }
 func rawIntentBinding(b evidence.Binding) []byte { v, _ := json.Marshal(b); return v }
 
@@ -247,6 +252,9 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 			selectors = append(selectors, "namespace=~"+strconv.Quote(strings.Join(parts, "|")))
 		}
 	}
+	if len(qualification.ResourceUIDs) > 0 && len(scope.Resources) == 0 {
+		return p, ErrSource
+	}
 	if len(scope.Resources) > 0 {
 		uids := []string{}
 		for _, id := range scope.Resources {
@@ -259,6 +267,9 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 				return p, ErrDenied
 			}
 			uids = append(uids, parsed.StableID)
+		}
+		if !qualifiedUIDsAllow(qualification.ResourceUIDs, uids) {
+			return p, ErrSource
 		}
 		sort.Strings(uids)
 		if logs {

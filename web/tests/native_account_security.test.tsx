@@ -1,5 +1,25 @@
 import { beforeEach, expect, it, vi } from "vitest";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render as renderUI,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { ReactNode } from "react";
+function render(ui: ReactNode) {
+  return renderUI(
+    <QueryClientProvider
+      client={
+        new QueryClient({
+          defaultOptions: { queries: { retry: false, gcTime: 0 } },
+        })
+      }
+    >
+      {ui}
+    </QueryClientProvider>,
+  );
+}
 import { MemoryRouter } from "react-router-dom";
 import { ApiError, setNativeCredentials } from "../src/api/client";
 import { AccountSecurity } from "../src/pages/AccountSecurity";
@@ -7,6 +27,8 @@ import {
   createNativeMFAEnrollment,
   createNativeStepUpChallenge,
   getNativeMFAStatus,
+  getNativeUsers,
+  resetNativeUserMFA,
   verifyNativeMFAEnrollment,
   verifyNativeStepUpChallenge,
 } from "../src/api/generated/platform";
@@ -19,7 +41,7 @@ const auth = vi.hoisted(() => ({
     accountRevision: 1,
     acr: "urn:ops:loa:1",
     revocation: { credentialVersion: 1, sessionVersion: 1 },
-    authorization: { grants: [] },
+    authorization: { grants: [] as { role: string }[] },
   },
 }));
 vi.mock("../src/auth/AuthProvider", () => ({ useAuth: () => auth }));
@@ -27,6 +49,7 @@ vi.mock("../src/api/generated/platform", () => ({
   createNativeMFAEnrollment: vi.fn(),
   createNativeStepUpChallenge: vi.fn(),
   getNativeMFAStatus: vi.fn(),
+  getNativeUsers: vi.fn(),
   verifyNativeMFAEnrollment: vi.fn(),
   verifyNativeStepUpChallenge: vi.fn(),
   resetNativeUserMFA: vi.fn(),
@@ -35,10 +58,12 @@ vi.mock("../src/api/generated/platform", () => ({
 const response = (data: unknown) => ({
   status: 200,
   headers: new Headers(),
-  data: { data, requestId: "unit" },
+  data: { data, meta: {}, requestId: "unit" },
 });
 beforeEach(() => {
   vi.clearAllMocks();
+  auth.nativeSession.authorization.grants = [];
+  vi.mocked(getNativeUsers).mockResolvedValue(response([]) as never);
   setNativeCredentials("tenant-one", "synthetic-csrf");
   vi.mocked(verifyNativeStepUpChallenge).mockReset();
   vi.mocked(getNativeMFAStatus).mockResolvedValue(
@@ -227,4 +252,172 @@ it("reports password-work capacity as retryable and keeps the challenge open", a
   fireEvent.click(screen.getByRole("button", { name: "验证密码" }));
   await screen.findByText(/本次请求未判定为密码错误/);
   expect(screen.getByLabelText("当前密码")).toBeTruthy();
+});
+
+it("uses the selected server-owned account and versions for administrator MFA reset", async () => {
+  auth.nativeSession.authorization.grants = [{ role: "platform_admin" }];
+  vi.mocked(getNativeUsers).mockResolvedValue(
+    response([
+      {
+        userId: "018f0f2b-91c2-7d42-a8dc-f719c5987201",
+        loginName: "target.user",
+        displayName: "Target",
+        revision: 7,
+        revocation: { credentialVersion: 3 },
+      },
+    ]) as never,
+  );
+  vi.mocked(verifyNativeStepUpChallenge)
+    .mockResolvedValueOnce(response({ stepUpSession: null }) as never)
+    .mockResolvedValueOnce(
+      response({ stepUpSession: { sessionRef: "stepup:proof" } }) as never,
+    );
+  vi.mocked(resetNativeUserMFA).mockResolvedValue(
+    response({
+      sessionsRevoked: 1,
+      credentialVersion: 4,
+      auditRecordId: "audit:reset",
+    }) as never,
+  );
+  render(
+    <MemoryRouter>
+      <AccountSecurity />
+    </MemoryRouter>,
+  );
+  const targetPicker = await screen.findByRole("combobox", {
+    name: "目标账号（本页）",
+  });
+  await waitFor(() =>
+    expect((targetPicker as HTMLInputElement).disabled).toBe(false),
+  );
+  fireEvent.mouseDown(targetPicker);
+  fireEvent.click(await screen.findByText("Target / target.user"));
+  expect(screen.queryByLabelText("目标账号 revision")).toBeNull();
+  expect(screen.queryByLabelText("目标凭据版本")).toBeNull();
+  fireEvent.change(screen.getByLabelText("确认登录名"), {
+    target: { value: "target.user" },
+  });
+  fireEvent.change(screen.getByLabelText("原因"), {
+    target: { value: "reviewed recovery" },
+  });
+  fireEvent.change(screen.getByLabelText("我的当前密码"), {
+    target: { value: "actor password" },
+  });
+  fireEvent.change(screen.getByLabelText("我的动态码"), {
+    target: { value: "123456" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "执行管理员重置" }));
+  await waitFor(() => expect(resetNativeUserMFA).toHaveBeenCalledOnce());
+  expect(
+    vi.mocked(createNativeStepUpChallenge).mock.calls[0][0].target,
+  ).toEqual({
+    kind: "user",
+    userId: "018f0f2b-91c2-7d42-a8dc-f719c5987201",
+    revision: 7,
+  });
+  expect(vi.mocked(resetNativeUserMFA).mock.calls[0][1]).toMatchObject({
+    userId: "018f0f2b-91c2-7d42-a8dc-f719c5987201",
+    expectedUserRevision: 7,
+    expectedCredentialVersion: 3,
+    confirmLoginName: "target.user",
+  });
+});
+
+it("does not invent an unconfigured factor or zero recovery codes while status is loading", async () => {
+  let finish!: (value: never) => void;
+  vi.mocked(getNativeMFAStatus).mockReturnValueOnce(
+    new Promise((resolve) => {
+      finish = resolve;
+    }) as never,
+  );
+  render(
+    <MemoryRouter>
+      <AccountSecurity />
+    </MemoryRouter>,
+  );
+  await waitFor(() => expect(getNativeMFAStatus).toHaveBeenCalledTimes(1));
+  expect(screen.queryByText("未启用")).toBeNull();
+  expect(screen.queryByText("剩余恢复码")).toBeNull();
+  expect(screen.queryByRole("button", { name: "启用双因素" })).toBeNull();
+  finish(response({ state: "confirmed", recoveryCodesRemaining: 7 }) as never);
+  await screen.findByText("已启用");
+  expect(screen.getByText("7")).toBeTruthy();
+});
+
+it("shows status failure with retry instead of offering enrollment from an unknown state", async () => {
+  vi.mocked(getNativeMFAStatus).mockRejectedValueOnce(
+    new ApiError(503, "UNAVAILABLE", "状态读取失败", "status-request"),
+  );
+  render(
+    <MemoryRouter>
+      <AccountSecurity />
+    </MemoryRouter>,
+  );
+  await screen.findByText(/状态读取失败/);
+  expect(screen.queryByText("未启用")).toBeNull();
+  expect(screen.queryByText("剩余恢复码")).toBeNull();
+  expect(screen.queryByRole("button", { name: "启用双因素" })).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "重新加载" }));
+  await screen.findByRole("button", { name: "重新绑定双因素" });
+  expect(getNativeMFAStatus).toHaveBeenCalledTimes(2);
+});
+
+it("discards a binding and its old assurance when the real challenge returns conflict", async () => {
+  vi.mocked(verifyNativeStepUpChallenge).mockRejectedValue(
+    new ApiError(409, "CONFLICT", "challenge not pending", "expired-request"),
+  );
+  render(
+    <MemoryRouter>
+      <AccountSecurity />
+    </MemoryRouter>,
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "重新绑定双因素" }),
+  );
+  await screen.findByLabelText("当前密码");
+  fireEvent.change(screen.getByLabelText("当前密码"), {
+    target: { value: "current-password" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "验证密码" }));
+  await screen.findByText("本次验证已失效或版本已变化，请重新开始验证。");
+  expect(screen.queryByLabelText("当前密码")).toBeNull();
+  expect(screen.queryByLabelText("新绑定动态码")).toBeNull();
+  expect(screen.queryByText(/otpauth:\/\//)).toBeNull();
+  expect(screen.queryByText(/已创建双因素绑定挑战/)).toBeNull();
+  expect(verifyNativeMFAEnrollment).not.toHaveBeenCalled();
+  const restart = await screen.findByRole("button", { name: /重新绑定双因素/ });
+  await waitFor(() =>
+    expect((restart as HTMLButtonElement).disabled).toBe(false),
+  );
+  fireEvent.click(restart);
+  await waitFor(() => expect(createNativeMFAEnrollment).toHaveBeenCalledTimes(2));
+  await waitFor(() => expect(createNativeStepUpChallenge).toHaveBeenCalledTimes(2));
+});
+
+it("does not call an expired verification a wrong password or retain its pending key", async () => {
+  vi.mocked(verifyNativeStepUpChallenge).mockResolvedValue(
+    response({
+      challengeState: "expired",
+      completedMethods: ["password"],
+      revision: 2,
+      failureCode: "invalid_credential",
+    }) as never,
+  );
+  render(
+    <MemoryRouter>
+      <AccountSecurity />
+    </MemoryRouter>,
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "重新绑定双因素" }),
+  );
+  await screen.findByLabelText("当前密码");
+  fireEvent.change(screen.getByLabelText("当前密码"), {
+    target: { value: "current-password" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "验证密码" }));
+  await screen.findByText("本次验证已失效，请重新开始验证。");
+  expect(screen.queryByText("当前密码不正确，挑战仍待完成。")).toBeNull();
+  expect(screen.queryByText(/otpauth:\/\//)).toBeNull();
+  expect(screen.queryByLabelText("当前密码")).toBeNull();
 });

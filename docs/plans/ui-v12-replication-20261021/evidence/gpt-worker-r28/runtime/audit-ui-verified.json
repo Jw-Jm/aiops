@@ -1,0 +1,78 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "scope": "actual native admin browser audit entry, independent role, existing persisted real model/query result; no new model call",
+  "requests": [
+    {
+      "path": "/api/v1/assistant/capabilities",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/assistant/conversations",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/assistant/capabilities",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/assistant/conversations",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/assistant/conversations/01a17b2e-7810-7c90-9875-76be31a09542",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/assistant/conversations/01a17b2e-7810-7c90-9875-76be31a09542/messages",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/assistant/conversations/01a17b2e-7810-7c90-9875-76be31a09542/events",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/assistant/query-results/01a17b2e-8ba2-71a9-a16c-9b9eef1dda3f",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/assistant/conversations/01a17b2e-7810-7c90-9875-76be31a09542",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/assistant/capabilities",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/assistant/conversations/01a17b2e-7810-7c90-9875-76be31a09542",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/assistant/capabilities",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/assistant/conversations",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/assistant/conversations/01a17b2e-7810-7c90-9875-76be31a09542/messages",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/assistant/conversations/01a17b2e-7810-7c90-9875-76be31a09542/events",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/assistant/query-results/01a17b2e-8ba2-71a9-a16c-9b9eef1dda3f",
+      "status": 200
+    }
+  ],
+  "status": "passed",
+  "checks": [
+    "audit record page links to audit assistant without operator grant",
+    "administrator audit-only session; operational resource API403",
+    "persisted real query facts render after DeepSeek turn; numeric rows come from server results, not model summary; page reload retains result"
+  ],
+  "conversationId": "01a17b2e-7810-7c90-9875-76be31a09542",
+  "turnId": "01a17b2e-7857-7d6a-9653-202822c7fb0d"
+}

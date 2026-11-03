@@ -61,10 +61,9 @@ func TestNativeInternalAuthorityReproof(t *testing.T) {
 		VALUES ($1,$2,$3,'internal authority','active',1)
 	`, f.tenantA, clusterID, clusterUID)
 	nativeMFAHardeningOwnerExec(t, f, f.tenantA, `
-		INSERT INTO identity.role_grants
-			(tenant_id, user_id, binding_id, role, scope, authorization_version, status)
-		VALUES ($1,$2,$3,'operator',$4::jsonb,1,'active')
-	`, f.tenantA, userID, uuid.Must(uuid.NewV7()),
+		UPDATE identity.role_grants SET scope=$3::jsonb
+		WHERE tenant_id=$1 AND user_id=$2 AND role='operator' AND status='active'
+	`, f.tenantA, userID,
 		`{"clusterUids":["`+clusterUID+`"],"namespaces":[]}`)
 
 	expected := nativeInternalScope(t, f, userID, clusterUID, 1)

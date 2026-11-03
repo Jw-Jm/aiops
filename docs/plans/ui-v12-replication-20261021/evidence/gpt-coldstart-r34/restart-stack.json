@@ -1,0 +1,147 @@
+{
+  "origin": "https://192.168.0.63:30472",
+  "namespace": "ops-native-v12-r34-20261027",
+  "checks": [
+    "Web/API/Worker/investigator recreated without OIDC; CLI repeat refuses to overwrite first tenant",
+    "same native cookie/sessionRef survives all process restarts and browser reload",
+    "real Worker mTLS reaches investigator validation400; no client certificate is rejected; zero Jobs/model calls"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a17ff1-a4d5-7906-840e-a7a319c867f7"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a17ff1-a56c-7903-8fd7-c48b7ffcae9b"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ff1-a699-727d-97bd-95760ad7ac34"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a17ff1-a6fe-71b6-8fb2-941c46d6ae33"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a17ff1-a6ff-7712-9e2f-d977d8962f93"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 502
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ff2-39a9-78f4-bca7-93d00e3df634"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ff2-3a8b-7b66-b2fa-c320af2a68e1"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a17ff2-3ae8-760e-ba8e-d51f585b7fe0"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a17ff2-3aeb-7320-9931-889df198507c"
+    }
+  ],
+  "modelRequests": 0,
+  "beforeSession": {
+    "status": 200,
+    "sessionRef": "session:01a17ff1-a5fb-7d77-a7fd-1bed82204b78",
+    "subject": "user:01a17d06-243d-7290-9687-8795b0c3fb1a",
+    "roles": [
+      "platform_admin"
+    ],
+    "requestId": "01a17ff1-a77a-713b-b88d-34340eed2903"
+  },
+  "beforePods": [
+    {
+      "name": "ops-api",
+      "uid": "08092402-a8f6-49d0-afad-8426887f288f",
+      "phase": "Running",
+      "restarts": [
+        0
+      ]
+    },
+    {
+      "name": "ops-worker",
+      "uid": "67793a39-7f34-4e12-89af-5929978839f7",
+      "phase": "Running",
+      "restarts": [
+        0
+      ]
+    },
+    {
+      "name": "ops-investigator",
+      "uid": "ac8b8b6e-30cc-4413-bbb6-4a166e6c176c",
+      "phase": "Running",
+      "restarts": [
+        0
+      ]
+    }
+  ],
+  "afterSession": {
+    "status": 200,
+    "sessionRef": "session:01a17ff1-a5fb-7d77-a7fd-1bed82204b78",
+    "subject": "user:01a17d06-243d-7290-9687-8795b0c3fb1a",
+    "roles": [
+      "platform_admin"
+    ],
+    "requestId": "01a17ff2-3943-76d6-ae2c-638376fc3fca"
+  },
+  "pathBeforeReload": "/login",
+  "pathAfterReload": "/access/sources",
+  "afterPods": [
+    {
+      "name": "ops-api",
+      "uid": "3538a4cb-d7dc-4ed8-8413-b3635de34a28",
+      "phase": "Running",
+      "restarts": [
+        0
+      ]
+    },
+    {
+      "name": "ops-worker",
+      "uid": "21746af7-ac8e-468d-a391-9469be53fe83",
+      "phase": "Running",
+      "restarts": [
+        0
+      ]
+    },
+    {
+      "name": "ops-investigator",
+      "uid": "1b74ce2e-3d9e-4236-85de-f2d691a3fcb5",
+      "phase": "Running",
+      "restarts": [
+        0
+      ]
+    }
+  ],
+  "workload": {
+    "investigatorRequestValidationStatus": 400,
+    "modelRequests": 0,
+    "newJobs": 0,
+    "withoutClientCertificateRejected": true,
+    "workerMTLS": true
+  },
+  "cliRepeat": "existing tenant refused; no identity reset",
+  "database": {
+    "jobs": 0,
+    "schema": 70,
+    "accounts": 2
+  },
+  "status": "passed"
+}

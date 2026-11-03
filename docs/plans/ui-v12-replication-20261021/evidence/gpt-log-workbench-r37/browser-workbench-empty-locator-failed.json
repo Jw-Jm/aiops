@@ -1,0 +1,133 @@
+{
+  "mode": "normal",
+  "at": "2026-10-28T04:16:27.046Z",
+  "origin": "https://192.168.0.63:30471",
+  "viewport": {
+    "width": 1440,
+    "height": 960
+  },
+  "checks": [
+    "real population 186 / bounded samples 20",
+    "local filter preserves population and Enter does not resubmit",
+    "sanitized sample modal opens",
+    "source revision qualification and incomplete coverage shown",
+    "persisted personal history restores result"
+  ],
+  "captures": [
+    {
+      "name": "logs-idle",
+      "captured": false,
+      "probes": [
+        "recovery-code"
+      ]
+    },
+    {
+      "name": "logs-success",
+      "captured": false,
+      "probes": [
+        "recovery-code"
+      ]
+    },
+    {
+      "name": "logs-sample",
+      "captured": false,
+      "probes": [
+        "recovery-code"
+      ]
+    },
+    {
+      "name": "logs-source",
+      "captured": false,
+      "probes": [
+        "recovery-code"
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "method": "GET",
+      "requestId": "01a180b9-431c-7ee3-99f9-fa5f4d6b76d0"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "method": "POST",
+      "requestId": "01a180b9-43ad-79de-9f63-63c1bfed88a4"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b9-446e-79a8-acb3-b33c8150ca15"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b9-44c6-71d5-aeb4-1ae0f70c17ae"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b9-4828-794e-9dde-0e8bcd7b5d59"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "status": 202,
+      "method": "POST",
+      "requestId": "01a180b9-4d9e-776e-beb5-78ee0c383953"
+    },
+    {
+      "path": "/api/v1/observability/queries/5156e078-12d9-4021-9a24-abbadbb9c306",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b9-53ca-7a72-bc97-f9e096818b84"
+    },
+    {
+      "path": "/api/v1/observability/queries/5156e078-12d9-4021-9a24-abbadbb9c306/results",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b9-55d0-7d18-a009-80d450ecce15"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b9-65b2-7c6e-b2da-b87c653a62dd"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "status": 202,
+      "method": "POST",
+      "requestId": "01a180b9-75d8-7b57-a547-f4c2e9aa145f"
+    },
+    {
+      "path": "/api/v1/observability/queries/151ce5af-4f3a-4db7-9091-a88e66d41b33",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b9-7ee9-7d99-a641-8d89e9845d85"
+    },
+    {
+      "path": "/api/v1/observability/queries/151ce5af-4f3a-4db7-9091-a88e66d41b33/results",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b9-822f-7f34-8494-6eae7a544989"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b9-b9f7-7a51-b83d-1f7f7700e791"
+    }
+  ],
+  "windowInputs": [
+    "2026-10-28T10:06:14",
+    "2026-10-28T10:36:13"
+  ],
+  "historyLength": 11,
+  "status": "failed",
+  "failure": "locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n  - waiting for getByText('所选范围没有日志', { exact: true }) to be visible\n"
+}

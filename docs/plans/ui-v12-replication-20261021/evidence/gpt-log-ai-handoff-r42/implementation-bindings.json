@@ -1,0 +1,16 @@
+{
+  "route": "/observe/logs -> /assistant",
+  "act_id": "observe-ai",
+  "prototypeStage": "local open form",
+  "runtimeStages": [
+    "prefetch C168 persisted result",
+    "local confirmation form",
+    "prefetch C168 immediately before explicit create",
+    "submit existing assistant create with canonical/resource/time/namespace"
+  ],
+  "identity": "logQuery ID+scoped cluster in URL; GET results current session/scope/source/expiry reauthorization; no samples or credential URL payload",
+  "service": "observationquery.Service.Read; assistant_handlers resource resolver; assistant.Repository.Create transaction rechecks",
+  "sourceBinding": "original source displayed only; no pinned-AI-source or result-evidence injection claimed",
+  "observed": "real read/navigation and 410/404 denial passed; create blocked by enabled=true/taskKinds=[data_query]",
+  "scope": "only logs; no claim for other observe routes"
+}

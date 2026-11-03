@@ -1,3 +1,27 @@
+## 2026-10-28 r35 最新接续（GPT直接执行）
+
+本轮按用户两项授权补齐legacy v2调查映射只读入口/列表/步骤/SSE逐事件复检及前端只读取消禁用；真实PG/HTTP同时验证旧执行输出、审计独立授权、证据引用、流中撤权和旧归属不变。来源revision变更复用旧UID/RV归档ID的问题已修为投影v3，旧证据保留。真实无效采集凭据→拒绝503→恢复原投射身份→漏采更新/新更新持久化，以及第二namespace实际只读RBAC、同名资源独立UID、用户范围A+B后收窄A/撤权拒绝通过。完整证据见evidence/gpt-history-recovery-r35/README.md、result.json、source.json、runtime-final.json。
+
+30471现为r35 Web/API/Worker/source3双任务namespace；30472为r35 Web/API+原r34 Worker。原r24 admin/member密码/MFA/授权未改，r31测试operator已恢复原A范围（授权版本正常递增、测试会话失效）。新迁移无，仍70；无新模型调用。稳定窗口12次200不代表启动/故障窗口永无503。实际旧库实迁、历史query-result/formal-reference全组合、P1/P2完整视觉与正式Bundle/离线发行仍未关；P2-04/05及六维状态不提升。下一步补剩余引用组合和P1/P2视觉，再按依赖SL049；不重复736参考或本轮已验证的凭据/范围演练。
+
+## 2026-10-28 r34 最新接续（GPT直接执行）
+
+完成受控历史inventory真实CLI导入、管理UI显式映射/再次验证/错误摘要拒绝/旧会话失效，以及新namespace/新库无OIDC的Web/API/Worker/调查器/CLI启动与进程重建；历史会话只读前端修复已部署独立30472。原30471与既有用户不变。详见 evidence/gpt-coldstart-r34/README.md、result.json、source.json、runtime-final.json。会话重启有效，但故障502后页面需刷新恢复，未保证原路径。新库0 Jobs/0模型调用；受控旧主体不是实际旧库。P2-04/05和六维状态不提升。
+
+下一步：历史执行/审计/证据引用及双角色组合；采集真实凭据失效恢复、第二namespace实际授权；P1/P2视觉收尾，再按依赖P3资源日志样板及P4～P8。独立源码冷启动已验证；正式不可变OCI/Bundle/离线安装切换仍缺合格材料。中断前脚本泄露的单个r34测试会话已自然过期401，失败回执已脱敏，未改其他会话，见session-containment.json。用户新增代码约束：入口一次校验；不重复判空或滥用try/catch；单次逻辑不乱抽函数；低概率防御先征求同意。
+
+## 2026-10-27 r33 最新接续（GPT直接执行，覆盖下方旧交接约定）
+
+用户已撤销 CodeBuddy，交接1d91d497取消，后续由GPT实施；不得再派发。当前platform/main/082f87d66c5b及r23～r33全部未提交修改保留。r33完成采集/归档/Lease/chart具体返修、来源真实PG回归、历史消息HTTP分页映射修复和正反例；三版真实ConfigMap跨自动轮换/Worker重连持久化通过。API/Worker运行r33，Web-r14、调查器r28、PG17.11:15454/schema70不变；30471仍为任务预览。
+
+先读 evidence/gpt-authz-r33/README.md/source.json/runtime-final.json。下一工作：C历史inventory/import/mapping完整API/UI（受控隔离数据，不能冒充真实旧库）、历史执行/审计/引用；D独立namespace/库整栈无OIDC冷启动及CLI/浏览器持久化；再补凭据故障恢复和第二namespace实际授权。正式Bundle缺材料仅阻塞正式发行验收，不阻止独立机制工作。P1/P2视觉及SL049后续不跳阶段。已有r28/r30成功链路和736参考不重做；用户admin/member身份和秘密不动。
+
+## 2026-10-26 r23 当前接续（GPT直接执行）
+
+用户最新要求完成四项，解除旧“发现问题后停止”的本轮边界；不得连接CodeBuddy。MFA窗口缺陷新增70修复，集中35项+P2独立10项通过，新登录single-flight修复及30470隔离预览浏览器通过。代码尚未提交，主分支基线082f87d。任务目录/data/ops-v12-completion-20261026-r1；新库ui_v12_r23_preview/schema70、API18091、metrics19091、Web30470；r15仍69、旧共用库57。70已执行必须冻结，下一迁移71+。新增来源能力交互证明修复、真实Transit浏览器MFA全链已通过；TokenReview旧凭据过期，续签同SA/audience任务凭据后恢复，未改角色/信任/key/策略。详细进展以progress.md r23节与evidence/gpt-completion-r23/README.md为准，不能照下方旧记录反复修已解决项。
+
+剩余主目标：P1/P2完整视觉与原生全栈运行/切换收尾，再P3独立观测查询生命周期及SL-049同组真实资源日志样板；不把受控协议fixture称为真实安装来源。新预览冷启动只证明API/Web native起进程，未启动Worker，不能标P2-05完成。用户r14账号/原数据库/其他预览未改；复制的私有数据库dump、DSN、原生凭据仅远程private，不入Git。
+
 # V1.2 接续记录：额度耗尽前的未完成工作
 
 本记录按用户2026-10-22要求保存，专门保留上次额度耗尽的中断点；不是只记录其后发生的远程断连。用户已改为GPT直接实施，取消CodeBuddy交接c767b57e；后续不要再下发CodeBuddy。实际源码、运行状态和用户新指令优先，报告不能代替验证。
@@ -153,3 +177,104 @@ SL-005补齐真实关闭/Escape/加载禁用与退出失败网络故障、刷新
 - 修 P2：`Authority.nativeForRecheck` 只接受完整 native / 显式 legacy / 历史空编码；未知 source 与混合字段拒绝，含单测。
 - 证据：r22 source.json 由最终树脚本生成并 `shasum -c` 复核通过。
 - 下一轮（未完成）：独立 Worker 签名 Context/工具结果/取消/异常、Action 原生后检查真实用例、CLI 首次改密、安装器 native 闭包与无 OIDC 冷启动/重启/前滚、P2-04 剩余读取与映射并发、P2-02/03 与 P1 视觉、P3 SL-049、P4～P8。任务库仍 schema57。
+
+
+## 最新断点 r24（2026-10-27，优先于旧冷启动/视觉描述）
+
+远程已恢复并重新核对mssc身份。现用独立namespace `ops-native-v12-r24-20261026`、目录 `/data/ops-v12-native-visual-r24-20261026`、PostgreSQL17.11/15454/schema70、预览 https://192.168.0.63:30471/login。真实first-tenant CLI与API/独立审计Worker/Web/OpenBao/Archive无OIDC启动通过；MFA只授API，Worker访问403；同Pod API/Worker/reviewer投射凭据自动续取后仍有效。10月27日再次重建API/Worker后，同会话保持有效，退出后旧Cookie401；旧签名段未变，生产S3读/解密/摘要/签名/前驱链验证范围1～49共7段通过。
+
+真实浏览器已验证登录/首次改密/自助改密、MFA注册/恢复/重新绑定、管理员密码与MFA重置、零角色自助安全和业务拒绝、独立管理员授权撤销、禁用持久化与迟到结果恢复。MFA enrollment owner pending/confirmed GET200不泄露秘密、其他管理员GET404。测试为最终178 Vitest+6 SSE、Go race/contract/生成及构建通过，范围以r24结果为准。SL-003稳定前景660×424/header76与固定切片尺寸一致；内容/背景/完整逐状态像素仍不通过，不提升458项整体验收。
+
+实际版本为API/Worker final二进制、Web-r4、`source-final-2/`，源码归档哈希71a4480aa1d67094585c2507689a5f179d693e047a71e93abd375c6b9a431a74。当前是挂载源码制品canary，不是新OCI准入或不可变Bundle验收。SP06业务dispatcher未配置，不能用审计Worker归档冒充业务Job签名Context/工具结果/接管/取消。1/2与P1/P2保持未完成，P3～P8剩余不变。所有早期失败、动画帧误采和脚本导出失败保留；凭据仅远程private，不导入仓库。
+
+详见 [r24记录](evidence/gpt-native-visual-r24/README.md) 与 [结果](evidence/gpt-native-visual-r24/result.json)。
+
+续接先核对当前HEAD/工作区及r24实际Pod/容器，不重跑prepare/init/bootstrap或重复已完成的MFA重置。凭据与恢复材料仅任务private。当前API/Worker final、CLI ops-r24-final-opsctl、Web-r4；旧root/source与30467～30470不是本轮最终版本。
+
+优先未关闭项：SP06业务独立Worker签名Context/工具结果/接管/撤权取消与异常恢复；正式安装器/Bundle native闭包和切换；27主状态及MFA补充状态完整视觉/错误交互。按依赖推进SL-049与P4～P8，不恢复虚拟化/Trace，不将本轮局部通过写成V1.2完成。
+
+本轮收尾校验：validate-progress.py通过458状态/177合同结构核对；新增evidence/contract-adaptations.json登记真实原生账号合同增量，原slice-map不改。移除原基准合同或加入未登记合同的负向自检均拒绝。结构检查不代表产品六维通过；失败记录已保留。
+
+
+## r25（2026-10-27）：运行中Dispatcher边界与MFA读取状态
+
+新增正式Dispatcher原生运行中取消/撤权/停机接管回归，远程任务PG15454独立随机库/schema70三项通过；旧上下文拒绝、平台取消部分结果不被迟到成功覆盖、新generation可发布。签名器与调查器仍fixture，不算真实SP06业务Worker运行。失败测试假设及数据库审计保留。
+
+修复MFA未知读取状态被显示成未启用/恢复码0，改React Query+QueryState并覆盖加载、失败、重试；180 Vitest+6 SSE/TypeScript/Vite通过，远程浏览器网络中断→真实GET200重试通过。30471当前Web为ops-v12-native-r25-web-r5/web-r5；r24旧容器停止保留，API/Worker/PG/Bao不改。来源为r24 source-final-2加r25 source-delta-2，见evidence/gpt-dispatcher-r25/source.json。
+
+下一步仍为SP06真实独立Worker/来源与工具链、完整P1/P2视觉及正式Bundle；随后按依赖P3～P8。本轮未提升产品六维，不重跑一次性初始化/首租户/MFA重置。详见evidence/gpt-dispatcher-r25/README.md、result.json。
+
+
+## r26（2026-10-27）：MiniMax真实连接402，第一项未完成
+
+用户提供MiniMax-M3.1-Flash及https://api.minimax.cn/anthropic/v1/messages并授权真实验证。凭据仅远程任务private/minimax-m31-api-key，0600，续接直接读取，不输出或写Git。一次最小请求在mssc-direct返回HTTP402 insufficient_balance_error，请求ID072f36eff225abdaaf349c18d2fab315，未获得模型回答，不重复重试。
+
+另核实Go Profile限制内部/v1、Python只准内部OpenAI llama3.1:8b-16k、Schema费用固定zero-charge并要求自托管权重证据，需显式扩展外部Anthropic/计费/来源合同，不能伪造材料或绕过准入。第一项真实业务Worker仍未完成；额度恢复后再验证协议/工具/usage并接真实固定Profile业务链路。局部阻塞不阻止其他视觉和独立任务。30471/r25 Web-r5及API/Worker/PG未改。证据见evidence/gpt-minimax-r26/result.json、connectivity.json。
+
+
+## r28（2026-10-27）：真实原生审计业务Worker链路完成
+
+按用户明确指示将DeepSeek作为本任务受信内部模型，使用实际deepseek-flash官方OpenAI接口。原生会话/CSRF/幂等→真实签名策略与登记Context→独立Worker→真实投射身份/OpenBao Transit/PKI双向TLS→锁定Holmes→真实DeepSeek→真实audit.events工具统计→持久化/事实引用→浏览器和刷新回显通过。首个完成Job01a17b2e-7857-7d6b-973b-205c44bb3912。
+
+真实模型运行中取消、临时独立管理员撤权（用户失权，AUTHORIZATION_REVOKED无结果）以及Worker/调查器进程崩溃、实际租约过期epoch1→2接管成功，均有独立实证，不使用fixture签名器/模型/工具、不修改租约SQL。临时授权已撤销。修复控制面查询工具在Worker侧仍用浏览器/legacy授权的遗漏；修复JSON模式未提供精确输出Schema。新增管理审计页审计问数入口，管理员无需operator，运维资源API仍403。
+
+30 Python、Go相关包/contract与真实PG查询回归、181 Vitest+6 SSE/正式构建通过。旧失败/原始任务保留。30471现Web-r6；API r28-worker/ops-api-query，Worker r28-worker/ops-worker，调查器source-4，PG15454/schema70不变；准确源码/manifest/恢复见evidence/gpt-worker-r28/README.md、source-final.json、runtime/final-runtime.json。凭据仅远程private/任务Secret，不进入报告。
+
+这是审计data_query业务链路通过，不是所有业务工具、回答质量、全部视觉或签名Bundle验收。P2-05仍in_progress，下一步继续原P1/P2视觉与正式安装切换、P3资源日志SL-049及P4～P8；原额度中断剩余与虚拟化延期不变。不重跑一次性初始化/首租户/已发布策略，不回滚身份数据。
+
+
+## r29（2026-10-27）：认证失败态复刻与MFA409恢复
+
+SL-002错误条按原HTML复刻，400/401统一不枚举账号的凭据错误；后台12～256密码校验、同源/限流未改。真实401等待/禁用/重试、网络abort通过，稳定真实400使用原型相同短错误输入。原r3参考无重采/无掩码，错误条14200像素完全一致；整图仍6259像素不同，不提升整体visual。
+
+补MFA失效恢复：409/expired/revoked清除待绑定URI、旧表单/证明与过时提示，并更新请求代次。真实单挑战state=expired故障注入→API409→重新创建/取消通过，既有MFA确认时间和恢复码数量不变；自然计时到期仍不算本次验证。184 Vitest+6 SSE、构建及最终9项MFA增强restart点击检查通过，失败测试/捕获假设保留。
+
+30471现Web-r9（ops-v12-native-r29-web-r9/web-r9），API/Worker/调查器r28和PG15454/schema70不改。来源、版本范围、恢复及证据见evidence/gpt-login-r29/README.md、source.json、runtime/web-runtime-r9.json。本轮无模型调用、无真实账号改密/角色变更，不重跑已通过Worker链路。P1/P2全量视觉与安全补充/正式安装仍未完成；下一步继续这些缺口，再按依赖P3资源日志与P4～P8。六维状态未提升。
+
+
+## r30（2026-10-27，最新断点）：P2-02/P2-03 认证与账号安全整组真实验收
+
+Web 现为 `ops-v12-native-r30-web-r14`（`/data/ops-v12-native-visual-r24-20261026/web-r14`，index SHA256 `8465ddec2b4632b7cc5ac518f39506255c9a65b17b7a58e085fd217377075ba8`）；r8～r13 停止保留。API/Worker/investigator 仍 r28，PG15454/schema70 未改；本轮无迁移、无模型调用、未重采参考。
+
+已修：登录/改密传输失败文案不再回显「请先核对持久记录」；强制重绑 MFA 的登录路由竞态（登录页会话重定向与提交目标不一致，可能落到普通首页）；账号安全面包屑「未匹配页面」与顶层页面模块名重复；焦点环 `#208f89/3px` → 原型 `#aaa7ef/2px`，对话初始焦点按原生 dialog 落到关闭控件。
+
+已实证（真实浏览器/真实 PG，证据在 `evidence/gpt-auth-r30/`）：登录空闲/加载/400/401/网络中断、同源与 CSRF 403、入口 429（第 60 次，`Retry-After`，窗口后恢复）、5 次失败锁定返回与错误密码完全相同的 401 并在 15 分钟后解锁、首次改密全套（刷新/错误当前密码/取消撤销/201 轮换/旧 Cookie 401）、首改密会话对业务/MFA/管理员接口 403、自助改密与账号菜单退出撤销、MFA 登记确认（10 码）/取消（零请求）/错误动态码保持挑战/自然闲置 660s 后真实 409 且清除旧密钥/再绑定推进 confirmedAt 并拒绝旧恢复码/管理员重置→`reset_required` 强制重绑/恢复码一次性消费撤销全部会话。
+
+未验（本节随后被 r30 返修断点修订）：逐状态整页视觉（SL-001/002 的演示凭据与演示页脚、SL-005 登记的安全扩展字段「当前密码」）、operator 真实运行（任务环境无合法集群范围，未伪造注册）、正式不可变 OCI/Bundle/离线安装与切换、资源/业务工具路径的 SP06、完整 Trace 与虚拟化（继续延期）。15 分钟绝对到期与并发/跨账号反例已在返修中补验。六维：visual 0（返修后纠正）、interaction 5、api 5、persistence 5、authorization 3、live 5；P1/P2 与 V1.2 仍未完成。
+
+续接顺序：先按 tasks.csv 依赖推进 P2-04/P2-05 正式部署闭包与 P1 剩余视觉，再 P3 资源日志 SL-049 同组（不以通用详情代替日志工作台），然后 P4～P8。不要重跑本轮已通过的一次性脚本（创建账号/重置/恢复）；验收身份 `r30.accept.*` 保留用于复核，`v12.r24.admin`、`r24.member.*` 未改动。
+
+## r30 返修断点（2026-10-27，复审后）
+
+- 敏感截图：仓库与该目录不再含任何 `mfa-*` 图；远程 23 张可疑图已移入 `private-evidence-quarantine`（0700/0600）。禁止把它们复制回仓库、再次展示或交给模型；后续截图必须走 `evidence/gpt-auth-r30/harness/safe-capture.mjs`（命中 otpauth/恢复码/动态码/base32 即拒绝出图），含秘密状态只留机检断言。
+- 9 个 `r30.accept.*` 身份已全部管理员重置 MFA（`mfa_reset_required=t`、无活动登记/恢复码/会话），继续验收请用新独立身份；`v12.r24.admin`、`r24.member.*` 未改动。
+- SL-001 `visual` 已纠正为 `not_verified`，全表 visual passed=0；不要再引用旧的 visual 1。
+- 窗口到期实证：`runs/idle-expiry-confirmed.json`（闲置 600s，无活动）、`runs/absolute-expiry.json`（绝对 900s，t+9min 的活动只刷新闲置）；并发/跨账号见 `runs/cross-account-concurrency.json`。
+- 运行手册 r30 段写明 Web-r14（index SHA `8465ddec…`）、安全前滚/恢复边界与"数据库恢复后必须重跑验收"。
+- SP06 剩余范围限定为资源/业务工具路径；审计 data_query 真实链路 r28 已通过，不要笼统写成"SP06 业务 Worker 未完成"。
+- 未通过/未验（继续登记，不继承旧 PASS）：SL-001/002/005 整页视觉（演示数据与登记的安全扩展字段）、operator 真实范围（无合法集群，不伪造注册）、正式不可变 OCI/Bundle 与离线切换、完整 Trace 与虚拟化（延期）。
+- 下一步：按 tasks.csv 依赖推进 P2-04/05 正式部署闭包与 P1 余项（逐状态整页视觉、operator 合法范围），随后 P3 日志 SL-049 同组样板与 P4～P8。
+
+## r31（2026-10-27，最新断点）：原生授权／历史主体／部署一致性
+
+Web 仍 `ops-v12-native-r30-web-r14`（index `8465ddec…`）；API `r28-worker/ops-api-query`（sha256 `8fe8d7bd…`）、Worker `r28-worker/ops-worker`（`735a9044…`）、调查器 `r28-python` 源码只读挂载、PG15454/schema70 均未升级，本轮无迁移、无模型调用。API/Worker Pod 已按 `r31/api-pod-r31.json`、`r31/worker-pod-r31.json` 重建（比 r28 多一个 `/etc/r31` 只读挂载），configmap `r28-runtime` 的 `sp04.json` 增加真实集群条目（备份 `r31/sp04.before.json`）。
+
+已就绪的真实链路：任务专属只读身份 `ops-r31-sp04-read` + ClusterRole `ops-native-v12-r24-20261026-r31-sp04-read`（17 个核心 Kind 只读、无 secrets、无写动词）+ 命名空间 `r31-sp04-lease` Role + Lease `r31-graph-lease`；集群登记 `clusterId 01a17c3c-80db-783b-9388-c6eee037f89b`（UID `79014400-9453-4cb4-9678-0fae47981d79`，endpoint `https://192.168.0.63:6443`，`apiEndpointRef openbao://secret/data/ops/r31-cluster/endpoint`）；来源 `sourceId 01a17c3c-ef66-70cf-9ff1-cad25a8bee34`（revision 2，scope=该 UID + `ops-native-v12-r24-20261026`）。SP04 采集 17 GVR 全部就绪，图所有权 epoch=1。
+
+授权：`r31.op.1793086009209` 持 operator（该 UID + 任务 namespace，authorizationVersion 8）；`v12.r24.admin` 仍只有 platform_admin、**未加 operator**；`r24.member.*` 未动。管理员读资源 403、该 operator 读 39～43 条真实资源。`r31.hist.1793086582839` 为零角色账号，仅用于历史映射负例（映射被服务端守卫拒绝，未产生映射行）。
+
+复现/继续时注意：
+- 24h 集群只读令牌到期后需 `kubectl create token ops-r31-sp04-read -n ops-native-v12-r24-20261026 --duration=86400s` 更新 Secret `r31-cluster-read`，否则采集失败（API 登录与授权数据不受影响）。
+- 读到瞬时 503 `GRAPH_NOT_READY`（worker `stage=lease_before_query`）是租约续约窗口内的 fail-closed，重试即恢复；不要为此放宽作用域或改租约 SQL。
+- 回退：`kubectl apply -f r31/api-pod-before.json` / `r31/worker-pod-before.json`，并把 `sp04.json` 恢复为 `r31/sp04.before.json`。回退不影响数据库与身份数据。
+- source 登记接口接受 `nativeTenant`，但 k8s 采集器要求为空——先按 PATCH 收窄再采集；这是待决策的语义不一致，不要用改产品校验来"修"验收。
+
+未通过/未验：整页视觉（SL-001/002/005 及全表 visual 0）、正式不可变 OCI/Bundle 与离线切换、Web 静态发布与 chart 渲染一致性、P3（SL-049）与 P4～P8。历史归属只做了真实 PG 机制验证，未在 live 重演旧用户迁移（live 无旧主体，且映射守卫拒绝编造）。六维未提升，P2-04/P2-05 仍 in_progress。
+
+## r32（2026-10-27，最新断点）：采集收敛/自动轮换/503 根因/原生管理
+
+复审 5 项集中返修完成 4.5 项，全部远程实证，详见 `evidence/gpt-authz-r32/README.md`。要点：采集身份收敛为 Worker 自身 SA+命名空间 Role+6 类集群级 Kind（旧全局 ClusterRole/SA/静态令牌已删除且旧令牌 401）；采集凭据为 600s 投射令牌自动轮换（三次轮换摘要+跨轮换连续 200 实证）；503 根因为续约全程 ~500ms 超过 Confirm gate 300ms（实测 gate_timeout），修复后 60 连读 0 失败且所有权/过期语义不变；k8s 来源 nativeTenant 在全部登记入口统一拒绝并可显式修复呈现；B 账号生命周期（停用/恢复/双并发反例）通过。
+
+chart（sp04.yaml、deployments.yaml、values.schema.json）已同步为收敛模型并新增渲染合同测试；`go test ./internal/{graph,source,httpapi,app}` 与 `./test/contract` 全部通过。
+
+剩余（按优先级）：C 历史主体正反例需一次性独立测试库+隔离 API/UI 环境（live 无旧主体、守卫正确拒绝编造）；D 无 OIDC 隔离冷启动（整栈新 namespace+新库+chart 安装+first-tenant）；正式不可变 OCI/Bundle 物料缺口继续阻塞；P1 整页视觉与 P3 SL-049 不变。运行环境现为 r32 API/Worker（r32-worker/ops-api、r32-worker/ops-worker），回退路径见 README"版本与回退"。本地 r32 目录 `/Users/mssc/Documents/Code/ops/r32/40-account-lifecycle.mjs`（远程 `r32/` 为运行副本）。凭据仍仅远程 private。

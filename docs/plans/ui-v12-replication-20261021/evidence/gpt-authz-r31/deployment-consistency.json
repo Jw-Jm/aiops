@@ -1,0 +1,225 @@
+{
+ "at": "2026-10-27T15:39:43+08:00",
+ "scope": "native stack consistency after replacing the API process and enabling the real cluster collector: API, Worker, investigator, Web, CLI and the read-only cluster identity",
+ "gitBase": "platform/main 082f87d66c5b plus the preserved r23..r31 uncommitted working tree; no commit, reset or push in this round",
+ "components": {
+  "ops-api": {
+   "image": "ops.local/verification-20261019/platform-api@sha256:494817ba463482a5959c1c3e10968b3e28db1affc458dbdbe2cec0be5d4878a7",
+   "command": [
+    "/data/ops-v12-native-visual-r24-20261026/r28-worker/ops-api-query"
+   ],
+   "podUid": "ae32a564-c588-467a-b183-2a168f3e72d0",
+   "startedAt": "2026-10-27T07:22:32Z",
+   "envKeys": [
+    "SP04_RUNTIME_FILE",
+    "SP06_RUNTIME_FILE"
+   ],
+   "oidcEnvKeys": [],
+   "mounts": [
+    [
+     "binary",
+     "/data/ops-v12-native-visual-r24-20261026/r28-worker/ops-api-query"
+    ],
+    [
+     "runtime",
+     "/etc/ops/runtime"
+    ],
+    [
+     "trust",
+     "/data/ops-v12-native-visual-r24-20261026/registry-trust.json"
+    ],
+    [
+     "projected",
+     "/var/run/secrets/ops-platform/openbao"
+    ],
+    [
+     "r28-runtime",
+     "/etc/r28"
+    ],
+    [
+     "r28-scope",
+     "/etc/r28-scope"
+    ],
+    [
+     "r31-cluster-read",
+     "/etc/r31"
+    ]
+   ]
+  },
+  "ops-worker": {
+   "image": "ops.local/verification-20261019/platform-worker@sha256:48d3700cd7595781e5384821b07e8fa38aaf172ada0fe2b55832fedd661a92ad",
+   "command": [
+    "/data/ops-v12-native-visual-r24-20261026/r28-worker/ops-worker"
+   ],
+   "podUid": "9bba1f8b-e2c0-4f36-a681-7b251fa9e549",
+   "startedAt": "2026-10-27T07:25:17Z",
+   "envKeys": [
+    "SP04_RUNTIME_FILE",
+    "SP06_RUNTIME_FILE"
+   ],
+   "oidcEnvKeys": [],
+   "mounts": [
+    [
+     "binary",
+     "/data/ops-v12-native-visual-r24-20261026/r28-worker/ops-worker"
+    ],
+    [
+     "runtime",
+     "/etc/ops/runtime"
+    ],
+    [
+     "trust",
+     "/data/ops-v12-native-visual-r24-20261026/registry-trust.json"
+    ],
+    [
+     "projected",
+     "/var/run/secrets/ops-platform/openbao"
+    ],
+    [
+     "archive-credentials",
+     "/etc/ops/archive"
+    ],
+    [
+     "r28-runtime",
+     "/etc/r28"
+    ],
+    [
+     "r31-cluster-read",
+     "/etc/r31"
+    ]
+   ]
+  },
+  "ops-investigator": {
+   "image": "ops.local/verification-20261019/holmesgpt@sha256:7ecb3550a6cbff97b243ffbad07f80b8f640c63ac9b9531ffec4e8f8b8655ae3",
+   "command": [
+    "python",
+    "-c",
+    "import json; from investigator.worker import serve; serve(json.load(open(\"/etc/r28/investigator.json\")))"
+   ],
+   "podUid": "bf5652b7-84b2-48bc-81f2-bd9e66eb38b3",
+   "startedAt": "2026-10-27T02:31:19Z",
+   "envKeys": [
+    "OPENBAO_ADDR",
+    "OPENBAO_CA_FILE",
+    "OPENBAO_PROJECTED_TOKEN_FILE",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONPATH"
+   ],
+   "oidcEnvKeys": [],
+   "mounts": [
+    [
+     "source",
+     "/opt/r28-python"
+    ],
+    [
+     "r28-runtime",
+     "/etc/r28"
+    ],
+    [
+     "bao",
+     "/etc/ops/runtime"
+    ],
+    [
+     "model",
+     "/run/model"
+    ],
+    [
+     "projected",
+     "/var/run/ops/openbao"
+    ],
+    [
+     "tmp",
+     "/tmp"
+    ]
+   ]
+  }
+ },
+ "binaries": {
+  "api": "8fe8d7bde1a141ab76bf311ec2f02b1e136a82c8b153367d649417ee895243d1",
+  "worker": "735a9044d8b51e4a85945b4c2f42b4b8ae2c5aeeb1315de72afffb95333ac8a2",
+  "opsctl": "a2e8de1f98dad352bf2f297daa6900b587b5c96d6895ed4a985e11cf1f16b0a5",
+  "integrationTest": "5b76c78633ff2324114487faa02b45b1df6af173cc0538f07ff6a18de3f193f1"
+ },
+ "web": {
+  "container": "ops-v12-native-r30-web-r14",
+  "indexSha256": "8465ddec2b4632b7cc5ac518f39506255c9a65b17b7a58e085fd217377075ba8",
+  "runtimeConfig": {
+   "auth": {
+    "mode": "native"
+   }
+  },
+  "oidcDiscoveryPath": "serves the SPA shell (text/html); no discovery document"
+ },
+ "restartProof": {
+  "before": {
+   "session": 200,
+   "sessionRef": "session:01a17c4b-62de-725d-8c24-1727efe6b9c5",
+   "read": 200
+  },
+  "after": {
+   "session": 200,
+   "sessionRef": "session:01a17c4b-62de-725d-8c24-1727efe6b9c5",
+   "loginName": "r31.op.1793086009209",
+   "read": 200,
+   "count": 43,
+   "attempts": [
+    {
+     "status": 200,
+     "count": 43
+    }
+   ],
+   "path": "/overview"
+  },
+  "claim": "the session created before the API pod was deleted (session:01a17c4b-62de-725d-8c24-1727efe6b9c5) still authenticates and reads real resources on the replacement process, so session state is PostgreSQL-backed and the stack starts without an identity provider"
+ },
+ "oidcProbe": {
+  "discoveryStatus": 200,
+  "discoveryType": "text/html",
+  "runtimeStatus": 200,
+  "authMode": "native",
+  "oidcKeys": []
+ },
+ "contractTests": {
+  "command": "go test ./test/contract -run Native -count=1",
+  "result": "ok ops-platform/test/contract",
+  "cases": [
+   "TestNativeAuthChartHasNoOIDCDependencyAndProjectsMFADuty (without-investigator, with-investigator)",
+   "TestNativeScopeContractLimits (5 scope boundary cases)"
+  ]
+ },
+ "observedIssue": {
+  "symptom": "intermittent HTTP 503 GRAPH_NOT_READY on resource reads",
+  "log": "worker logs 'Graph request unavailable' stage=lease_before_query",
+  "attemptsRecorded": [
+   [
+    {
+     "status": 503,
+     "count": 0
+    },
+    {
+     "status": 200,
+     "count": 43
+    }
+   ],
+   [
+    {
+     "status": 503,
+     "count": 0
+    },
+    {
+     "status": 200,
+     "count": 43
+    }
+   ]
+  ],
+  "interpretation": "a read can land between the 2s lease renewal and the 6s ownership-mirror expiry; the request fails closed and succeeds on retry. Recorded as an observed behaviour, not worked around or hidden."
+ },
+ "notVerified": [
+  "formal immutable OCI/Bundle, offline install and switch-over: no qualified signed material for this task, so it stays blocked rather than simulated",
+  "a chart-based install of this namespace: the running stack is a source canary over the verified images, not a chart release"
+ ],
+ "blockers": [
+  "no admitted OCI image/Chart for the current source and no signed Bundle profile for this tenant; the existing OPA source-material mismatch is preserved and was not bypassed",
+  "the Web container is a prebuilt static release (r30/web-r14) rather than a chart-rendered deployment; source-to-image parity for Web is asserted by the recorded index hash, not by a signed image"
+ ]
+}

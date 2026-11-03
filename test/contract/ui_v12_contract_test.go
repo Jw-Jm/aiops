@@ -805,7 +805,7 @@ func uiV12ClusterScopedCreateJSON() string {
 }
 
 func uiV12QueryViewJSON() string {
-	return `{"queryId": "` + uiV12UUID + `", "schemaVersion": "ui-v12-observability-query/v1",
+	return `{"queryId": "` + uiV12UUID + `", "revision": 1, "schemaVersion": "ui-v12-observability-query/v1",
 		"state": "completed", "ownerSubject": "principal-7f3a", "tenantId": "tenant-a",
 		"resource": ` + uiV12ResourceJSON() + `, "source": ` + uiV12SourceJSON() + `,
 		"window": ` + uiV12WindowJSON() + `, "coverage": ` + uiV12CoverageJSON() + `,

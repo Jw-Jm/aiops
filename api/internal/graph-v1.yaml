@@ -105,10 +105,12 @@ components:
         relationKinds: {type: array, items: {type: string}}
         cursorRevision: {$ref: '#/components/schemas/GraphRevision'}
         afterCanonicalId: {type: string}
+        includeFilterOptions: {type: boolean}
         includeDomains: {type: boolean}
         domain: {type: string, enum: [hardware, kubernetes, network, storage]}
         kind: {type: string}
         name: {type: string}
+        q: {type: string, maxLength: 256}
         health: {type: string}
         label: {type: string}
         sort: {type: string}

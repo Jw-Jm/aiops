@@ -11,28 +11,40 @@ import (
 	"strings"
 )
 
+// HostedEvidence identifies the actual API protocol material, without claiming
+// ownership of hosted weights or a zero-cost self-hosted license.
+type HostedEvidence struct {
+	Provider               string `json:"provider"`
+	Protocol               string `json:"protocol"`
+	RevisionPolicy         string `json:"revisionPolicy"`
+	DocumentationURL       string `json:"documentationURL"`
+	DocumentationDigest    string `json:"documentationDigest"`
+	ProtocolEvidenceDigest string `json:"protocolEvidenceDigest"`
+}
+
 type Profile struct {
-	SchemaVersion           string   `json:"schemaVersion"`
-	Version                 string   `json:"version"`
-	ModelID                 string   `json:"modelID"`
-	ModelVersion            string   `json:"modelVersion"`
-	BaseURL                 string   `json:"baseURL"`
-	APIKeyRef               string   `json:"apiKeyRef"`
-	ContextWindow           int      `json:"contextWindow"`
-	OutputTokenLimit        int      `json:"outputTokenLimit"`
-	TokenAccounting         string   `json:"tokenAccounting"`
-	CostPolicy              string   `json:"costPolicy"`
-	ToolCalling             bool     `json:"toolCalling"`
-	StructuredOutput        bool     `json:"structuredOutput"`
-	TaskKinds               []string `json:"taskKinds"`
-	TimeoutSeconds          int      `json:"timeoutSeconds"`
-	Retries                 int      `json:"retries"`
-	LicenseSPDX             string   `json:"licenseSPDX"`
-	WeightsDigest           string   `json:"weightsDigest"`
-	EvaluationVersion       string   `json:"evaluationVersion"`
-	EvaluationDigest        string   `json:"evaluationDigest"`
-	AdmissionEvidenceDigest string   `json:"admissionEvidenceDigest"`
-	AdmissionState          string   `json:"admissionState"`
+	SchemaVersion           string          `json:"schemaVersion"`
+	Version                 string          `json:"version"`
+	ModelID                 string          `json:"modelID"`
+	ModelVersion            string          `json:"modelVersion"`
+	BaseURL                 string          `json:"baseURL"`
+	APIKeyRef               string          `json:"apiKeyRef"`
+	ContextWindow           int             `json:"contextWindow"`
+	OutputTokenLimit        int             `json:"outputTokenLimit"`
+	TokenAccounting         string          `json:"tokenAccounting"`
+	CostPolicy              string          `json:"costPolicy"`
+	ToolCalling             bool            `json:"toolCalling"`
+	StructuredOutput        bool            `json:"structuredOutput"`
+	TaskKinds               []string        `json:"taskKinds"`
+	TimeoutSeconds          int             `json:"timeoutSeconds"`
+	Retries                 int             `json:"retries"`
+	LicenseSPDX             string          `json:"licenseSPDX,omitempty"`
+	WeightsDigest           string          `json:"weightsDigest,omitempty"`
+	EvaluationVersion       string          `json:"evaluationVersion"`
+	EvaluationDigest        string          `json:"evaluationDigest"`
+	AdmissionEvidenceDigest string          `json:"admissionEvidenceDigest"`
+	AdmissionState          string          `json:"admissionState"`
+	Hosted                  *HostedEvidence `json:"hosted,omitempty"`
 }
 
 // Reference includes every field, including endpoint, cost and evaluation proof.
@@ -46,8 +58,12 @@ func (p Profile) Reference() string {
 }
 func (p Profile) Valid(listen string) bool {
 	b, _ := json.Marshal(p)
-	if contract.Validate("https://ops.local/schemas/assistant-model-profile/v1", b) != nil || p.OutputTokenLimit >= p.ContextWindow {
+	schema := "https://ops.local/schemas/" + p.SchemaVersion
+	if (p.SchemaVersion != "assistant-model-profile/v1" && p.SchemaVersion != "assistant-model-profile/v2") || contract.Validate(schema, b) != nil || p.OutputTokenLimit >= p.ContextWindow {
 		return false
+	}
+	if p.SchemaVersion == "assistant-model-profile/v2" {
+		return p.AdmissionState == "admitted"
 	}
 	u, err := url.Parse(p.BaseURL)
 	if err != nil || (u.Scheme != "https" && u.Scheme != "http") || u.User != nil || u.RawQuery != "" || u.Fragment != "" || u.Path != "/v1" || strings.ContainsAny(p.BaseURL, "?#") {

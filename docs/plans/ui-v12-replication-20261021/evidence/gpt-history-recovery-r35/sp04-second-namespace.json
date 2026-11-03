@@ -1,0 +1,38 @@
+{
+ "IdentityMode": "openbao-kubernetes",
+ "Namespace": "ops-native-v12-r24-20261026",
+ "ListenAddress": "0.0.0.0:18492",
+ "OwnerEndpoint": "https://127.0.0.1:18492",
+ "ServerName": "ops-worker.ops-native-v12-r24-20261026.svc.cluster.local",
+ "CertificateFile": "/etc/r28/tls.crt",
+ "PrivateKeyFile": "/etc/r28/tls.key",
+ "CAFile": "/etc/r28/workload-ca.pem",
+ "CRLFile": "/etc/r28/workload-crl.pem",
+ "ContextPrivateKeyFile": "/etc/r28-scope/scope-key",
+ "ContextPublicKeyFile": "/etc/r28/scope-public-key",
+ "ArchiveBackendLogicalID": "r28-task-archive",
+ "AllowedWorkerCIDRs": [
+  "127.0.0.1/32"
+ ],
+ "Clusters": [
+  {
+   "Tenant": "01a177f1-372f-75b7-be90-e8121d1445f5",
+   "ClusterUID": "79014400-9453-4cb4-9678-0fae47981d79",
+   "SourceID": "01a17c3c-ef66-70cf-9ff1-cad25a8bee34",
+   "BackendLogicalID": "r31-native-dev-cluster",
+   "Endpoint": "https://192.168.0.63:6443",
+   "CAFile": "/etc/r31/ca.crt",
+   "TokenFile": "/etc/r31-projected/token",
+   "LeaseNamespace": "ops-native-v12-r24-20261026",
+   "LeaseName": "r31-graph-lease",
+   "SourceRevision": 3,
+   "QPS": 8,
+   "Burst": 20,
+   "Namespaces": [
+    "ops-native-v12-r24-20261026",
+    "ops-native-v12-r35-scope"
+   ]
+  }
+ ],
+ "Sources": []
+}

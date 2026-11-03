@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"io"
+	"k8s.io/apimachinery/pkg/util/validation"
 	"log/slog"
 	"net"
 	"net/http"
@@ -38,9 +39,14 @@ import (
 type SP04Cluster struct {
 	SourceScopeDigest                                                                                      string `json:"-"`
 	Tenant, ClusterUID, SourceID, BackendLogicalID, Endpoint, CAFile, TokenFile, LeaseNamespace, LeaseName string
-	SourceRevision                                                                                         int64
-	QPS                                                                                                    int
-	Burst                                                                                                  int
+	// Namespaces is the exact namespace scope of the registered source. It is
+	// validated against the registration before any list/watch is issued, so a
+	// declaration cannot silently become an all-namespaces collection.
+	PodLogs        bool
+	Namespaces     []string
+	SourceRevision int64
+	QPS            int
+	Burst          int
 }
 type SP04Source struct {
 	AnalysisQualifications []analytics.Qualification
@@ -285,7 +291,7 @@ func clusterClient(c SP04Cluster) (*kubernetes.Client, error) {
 	if qps > 10 || burst > 25 {
 		return nil, errors.New("SP04 two-worker cluster budget requires QPS<=10 and burst<=25 per worker")
 	}
-	client, err := kubernetes.NewClient(c.Endpoint, &http.Client{Transport: tokenTransport{transport, c.TokenFile}, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}, qps, burst)
+	client, err := kubernetes.NewClient(c.Endpoint, &http.Client{Transport: clusterCredentialTransport{transport, c.TokenFile}, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}, qps, burst)
 	if err != nil {
 		return nil, err
 	}
@@ -298,6 +304,61 @@ func clusterClient(c SP04Cluster) (*kubernetes.Client, error) {
 		return nil, err
 	}
 	return client, nil
+}
+
+// validateCollectorScope makes the collection path identical to the registered
+// source scope before the first request: the declared namespaces must equal the
+// registered namespace scope, the registration must not declare a native tenant
+// (Kubernetes collection has no implementation for it), the Graph Lease must be
+// inside that scope, and every required resource must have a known native
+// scope. A drift here is a configuration error, never an implicit broadcast.
+func validateCollectorScope(cluster SP04Cluster, binding evidence.Binding) error {
+	if binding.Tenant != cluster.Tenant || binding.SourceID != cluster.SourceID || binding.Revision != cluster.SourceRevision ||
+		binding.SourceType != "kubernetes" || binding.BackendLogicalID != cluster.BackendLogicalID {
+		return errors.New("Kubernetes collection binding does not match its configuration")
+	}
+	if binding.ScopeMapping.NativeTenant != "" {
+		return errors.New("Kubernetes collection does not support a native tenant data scope")
+	}
+	registered := map[string]bool{}
+	for _, namespace := range binding.ScopeMapping.Scopes["namespace"] {
+		if !validNamespaceName(namespace) || registered[namespace] {
+			return errors.New("registered Kubernetes source namespace scope is invalid")
+		}
+		registered[namespace] = true
+	}
+	if len(registered) == 0 {
+		return errors.New("registered Kubernetes source has no namespace scope")
+	}
+	declared := map[string]bool{}
+	for _, namespace := range cluster.Namespaces {
+		if !validNamespaceName(namespace) || declared[namespace] {
+			return errors.New("Kubernetes collection namespace configuration is invalid")
+		}
+		if !registered[namespace] {
+			return errors.New("Kubernetes collection namespace exceeds the registered source scope")
+		}
+		declared[namespace] = true
+	}
+	if len(declared) == 0 {
+		return errors.New("Kubernetes collection requires an explicit namespace scope")
+	}
+	if len(declared) != len(registered) {
+		return errors.New("Kubernetes collection does not cover the registered source namespace scope")
+	}
+	if !declared[cluster.LeaseNamespace] {
+		return errors.New("Graph Lease namespace is outside the Kubernetes collection scope")
+	}
+	for _, gvr := range kubernetes.CoreRequiredGVRs() {
+		if !gvr.Collected() {
+			return errors.New("unclassified Kubernetes collection resource: " + gvr.Key())
+		}
+	}
+	return nil
+}
+
+func validNamespaceName(value string) bool {
+	return value != "" && len(value) <= 63 && len(validation.IsDNS1123Label(value)) == 0
 }
 func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.ArchiveService, runtime *observability.Runtime, auditVerifier ...AuditRangeVerifier) (func(), error) {
 	c, err := loadSP04()
@@ -360,8 +421,17 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 			cancel()
 			return nil, err
 		}
+		if err := validateCollectorScope(cluster, initialBinding); err != nil {
+			cancel()
+			return nil, err
+		}
 		cluster.SourceScopeDigest = evidence.BindingScopeDigest(initialBinding)
 		graphBindings := []evidence.Binding{initialBinding}
+		group.Add(1)
+		go func(cluster SP04Cluster) {
+			defer group.Done()
+			watchClusterCredential(runContext, runtime.Logger, cluster)
+		}(cluster)
 		for _, source := range c.Sources {
 			if source.Binding.Tenant == cluster.Tenant && slices.Contains(source.Binding.ScopeMapping.Scopes["cluster"], cluster.ClusterUID) && (source.Name == "redfish" || source.Name == "deepflow") {
 				graphBindings = append(graphBindings, source.Binding)
@@ -397,11 +467,15 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 						return InspectSP05Snapshot(runContext, cluster, s, archive)
 					})
 				}
+				var namespaces []string
+				if gvr.Namespaced() {
+					namespaces = cluster.Namespaces
+				}
 				for runContext.Err() == nil {
-					err := client.Run(runContext, gvr, sink)
+					err := client.Run(runContext, gvr, namespaces, sink)
 					if err != nil && runContext.Err() == nil {
 						runtime.Metrics.RecordOperation("kubernetes", "query", "unavailable")
-						runtime.Logger.WarnContext(runContext, "Kubernetes collection unavailable", slog.String("gvr", gvr.Path()), slog.String("errorClass", collectionErrorClass(err)))
+						runtime.Logger.WarnContext(runContext, "Kubernetes collection unavailable", slog.String("gvr", gvr.Path()), slog.Any("namespaces", namespaces), slog.String("errorClass", collectionErrorClass(err)), slog.String("error", err.Error()))
 						select {
 						case <-runContext.Done():
 							return
@@ -638,7 +712,18 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 	if err := startSP05Worker(runContext, pool, archive, c, handlers, adapters, runtime, &group); err != nil {
 		return nil, err
 	}
+	namespaceScopes := map[string][]string{}
+	logClusters := map[string]SP04Cluster{}
+	for _, cluster := range c.Clusters {
+		namespaceScopes[cluster.Tenant+"|"+cluster.ClusterUID] = cluster.Namespaces
+		logClusters[cluster.Tenant+"|"+cluster.ClusterUID] = cluster
+	}
+	startObservationQueries(runContext, pool, c, analysisAdapters, handlers, &group)
 	dispatch := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/internal/v1/observability:request" {
+			serveObservationRequest(w, r, trust, key, pool, analysisAdapters, handlers, namespaceScopes, logClusters)
+			return
+		}
 		if r.URL.Path == "/internal/v1/analysis:query" {
 			serveWorkerAnalysis(w, r, trust, key, pool, analysisAdapters, handlers, adapters, networkAnalysisRuntime{Adapters: networkAdapters, Archive: archive})
 			return

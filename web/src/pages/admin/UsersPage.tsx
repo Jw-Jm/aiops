@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { Alert, Button, Input, Select, Space, Table, Tabs, Tag } from "antd";
+import { Alert, Button, Input, Select, Space, Tabs } from "antd";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAuth } from "../../auth/AuthProvider";
 import {
@@ -26,10 +26,12 @@ import {
   Surface,
   Toolbar,
   Field,
+  DataTable,
+  StatusPill,
+  Note,
 } from "../../components/v12/primitives";
 import { V12Drawer, V12Modal } from "../../components/v12/Layer";
 import { QueryState } from "../../components/QueryState";
-import { Details } from "../../components/Details";
 
 import { SubjectMappingsPanel } from "./SubjectMappingsPanel";
 
@@ -245,7 +247,13 @@ function UserOperation({
             loading={submit.isPending}
             onClick={() => submit.mutate()}
           >
-            确认提交
+            {edit.operation === "create"
+              ? "创建账号"
+              : edit.operation === "edit"
+                ? "保存资料"
+                : edit.operation === "password"
+                  ? "保存密码"
+                  : "确认提交"}
           </Button>
         </Space>
       }
@@ -255,12 +263,17 @@ function UserOperation({
           {user.loginName} · 资料版本 r{user.revision}
         </p>
       ) : null}
-      <Space orientation="vertical" style={{ width: "100%" }}>
-        {edit.operation === "create" ? (
-          <Field label="用户名" htmlFor={id + "login"}>
+      <div className="v12-layer-form">
+        {["create", "edit"].includes(edit.operation) ? (
+          <Field
+            label="用户名"
+            htmlFor={id + "login"}
+            help="1～128 位字母、数字、点、下划线或短横线；首位为字母或数字。"
+          >
             <Input
               id={id + "login"}
-              value={login}
+              value={edit.operation === "edit" ? user!.loginName : login}
+              readOnly={edit.operation === "edit"}
               onChange={(e) => setLogin(e.target.value)}
               autoComplete="off"
               maxLength={128}
@@ -381,7 +394,7 @@ function UserOperation({
         ) : null}
         {proof.verification}
         <QueryState loading={false} error={submit.error} />
-      </Space>
+      </div>
     </V12Modal>
   );
 }
@@ -391,6 +404,22 @@ export function UsersPage() {
   const [cursor, setCursor] = useState<string>();
   const [filter, setFilter] = useState("");
   const [tab, setTab] = useState("users");
+  const [status, setStatus] = useState("all");
+  const [roleFilter, setRoleFilter] = useState("all");
+  const { configCandidates } = useClusterScope();
+  const scopeText = (grant: Grant) =>
+    grant.role === "platform_admin"
+      ? "平台管理权限；不含资源操作"
+      : grant.scope.clusterUids
+          .map(
+            (uid) =>
+              configCandidates.find((c) => c.clusterUid === uid)?.displayName ??
+              uid,
+          )
+          .join("、") +
+        (grant.scope.namespaces.length
+          ? " / " + grant.scope.namespaces.join("、")
+          : " / 全部命名空间");
   const [selected, setSelected] = useState<Account>();
   const [edit, setEdit] = useState<Edit>();
   const [uncertain, setUncertain] = useState(false);
@@ -402,11 +431,17 @@ export function UsersPage() {
       checked(getNativeUsers({ limit: 50, cursor }, requestOptions(signal))),
   });
   const users = query.data?.data ?? [];
-  const rows = users.filter((u) =>
-    (u.loginName + u.displayName).toLowerCase().includes(filter.toLowerCase()),
+  const rows = users.filter(
+    (u) =>
+      (u.loginName + u.displayName)
+        .toLowerCase()
+        .includes(filter.toLowerCase()) &&
+      (status === "all" || u.status === status),
   );
   const grants = rows.flatMap((user) =>
-    user.roleGrants.map((grant) => ({ ...grant, user })),
+    user.roleGrants
+      .filter((g) => roleFilter === "all" || g.role === roleFilter)
+      .map((grant) => ({ ...grant, user })),
   );
   const refresh = () => {
     setSelected(undefined);
@@ -415,7 +450,7 @@ export function UsersPage() {
   if (auth.authMode !== "native")
     return <Alert type="warning" title="该页面需要原生账号运行模式。" />;
   return (
-    <>
+    <div className="v12-users-page">
       <PageHeader
         title="用户与权限"
         description="由平台管理员创建账号，管理启停、密码和访问授权。"
@@ -451,10 +486,33 @@ export function UsersPage() {
         <Surface title={tab === "users" ? "平台用户" : "角色授权"}>
           <Toolbar>
             <Input.Search
+              enterButton="搜索"
               aria-label="搜索本页用户"
               placeholder="用户名或姓名（本页）"
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
+            />
+            {tab === "grants" ? (
+              <Select
+                aria-label="筛选本页角色"
+                value={roleFilter}
+                onChange={setRoleFilter}
+                options={[
+                  { value: "all", label: "全部角色（本页）" },
+                  { value: "operator", label: "运维操作员" },
+                  { value: "platform_admin", label: "平台管理员" },
+                ]}
+              />
+            ) : null}
+            <Select
+              aria-label="筛选本页登录状态"
+              value={status}
+              onChange={setStatus}
+              options={[
+                { value: "all", label: "全部状态（本页）" },
+                { value: "active", label: "启用" },
+                { value: "disabled", label: "停用" },
+              ]}
             />
             <Button onClick={refresh}>刷新</Button>
           </Toolbar>
@@ -464,30 +522,37 @@ export function UsersPage() {
             retry={refresh}
           >
             {tab === "users" ? (
-              <Table
+              <DataTable
                 rowKey="userId"
                 dataSource={rows}
                 pagination={false}
                 columns={[
                   {
                     title: "用户名 / 姓名",
+                    width: "16%",
                     render: (_, u: Account) => (
                       <>
                         <strong>{u.displayName}</strong>
-                        <div>{u.loginName}</div>
+                        <div className="v12-user-meta">{u.loginName}</div>
                       </>
                     ),
                   },
                   {
                     title: "登录状态",
+                    width: "13.4%",
                     render: (_, u: Account) => (
-                      <Tag>{u.status === "active" ? "启用" : "停用"}</Tag>
+                      <StatusPill
+                        value={u.status}
+                        label={u.status === "active" ? "启用" : "停用"}
+                      />
                     ),
                   },
                   {
                     title: "角色",
+                    width: "27%",
                     render: (_, u: Account) =>
                       u.roleGrants
+                        .filter((g) => !g.revokedAt)
                         .map((g) =>
                           g.role === "operator" ? "运维操作员" : "平台管理员",
                         )
@@ -495,6 +560,7 @@ export function UsersPage() {
                   },
                   {
                     title: "密码状态",
+                    width: "13%",
                     render: (_, u: Account) =>
                       u.mustChangePassword ? "首次登录须修改" : "已设置",
                   },
@@ -527,22 +593,41 @@ export function UsersPage() {
                 ]}
               />
             ) : (
-              <Table
+              <DataTable
                 rowKey="bindingId"
                 dataSource={grants}
                 pagination={false}
                 columns={[
                   { title: "用户", render: (_, g) => g.user.loginName },
-                  { title: "角色", dataIndex: "role" },
                   {
-                    title: "集群与命名空间",
-                    render: (_, g) => <Details value={g.scope} />,
+                    title: "角色",
+                    render: (_, g) =>
+                      g.role === "operator" ? "运维操作员" : "平台管理员",
+                  },
+                  {
+                    title: "授权范围",
+                    render: (_, g) => scopeText(g),
+                  },
+                  {
+                    title: "状态 / 版本",
+                    render: (_, g) => (
+                      <>
+                        <StatusPill
+                          value={g.revokedAt ? "disabled" : "active"}
+                          label={g.revokedAt ? "已撤销" : "已授权"}
+                        />
+                        <div className="v12-user-meta">
+                          r{g.authorizationVersion}
+                        </div>
+                      </>
+                    ),
                   },
                   {
                     title: "操作",
                     render: (_, g) => (
                       <Button
                         danger
+                        disabled={!!g.revokedAt}
                         onClick={() =>
                           setEdit({
                             operation: "revoke",
@@ -558,45 +643,74 @@ export function UsersPage() {
                 ]}
               />
             )}
-            <p>账号与角色分别管理；创建账号不自动授予管理员或集群权限。</p>
-            <Space>
-              <Button disabled={!cursor} onClick={() => setCursor(undefined)}>
-                首页
-              </Button>
-              <Button
-                disabled={!query.data?.meta.nextCursor}
-                onClick={() => setCursor(query.data?.meta.nextCursor)}
-              >
-                下一页
-              </Button>
-            </Space>
+            <p className="v12-user-footnote">
+              账号与角色分别管理；创建账号不自动授予管理员或集群权限。
+            </p>
+            {cursor || query.data?.meta.nextCursor ? (
+              <Space className="v12-user-pagination">
+                <Button disabled={!cursor} onClick={() => setCursor(undefined)}>
+                  首页
+                </Button>
+                <Button
+                  disabled={!query.data?.meta.nextCursor}
+                  onClick={() => setCursor(query.data?.meta.nextCursor)}
+                >
+                  下一页
+                </Button>
+              </Space>
+            ) : null}
           </QueryState>
         </Surface>
       )}
       {selected ? (
-        <V12Drawer open title="用户详情" onClose={() => setSelected(undefined)}>
-          <Details
-            value={{
+        <V12Drawer
+          open
+          title="用户详情"
+          onClose={() => setSelected(undefined)}
+          footer={
+            <Space wrap>
+              {(["edit", "password", "sessions"] as const).map((operation) => (
+                <Button
+                  key={operation}
+                  onClick={() => setEdit({ operation, user: selected })}
+                >
+                  {operation === "edit"
+                    ? "编辑资料"
+                    : operation === "password"
+                      ? "重置密码"
+                      : titles[operation]}
+                </Button>
+              ))}
+            </Space>
+          }
+        >
+          <dl className="v12-key-values">
+            {Object.entries({
               用户名: selected.loginName,
               姓名: selected.displayName,
               账号类型: "平台内置账号",
-              平台访问: selected.status,
+              平台访问: selected.status === "active" ? "启用" : "停用",
               密码状态: selected.mustChangePassword
                 ? "首次登录须修改"
                 : "已设置；不可查看原密码",
-              资料版本: selected.revision,
-            }}
-          />
-          <Space wrap>
-            {(["edit", "password", "sessions"] as const).map((operation) => (
-              <Button
-                key={operation}
-                onClick={() => setEdit({ operation, user: selected })}
-              >
-                {titles[operation]}
-              </Button>
+              资料版本: `r${selected.revision}`,
+              独立角色:
+                selected.roleGrants
+                  .filter((g) => !g.revokedAt)
+                  .map((g) =>
+                    g.role === "operator" ? "运维操作员" : "平台管理员",
+                  )
+                  .join("、") || "尚未授权",
+            }).map(([label, value]) => (
+              <div key={label}>
+                <dt>{label}</dt>
+                <dd>{value}</dd>
+              </div>
             ))}
-          </Space>
+          </dl>
+          <Note>
+            账号资料与角色分别管理。修改密码或撤销会话后，该用户需要重新登录。
+          </Note>
         </V12Drawer>
       ) : null}
       {edit ? (
@@ -612,6 +726,6 @@ export function UsersPage() {
           changed={refresh}
         />
       ) : null}
-    </>
+    </div>
   );
 }

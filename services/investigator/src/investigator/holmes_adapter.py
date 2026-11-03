@@ -98,6 +98,9 @@ def investigate(job, model, job_api, bridge, api_key_file="/run/secrets/model-ap
     if assistant:llm.assistant_task_kind=job["assistant"]["taskKind"]
     prompt=assistant_messages(job,prior) if assistant else messages(job,prior)
     schema=assistant_schema() if assistant else OUTPUT_JSON_SCHEMA
+    # JSON-mode providers do not receive the schema through response_format.
+    schema_message={"role":"system","content":"Return the final JSON object matching this exact output schema. Do not add or rename fields. "+json.dumps(schema,separators=(",",":"))} if getattr(llm,"structured_output_mode","json_schema")=="json_object" else None
+    if schema_message:prompt.append(schema_message)
     response_format={"type":"json_schema","json_schema":{"name":"AssistantAnswer" if assistant else "InvestigationResult","strict":True,"schema":schema}}
     try:
         result=agent.call(messages=prompt,response_format=response_format)
@@ -118,6 +121,7 @@ def investigate(job, model, job_api, bridge, api_key_file="/run/secrets/model-ap
         repair_steps=job_api.request("/steps")
         repair_prior=committed_reads(repair_steps)
         repair_prompt=assistant_messages(job,repair_prior)+[{"role":"user","content":"The previous response was invalid JSON or violated the output/reference schema. Return one object matching the required schema. resourceSourceSteps must be [], faultChainContextRef must be null: the platform attaches its own references. Use only permitted committed references. Historical checks are not checks executed in this Job. Do not copy platform-owned fields from prior answers."}]
+        if schema_message:repair_prompt.append(schema_message)
         try:
             repaired=agent.call(messages=repair_prompt,response_format=response_format)
         except CompactionInsufficientError:

@@ -1,0 +1,45 @@
+{
+  "preservedRemoteLogs": [
+    "source-first.log",
+    "source-second.log",
+    "source-archive-final.log",
+    "historical-before.log"
+  ],
+  "failures": [
+    {
+      "test": "new Lease dependency regression",
+      "initial": "test incorrectly expected epoch zero after InvalidateOwner; actual contract clears deadline",
+      "resolution": "assert published snapshot cleared and owner deadline zero; final test passes"
+    },
+    {
+      "test": "new queue health regression",
+      "initial": "empty snapshot had no LastListCompletedAt/required GVR, query correctly GRAPH_NOT_READY",
+      "resolution": "use a qualified snapshot; sticky conflict assertion passes"
+    },
+    {
+      "test": "source-first.log",
+      "initial": "macOS AppleDouble migration entries could not be parsed",
+      "resolution": "new repo-clean directory contains only numbered SQL files; original packaging retained"
+    },
+    {
+      "test": "source-second.log",
+      "initial": "schema_owner lacked CREATE on the isolated database at migration44",
+      "resolution": "test bootstrap grants CREATE only on its own random database"
+    },
+    {
+      "test": "source-archive-final.log",
+      "initial": "replay fixture retain_until roundtrip at exact180-day boundary lost nanoseconds in PostgreSQL, then pending failed fixture affected next recovery",
+      "resolution": "fixture uses same181-day margin as production collector; full archive suite passes; production retention validation unchanged"
+    },
+    {
+      "test": "historical-before.log",
+      "initial": "mapped message pagination returned404 while detail200",
+      "resolution": "GET preflight uses existing GetReadable; mutations stay strict; remote test passes"
+    },
+    {
+      "test": "rotation update harness",
+      "initial": "kubectl label -o json returned client object with old RV; assertion rejected it",
+      "resolution": "explicit server GET confirms same UID with new RV; DB and API verify the new fact"
+    }
+  ]
+}

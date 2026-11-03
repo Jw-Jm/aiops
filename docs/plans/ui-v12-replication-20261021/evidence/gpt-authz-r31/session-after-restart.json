@@ -1,0 +1,30 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "checks": [
+    "the session created before the restart still authenticates and reads 43 real resources afterwards, so sessions live in PostgreSQL rather than in one process",
+    "the Web runtime configuration declares auth.mode=native with no OIDC/issuer/client keys, and /oidc/.well-known/openid-configuration falls through to the SPA shell (text/html) instead of serving a discovery document; the API and Worker carry no OIDC/Keycloak/issuer environment variables"
+  ],
+  "failure": null,
+  "after": {
+    "session": 200,
+    "sessionRef": "session:01a17c4b-62de-725d-8c24-1727efe6b9c5",
+    "loginName": "r31.op.1793086009209",
+    "read": 200,
+    "count": 43,
+    "attempts": [
+      {
+        "status": 200,
+        "count": 43
+      }
+    ],
+    "path": "/overview"
+  },
+  "oidcProbe": {
+    "discoveryStatus": 200,
+    "discoveryType": "text/html",
+    "runtimeStatus": 200,
+    "authMode": "native",
+    "oidcKeys": []
+  },
+  "status": "passed"
+}

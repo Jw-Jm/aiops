@@ -16,7 +16,12 @@ var (
 	ErrRevisionConflict = errors.New("source registration revision changed")
 	ErrResourceNotFound = errors.New("source or cluster registration was not found")
 	ErrIdentityConflict = errors.New("registered source or cluster identity conflicts with the requested identity")
-	allowedSourceTypes  = map[string]struct{}{
+	// ErrScopeIncompatible means the declared data scope is well formed but the
+	// selected source type has no runtime implementation for it. Registration
+	// used to accept such a declaration and fail every later collection with
+	// source_scope_unverified, so it is rejected at the write boundary instead.
+	ErrScopeIncompatible = errors.New("source data scope mapping is incompatible with its source type")
+	allowedSourceTypes   = map[string]struct{}{
 		"victoriametrics": {}, "victorialogs": {}, "deepflow": {}, "kubernetes": {},
 		"redfish": {}, "ipmi": {}, "smart": {}, "object_storage": {}, "model": {},
 	}
@@ -38,6 +43,14 @@ type SourceRegistration struct {
 	Revision           int64            `json:"revision"`
 	CreatedAt          time.Time        `json:"createdAt"`
 	UpdatedAt          time.Time        `json:"updatedAt"`
+}
+
+// ScopeSupported reports whether the stored declaration can be collected by its
+// source type. The API uses it to present an existing incompatible registration
+// explicitly, and to point the operator at the repair path, instead of hiding it
+// behind a generic "verification pending" reason.
+func (value SourceRegistration) ScopeSupported() bool {
+	return validateTypeScope(value.SourceType, value.BackendLogicalID, value.DataScopeMapping, value.ClusterUID) == nil
 }
 
 type RegisterCommand struct {

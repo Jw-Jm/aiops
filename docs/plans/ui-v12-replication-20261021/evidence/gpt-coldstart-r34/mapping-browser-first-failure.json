@@ -1,0 +1,66 @@
+{
+  "controlledFixture": true,
+  "origin": "https://192.168.0.63:30472",
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a17d14-9d21-757e-8cba-3e462a39c3d1"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a17d14-9db8-74d7-8552-0224c78fcd4d"
+    },
+    {
+      "path": "/api/v1/auth/password:change",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a17d14-a092-7eca-b699-36fe4c75abf3"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a17d14-a336-7ed9-8265-7a646ac5ba69"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a17d14-a3a2-7bdc-b461-42a434c4f613"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d14-a458-75b5-9ce9-99ab815fba2c"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d14-a4a6-77b9-ad75-7f609e0c3446"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d14-a4a5-755d-b0aa-c12d8ca2e057"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d15-16be-75af-95f4-ab9abecf6bf7"
+    }
+  ],
+  "checks": [
+    "same login name as legacy owner does not inherit history or roles"
+  ],
+  "sameNameBeforeMapping": 404,
+  "status": "failed",
+  "failure": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByRole('button', { name: '映射历史主体', exact: true })\n"
+}

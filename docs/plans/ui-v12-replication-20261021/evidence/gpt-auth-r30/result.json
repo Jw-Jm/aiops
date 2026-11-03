@@ -1,0 +1,119 @@
+{
+  "date": "2026-10-27",
+  "round": "r30",
+  "status": "auth_group_runtime_scoped_passed",
+  "head": "082f87d66c5b1336b4cd32c48ebbe59e4093144b",
+  "branch": "main",
+  "uncommitted": true,
+  "scope": "P2-02/P2-03 native login, first/self password, logout revocation, MFA enrolment/confirmation/recovery/re-verification/expiry/restart/cancel, administrator reset and forced re-enrolment, refresh persistence and zero-grant failures, plus the required P1 shell adaptation",
+  "changes": [
+    "web/src/pages/Login.tsx: transport/5xx failures no longer echo the shared write-path copy (接口连接中断，请先核对持久记录); the already-restored-session redirect now agrees with the login destination so a forced factor reset cannot be raced into the ordinary home page",
+    "web/src/pages/FirstPassword.tsx: the same transport/5xx wording fix for the first-password form",
+    "web/src/app/navigation.tsx: post-prototype account pages are named (账号 / 账号安全) instead of 未匹配页面, and a top-level route no longer repeats its own module in the breadcrumb",
+    "web/src/components/v12/Layer.tsx: initial focus follows the prototype native dialog order ([data-autofocus] -> close control -> first body control) and is re-asserted once the overlay container settles",
+    "web/src/design/v12.css: prototype focus ring 3px #aaa7ef offset 2px for v12 containers instead of the legacy #208f89 ring; the dialog close control keeps the ring while it holds the initial focus",
+    "web/tests/native_auth.test.tsx, web/tests/v12/p1_layer.test.tsx, web/tests/v12/p1_shell.test.tsx: regressions for the four fixes"
+  ],
+  "tests": {
+    "web": "189 Vitest across 42 files; the six SSE contract checks are a separate node run (web/test/sse.test.mjs) and are not part of that count; TypeScript/Vite production build passed with the pre-existing chunk-size warning",
+    "progress": "validate-progress.py passed 458 states / 177 contracts; six-dimension passed visual 0, interaction 5, api 5, persistence 5, authorization 3, live 5; product_six_verified false"
+  },
+  "remote": {
+    "host": "mssc-direct -> root@10.10.10.2; hostname mssc verified",
+    "namespace": "ops-native-v12-r24-20261026",
+    "root": "/data/ops-v12-native-visual-r24-20261026",
+    "origin": "https://192.168.0.63:30471",
+    "web": "ops-v12-native-r30-web-r14 / web-r14; index SHA256 8465ddec2b4632b7cc5ac518f39506255c9a65b17b7a58e085fd217377075ba8; archive SHA256 39bd606ef502affab37df9eb88fbdc1f2c5640381301f9bbfd3075ad1acc4c4b; r8-r13 stopped and preserved",
+    "apiWorkerDatabase": "r28 API/Worker/investigator unchanged; PostgreSQL 17.11 on 15454, database ui_v12_r24_native, schema70; no migration, no model call",
+    "identity": "one new acceptance identity per scenario created through the real administrator UI with password+TOTP operation proof; zero implicit role and server-forced first password change; v12.r24.admin and r24.member.* untouched, no operator grant added to the administrator",
+    "verified": [
+      "login idle: blank submit validates locally and issues no identity request",
+      "login loading: the single submit control is aria-busy and disabled while the real request is held open",
+      "login failure: real 400 (format) and 401 (credential) share one constant message and re-enable retry; account existence is not disclosed",
+      "login transport failure: a real aborted request reports service unavailability, never a credential verdict",
+      "same-origin and CSRF: cross-origin and origin-less login 403; missing/wrong/foreign-origin CSRF 403; the session-bound token logs out once with 200",
+      "entry limiter: request 60 returns 429 with Retry-After and refuses even a valid login; the same login succeeds after the window",
+      "account lock: five real failures lock the account server-side; the correct password returns the identical 401 body; the lock expires on the server clock and the same password then issues a session",
+      "first password: reload keeps first_password_only with zero business reads; wrong current password 401 keeps the session; mismatch/short password never reach the API; cancel revokes the session; the real change 201 rotates the cookie, the old cookie is 401 and a reload keeps the new session",
+      "first-password boundary: business, MFA status and administrator APIs answer 403",
+      "self password: wrong current 401, client-side mismatch, real 201 rotation, old cookie 401, reload is a full LoA1 session",
+      "logout: the account dialog logout is server-confirmed 200, the old cookie is 401 and a reload stays signed out",
+      "MFA enrolment: pending secret shown once; a reload shows the server pending state without the secret; password+TOTP raises the server session to urn:ops:loa:2; confirmation returns ten recovery codes once; reload shows confirmed/10/confirmedAt",
+      "MFA binding cancel: no MFA request, pending secret removed, the confirmed factor untouched",
+      "MFA wrong credential: a wrong password or wrong TOTP keeps the challenge open and never reports success",
+      "MFA natural expiry: a challenge idle for 660s refuses a valid TOTP with a real 409, clears the pending secret and offers a restart; the challenge row is expired with created_at -> idle_expires_at of exactly 600s",
+      "MFA re-binding: the confirmed factor proves the step-up, the new secret is confirmed, confirmedAt advances, the state persists after a reload and the replaced factor's recovery codes are refused",
+      "administrator MFA reset: target revision/credential binding, 200, real revoked session count, target reset_required with zero codes and a forced security page",
+      "recovery code: an unknown code is refused, a real code verifies once, revokes every session, deletes the whole code set and leaves reset_required; the pre-recovery cookie is 401",
+      "zero-grant boundary: /settings/permissions and /overview denied, admin users and business resources 403, own MFA status 200"
+    ],
+    "failedOrPreserved": [
+      "first MFA re-binding attempt submitted the pending secret where the confirmed factor is required (server rule) and was refused; corrected harness passes in runs/rebind.json",
+      "an earlier b-row of scripts lost a rotated password because the file was written after a later assertion; the affected identities are preserved and were not reused",
+      "the natural-expiry batch kept failing after its assertions on a harness-level dangling waiter; the assertions themselves passed and are recorded"
+    ],
+    "notVerified": [
+      "per-state whole-page visual for SL-001, SL-002 and SL-005 (prototype demo prefill/tag/footer copy, and the registered 当前密码 extension)",
+      "operator-side live pages: no registered cluster exists in this task environment, so no legal operator scope could be created; no synthetic cluster registration was made",
+      "the 15-minute absolute step-up expiry was not waited out (only the 10-minute idle expiry)",
+      "concurrency and cross-account fault expansion, formal immutable OCI/Bundle, offline install and cutover, SP06 business worker, full Trace, KubeVirt/CDI and production"
+    ]
+  },
+  "visual": {
+    "references": "artifacts/test-reports/ui-v12-reference-r3 reused, not re-captured",
+    "noMasks": true,
+    "summary": "SL-003 dialog 660x423.8125/header 76/close 31x31 exactly matches the reference; after aligning the reference scrollbar offset (-7px) the dialog foreground differs in 12651/279840 pixels (7278 above a 20-level channel delta). SL-004 dialog 660x492.625, foreground 9257/325380 (5235). SL-002 error strip 0 differing pixels. Remaining whole-page differences are prototype demo credentials/copy and the registered security extension; SL-001/002/005 visual stay not_verified.",
+    "evidence": "evidence/gpt-auth-r30/visual-comparisons.json"
+  },
+  "acceptancePromotions": {
+    "SL-001": "interaction, live (visual withdrawn to not_verified in the repair)",
+    "SL-002": "persistence",
+    "SL-003": "interaction, api, persistence, authorization, live",
+    "SL-004": "interaction, api, persistence, authorization, live",
+    "SL-005": "authorization, live"
+  },
+  "sixDimensionPassed": {
+    "visual": 0,
+    "interaction": 5,
+    "api": 5,
+    "persistence": 5,
+    "authorization": 3,
+    "live": 5
+  },
+  "productComplete": false,
+  "remaining": "P1/P2 whole-page per-state visual (prototype demo data and the registered current-password extension), operator-side live acceptance (no registered cluster in this environment), formal install/cutover, then P3 resource/log SL-049 as its own sample and P4-P8; SP06 remaining work is limited to the resource and business tool path; virtualization, Trace and production stay deferred",
+  "evidence": [
+    "evidence/gpt-auth-r30/README.md",
+    "evidence/gpt-auth-r30/runs/login-first-password.json",
+    "evidence/gpt-auth-r30/runs/mfa-enroll.json",
+    "evidence/gpt-auth-r30/runs/mfa-expiry.json",
+    "evidence/gpt-auth-r30/runs/rebind.json",
+    "evidence/gpt-auth-r30/runs/recovery-permissions.json",
+    "evidence/gpt-auth-r30/runs/self-password-boundary.json",
+    "evidence/gpt-auth-r30/runs/lock-first-password.json",
+    "evidence/gpt-auth-r30/runs/csrf-entry-limit.json",
+    "evidence/gpt-auth-r30/runs/web-runtime-r14.json",
+    "evidence/gpt-auth-r30/visual-comparisons.json",
+    "evidence/gpt-auth-r30/db-evidence.json",
+    "evidence/gpt-auth-r30/shots/"
+  ],
+  "repair": {
+    "trigger": "independent review changes_required (2026-10-27)",
+    "document": "evidence/gpt-auth-r30/repair.md",
+    "items": [
+      "screenshots: the 17 quarantined mfa-* captures stay quarantined (plus 23 suspicious images moved into the host quarantine at 0700/0600); all nine r30.accept.* factors were reset through the administrator UI so no captured secret can still be used; every capture now goes through harness/safe-capture.mjs, which refuses an image while an otpauth URI, recovery code or one-time code is on screen, and secret-bearing states are recorded as machine-checked assertions only (containment.json, runs/safe-captures.json)",
+      "SL-001 visual corrected from the inherited pass to not_verified; the whole table now reports visual passed = 0",
+      "the 04 natural-expiry claim about submitting the confirmed factor's correct code is withdrawn (the 409 happened at the password step before any factor was evaluated); the database wording is now '600s from the last activity', not 'exactly 600s from creation'",
+      "runs/idle-expiry-confirmed.json proves the idle window (600s, no activity) and then proves the same confirmed factor reaches LoA2 on a fresh challenge",
+      "runs/absolute-expiry.json proves the 900s absolute deadline in real wall-clock time with the idle window refreshed by a completed method at t+9min",
+      "runs/cross-account-concurrency.json proves challenges, one-time codes and recovery codes cannot be reused across identities or replayed",
+      "native-deployment-runbook.md gained the r30 section with roll-forward and recovery boundaries; the remaining SP06 scope is limited to the resource and business tool path because the audit data_query chain already passed in r28",
+      "the idle window can only be moved forward up to the absolute cap (idle_expires_at is clamped to absolute_expires_at), so the absolute deadline is the binding limit; both windows were measured separately in real time without touching time or state in SQL"
+    ],
+    "windows": {
+      "idleExpiry": "runs/idle-expiry-confirmed.json: eleven minutes without activity -> real 409, challenge expired, created->idle exactly 600s, then the same confirmed factor reaches LoA2 on a fresh challenge",
+      "absoluteExpiry": "runs/absolute-expiry.json: real wall clock 948s; completing the password method at t+9min pushes the idle window forward 300s and clamps it to the absolute cap; absolute stays created+900s; the correct confirmed-factor code is refused with 409 at t+15.8min and the challenge is expired",
+      "crossAccount": "runs/cross-account-concurrency.json: a foreign identity gets 404 on another session's challenge; concurrent identical one-time codes yield exactly one LoA2; a consumed code replays to 409; a concurrent second password submission is refused with 409; another identity's recovery code returns verified=false"
+    }
+  }
+}

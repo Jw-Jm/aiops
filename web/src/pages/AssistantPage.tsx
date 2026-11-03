@@ -39,16 +39,20 @@ import type {
   AssistantTurnV1,
   AssistantResourceCandidateV1,
 } from "../api/generated/models";
+import { observation, type ObservationResult } from "../api/observation";
 import { PageHeading } from "../components/PageHeading";
 import { QueryState } from "../components/QueryState";
 import { DiagnosisAnswer } from "../features/assistant/DiagnosisAnswer";
 import { ConversationContext } from "../features/assistant/ConversationContext";
 import { useConversationStream } from "../features/assistant/useConversationStream";
-export function AssistantPage() {
+export function AssistantPage({
+  initialDomain,
+}: { initialDomain?: "audit" } = {}) {
   const { session } = useAuth();
   const client = useQueryClient();
   const [url, setUrl] = useSearchParams();
   const id = url.get("conversation") || undefined;
+  const logQuery = url.get("logQuery");
   const {
     clusterUid: scopedCluster,
     candidates,
@@ -64,13 +68,25 @@ export function AssistantPage() {
     scopeGeneration,
     generation,
   ]);
+  const logContext = useQuery({
+    queryKey: ["assistant-log-context", scopeKey, logQuery],
+    enabled: !!logQuery && !id && !!scopedCluster,
+    queryFn: ({ signal }) =>
+      observation<ObservationResult>(
+        `queries/${encodeURIComponent(logQuery!)}/results`,
+        scopedCluster,
+        signal,
+      ),
+  });
+  const linkedLog = !logContext.error ? logContext.data : undefined;
   const [mode, setMode] = useState<"data_query" | "troubleshoot">(
-    url.get("incidentId") || url.get("canonicalId")
+    url.get("incidentId") || url.get("canonicalId") || logQuery
       ? "troubleshoot"
       : "data_query",
   );
   const [domain, setDomain] = useState<"operational" | "audit">(
-    session?.roles.includes("operator") ? "operational" : "audit",
+    initialDomain ??
+      (session?.roles.includes("operator") ? "operational" : "audit"),
   );
   const [cluster, setCluster] = useState(scopedCluster);
   useEffect(() => {
@@ -98,11 +114,13 @@ export function AssistantPage() {
   const targetCandidates =
     resolution?.key === targetKey ? resolution.candidates : [];
   const boundTarget =
+    linkedLog?.resource.canonicalId ||
     url.get("canonicalId") ||
     (targetCandidates.some((c) => c.canonicalId === selectedTarget)
       ? selectedTarget
       : undefined);
-  const boundObject = url.get("incidentId") || url.get("canonicalId") || "";
+  const boundObject =
+    logQuery || url.get("incidentId") || url.get("canonicalId") || "";
   const previousObjectRef = useRef<string | undefined>(undefined);
   useEffect(() => {
     const previous = previousObjectRef.current;
@@ -150,7 +168,7 @@ export function AssistantPage() {
     setError(undefined);
     setMessageCursor(undefined);
     setMode(
-      url.get("incidentId") || url.get("canonicalId")
+      url.get("incidentId") || url.get("canonicalId") || logQuery
         ? "troubleshoot"
         : "data_query",
     );
@@ -178,6 +196,10 @@ export function AssistantPage() {
     queryFn: ({ signal }) =>
       checked(getAssistantConversation(id!, requestOptions(signal))),
   });
+  const canWriteConversation =
+    !!conversation.data &&
+    conversation.data.data.ownerSubject === session?.subject;
+  const historicalReadOnly = !!conversation.data && !canWriteConversation;
   const capabilityCluster = conversation.data?.data.clusterUid || cluster;
   const capabilityDomain =
     conversation.data?.data.authorizationDomain || domain;
@@ -276,7 +298,10 @@ export function AssistantPage() {
     },
     [],
   );
-  const streamError = useConversationStream(id, scopeKey);
+  const streamError = useConversationStream(
+    canWriteConversation ? id : undefined,
+    scopeKey,
+  );
   const active =
     currentTurn.data?.data || turn || conversation.data?.data.activeTurn;
   const running = active && ["queued", "running"].includes(active.state);
@@ -327,9 +352,7 @@ export function AssistantPage() {
     const signal = scopeAbort.current.signal;
     const epoch = (busyEpoch.current += 1);
     const canCommit = () =>
-      !unmountedRef.current &&
-      scopeRef.current === runScope &&
-      !signal.aborted;
+      !unmountedRef.current && scopeRef.current === runScope && !signal.aborted;
     setBusy(true);
     setError(undefined);
     try {
@@ -350,6 +373,10 @@ export function AssistantPage() {
   }
   async function create() {
     await mutate(async (signal, canCommit) => {
+      const log = logQuery
+        ? (await logContext.refetch({ throwOnError: true })).data!
+        : undefined;
+      if (!canCommit()) return;
       const now = new Date();
       const body: AssistantCreateConversationV1 = {
         title:
@@ -359,18 +386,32 @@ export function AssistantPage() {
         mode,
         authorizationDomain: domain,
         timezone:
-          Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Shanghai",
+          (log?.window.timezone ??
+            Intl.DateTimeFormat().resolvedOptions().timeZone) ||
+          "Asia/Shanghai",
         ...(domain === "operational"
           ? {
               clusterUid: cluster,
-              namespaceSelection: namespace ? [namespace] : [],
-              includeClusterScoped: !namespace,
+              namespaceSelection: log
+                ? [log.resource.namespaceScope.namespace]
+                : namespace
+                  ? [namespace]
+                  : [],
+              includeClusterScoped: log ? false : !namespace,
             }
           : {}),
       };
       if (mode === "troubleshoot") {
         body.symptom = symptom;
-        if (url.get("incidentId")) body.incidentId = url.get("incidentId")!;
+        if (log) {
+          body.timeRange = {
+            from: log.window.from,
+            to: log.window.to,
+            timezone: log.window.timezone,
+          };
+          body.resourceCanonicalIds = [log.resource.canonicalId];
+        } else if (url.get("incidentId"))
+          body.incidentId = url.get("incidentId")!;
         else {
           const from =
             windowMinutes === "custom"
@@ -406,12 +447,13 @@ export function AssistantPage() {
         const next = new URLSearchParams(previous);
         next.set("clusterUid", cluster);
         next.set("conversation", out.data.conversationId);
+        next.delete("logQuery");
         return next;
       });
     });
   }
   async function send() {
-    if (!id || !conversation.data) return;
+    if (!id || !conversation.data || !canWriteConversation) return;
     await mutate(async (signal, canCommit) => {
       const clarification = active?.answer?.clarification?.clarificationId;
       const out = await checked(
@@ -462,7 +504,8 @@ export function AssistantPage() {
           description={
             <>
               <p>
-                当前无法确认模型 Profile、任务类型和来源能力，因此暂时无法创建会话。这不代表功能未启用。
+                当前无法确认模型
+                Profile、任务类型和来源能力，因此暂时无法创建会话。这不代表功能未启用。
               </p>
               <Button size="small" onClick={() => void capabilities.refetch()}>
                 重新加载能力信息
@@ -533,7 +576,7 @@ export function AssistantPage() {
             extra={
               id && (
                 <Button
-                  disabled={busy || !!running}
+                  disabled={!canWriteConversation || busy || !!running}
                   onClick={() =>
                     void mutate(async (signal, canCommit) => {
                       await checked(
@@ -556,9 +599,48 @@ export function AssistantPage() {
               )
             }
           >
+            {historicalReadOnly && (
+              <Alert
+                type="info"
+                title="历史会话只读"
+                description="该会话保留原主体归属，仅供查看。请新建会话发起任务。"
+              />
+            )}
             {!id ? (
               <Space orientation="vertical" style={{ width: "100%" }}>
+                {logQuery && (
+                  <QueryState
+                    loading={logContext.isPending}
+                    error={logContext.error}
+                    retry={() => void logContext.refetch()}
+                  >
+                    {linkedLog && (
+                      <Alert
+                        type="info"
+                        title="按日志资源与时间创建排查会话"
+                        description={
+                          <>
+                            <div>{linkedLog.resource.canonicalId}</div>
+                            <div>
+                              {linkedLog.window.from} – {linkedLog.window.to} ·{" "}
+                              {linkedLog.window.timezone}
+                            </div>
+                            <div>
+                              来源 {linkedLog.source.registrationId} · 版本{" "}
+                              {linkedLog.source.registrationRevision}
+                            </div>
+                            <div>
+                              AI
+                              将按当前授权选择合格来源，日志样例不会自动作为回答证据。
+                            </div>
+                          </>
+                        }
+                      />
+                    )}
+                  </QueryState>
+                )}
                 <Select
+                  disabled={!!logQuery}
                   aria-label="会话模式"
                   value={mode}
                   onChange={(value) => {
@@ -580,6 +662,7 @@ export function AssistantPage() {
                   ]}
                 />
                 <Select
+                  disabled={!!logQuery}
                   aria-label="授权域"
                   value={domain}
                   onChange={setDomain}
@@ -596,6 +679,7 @@ export function AssistantPage() {
                 {domain === "operational" && (
                   <>
                     <Select
+                      disabled={!!logQuery}
                       aria-label="授权集群"
                       placeholder="选择授权集群"
                       value={cluster || undefined}
@@ -606,9 +690,13 @@ export function AssistantPage() {
                       }))}
                     />
                     <Input
+                      disabled={!!logQuery}
                       aria-label="命名空间子范围"
                       placeholder="命名空间子范围（空表示全部已授权命名空间）"
-                      value={namespace}
+                      value={
+                        linkedLog?.resource.namespaceScope.namespace ??
+                        namespace
+                      }
                       onChange={(e) => setNamespace(e.target.value)}
                     />
                   </>
@@ -622,95 +710,97 @@ export function AssistantPage() {
                         boundTarget ||
                         "请填写资源名称并确认候选"}
                     </Typography.Text>
-                    {!url.get("incidentId") && !url.get("canonicalId") && (
-                      <>
-                        <Select
-                          value={targetKind}
-                          onChange={setTargetKind}
-                          options={[
-                            "Pod",
-                            "Deployment",
-                            "StatefulSet",
-                            "DaemonSet",
-                            "Service",
-                            "Node",
-                            "PersistentVolumeClaim",
-                          ].map((value) => ({ value, label: value }))}
-                        />
-                        <Input
-                          placeholder="精确资源名称；同名资源将列出候选"
-                          value={targetName}
-                          onChange={(e) => setTargetName(e.target.value)}
-                        />
-                        <Button
-                          loading={busy}
-                          disabled={!cluster || !targetName}
-                          onClick={() =>
-                            void mutate(async (signal, canCommit) => {
-                              const response = await checked(
-                                resolveAssistantResource(
-                                  {
-                                    clusterUid: cluster,
-                                    namespaceSelection: namespace
-                                      ? [namespace]
-                                      : [],
-                                    includeClusterScoped: !namespace,
-                                    selector: {
-                                      name: targetName,
-                                      kind: targetKind,
-                                      ...(namespace ? { namespace } : {}),
+                    {!logQuery &&
+                      !url.get("incidentId") &&
+                      !url.get("canonicalId") && (
+                        <>
+                          <Select
+                            value={targetKind}
+                            onChange={setTargetKind}
+                            options={[
+                              "Pod",
+                              "Deployment",
+                              "StatefulSet",
+                              "DaemonSet",
+                              "Service",
+                              "Node",
+                              "PersistentVolumeClaim",
+                            ].map((value) => ({ value, label: value }))}
+                          />
+                          <Input
+                            placeholder="精确资源名称；同名资源将列出候选"
+                            value={targetName}
+                            onChange={(e) => setTargetName(e.target.value)}
+                          />
+                          <Button
+                            loading={busy}
+                            disabled={!cluster || !targetName}
+                            onClick={() =>
+                              void mutate(async (signal, canCommit) => {
+                                const response = await checked(
+                                  resolveAssistantResource(
+                                    {
+                                      clusterUid: cluster,
+                                      namespaceSelection: namespace
+                                        ? [namespace]
+                                        : [],
+                                      includeClusterScoped: !namespace,
+                                      selector: {
+                                        name: targetName,
+                                        kind: targetKind,
+                                        ...(namespace ? { namespace } : {}),
+                                      },
                                     },
-                                  },
-                                  requestOptions(signal),
-                                ),
-                              );
-                              if (!canCommit()) return;
-                              setResolution({
-                                key: targetKey,
-                                candidates: response.data.candidates,
-                                missing: response.data.missingFields,
-                                truncated: response.data.truncated,
-                              });
-                              setSelectedTarget(undefined);
-                            })
-                          }
-                        >
-                          查找授权范围内的目标
-                        </Button>
-                        {resolution?.key === targetKey && (
-                          <>
-                            {resolution.missing.length > 0 && (
-                              <Alert
-                                type="info"
-                                title={`请补充：${resolution.missing.join("、")}`}
+                                    requestOptions(signal),
+                                  ),
+                                );
+                                if (!canCommit()) return;
+                                setResolution({
+                                  key: targetKey,
+                                  candidates: response.data.candidates,
+                                  missing: response.data.missingFields,
+                                  truncated: response.data.truncated,
+                                });
+                                setSelectedTarget(undefined);
+                              })
+                            }
+                          >
+                            查找授权范围内的目标
+                          </Button>
+                          {resolution?.key === targetKey && (
+                            <>
+                              {resolution.missing.length > 0 && (
+                                <Alert
+                                  type="info"
+                                  title={`请补充：${resolution.missing.join("、")}`}
+                                />
+                              )}
+                              {resolution.truncated && (
+                                <Alert
+                                  type="warning"
+                                  title="候选已截断，请先收窄 namespace。"
+                                />
+                              )}
+                              <Select
+                                placeholder="确认真实资源身份"
+                                value={selectedTarget}
+                                onChange={setSelectedTarget}
+                                options={targetCandidates.map((c) => ({
+                                  value: c.canonicalId,
+                                  label: `${c.kind} ${c.namespace || "集群级"}/${c.name} · ${c.canonicalId.split("/").at(-1)}`,
+                                }))}
                               />
-                            )}
-                            {resolution.truncated && (
-                              <Alert
-                                type="warning"
-                                title="候选已截断，请先收窄 namespace。"
-                              />
-                            )}
-                            <Select
-                              placeholder="确认真实资源身份"
-                              value={selectedTarget}
-                              onChange={setSelectedTarget}
-                              options={targetCandidates.map((c) => ({
-                                value: c.canonicalId,
-                                label: `${c.kind} ${c.namespace || "集群级"}/${c.name} · ${c.canonicalId.split("/").at(-1)}`,
-                              }))}
-                            />
-                          </>
-                        )}
-                      </>
-                    )}
+                            </>
+                          )}
+                        </>
+                      )}
                     <Input.TextArea
                       placeholder="描述现象"
                       value={symptom}
                       onChange={(e) => setSymptom(e.target.value)}
                       maxLength={4000}
                     />
-                    {!url.get("incidentId") && (
+                    {!logQuery && !url.get("incidentId") && (
                       <Button
                         disabled={!symptom || busy}
                         onClick={() =>
@@ -741,7 +831,7 @@ export function AssistantPage() {
                         从症状识别目标，再查找并确认身份
                       </Button>
                     )}
-                    {!url.get("incidentId") && (
+                    {!logQuery && !url.get("incidentId") && (
                       <>
                         <Typography.Text>
                           资源调查时间（最长 60 分钟）
@@ -790,6 +880,7 @@ export function AssistantPage() {
                   disabled={
                     !capabilities.data?.data.enabled ||
                     !taskAvailable ||
+                    (!!logQuery && !linkedLog) ||
                     (mode === "troubleshoot" &&
                       !url.get("incidentId") &&
                       !boundTarget)
@@ -852,6 +943,7 @@ export function AssistantPage() {
                 )}
                 {conversation.data && (
                   <ConversationContext
+                    readOnly={historicalReadOnly}
                     binding={conversation.data.data.binding}
                     domain={conversation.data.data.authorizationDomain}
                     cluster={conversation.data.data.clusterUid}
@@ -892,6 +984,7 @@ export function AssistantPage() {
                 ) && (
                   <Select
                     aria-label="确认历史资源指代"
+                    disabled={!canWriteConversation}
                     placeholder="选择本轮指代的已验证资源"
                     value={referent}
                     onChange={setReferent}
@@ -923,7 +1016,13 @@ export function AssistantPage() {
                       <Card
                         size="small"
                         style={{ width: "100%" }}
-                        title={item.role === "user" ? "我" : "助手"}
+                        title={
+                          item.role === "user"
+                            ? historicalReadOnly
+                              ? "历史用户"
+                              : "我"
+                            : "助手"
+                        }
                       >
                         {"text" in item.content ? (
                           <Typography.Paragraph
@@ -939,19 +1038,22 @@ export function AssistantPage() {
                               capabilities.data?.data.faultChainEnabled
                                 ? {
                                     conversation: conversation.data!.data,
-                                    disabled: Boolean(running) || busy,
+                                    disabled:
+                                      !canWriteConversation ||
+                                      Boolean(running) ||
+                                      busy,
                                     epoch: submissionEpoch,
                                     onSubmitted: (next, epoch) =>
                                       acceptFaultChainTurn(
                                         next,
-                                        conversation.data!.data
-                                          .conversationId,
+                                        conversation.data!.data.conversationId,
                                         epoch,
                                       ),
                                   }
                                 : undefined
                             }
                             onReadOnlyCheck={
+                              canWriteConversation &&
                               item.turnId === active?.turnId
                                 ? (draft) => {
                                     setMessage(draft);
@@ -982,7 +1084,10 @@ export function AssistantPage() {
                           capabilities.data?.data.faultChainEnabled
                             ? {
                                 conversation: conversation.data!.data,
-                                disabled: Boolean(running) || busy,
+                                disabled:
+                                  !canWriteConversation ||
+                                  Boolean(running) ||
+                                  busy,
                                 epoch: submissionEpoch,
                                 onSubmitted: (next, epoch) =>
                                   acceptFaultChainTurn(
@@ -1004,7 +1109,7 @@ export function AssistantPage() {
                         {active.errorCode}
                       </Typography.Text>
                     )}
-                    {running && (
+                    {running && canWriteConversation && (
                       <Button
                         onClick={() =>
                           void mutate(async (signal, canCommit) => {
@@ -1052,7 +1157,9 @@ export function AssistantPage() {
                         return [
                           <Button
                             key={key}
-                            disabled={!!running || busy}
+                            disabled={
+                              !canWriteConversation || !!running || busy
+                            }
                             onClick={() => setMessage(example)}
                           >
                             {example}
@@ -1063,6 +1170,7 @@ export function AssistantPage() {
                   )}
                 <Input.TextArea
                   aria-label="问题"
+                  disabled={!canWriteConversation}
                   value={message}
                   id="assistant-message"
                   onChange={(e) => setMessage(e.target.value)}
@@ -1078,6 +1186,7 @@ export function AssistantPage() {
                   type="primary"
                   loading={busy}
                   disabled={
+                    !canWriteConversation ||
                     !message.trim() ||
                     !!running ||
                     !capabilities.data?.data.enabled

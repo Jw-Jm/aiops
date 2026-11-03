@@ -50,7 +50,7 @@ func TestWatchHealthAndUnchangedResyncDoNotRepublishFacts(t *testing.T) {
 	observations := 0
 	fresh := false
 	disconnected := false
-	_ = client.Run(ctx, GVR{Version: "v1", Resource: "pods"}, func(s Snapshot) error {
+	_ = client.Run(ctx, GVR{Version: "v1", Resource: "pods"}, []string{"apps"}, func(s Snapshot) error {
 		if s.State.WatchContinuous {
 			fresh = true
 		}

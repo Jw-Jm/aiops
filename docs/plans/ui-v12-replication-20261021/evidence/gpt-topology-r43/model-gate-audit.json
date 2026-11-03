@@ -1,0 +1,109 @@
+{
+  "at": "2026-10-29T02:00:09.434680+00:00",
+  "namespace": "ops-native-v12-r24-20261026",
+  "namespaceUID": "731f0e88-1893-4836-844b-a29374c1ca11",
+  "modelProfile": {
+    "schemaVersion": "assistant-model-profile/v2",
+    "version": "deepseek-trusted-r28/v2",
+    "modelID": "deepseek-flash",
+    "modelVersion": "provider-deepseek-v4.1-flash-1017",
+    "baseURL": "https://api.deepseek.com/v1",
+    "apiKeyRef": "secret://model/api-key",
+    "contextWindow": 65536,
+    "outputTokenLimit": 4096,
+    "tokenAccounting": "reserve-context-bound",
+    "costPolicy": "provider-metered-token-bounded",
+    "toolCalling": true,
+    "structuredOutput": true,
+    "taskKinds": [
+      "data_query"
+    ],
+    "timeoutSeconds": 120,
+    "retries": 0,
+    "hosted": {
+      "provider": "deepseek",
+      "protocol": "openai-chat-completions",
+      "revisionPolicy": "provider-managed-alias",
+      "documentationURL": "https://api-docs.deepseek.com/",
+      "documentationDigest": "sha256:50490e85b6a47700cef1c847cfb505afb136a0d45ce48f519255960c7f63b9f3",
+      "protocolEvidenceDigest": "sha256:13654a6f84639ed2e0a26d93d71f299eb67bf151feb2fc05a8637c660c2f7dae"
+    },
+    "evaluationVersion": "deepseek-protocol-r27/v1",
+    "evaluationDigest": "sha256:13654a6f84639ed2e0a26d93d71f299eb67bf151feb2fc05a8637c660c2f7dae",
+    "admissionEvidenceDigest": "sha256:2ceb69cf52039c964e7eac9b4db9617457bc69cd5b0c6c187afc113f7222c121",
+    "admissionState": "admitted"
+  },
+  "apiPythonProfileEqual": true,
+  "profileReference": "deepseek-trusted-r28/v2@sha256:d8b72dde6c40aca9230797abe702cef1b89bb009324ed1d616a109da4a60d9b5",
+  "policyName": "r28-read-only",
+  "policies": [
+    {
+      "version": "01a17b22-56d7-757c-8cfe-99339a3a6e30",
+      "digest": "sha256:6331606b90641891a701c372e95695cd3a83eb7cdfd931629f3ed76b48baff4d",
+      "name": "r28-read-only",
+      "content": {
+        "name": "r28-read-only",
+        "modules": [
+          {
+            "id": "tool/v1/tool.rego",
+            "content": "package ops.policy\n\ndefault tool_decision := {\n\t\"allow\": false,\n\t\"risk\": \"high\",\n\t\"reasons\": [\"tool_default_deny\"],\n\t\"requiresStepUp\": false,\n}\n\ntool_decision := {\n\t\"allow\": true,\n\t\"risk\": input.risk,\n\t\"reasons\": [],\n\t\"requiresStepUp\": false,\n} if {\n\tinput.requestType == \"tool\"\n\tinput.tenantMatched\n\tinput.scopeAllowed\n\tinput.toolAllowed\n\tinput.toolReadOnly\n\truntime_principal\n}\n\nruntime_principal if {\n\tinput.principalType == \"operator\"\n}\n\nruntime_principal if {\n\tinput.principalType == \"agent\"\n}\n\n# Audit assistant permission is distinct from operational tool access. Existing\n# admin requests without a v3 binding remain denied.\nruntime_principal if {\n input.principalType == \"platform_admin\"\n input.taskKind == \"data_query\"\n input.authorizationDomain == \"audit\"\n input.toolName in {\"get_assistant_context\", \"describe_analysis_dataset\", \"execute_analysis_query\"}\n audit_dataset\n}\n\naudit_dataset if { input.datasetId == \"\" }\naudit_dataset if { input.datasetId == \"audit.events\" }\n"
+          },
+          {
+            "id": "action/v1/action.rego",
+            "content": "package ops.policy\n\ndefault action_decision := {\n\t\"allow\": false,\n\t\"risk\": \"high\",\n\t\"reasons\": [\"action_default_deny\"],\n\t\"requiresStepUp\": false,\n}\n\naction_decision := {\n\t\"allow\": false,\n\t\"risk\": input.risk,\n\t\"reasons\": [\"step_up_required\"],\n\t\"requiresStepUp\": true,\n} if {\n\tinput.requestType == \"action\"\n\tinput.tenantMatched\n\tinput.scopeAllowed\n\tinput.actionAllowed\n\tinput.requiresStepUp\n\tnot input.stepUpVerified\n}\n\naction_decision := {\n\t\"allow\": true,\n\t\"risk\": input.risk,\n\t\"reasons\": [],\n\t\"requiresStepUp\": input.requiresStepUp,\n} if {\n\tinput.requestType == \"action\"\n\tinput.tenantMatched\n\tinput.scopeAllowed\n\tinput.actionAllowed\n\tinput.commandDigestMatched\n\tinput.riskAcknowledged\n\tstepUpSatisfied\n}\n\nstepUpSatisfied if {\n\tnot input.requiresStepUp\n}\n\nstepUpSatisfied if {\n\tinput.requiresStepUp\n\tinput.stepUpVerified\n}\n"
+          }
+        ],
+        "schemaVersion": "policy-registry/v1"
+      }
+    }
+  ],
+  "admission": {
+    "decision": "deepseek就当作是内部模型",
+    "scope": "user-approved trusted DeepSeek model in existing internal Worker flow; no extra external governance",
+    "endpoint": "https://api.deepseek.com/v1",
+    "model": "deepseek-flash",
+    "billing": "provider-metered; bounded by existing model request/input/output token budgets; currency is not calculated by this runtime",
+    "alias": "provider-managed; profile freezes route and declared model, not hosted weights",
+    "protocolEvidenceDigest": "sha256:13654a6f84639ed2e0a26d93d71f299eb67bf151feb2fc05a8637c660c2f7dae",
+    "documentationDigest": "sha256:50490e85b6a47700cef1c847cfb505afb136a0d45ce48f519255960c7f63b9f3",
+    "checks": "Go modelprofile/app/contract checks and24 Python profile/runtime/provider/ledger/failure tests passed; real protocol probe passed"
+  },
+  "protocol": {
+    "date": "2026-10-27T01:57:54.951365+00:00",
+    "model": "deepseek-flash",
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "scope": "synthetic diagnostic tool/JSON protocol; not a business tool, admission or complete Worker acceptance",
+    "calls": [
+      {
+        "responseId": "94f425c6-e11f-49bd-9b68-9f16ce50bc4b",
+        "model": "deepseek-flash",
+        "finishReason": "tool_calls",
+        "usage": {
+          "prompt_tokens": 299,
+          "completion_tokens": 35,
+          "total_tokens": 334,
+          "prompt_cache_hit_tokens": 0,
+          "prompt_cache_miss_tokens": 299
+        }
+      },
+      {
+        "responseId": "2710052b-7564-47d5-ab13-5e7a70b46116",
+        "model": "deepseek-flash",
+        "finishReason": "stop",
+        "usage": {
+          "prompt_tokens": 121,
+          "completion_tokens": 5,
+          "total_tokens": 126,
+          "prompt_cache_hit_tokens": 0,
+          "prompt_cache_miss_tokens": 121
+        }
+      }
+    ],
+    "toolCallValidated": true,
+    "status": "passed",
+    "toolResultRoundTrip": true,
+    "structuredJSON": true
+  },
+  "resourceTroubleshootingEnabled": false,
+  "missing": "No resource_troubleshooting-specific evaluation/admission evidence exists in r28 material. Need actual operational tool/structured-result evaluation and policy decision verification before replacing the frozen API/Worker/Python profile; the existing signed r28 policy already allows scope-bound read-only operator/agent tools; existing audit-only runtime evidence does not establish that capability. No material or profile changed."
+}

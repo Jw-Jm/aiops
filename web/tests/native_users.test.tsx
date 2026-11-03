@@ -67,6 +67,51 @@ beforeEach(() => {
   vi.mocked(createRoleBinding).mockResolvedValue(response({}, 201) as never);
 });
 
+it("filters the loaded page without inventing server-wide results or mutating accounts", async () => {
+  vi.mocked(getNativeUsers).mockResolvedValue(
+    response([
+      {
+        userId: "active-id",
+        loginName: "active.user",
+        displayName: "Active",
+        status: "active",
+        roleGrants: [],
+        revocation: {},
+        mustChangePassword: false,
+      },
+      {
+        userId: "disabled-id",
+        loginName: "disabled.user",
+        displayName: "Disabled",
+        status: "disabled",
+        roleGrants: [],
+        revocation: {},
+        mustChangePassword: false,
+      },
+    ]) as never,
+  );
+  render(
+    <QueryClientProvider
+      client={
+        new QueryClient({ defaultOptions: { queries: { retry: false } } })
+      }
+    >
+      <UsersPage />
+    </QueryClientProvider>,
+  );
+  await screen.findByText("active.user");
+  fireEvent.mouseDown(
+    screen.getByRole("combobox", { name: "筛选本页登录状态" }),
+  );
+  fireEvent.click(
+    screen.getByText("停用", { selector: ".ant-select-item-option-content" }),
+  );
+  await waitFor(() => expect(screen.queryByText("active.user")).toBeNull());
+  expect(screen.getByText("disabled.user")).toBeVisible();
+  expect(getNativeUsers).toHaveBeenCalledOnce();
+  expect(createNativeUser).not.toHaveBeenCalled();
+});
+
 it("sends explicit empty scope arrays for an independent administrator grant", async () => {
   const userId = "018f0f2b-91c2-7d42-a8dc-f719c5987201";
   vi.mocked(getNativeUsers).mockResolvedValue(
@@ -99,7 +144,7 @@ it("sends explicit empty scope arrays for an independent administrator grant", a
   );
   await screen.findByText("Native User");
   fireEvent.click(screen.getByRole("button", { name: "配置授权" }));
-  const dialog = within(screen.getByRole("dialog", { name: "配置用户授权" }));
+  const dialog = within(await screen.findByRole("dialog"));
   fireEvent.mouseDown(dialog.getByRole("combobox", { name: "角色" }));
   fireEvent.click(await screen.findByText("平台管理员"));
   fireEvent.change(dialog.getByLabelText("操作原因"), {
@@ -133,7 +178,7 @@ it("requires matching passwords and a fresh operation proof; creation sends no r
   );
   await waitFor(() => expect(getNativeUsers).toHaveBeenCalled());
   fireEvent.click(screen.getByRole("button", { name: /创建用户/ }));
-  const dialog = within(screen.getByRole("dialog", { name: "创建内置账号" }));
+  const dialog = within(await screen.findByRole("dialog"));
   fireEvent.change(dialog.getByLabelText("用户名"), {
     target: { value: "new.user" },
   });
@@ -143,18 +188,18 @@ it("requires matching passwords and a fresh operation proof; creation sends no r
   fireEvent.change(dialog.getByLabelText("密码"), {
     target: { value: "fixture-password-only" },
   });
-  expect(dialog.getByRole("button", { name: "确认提交" })).toBeDisabled();
+  expect(dialog.getByRole("button", { name: "创建账号" })).toBeDisabled();
   fireEvent.change(dialog.getByLabelText("确认密码"), {
     target: { value: "fixture-password-only" },
   });
   fireEvent.click(dialog.getByText("fixture verification"));
-  expect(dialog.getByRole("button", { name: "确认提交" })).toBeEnabled();
+  expect(dialog.getByRole("button", { name: "创建账号" })).toBeEnabled();
   fireEvent.change(dialog.getByLabelText("姓名"), {
     target: { value: "Updated User" },
   });
-  expect(dialog.getByRole("button", { name: "确认提交" })).toBeDisabled();
+  expect(dialog.getByRole("button", { name: "创建账号" })).toBeDisabled();
   fireEvent.click(dialog.getByText("fixture verification"));
-  fireEvent.click(dialog.getByRole("button", { name: "确认提交" }));
+  fireEvent.click(dialog.getByRole("button", { name: "创建账号" }));
   await waitFor(() => expect(createNativeUser).toHaveBeenCalledTimes(1));
   expect(vi.mocked(createNativeUser).mock.calls[0][0]).toEqual({
     loginName: "new.user",

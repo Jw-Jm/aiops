@@ -1,0 +1,74 @@
+{
+  "at": "2026-10-28T04:13:55.287Z",
+  "origin": "https://192.168.0.63:30471",
+  "viewport": {
+    "width": 1440,
+    "height": 960
+  },
+  "checks": [],
+  "captures": [
+    {
+      "name": "logs-idle",
+      "captured": false,
+      "probes": [
+        "recovery-code"
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "method": "GET",
+      "requestId": "01a180b6-f22d-72c0-bc05-005512d46748"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "method": "POST",
+      "requestId": "01a180b6-f2aa-7ec8-9703-6a3b20ac22f2"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b6-f377-76c1-9d69-ccee3f889baf"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b6-f3ca-7deb-a0ff-1cac35748676"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b6-f738-70ae-a6c1-e3c0d628fbfb"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "status": 202,
+      "method": "POST",
+      "requestId": "01a180b6-fcbc-7994-8f5d-43d313f11f53"
+    },
+    {
+      "path": "/api/v1/observability/queries/3f65104e-f82d-49f3-8544-be98779edd10",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b7-03cb-770c-bc14-bd00993cfca5"
+    },
+    {
+      "path": "/api/v1/observability/queries/3f65104e-f82d-49f3-8544-be98779edd10/results",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b7-0616-7081-a79a-3fa4b78b7f3a"
+    }
+  ],
+  "windowInputs": [
+    "2026-10-28T10:06:14",
+    "2026-10-28T10:36:13"
+  ],
+  "status": "failed",
+  "failure": "locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n  - waiting for getByText('来源总体 186 条 · 本次脱敏样例 20 条', { exact: true }) to be visible\n"
+}

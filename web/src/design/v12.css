@@ -163,10 +163,13 @@
 .v12-login-error:empty {
   display: none;
 }
-.v12-login-error .ant-alert {
+.v12-login-error:not(:empty) {
+  color: #c94753;
+  background: #fdf0f1;
   padding: 10px 13px;
   border-radius: 5px;
   font-size: 12px;
+  line-height: 1.65;
 }
 .v12-login-footer {
   color: #788196;
@@ -212,6 +215,14 @@
   min-height: 100vh;
   background: var(--v12-canvas);
   color: var(--v12-ink);
+  font:
+    13px/1.65 Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "PingFang SC",
+    "Microsoft YaHei",
+    sans-serif;
 }
 .v12-shell .v12-sider {
   position: sticky !important;
@@ -247,7 +258,7 @@
 .v12-shell .v12-brand-text {
   font-size: 17px;
   font-weight: 650;
-  line-height: 1.2;
+  line-height: 1.65;
   white-space: nowrap;
 }
 .v12-shell .v12-brand-text small {
@@ -391,6 +402,19 @@
   gap: 8px;
   min-width: 0;
 }
+.v12-shell .v12-brand-mark svg {
+  width: 18px;
+  height: 18px;
+}
+.v12-environment-strip {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 30px;
+  border-bottom: 1px solid #e8ebf2;
+  background: #f0f1f7;
+  color: #8a91a3;
+  font-size: 10px;
+}
 .v12-shell .v12-main-shell {
   flex: 1;
 }
@@ -484,13 +508,21 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 2px 8px;
-  border: 1px solid var(--v12-line);
-  border-radius: 999px;
+  padding: 3px 8px;
+  border: 0;
+  border-radius: 5px;
   background: #f8f9fc;
   color: var(--v12-sub);
   font-size: 11px;
-  line-height: 20px;
+  line-height: 1.65;
+  font-weight: 500;
+}
+.v12-status > span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  font-size: 0;
 }
 .v12-status[data-tone="success"] {
   border-color: #c9e5d9;
@@ -567,7 +599,7 @@
 }
 .v12-layer-form {
   display: grid;
-  gap: 14px;
+  gap: 18px;
 }
 .v12-layer-footer {
   display: flex;
@@ -593,24 +625,24 @@
     "Microsoft YaHei",
     sans-serif;
 }
-.v12-first-password-modal .ant-modal-mask {
+.v12-layer-root .ant-modal-mask {
   background: #141a3540;
   backdrop-filter: blur(2px);
 }
-.v12-first-password-modal .ant-modal-container,
-.v12-first-password-modal .ant-modal-content {
+.v12-layer-root .ant-modal-container,
+.v12-layer-root .ant-modal-content {
   padding: 0;
   overflow: hidden;
   border-radius: 12px;
   box-shadow: 0 20px 70px #15193526;
 }
-.v12-first-password-modal .ant-modal-header {
+.v12-layer-root .ant-modal-header {
+  min-height: 76px;
   padding: 22px 25px;
   margin: 0;
-  min-height: 76px;
   border-bottom: 1px solid #e8ebf2;
 }
-.v12-first-password-modal .ant-modal-title {
+.v12-layer-root .ant-modal-title {
   font:
     650 17px/1.65 Inter,
     -apple-system,
@@ -621,7 +653,7 @@
     sans-serif;
   color: #20263a;
 }
-.v12-first-password-modal .ant-modal-close {
+.v12-layer-root .ant-modal-close {
   top: 22px;
   inset-inline-end: 25px;
   width: 31px;
@@ -629,26 +661,26 @@
   color: #788196;
   border-radius: 5px;
 }
-.v12-first-password-modal .ant-modal-body {
+.v12-layer-root .ant-modal-body {
   padding: 24px 25px;
   max-height: calc(88vh - 145px);
 }
-.v12-first-password-modal .ant-form {
+.v12-layer-root .ant-form {
   display: grid;
   gap: 18px;
 }
-.v12-first-password-modal .ant-form-item {
+.v12-layer-root .ant-form-item {
   margin: 0;
 }
-.v12-first-password-modal .ant-form-item-row {
+.v12-layer-root .ant-form-item-row {
   display: grid;
   gap: 6px;
 }
-.v12-first-password-modal form.ant-form .ant-form-item .ant-form-item-label {
+.v12-layer-root form.ant-form .ant-form-item .ant-form-item-label {
   padding: 0;
   line-height: 0;
 }
-.v12-first-password-modal .ant-form-item-label > label {
+.v12-layer-root .ant-form-item-label > label {
   display: block;
   height: auto;
   font-family: inherit;
@@ -657,7 +689,7 @@
   font-weight: 500;
   color: #505a70;
 }
-.v12-first-password-modal .ant-input {
+.v12-layer-root .ant-input {
   min-height: 38px;
   padding: 9px 11px;
   border: 1px solid #dfe3ed;
@@ -671,7 +703,7 @@
     "Microsoft YaHei",
     sans-serif;
 }
-.v12-first-password-modal .ant-form-item-extra {
+.v12-layer-root .ant-form-item-extra {
   min-height: 0;
   padding-top: 6px;
   font-size: 11px;
@@ -684,7 +716,7 @@
   line-height: 1.65;
   color: #788196;
 }
-.v12-first-password-modal .ant-modal-footer {
+.v12-layer-root .ant-modal-footer {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
@@ -693,7 +725,7 @@
   border-top: 1px solid #e8ebf2;
   background: #fafbfe;
 }
-.v12-first-password-modal .ant-modal-footer > .ant-btn {
+.v12-layer-root .ant-modal-footer .ant-btn {
   margin: 0;
   height: auto;
   min-height: 36px;
@@ -703,8 +735,9 @@
   font-size: 13px;
   line-height: 1.65;
   font-weight: 500;
+  box-shadow: none;
 }
-.v12-first-password-modal .ant-modal-footer > .ant-btn-primary {
+.v12-layer-root .ant-modal-footer .ant-btn-primary {
   background: #5451d6;
   border-color: #5451d6;
 }
@@ -717,6 +750,564 @@
   background: #5451d6;
   border-color: #5451d6;
 }
-.v12-first-password-modal .ant-modal-footer > .ant-btn + button.ant-btn {
+.v12-layer-root .ant-modal-footer .ant-btn + button.ant-btn {
   margin-inline-start: 0;
 }
+
+.v12-layer-root .ant-modal-mask,
+.v12-layer-root .ant-drawer-mask {
+  background: #141a3540;
+  backdrop-filter: blur(2px);
+}
+.v12-layer-root .ant-drawer-content {
+  border-radius: 0;
+}
+.v12-layer-root .ant-drawer-header {
+  padding: 22px 25px;
+  border-bottom: 1px solid #e8ebf2;
+}
+.v12-layer-root .ant-drawer-title {
+  font-size: 17px;
+  line-height: 1.65;
+}
+.v12-layer-root .ant-drawer-body {
+  padding: 24px 25px;
+}
+.v12-layer-root .ant-drawer-footer {
+  padding: 15px 25px;
+  background: #fafbfe;
+}
+.v12-layer-root .ant-modal-footer .ant-space {
+  gap: 10px !important;
+}
+.v12-key-values {
+  line-height: 1.65;
+  margin: 0;
+  display: grid;
+  gap: 13px;
+  font-size: 12px;
+}
+.v12-key-values > div {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 18px;
+}
+.v12-key-values dt {
+  color: #788196;
+}
+.v12-key-values dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.v12-note {
+  margin: 0;
+  padding: 12px 15px;
+  border: 1px solid #e7e7f6;
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  border-radius: 7px;
+  background: #f5f6fc;
+  color: #697087;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.v12-users-page .v12-surface {
+  padding: 0;
+  overflow: hidden;
+}
+.v12-users-page .v12-surface-head {
+  margin: 0;
+  padding: 17px 20px;
+  min-height: 60px;
+  border-bottom: 1px solid #e8ebf2;
+}
+.v12-users-page .v12-toolbar {
+  margin: 0;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e8ebf2;
+}
+.v12-users-page .v12-toolbar .ant-input-search {
+  width: 299px;
+}
+.v12-users-page .v12-toolbar .ant-select {
+  min-width: 155px;
+}
+.v12-users-page .ant-table {
+  line-height: 1.65;
+  font-size: 12px;
+}
+.v12-users-page .ant-table-wrapper .ant-table .ant-table-thead > tr > th {
+  background: #fafbfe;
+  color: #7b8499;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 12px 18px;
+}
+.v12-users-page .ant-table-wrapper .ant-table .ant-table-tbody > tr > td {
+  padding: 15px 18px;
+}
+.v12-users-page .ant-table-cell strong {
+  font-weight: 500;
+}
+.v12-users-page .ant-table-cell .ant-btn {
+  font-size: 12px;
+  padding: 4px 8px;
+  height: auto;
+}
+.v12-user-meta {
+  margin-top: 3px;
+  color: #788196;
+  font-size: 10px;
+}
+.v12-user-footnote,
+.v12-user-pagination {
+  margin: 16px 20px;
+  color: #788196;
+  font-size: 12px;
+}
+.v12-layer-root .ant-drawer-footer .ant-space {
+  gap: 10px !important;
+}
+
+.v12-layer-root .ant-drawer-header-title {
+  flex-direction: row-reverse;
+  gap: 16px;
+}
+.v12-layer-root .ant-drawer-close {
+  margin: 0;
+  width: 31px;
+  height: 31px;
+  border-radius: 5px;
+  color: #788196;
+}
+.v12-layer-root .ant-drawer-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+.v12-users-page .ant-tabs-nav {
+  margin-bottom: 26px;
+}
+.v12-users-page .ant-tabs-tab {
+  padding: 11px 1px;
+  font-size: 13px;
+}
+.v12-users-page .ant-tabs-tab + .ant-tabs-tab {
+  margin-left: 25px;
+}
+
+.v12-denied-page .v12-surface {
+  padding: 0;
+}
+.v12-denied-page .v12-surface-head {
+  margin: 0;
+  padding: 17px 20px;
+  min-height: 60px;
+  border-bottom: 1px solid #e8ebf2;
+}
+.v12-denied-body {
+  min-height: 245px;
+  padding: 46px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.v12-denied-body > svg {
+  width: 26px;
+  height: 26px;
+  color: #a3acc5;
+  margin-bottom: 12px;
+}
+.v12-denied-body > strong {
+  font-size: 15px;
+}
+.v12-denied-body > p {
+  margin: 9px 0 20px;
+  font-size: 12px;
+  color: #788196;
+}
+
+.v12-note > svg {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  flex: none;
+}
+.v12-layer-root .ant-modal-footer .ant-btn-color-dangerous {
+  background: #fdf0f1;
+  border-color: #f3d8dc;
+  color: #c94753;
+}
+
+/* shared/platform.css:62-70 fixes the desktop focus ring at 3px #aaa7ef with a
+   2px offset. The legacy styles.css ring (#208f89, 3px offset) belongs to the
+   pre-V1.2 shell and must not leak into the frozen design. The dialog close
+   control keeps the ring while it holds focus: the prototype layers are native
+   <dialog> elements, so opening one focuses that control and the reference
+   captures show the ring even when the layer was opened by pointer. */
+.v12-login :focus-visible,
+.v12-shell :focus-visible,
+.v12-page :focus-visible,
+.v12-denied-page :focus-visible,
+.v12-first-password-page :focus-visible,
+.v12-layer-root :focus-visible {
+  outline: 3px solid #aaa7ef !important;
+  outline-offset: 2px !important;
+}
+.v12-layer-root .ant-modal-close:focus,
+.v12-layer-root .ant-drawer-close:focus {
+  outline: 3px solid #aaa7ef;
+  outline-offset: 2px;
+}
+
+.v12-users-page .ant-input-search-button {
+  white-space: nowrap;
+  padding-inline: 14px;
+  color: #20263a;
+  background: #fff;
+  border-color: #d9deec;
+  box-shadow: none;
+}
+
+.v12-log-workspace,
+.v12-log-results {
+  background: #fff;
+  border: 1px solid #e8ebf2;
+  border-radius: 9px;
+  overflow: hidden;
+}
+.v12-log-query {
+  padding: 20px 22px 0;
+}
+.v12-log-scope {
+  display: grid;
+  grid-template-columns: minmax(210px, 1.3fr) minmax(185px, 1fr) minmax(
+      195px,
+      1fr
+    ) 100px;
+  gap: 14px;
+  align-items: end;
+}
+.v12-logs-page label {
+  display: grid;
+  gap: 7px;
+  color: #59677f;
+  font-size: 12px;
+}
+.v12-logs-page .ant-select {
+  width: 100%;
+}
+.v12-log-run {
+  display: grid;
+  gap: 5px;
+}
+.v12-log-run small {
+  font-size: 9px;
+  color: #788196;
+  text-align: center;
+}
+.v12-log-search {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) 150px 220px;
+  gap: 14px;
+  align-items: end;
+  padding: 18px 0;
+  margin-top: 16px;
+  border-top: 1px solid #e8ebf2;
+}
+.v12-log-search > span {
+  font-size: 10px;
+  color: #788196;
+}
+.v12-log-context {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 22px;
+  background: #fafbfe;
+  border-top: 1px solid #e8ebf2;
+  font-size: 10px;
+  color: #788196;
+}
+.v12-log-context button {
+  margin-left: auto;
+  font-size: 11px;
+}
+.v12-log-results {
+  margin-top: 20px;
+}
+.v12-log-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 216px;
+  gap: 12px;
+}
+.v12-log-state h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #20263a;
+}
+.v12-log-state p {
+  margin: 0;
+  color: #788196;
+}
+.v12-log-summary {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid #e8ebf2;
+}
+.v12-log-result-actions > span,
+.v12-log-footnote {
+  font-size: 11px;
+  color: #788196;
+}
+.v12-log-footnote {
+  padding: 12px 22px;
+}
+
+.v12-log-tools, .v12-log-detail-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 22px;
+}
+.v12-log-tools > span { margin-right: auto; color: #788196; font-size: 11px; }
+.v12-log-json { white-space: pre-wrap; overflow-wrap: anywhere; padding: 14px; background: #f6f8fc; font: 12px/1.65 monospace; }
+.v12-log-detail-actions { padding: 0; }
+
+/* Logs result layout copied from the frozen shared/platform.css. */
+      .v12-log-layout {
+        display: grid;
+        grid-template-columns: 190px minmax(0, 1fr);
+      }
+      .v12-log-facets {
+        padding: 22px 18px;
+        background: #fcfcff;
+        border-right: 1px solid #e8ebf2;
+      }
+      .v12-log-facets h3 {
+        font-size: 11px;
+      }
+      .v12-log-facets p {
+        font-size: 10px;
+        color: #788196;
+        margin: 5px 0 16px;
+      }
+      .v12-log-facets > button {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        border: 0;
+        background: transparent;
+        border-radius: 5px;
+        padding: 9px 8px;
+        font-size: 11px;
+      }
+      .v12-log-facets > button:hover {
+        background: #eeedfc;
+      }
+      .v12-log-facets b {
+        font-weight: 500;
+        color: #788196;
+      }
+      .v12-log-level-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 2px;
+        background: #8794ad;
+      }
+      .v12-log-level-dot.error {
+        background: #c94753;
+      }
+      .v12-log-level-dot.warn {
+        background: #b97716;
+      }
+      .v12-log-fields {
+        margin: 14px 0 0;
+        font-size: 10px;
+        display: grid;
+        gap: 6px;
+      }
+      .v12-log-fields dt {
+        color: #788196;
+        font-family: ui-monospace, monospace;
+      }
+      .v12-log-fields dd {
+        margin: 0 0 12px;
+        overflow-wrap: anywhere;
+        color: #505a70;
+      }
+      .v12-log-main {
+        min-width: 0;
+      }
+      .v12-log-tools {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        border-bottom: 1px solid #e8ebf2;
+        padding: 10px 14px;
+        font-size: 10px;
+        color: #788196;
+      }
+      .v12-log-entry {
+        display: grid;
+        grid-template-columns: 69px 53px minmax(0, 1fr) 14px;
+        gap: 10px;
+        align-items: start;
+        width: 100%;
+        padding: 17px 18px;
+        border: 0;
+        border-bottom: 1px solid #e8ebf2;
+        background: #fff;
+        text-align: left;
+        font-size: 11px;
+        min-height: 64px;
+      }
+      .v12-log-entry:hover {
+        background: #f8f8ff;
+      }
+      .v12-log-entry time {
+        color: #788196;
+        font-family: ui-monospace, monospace;
+      }
+      .v12-log-entry code {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 11px;
+        line-height: 1.8;
+        color: #505a70;
+      }
+      .v12-log-list.v12-log-wrap code {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+      .v12-log-arrow {
+        color: #a8acc1;
+        font-size: 17px;
+        line-height: 1;
+      }
+      .v12-log-level {
+        font-size: 9px;
+        font-weight: 600;
+        padding: 2px 5px;
+        border-radius: 3px;
+        text-align: center;
+        background: #eef1f8;
+        color: #647593;
+      }
+      .v12-log-level.error {
+        background: #fdf0f1;
+        color: #c94753;
+      }
+      .v12-log-level.warn {
+        background: #fff6e7;
+        color: #b97716;
+      }
+      .v12-log-footnote {
+        padding: 14px 18px;
+        font-size: 10px;
+        color: #788196;
+        background: #fdfdff;
+      }
+      .v12-log-histogram {
+        padding: 18px 22px 12px;
+        border-bottom: 1px solid #e8ebf2;
+      }
+      .v12-log-histogram > .v12-log-hist-heading > span {
+        font-size: 10px;
+        color: #788196;
+      }
+      .v12-log-hist-bars {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 7px;
+        align-items: end;
+        margin-top: 14px;
+      }
+      .v12-log-hist-bars button {
+        height: 85px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: stretch;
+        gap: 4px;
+        padding: 0 14px;
+        border: 0;
+        background: transparent;
+        border-radius: 4px;
+        color: #788196;
+      }
+      .v12-log-hist-bars button:hover,
+      .v12-log-hist-bars button.active {
+        background: #eeedfc;
+      }
+      .v12-log-hist-bars i {
+        display: block;
+        background: #b3aff0;
+        border-radius: 3px 3px 0 0;
+        min-height: 2px;
+      }
+      .v12-log-hist-bars span {
+        font-size: 10px;
+        text-align: center;
+      }
+      .v12-log-hist-bars small {
+        font-size: 9px;
+        text-align: center;
+      }
+      .v12-log-hist-bars button.active i {
+        background: #5451d6;
+      }
+
+.v12-log-hist-heading {display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.v12-log-hist-heading h3 {margin:0;font-size:13px;font-weight:650;}
+.v12-log-facets h3 {margin:0;font-weight:650;}
+.v12-log-facets > button > span {display:flex;align-items:center;gap:7px;}
+.v12-log-facets hr {border:0;border-top:1px solid #e8ebf2;margin:16px 0;}
+.v12-log-fields small {display:block;margin-top:5px;color:#788196;}
+.v12-log-footnote {margin:0;}
+
+.v12-log-entry, .v12-log-facets > button, .v12-log-hist-bars button {font-family:inherit;cursor:pointer;}
+
+.v12-log-result-actions {display:flex;align-items:center;gap:10px;}
+
+/* SL-009: fixed prototype controls and graph surface; positions come from the real graph. */
+.v12-topology-toolbar { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-bottom: 1px solid var(--v12-line); }
+.v12-topology-toolbar label, .v12-topology-keyboard { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.v12-topology-toolbar select { max-width: 400px; }
+.v12-topology-modes { margin-left: auto; display: flex; padding: 3px; border-radius: 7px; background: #f0f1f7; }
+.v12-topology-modes button { border: 0; background: transparent; padding: 5px 12px; border-radius: 5px; color: var(--v12-muted); font-size: 12px; cursor: pointer; }
+.v12-topology-modes button.active { background: #fff; color: var(--v12-primary); box-shadow: 0 1px 4px #20263a14; }
+.v12-topology-result { padding: 18px; }
+.v12-topology-graph { position: relative; border: 1px solid var(--v12-line); border-radius: 8px; background: #fafbff; overflow: hidden; }
+.v12-topology-canvas { height: 350px; }
+.v12-topology-zoom { position: absolute; right: 12px; top: 12px; display: flex; gap: 4px; z-index: 2; }
+.v12-topology-zoom button { border: 1px solid var(--v12-line); background: #fff; border-radius: 5px; padding: 4px 10px; cursor: pointer; }
+.v12-topology-keyboard { margin-top: 12px; }
+
+.v12-topology-page .v12-surface { padding: 0; }
+.v12-topology-page .v12-surface-head { margin: 0; padding: 18px 20px; border-bottom: 1px solid var(--v12-line); }
+.v12-topology-toolbar select, .v12-topology-keyboard select { min-height: 32px; border: 1px solid var(--v12-line); border-radius: 6px; padding: 4px 10px; background: #fff; color: var(--v12-ink); }
+
+/* Frozen SL-028 resource cards, labels and status strip. */
+.v12-resource-detail .v12-surface { padding: 0; overflow: hidden; }
+.v12-resource-detail .v12-surface-head { padding: 17px 20px; min-height: 60px; margin: 0; border-bottom: 1px solid var(--v12-line); align-items: center; }
+.v12-resource-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; }
+.v12-resource-pad { padding: 20px; }
+.v12-resource-kv { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 13px 18px; margin: 0; font-size: 12px; }
+.v12-resource-kv dt { color: var(--v12-muted); overflow-wrap: anywhere; }
+.v12-resource-kv dd { margin: 0; overflow-wrap: anywhere; }
+.v12-resource-kv .full-text { margin-bottom: 0; font-family: monospace; }
+.v12-resource-labels { margin-top: 20px; }
+.v12-resource-labels > div { display: contents; }
+.v12-resource-meta { display: flex; align-items: center; gap: 15px; padding: 13px 18px; background: #fff; border: 1px solid var(--v12-line); border-radius: 8px; margin-bottom: 22px; font-size: 12px; }
+.v12-resource-uid { margin-left: auto; color: var(--v12-muted); font-family: monospace; }

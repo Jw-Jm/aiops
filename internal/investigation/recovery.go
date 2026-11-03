@@ -134,10 +134,7 @@ func (r Repository) ReadSteps(ctx context.Context, tenant, id uuid.UUID, subject
 		if err != nil {
 			return err
 		}
-		if j.Subject != subject {
-			return ErrDenied
-		}
-		if err = current(ctx, tx, j); err != nil {
+		if err = currentRead(ctx, tx, j, subject); err != nil {
 			return err
 		}
 		out, err = readSteps(ctx, tx, j)

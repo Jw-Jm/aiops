@@ -251,7 +251,9 @@ spec:
             sources:
               - serviceAccountToken:
                   path: token
-                  expirationSeconds: 3600
+                  # Short-lived kubelet-rotated token: the collector rereads the
+                  # file per request, so rotation never interrupts collection.
+                  expirationSeconds: 600
               - configMap:
                   name: kube-root-ca.crt
                   items:

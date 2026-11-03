@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "checks": [
+    "precondition: the acceptance identity starts this run with a confirmed factor",
+    "administrator reset binds the real target revision and returns the revoked session count",
+    "the reset factor is reset_required with zero recovery codes and forces the security page",
+    "forced re-enrolment ends in a confirmed factor that survives a reload",
+    "a single-use recovery code revokes every session, deletes the whole code set and leaves reset_required",
+    "administrator reset, forced re-enrolment, single-use recovery and its refusal are proven end to end"
+  ],
+  "states": {
+    "startingStatus": "none",
+    "adminReset": {
+      "status": 200,
+      "requestId": "01a17ba2-4b88-7c24-927c-0909367e59aa",
+      "sessionsRevoked": 2,
+      "credentialVersion": 3
+    },
+    "afterReset": "reset_required",
+    "recovery": {
+      "sessionsRevoked": 1,
+      "remaining": 0,
+      "state": "reset_required"
+    }
+  },
+  "failure": null
+}

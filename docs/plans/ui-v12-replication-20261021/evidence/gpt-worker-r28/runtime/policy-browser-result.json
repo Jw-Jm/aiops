@@ -1,0 +1,82 @@
+{
+  "scope": "actual native admin HTTP, password+TOTP, signed policy publication/activation",
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17b22-0e51-7449-9818-56b54a7c317b"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17b22-0f11-7bdb-9ef7-4f14ea2b096f:verify",
+      "status": 200,
+      "requestId": "01a17b22-1099-7dc0-8daf-a4dae8ab7ecf"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17b22-0f11-7bdb-9ef7-4f14ea2b096f:verify",
+      "status": 200,
+      "requestId": "01a17b22-1184-78de-8a6e-c87eeff469c5"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts",
+      "status": 201,
+      "requestId": "01a17b22-1322-74ff-91cc-aafeed1a8b8a"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17b22-136e-7dae-99d7-b36f8f034863"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17b22-137c-7bb3-83c3-ea08dcd739a7:verify",
+      "status": 200,
+      "requestId": "01a17b22-138e-77ba-a274-33ad86c8836d"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17b22-137c-7bb3-83c3-ea08dcd739a7:verify",
+      "status": 200,
+      "requestId": "01a17b22-55dd-7153-8c83-dbe187559ccb"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/registry-drafts/01a17b22-133d-7c0a-86df-247d28ddc06f:publish",
+      "status": 201,
+      "requestId": "01a17b22-56b8-7138-9555-2b4933fda72d"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17b22-56f2-7b1a-82da-c83a94a09cf3"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17b22-5709-7dad-8070-ec6fc806b9c8:verify",
+      "status": 200,
+      "requestId": "01a17b22-5724-7886-8646-dbb5a07efa31"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17b22-5709-7dad-8070-ec6fc806b9c8:verify",
+      "status": 200,
+      "requestId": "01a17b22-cb0a-7de5-882b-323889b64657"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/registry-activations",
+      "status": 200,
+      "requestId": "01a17b22-cc7b-73c9-8bfe-5327045eaa2c"
+    }
+  ],
+  "checks": [
+    "three distinct exact-body native password/TOTP proofs; actual signed draft publication and tenant activation"
+  ],
+  "policyVersion": "01a17b22-56d7-757c-8cfe-99339a3a6e30",
+  "status": "passed"
+}

@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-27",
+  "status": "scoped_passed_product_in_progress",
+  "source": "source.json",
+  "runtime": "web-runtime.json",
+  "checks": {
+    "dispatcher": "TestNativeDispatcherInFlightLifecycle passed3 scenarios in isolated remote PostgreSQL17.11/schema70: in-flight cancel/revoke cancels remote context and rejects late success; process shutdown preserves running job; takeover generation1->2 refuses old signed context and publishes via new context",
+    "MFAStatus": "Loading/error/retry now use existing QueryState + session-scoped React Query; no fabricated disabled/zero status; remote browser controlled network abort then actual GET200 verified",
+    "web": "180 Vitest +6 SSE passed; TypeScript/Vite build passed",
+    "tracking": "458 states/177 contracts validate-progress and whitespace check passed"
+  },
+  "evidence": [
+    "dispatcher-inflight.log",
+    "runtime-result.json",
+    "mfa-status-browser.json",
+    "web-runtime.json",
+    "web-full.log",
+    "web-build.log"
+  ],
+  "preservedFailures": [
+    "first-failed.log: assertions incorrectly assumed cancellation has no platform partial answer and revoked Get remains readable; corrected to actual contract; production lifecycle unchanged",
+    "web-status-first-failed.log: target picker clicked before async enabled; ApiError text includes code; corrected tests"
+  ],
+  "limits": [
+    "Dispatcher regression uses test ES256 Transit and remote investigator; persisted leases advanced for takeover simulation. Not real model/tool transport or separate business Worker process restart.",
+    "Independent production runtime still enables audit Worker, not SP06 business dispatcher; full immutable Bundle/offline installation remains unverified.",
+    "MFA loading/error screenshots verify states; whole HTML-slice visual alignment and P1/P2 acceptance remain incomplete."
+  ],
+  "acceptancePromotions": 0,
+  "productComplete": false
+}

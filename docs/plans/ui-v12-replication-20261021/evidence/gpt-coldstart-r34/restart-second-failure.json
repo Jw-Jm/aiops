@@ -1,0 +1,52 @@
+{
+  "origin": "https://192.168.0.63:30472",
+  "namespace": "ops-native-v12-r34-20261027",
+  "checks": [],
+  "modelRequests": 0,
+  "beforeSession": {
+    "status": 200,
+    "sessionRef": "session:01a17fee-b1df-7e40-a9ec-b1abff5a61f6",
+    "subject": "user:01a17d06-243d-7290-9687-8795b0c3fb1a",
+    "roles": [
+      "platform_admin"
+    ],
+    "requestId": "01a17fee-b330-7009-99ed-f8f9f44275de"
+  },
+  "beforePods": [
+    {
+      "name": "ops-api",
+      "uid": "ab65df80-5ddd-42b6-9624-35023e354dc9",
+      "phase": "Running",
+      "restarts": [
+        0
+      ]
+    },
+    {
+      "name": "ops-worker",
+      "uid": "92633363-796b-4a07-9f02-76b22edaf6de",
+      "phase": "Running",
+      "restarts": [
+        0
+      ]
+    },
+    {
+      "name": "ops-investigator",
+      "uid": "5ab5380b-a8c0-488f-8165-00de9c5ac2df",
+      "phase": "Running",
+      "restarts": [
+        0
+      ]
+    }
+  ],
+  "afterSession": {
+    "status": 200,
+    "sessionRef": "session:01a17fee-b1df-7e40-a9ec-b1abff5a61f6",
+    "subject": "user:01a17d06-243d-7290-9687-8795b0c3fb1a",
+    "roles": [
+      "platform_admin"
+    ],
+    "requestId": "01a17fef-4750-79c0-bd8c-51c97b806483"
+  },
+  "status": "failed",
+  "failure": "locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByText('v12.r34.admin', { exact: true }) to be visible\n"
+}

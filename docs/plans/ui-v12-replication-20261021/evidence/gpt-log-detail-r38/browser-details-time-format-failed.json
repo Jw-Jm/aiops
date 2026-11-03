@@ -1,0 +1,86 @@
+{
+  "at": "2026-10-28T05:29:08.477Z",
+  "origin": "https://192.168.0.63:30471",
+  "viewport": {
+    "width": 1440,
+    "height": 960
+  },
+  "checks": [
+    "20 returned samples sort and wrap locally, population stays 186",
+    "detail fields/raw and adjacent navigation preserve resource, namespace, source, window and query; clipboard matches current sample",
+    "inspector summary/request/result and clipboard use persisted response, not current form or fabricated budget"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a180fb-cfd8-7657-bde9-de7b91d32205"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a180fb-d05e-704e-9aa3-8c65403ecfd3"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a180fb-d15b-70b5-9cbc-a1edf2d07f70"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a180fb-d1cb-7151-b64c-41588aeed97d"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a180fb-d720-774b-b8ed-738b4b16a027"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "method": "POST",
+      "status": 202,
+      "requestId": "01a180fb-da90-7c05-8596-e777dca8c1ce"
+    },
+    {
+      "path": "/api/v1/observability/queries/270b8bd6-bea4-4564-b40f-7ebe246ec035",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a180fb-e539-70ac-9850-c4058b8451bc"
+    },
+    {
+      "path": "/api/v1/observability/queries/270b8bd6-bea4-4564-b40f-7ebe246ec035/results",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a180fb-eadf-7e6f-8f22-46d404cc8e2b"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "method": "POST",
+      "status": 202,
+      "requestId": "01a180fb-fe0a-78d6-9cf4-4ac8afb08e3b"
+    }
+  ],
+  "queryId": "270b8bd6-bea4-4564-b40f-7ebe246ec035",
+  "resultDigest": "sha256:fd7b15e81f188f47bffa43e99bbe836fa971bfdfb9f0e5056c99c522819a3dd8",
+  "window": {
+    "bounds": "[from,to)",
+    "from": "2026-10-28T02:06:14Z",
+    "timezone": "Asia/Shanghai",
+    "to": "2026-10-28T02:36:13Z"
+  },
+  "screenshot": {
+    "captured": false,
+    "probes": [
+      "recovery-code"
+    ],
+    "note": "strict screenshot probe retained; JSON interactions are not visual acceptance"
+  },
+  "status": "failed",
+  "failure": "level filter lost fixed query range"
+}

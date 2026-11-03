@@ -1,0 +1,150 @@
+{
+  "mode": "empty",
+  "at": "2026-10-28T03:16:11.629Z",
+  "origin": "https://192.168.0.63:30471",
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a18082-1842-7e63-9df3-311a30868482"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a18082-1902-7335-92d0-6ed940a15645"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18082-19a7-7830-a556-b764a2529242"
+    },
+    {
+      "path": "/api/v1/capabilities",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18082-19cd-7a18-8c19-d9c63cd871f5"
+    },
+    {
+      "path": "/api/v1/overview",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18082-19cd-7297-b888-43babd64ab05"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18082-19d4-750f-9fd8-1d991b7ce836"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18082-2361-745c-b988-a74d414e57e2"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "method": "POST",
+      "status": 202,
+      "requestId": "01a18082-2cb6-7bb5-99dd-add0a7ca7579"
+    },
+    {
+      "path": "/api/v1/observability/queries/d580b720-4d27-4329-b8a0-d780c20e650d",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18082-32b9-72d8-8aa7-183fb6af7cbd"
+    },
+    {
+      "path": "/api/v1/observability/queries/d580b720-4d27-4329-b8a0-d780c20e650d",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18082-381d-7ae3-bba3-132ed9ac4859"
+    },
+    {
+      "path": "/api/v1/observability/queries/d580b720-4d27-4329-b8a0-d780c20e650d/results",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a18082-3a08-7d6e-a11f-dba70f09ed6d"
+    }
+  ],
+  "outcome": {
+    "queryId": "d580b720-4d27-4329-b8a0-d780c20e650d",
+    "source": {
+      "collectorVersion": "kubernetes-log-snapshot/v1",
+      "credentialRevision": 1,
+      "qualificationDigest": "sha256:11c359037ae2aad14aa47cc35d0a1b6607d433f417e8bb0b2376352ab78f6008",
+      "registrationId": "01a1805f-2214-7373-82a4-c20276c68d43",
+      "registrationRevision": 1
+    },
+    "resource": {
+      "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+      "uid": "0e648683-1088-4032-9b39-0a122ff475be",
+      "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+      "namespaceScope": {
+        "kind": "namespaced",
+        "namespace": "ops-native-v12-r24-20261026",
+        "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+      }
+    },
+    "window": {
+      "from": "2026-10-28T10:06:13.150326+08:00",
+      "to": "2026-10-28T10:36:13.150326+08:00",
+      "timezone": "Asia/Shanghai",
+      "bounds": "[from,to)"
+    },
+    "events": [
+      {
+        "state": "accepted",
+        "revision": 1,
+        "requestId": "01a18082-2cb6-7bb5-99dd-add0a7ca7579"
+      },
+      {
+        "state": "running",
+        "revision": 2,
+        "requestId": "01a18082-32b9-72d8-8aa7-183fb6af7cbd"
+      },
+      {
+        "state": "completed",
+        "revision": 3,
+        "requestId": "01a18082-381d-7ae3-bba3-132ed9ac4859"
+      }
+    ],
+    "finalState": "completed",
+    "resultStatus": 200,
+    "termination": null,
+    "failure": null,
+    "result": {
+      "resultId": "37159800-37ef-4e8f-92c9-697020eb17cd",
+      "resultDigest": "sha256:f04eb5d974704a6280df6a8f2104de0035f4f0a50eef626b2907ab754b0ff0dd",
+      "status": "no_data",
+      "population": {
+        "basis": "exact",
+        "count": 0,
+        "method": "source_total"
+      },
+      "sampleCount": 0,
+      "truncation": {
+        "reasons": [],
+        "truncated": false
+      },
+      "coverage": {
+        "basis": "unknown",
+        "complete": false,
+        "coveredFrom": "2026-10-28T10:06:13.150326+08:00",
+        "coveredTo": "2026-10-28T10:36:13.150326+08:00",
+        "gaps": []
+      },
+      "reauthorization": {
+        "authorizationVersion": 12,
+        "checkedAt": "2026-10-28T03:16:20.996314376Z",
+        "denialCode": null,
+        "result": "allowed",
+        "sourceRegistrationRevision": 1
+      }
+    }
+  },
+  "status": "passed"
+}

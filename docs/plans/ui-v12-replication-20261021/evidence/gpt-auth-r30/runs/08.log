@@ -1,0 +1,52 @@
+{
+  "status": "passed",
+  "checks": [
+    "five real failures lock the account server-side and the correct password still returns the same 401 body (no lock disclosure)",
+    "the lock expires on the server clock and the same password then creates a first-password session",
+    "a first-password session is refused for business, MFA and administrator APIs with 403",
+    "the wrong current password is refused, the real change returns 201, and the old cookie is 401 while the new session is full",
+    "logout returns 200 and the session cookie is immediately 401"
+  ],
+  "states": {
+    "lock": {
+      "wrong": {
+        "status": 401,
+        "code": "UNAUTHENTICATED",
+        "message": "login credentials were not accepted",
+        "requestId": "01a17ba3-0da7-74a0-9252-bd130c50032f"
+      },
+      "correctWhileLocked": {
+        "status": 401,
+        "code": "UNAUTHENTICATED",
+        "message": "login credentials were not accepted",
+        "requestId": "01a17ba3-0e9d-70da-8621-4906641b0379"
+      },
+      "sameCode": true
+    },
+    "unlock": {
+      "waitedMs": 904934,
+      "status": 201
+    },
+    "firstPasswordBoundary": {
+      "session": 200,
+      "sessionMode": "first_password_only",
+      "roles": [],
+      "resources": 403,
+      "mfaStatus": 403,
+      "adminUsers": 403
+    },
+    "wrongCurrent": {
+      "status": 401
+    },
+    "changed": {
+      "status": 201
+    },
+    "oldCookie": 401,
+    "afterChange": {
+      "mode": "full",
+      "acr": "urn:ops:loa:1"
+    },
+    "logout": 200,
+    "afterLogout": 401
+  }
+}

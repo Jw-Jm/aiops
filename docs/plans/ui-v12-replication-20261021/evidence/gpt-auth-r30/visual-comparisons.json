@@ -1,0 +1,92 @@
+{
+  "method": "local static pixel comparison of the frozen r3 1440x960 references against real product captures at 1440x960/100%; finite CSS animations awaited, pointer parked, nothing masked, no product style changed for the capture",
+  "references": "artifacts/test-reports/ui-v12-reference-r3 (not re-captured this round)",
+  "shiftNote": "The SL-003/SL-004 references were captured on a scrollable /overview page, so the whole panel sits 7px left of the product's non-scrolling page. The shifted numbers move the product capture left by 7px and are reported next to the unshifted ones; no pixel is hidden in either number.",
+  "states": [
+    {
+      "slice": "SL-001",
+      "name": "内置账号登录",
+      "reference": "SL-001-viewport.png",
+      "product": "shots/sl001-login-empty.png",
+      "wholeImage": { "pixels": 1382400, "changedExact": 6703, "maxChannelDeltaAbove20": 4623, "meanMaxChannelDelta": 0.28694 },
+      "registeredDifferences": [
+        "prototype pre-fills the demo account lin.wei and its demo password; the real form never pre-fills credentials",
+        "tag copy 内置账号 · 交互原型 vs 内置账号 (the demo tool tag cannot ship)",
+        "two demo footer lines (演示账号/仅本地模拟) vs production guidance"
+      ],
+      "verdict": "not_passed"
+    },
+    {
+      "slice": "SL-002",
+      "name": "登录失败",
+      "reference": "SL-002-viewport.png",
+      "product": "shots/sl002-login-error-400.png",
+      "wholeImage": { "pixels": 1382400, "changedExact": 7639, "maxChannelDeltaAbove20": 5410, "meanMaxChannelDelta": 0.34826 },
+      "errorStrip": { "box": [902, 540, 1260, 600], "pixels": 21480, "changedExact": 0, "maxChannelDeltaAbove20": 0 },
+      "registeredDifferences": [
+        "the username field carries the real acceptance login name instead of the prototype demo name",
+        "tag and footer demo copy as in SL-001",
+        "about 200px of sub-pixel glyph anti-aliasing on the submit label"
+      ],
+      "verdict": "not_passed"
+    },
+    {
+      "slice": "SL-003",
+      "name": "我的账号",
+      "reference": "SL-003-viewport.png",
+      "product": "shots/visual-sl003-my-account.png",
+      "geometry": {
+        "reference": { "x": 383, "y": 268, "width": 660, "height": 424 },
+        "product": { "x": 390, "y": 268.09375, "width": 660, "height": 423.8125, "headerHeight": 76, "closeButton": { "x": 994, "y": 290.09375, "width": 31, "height": 31 } }
+      },
+      "wholeImage": { "pixels": 1382400, "changedExact": 694633, "maxChannelDeltaAbove20": 134159 },
+      "dialogForeground": { "box": [383, 268, 1043, 692], "pixels": 279840, "changedExact": 20089, "maxChannelDeltaAbove20": 14064 },
+      "dialogForegroundShifted": { "shiftPixels": -7, "changedExact": 12651, "maxChannelDeltaAbove20": 7278 },
+      "registeredDifferences": [
+        "background page differs (reference /overview with a page scrollbar; a zero-grant identity sees the configuration page)",
+        "real account values instead of prototype fixtures",
+        "logout note copy states the real server-session semantics"
+      ],
+      "verdict": "dialog_geometry_exact_foreground_close_whole_page_not_passed"
+    },
+    {
+      "slice": "SL-004",
+      "name": "修改本人密码",
+      "reference": "SL-004-viewport.png",
+      "product": "shots/visual-sl004-change-password.png",
+      "geometry": { "reference": { "x": 383, "y": 234, "width": 660, "height": 492 }, "product": { "x": 390, "y": 233.6875, "width": 660, "height": 492.625 } },
+      "wholeImage": { "pixels": 1382400, "changedExact": 653311, "maxChannelDeltaAbove20": 123507 },
+      "dialogForeground": { "box": [383, 234, 1043, 727], "pixels": 325380, "changedExact": 15628, "maxChannelDeltaAbove20": 11856 },
+      "dialogForegroundShifted": { "shiftPixels": -7, "changedExact": 9257, "maxChannelDeltaAbove20": 5235 },
+      "registeredDifferences": [
+        "the password helper states the real 12–256 policy instead of the prototype demo sentence",
+        "background page and page scrollbar",
+        "sub-pixel glyph differences on the footer and close icon"
+      ],
+      "verdict": "dialog_geometry_exact_foreground_close_whole_page_not_passed"
+    },
+    {
+      "slice": "SL-005",
+      "name": "首次登录必须修改密码",
+      "reference": "SL-005-viewport.png",
+      "product": "shots/sl005-first-password.png",
+      "geometry": { "reference": { "x": 390, "y": 276, "width": 660, "height": 408 }, "product": { "x": 390, "y": 233.6875, "width": 660, "height": 492.625 } },
+      "wholeImage": { "pixels": 1382400, "changedExact": 207775, "maxChannelDeltaAbove20": 77696 },
+      "registeredDifferences": [
+        "the required 当前密码 field is a registered security extension (the server verifies the current credential); it makes the dialog 84.6px taller and shifts everything below it",
+        "helper/note copy states the real policy"
+      ],
+      "verdict": "not_passed_registered_extension"
+    }
+  ],
+  "unchangedLoginRegression": {
+    "comparison": "shots/sl001-login-empty.png vs evidence/gpt-login-r29/runtime/login-empty.png",
+    "changedExact": 0,
+    "note": "the login page itself did not move with this round's focus-ring and navigation changes"
+  },
+  "focusRing": {
+    "prototype": "3px solid #aaa7ef, offset 2px (shared/platform.css:62-70)",
+    "before": "3px solid rgb(32,143,137), computed offset 1px",
+    "after": "3px solid rgb(170,167,239), offset 2px on keyboard focus and on the dialog close control while it holds the initial focus"
+  }
+}

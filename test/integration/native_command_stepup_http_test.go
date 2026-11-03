@@ -767,11 +767,12 @@ func TestNativeCommandHTTPStepUpRefusesChangedBinding(t *testing.T) {
 		secret, _ := mfaEnrolFactor(t, f.mfa, &f.session, f.password)
 		f.secret = secret
 		assessment := f.assess(t)
+		// Create the proof while the assessed target is still current.
+		f.session.stepUpChallenge = f.pendingChallenge(t, assessment)
 		// The observed resource changed after the assessment.
 		if _, err := f.db.ExecContext(f.ctx, `UPDATE platform.resource_entities SET metadata=jsonb_set(metadata,'{changed}','"yes"') WHERE tenant_id=$1 AND canonical_id=$2`, f.tenantID, f.target); err != nil {
 			t.Fatal(err)
 		}
-		f.session.stepUpChallenge = f.pendingChallenge(t, assessment)
 		status, _, body := f.actions.do(t, http.MethodPost, "/api/v1/commands:risk-acknowledge", map[string]any{
 			"assessmentId": assessment.ID, "executionRequestDigest": assessment.RequestDigest,
 		}, &f.session)
@@ -793,6 +794,11 @@ func TestNativeCommandHTTPStepUpRefusesChangedBinding(t *testing.T) {
 			t.Fatalf("acknowledgement = %d %s", status, body)
 		}
 		// The preparation binds another profile version than the acknowledgement.
+		profileV2 := f.profile
+		profileV2.Version = 2
+		if _, err := f.db.ExecContext(f.ctx, `INSERT INTO platform.execution_profile_versions(tenant_id,profile_version_id,logical_name,version_number,content,digest,signature,signer_key_id,status,published_by) VALUES($1,$2,'native-http-profile',2,$3,$4,'x','test','published','test')`, f.tenantID, uuid.New(), action.Canonical(profileV2), action.Digest(action.Canonical(profileV2))); err != nil {
+			t.Fatal(err)
+		}
 		prepare := f.commandRequest()
 		prepare["executionProfileVersion"] = 2
 		prepare["riskAcknowledgementId"] = fmt.Sprintf("%v", mfaData(t, payload)["acknowledgementId"])
@@ -813,8 +819,14 @@ func TestNativeCommandHTTPStepUpRefusesChangedBinding(t *testing.T) {
 		status, _, body := f.actions.do(t, http.MethodPost, "/api/v1/commands:risk-acknowledge", map[string]any{
 			"assessmentId": assessment.ID, "executionRequestDigest": assessment.RequestDigest,
 		}, &f.session)
-		if status != 409 {
+		// The current scope includes the policy version, so the old proof loses
+		// authorization before the acknowledgement can be written.
+		if status != 403 {
 			t.Fatalf("changed policy acknowledgement = %d %s", status, body)
+		}
+		var acknowledgements int
+		if err := f.db.QueryRowContext(f.ctx, `SELECT count(*) FROM action.risk_acknowledgements WHERE tenant_id=$1 AND assessment_id=$2`, f.tenantID, assessment.ID).Scan(&acknowledgements); err != nil || acknowledgements != 0 {
+			t.Fatalf("stale policy acknowledgement persisted: %d (%v)", acknowledgements, err)
 		}
 	})
 }

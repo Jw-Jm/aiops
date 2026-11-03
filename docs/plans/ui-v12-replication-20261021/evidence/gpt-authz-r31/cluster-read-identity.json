@@ -1,0 +1,116 @@
+{
+ "identity": "system:serviceaccount:ops-native-v12-r24-20261026:ops-r31-sp04-read (task-dedicated, no write verbs, no secrets)",
+ "clusterRole": {
+  "name": "ops-native-v12-r24-20261026-r31-sp04-read",
+  "rules": [
+   {
+    "apiGroups": [
+     ""
+    ],
+    "resources": [
+     "pods",
+     "nodes",
+     "services",
+     "configmaps",
+     "persistentvolumeclaims",
+     "persistentvolumes",
+     "events"
+    ],
+    "verbs": [
+     "get",
+     "list",
+     "watch"
+    ]
+   },
+   {
+    "apiGroups": [
+     "apps"
+    ],
+    "resources": [
+     "deployments",
+     "replicasets",
+     "statefulsets",
+     "daemonsets"
+    ],
+    "verbs": [
+     "get",
+     "list",
+     "watch"
+    ]
+   },
+   {
+    "apiGroups": [
+     "batch"
+    ],
+    "resources": [
+     "jobs"
+    ],
+    "verbs": [
+     "get",
+     "list",
+     "watch"
+    ]
+   },
+   {
+    "apiGroups": [
+     "storage.k8s.io"
+    ],
+    "resources": [
+     "storageclasses",
+     "csidrivers",
+     "csinodes",
+     "volumeattachments"
+    ],
+    "verbs": [
+     "get",
+     "list",
+     "watch"
+    ]
+   },
+   {
+    "apiGroups": [
+     "discovery.k8s.io"
+    ],
+    "resources": [
+     "endpointslices"
+    ],
+    "verbs": [
+     "get",
+     "list",
+     "watch"
+    ]
+   }
+  ]
+ },
+ "namespacedRole": {
+  "name": "r31-sp04-lease",
+  "rules": [
+   {
+    "apiGroups": [
+     "coordination.k8s.io"
+    ],
+    "resourceNames": [
+     "r31-graph-lease"
+    ],
+    "resources": [
+     "leases"
+    ],
+    "verbs": [
+     "get",
+     "update",
+     "patch"
+    ]
+   }
+  ]
+ },
+ "subjectAccessReviews": {
+  "get secrets -n ops-native-v12-r24-20261026": "no",
+  "delete pods -n ops-native-v12-r24-20261026": "no",
+  "create pods -n ops-native-v12-r24-20261026": "no",
+  "update leases/r31-graph-lease -n ops-native-v12-r24-20261026": "yes",
+  "get leases/r31-graph-lease -n ops-native-v12-r24-20261026": "yes",
+  "list pods --all-namespaces": "yes"
+ },
+ "token": "issued with `kubectl create token --duration=86400s` into Secret r31-cluster-read (mounted read-only at /etc/r31 together with the kubernetes CA); no static long-lived service-account token Secret is used and no token value is stored in the repository",
+ "note": "the platform chart creates the same read-only collector role for every install (see ops-amd64-unified-r10-20261019-ops-platform-sp04-collector); this is the same shape, bound only to this task's own service account"
+}

@@ -1,0 +1,60 @@
+import {chromium} from '/data/ops-ui-v12-http-20261022-r1/preview-r1/playwright-core/index.mjs';
+import {readFileSync,writeFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {safeTopologyShot} from './safe-topology-capture.mjs';
+import {safeErrorMessage} from '../r37/safe-error.mjs';
+const root='/data/ops-v12-native-visual-r24-20261026',work=root+'/r43',origin='https://192.168.0.63:30471',cluster='79014400-9453-4cb4-9678-0fae47981d79';
+const account=JSON.parse(readFileSync(root+'/private/r31-operator-account.json','utf8'));
+const receipt={at:new Date().toISOString(),runtime:'r43 Web; r39c API/Worker; schema71',requests:[],errors:[],writes:0,resourceReadsSent:0,captures:[]};
+const browser=await chromium.launch({executablePath:'/opt/ops-assistant-browser-20261014/chrome-linux64/chrome',headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
+try{
+ const context=await browser.newContext({ignoreHTTPSErrors:true,viewport:{width:1440,height:960},locale:'zh-CN',timezoneId:'Asia/Shanghai'}),page=await context.newPage();page.setDefaultTimeout(15000);
+ page.on('pageerror',error=>receipt.errors.push(safeErrorMessage(error,[account.password])));
+ page.on('response',r=>{const url=new URL(r.url());if(url.pathname.startsWith('/api/v1/resources'))receipt.requests.push({path:url.pathname,query:url.searchParams.toString(),status:r.status()})});
+ page.on('request',r=>{if(new URL(r.url()).pathname.startsWith('/api/v1/resources'))receipt.resourceReadsSent++;if(r.method()!=='GET'&&new URL(r.url()).pathname.startsWith('/api/v1/')&&!new URL(r.url()).pathname.includes('/auth/'))receipt.writes++});
+ await page.goto(origin+'/login');await page.getByLabel('用户名',{exact:true}).fill(account.loginName);await page.getByLabel('密码',{exact:true}).fill(account.password);await page.getByRole('button',{name:/^登\s*录/}).click();await page.waitForURL(u=>u.pathname!='/login');
+ const resources=await (await context.request.get(origin+'/api/v1/resources?'+new URLSearchParams({clusterUid:cluster,limit:'50'}))).json();
+ if(!Array.isArray(resources.data))throw Error('real resource list unavailable');
+ const candidate=resources.data.find(n=>n.kind==='Pod'&&n.name==='ops-seaweedfs-0');if(!candidate)throw Error('task Pod missing');receipt.root=candidate;
+ const response=await page.goto(origin+'/resources/topology?'+new URLSearchParams({clusterUid:cluster,canonicalId:candidate.canonicalId}));receipt.indexSHA256=createHash('sha256').update(await response.body()).digest('hex');
+ await page.getByRole('heading',{name:'关系拓扑',exact:true}).waitFor();await page.getByRole('img',{name:/当前集群资源关系图/}).waitFor();
+ const initial=await (await context.request.get(origin+'/api/v1/resources/neighbors?'+new URLSearchParams({canonicalId:candidate.canonicalId,depth:'2',maxNodes:'200',maxEdges:'400'}))).json();
+ if(!initial.data?.nodes.some(n=>n.canonicalId===candidate.canonicalId))throw Error('root absent from neighbor result');receipt.depth2=initial;
+ receipt.layout=await page.locator('.v12-topology-canvas').evaluate(element=>({height:element.getBoundingClientRect().height,canvasCount:element.querySelectorAll('canvas').length,viewport:{width:innerWidth,height:innerHeight}}));
+ if(receipt.layout.height!==350||receipt.layout.canvasCount<1)throw Error('graph renderer not mounted');
+ const rendered=()=>page.locator('.v12-topology-canvas').evaluate(element=>({nodes:element._cyreg.cy.nodes().map(node=>node.id()),edges:element._cyreg.cy.edges().map(edge=>({from:edge.source().id(),to:edge.target().id(),kind:edge.data('label')})),zoom:element._cyreg.cy.zoom()}));
+ receipt.rendered=await rendered();if(JSON.stringify([...receipt.rendered.nodes].sort())!==JSON.stringify(initial.data.nodes.map(node=>node.canonicalId).sort()))throw Error('rendered node IDs differ from API');
+ if(receipt.rendered.edges.length!==initial.data.edges.length)throw Error('rendered edge count differs');
+ await page.getByRole('button',{name:'放大关系图',exact:true}).click();const enlarged=await rendered();if(enlarged.zoom<=receipt.rendered.zoom)throw Error('zoom-in control ineffective');
+ await page.getByRole('button',{name:'缩小关系图',exact:true}).click();const reduced=await rendered();if(reduced.zoom>=enlarged.zoom)throw Error('zoom-out control ineffective');
+ await page.locator('.v12-topology-zoom').getByRole('button',{name:'重置',exact:true}).click();receipt.zoom={before:receipt.rendered.zoom,enlarged:enlarged.zoom,reduced:reduced.zoom,reset:(await rendered()).zoom};
+
+ try{await safeTopologyShot(page,work+'/topology-graph.png',[cluster,candidate.tenantId,...initial.data.nodes.map(n=>n.stableId),...initial.data.observationSources.map(s=>s.sourceRegistrationId)]);receipt.captures.push({state:'graph',status:'captured'})}catch(error){receipt.captures.push({state:'graph',status:'refused',reason:safeErrorMessage(error,[account.password])})}
+ const beforeViews=receipt.requests.filter(r=>r.path.endsWith('/neighbors')).length;
+ await page.getByRole('button',{name:'关系列表',exact:true}).click();await page.getByRole('columnheader',{name:'关系说明',exact:true}).waitFor();
+ if(receipt.requests.filter(r=>r.path.endsWith('/neighbors')).length!==beforeViews)throw Error('local view issued another neighbor request');
+ for(const edge of initial.data.edges.slice(0,20))await page.getByText(edge.kind,{exact:true}).first().waitFor();
+ receipt.listRows=await page.locator('.v12-topology-result tbody tr').count();
+ await page.getByRole('button',{name:'查看根资源',exact:true}).click();await page.getByRole('dialog',{name:'资源详情',exact:true}).waitFor();const link=page.getByRole('link',{name:'打开完整资源详情',exact:true});await link.waitFor();receipt.detailLink=await link.getAttribute('href');
+ if(!receipt.detailLink.includes(encodeURIComponent(candidate.canonicalId))||!receipt.detailLink.includes(cluster))throw Error('detail lost exact scope');
+ await page.getByRole('dialog').locator('.ant-drawer-close').click();
+ await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/resources/neighbors')&&new URL(r.url()).searchParams.get('depth')==='1'),page.getByLabel('关系深度',{exact:true}).selectOption('1')]);
+ const one=await (await context.request.get(origin+'/api/v1/resources/neighbors?'+new URLSearchParams({canonicalId:candidate.canonicalId,depth:'1',maxNodes:'200',maxEdges:'400'}))).json();receipt.depth1=one;
+ await page.reload();await page.getByRole('columnheader',{name:'关系说明',exact:true}).waitFor();if(await page.getByLabel('关系深度',{exact:true}).inputValue()!=='1')throw Error('depth not restored');
+ const foreign=candidate.canonicalId.replace('/'+cluster+'/', '/00000000-0000-4000-8000-000000000043/');
+ await page.goto(origin+'/resources/topology?'+new URLSearchParams({clusterUid:cluster,canonicalId:foreign}));await page.getByText('没有此范围的访问权限',{exact:true}).waitFor();
+ if(await page.locator('.v12-topology-canvas').count())throw Error('foreign root displayed graph');receipt.foreignRejected=true;
+ const outsider=JSON.parse(readFileSync(work+'/readonly-resources.json','utf8')).resources.find(row=>row.namespace==='ops-native-v12-r35-scope'&&row.name==='r35-same-name'&&!row.deletedAt);
+ if(!outsider)throw Error('real unauthorized-namespace fixture missing');
+ const beforeOutside=receipt.requests.filter(r=>r.path.endsWith('/neighbors')).length;
+ await page.goto(origin+'/resources/topology?'+new URLSearchParams({clusterUid:cluster,canonicalId:outsider.canonicalId}));await page.getByText('当前筛选范围没有正式数据',{exact:true}).waitFor();
+ if(receipt.requests.filter(r=>r.path.endsWith('/neighbors')).length!==beforeOutside||await page.locator('.v12-topology-canvas').count())throw Error('unauthorized namespace fell back to a graph');
+ receipt.unauthorizedNamespace={canonicalId:outsider.canonicalId,namespace:outsider.namespace,emptyScopedRoot:true,noNeighborQuery:true};
+ const gate=await (await context.request.get(origin+'/api/v1/assistant/capabilities?clusterUid='+cluster)).json();receipt.modelGate={enabled:gate.data?.enabled,taskKinds:gate.data?.taskKinds};
+ const before=receipt.resourceReadsSent;
+ await page.goto(origin+'/resources/topology?'+new URLSearchParams({clusterUid:'00000000-0000-4000-8000-000000000043'}));await page.getByText('集群不在当前授权范围',{exact:true}).waitFor();
+ if(receipt.resourceReadsSent!==before)throw Error('unauthorized cluster queried resources');receipt.unauthorizedClusterNoRequest=true;
+ if(receipt.errors.length||receipt.writes)throw Error('runtime page error or unexpected write');
+ receipt.status='passed_scoped_topology';
+}catch(error){receipt.status='failed';receipt.failure=safeErrorMessage(error,[account.password]);process.exitCode=1}
+finally{await browser.close();writeFileSync(work+'/browser-topology.json',JSON.stringify(receipt,null,2));console.log(JSON.stringify({status:receipt.status,nodeCount:receipt.depth2?.data?.nodes?.length,edgeCount:receipt.depth2?.data?.edges?.length,writes:receipt.writes,errors:receipt.errors,failure:receipt.failure,captures:receipt.captures}))}

@@ -44,6 +44,16 @@ func (service *Service) Register(ctx context.Context, tx pgx.Tx, actor auth.Requ
 			return SourceRegistration{}, fmt.Errorf("%w: source cluster is not active in this tenant", ErrInvalidInput)
 		}
 	}
+	clusterUID := ""
+	if command.ClusterID != nil {
+		if err := tx.QueryRow(ctx, `SELECT cluster_uid FROM platform.cluster_registrations
+			WHERE tenant_id = $1 AND cluster_id = $2 AND status = 'active'`, actor.TenantID, *command.ClusterID).Scan(&clusterUID); err != nil {
+			return SourceRegistration{}, fmt.Errorf("read source cluster identity: %w", err)
+		}
+	}
+	if err := validateTypeScope(command.SourceType, command.BackendLogicalID, command.DataScopeMapping, clusterUID); err != nil {
+		return SourceRegistration{}, err
+	}
 	var clusterID any
 	if command.ClusterID != nil {
 		clusterID = *command.ClusterID
@@ -152,6 +162,25 @@ func (service *Service) UpdateRegistration(ctx context.Context, tx pgx.Tx, actor
 	if !validScopeBinding(newBackend, newMapping) {
 		return SourceRegistration{}, ErrInvalidInput
 	}
+	// A partial update that does not touch the data scope cannot introduce an
+	// incompatible declaration. Any update that does must pass the same
+	// type-specific rule as registration, so an existing incompatible row is
+	// repaired by this call instead of being re-accepted.
+	if command.DataScopeMapping != nil || command.ClusterIDSet {
+		newClusterUID := previous.ClusterUID
+		if command.ClusterIDSet {
+			newClusterUID = ""
+			if newClusterID != uuid.Nil {
+				if err := tx.QueryRow(ctx, `SELECT cluster_uid FROM platform.cluster_registrations
+					WHERE tenant_id = $1 AND cluster_id = $2 AND status = 'active'`, actor.TenantID, newClusterID).Scan(&newClusterUID); err != nil {
+					return SourceRegistration{}, fmt.Errorf("read updated source cluster identity: %w", err)
+				}
+			}
+		}
+		if err := validateTypeScope(previous.SourceType, newBackend, newMapping, newClusterUID); err != nil {
+			return SourceRegistration{}, err
+		}
+	}
 	if newClusterID == previous.ClusterID && newStatus == previous.Status && slices.Equal(newSchemas, previous.AllowedSchemas) && newBackend == previous.BackendLogicalID && sameDataScope(newMapping, previous.DataScopeMapping) {
 		return previous, nil
 	}
@@ -211,6 +240,14 @@ func (service *Service) RotateCredential(ctx context.Context, tx pgx.Tx, actor a
 	}
 	if previous.AuthRef == command.AuthRef {
 		return SourceRegistration{}, ErrInvalidInput
+	}
+	// Rotation re-activates a disabled source. A Kubernetes source whose stored
+	// data scope has no runtime implementation must not be promoted back to
+	// active; the operator repairs the mapping first, then rotates.
+	if previous.SourceType == "kubernetes" {
+		if err := validateTypeScope(previous.SourceType, previous.BackendLogicalID, previous.DataScopeMapping, previous.ClusterUID); err != nil {
+			return SourceRegistration{}, err
+		}
 	}
 	var resultID uuid.UUID
 	err = tx.QueryRow(ctx, `UPDATE platform.source_registrations
@@ -320,6 +357,19 @@ func (service *Service) RollbackRegistration(ctx context.Context, tx pgx.Tx, act
 		if !active {
 			return SourceRegistration{}, fmt.Errorf("%w: rollback source cluster is not active in this tenant", ErrInvalidInput)
 		}
+	}
+	// A rollback replays a historical declaration. It must not reintroduce a
+	// data scope the source type cannot collect, which the write boundary now
+	// rejects for new and updated registrations.
+	rollbackClusterUID := ""
+	if clusterID != uuid.Nil {
+		if err := tx.QueryRow(ctx, `SELECT cluster_uid FROM platform.cluster_registrations
+			WHERE tenant_id = $1 AND cluster_id = $2`, actor.TenantID, clusterID).Scan(&rollbackClusterUID); err != nil && !errors.Is(err, pgx.ErrNoRows) {
+			return SourceRegistration{}, fmt.Errorf("read rollback source cluster identity: %w", err)
+		}
+	}
+	if err := validateTypeScope(current.SourceType, scope.BackendLogicalID, scope.DataScopeMapping, rollbackClusterUID); err != nil {
+		return SourceRegistration{}, err
 	}
 	credentialRevision := current.CredentialRevision
 	if authRef != current.AuthRef {

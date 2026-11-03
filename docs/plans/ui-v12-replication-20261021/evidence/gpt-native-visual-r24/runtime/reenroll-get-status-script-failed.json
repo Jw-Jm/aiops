@@ -1,0 +1,46 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "database": "ui_v12_r24_native",
+  "scope": "real native MFA UI with isolated native tenant and projected Kubernetes API identity",
+  "checks": [],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a17ad2-8a32-719b-b33d-7926bbfcdb04"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a17ad2-8acc-7001-9714-ab505eec5e9e"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ad2-8c0f-7650-84b7-824ba73b2097"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a17ad2-8c4b-77a9-b78f-8e901ef0cfd7"
+    },
+    {
+      "path": "/api/v1/auth/mfa/enrollments",
+      "status": 201,
+      "requestId": "01a17ad2-8c77-79d7-9f03-9695ca9e5c15"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17ad2-8d76-740d-bfdd-c682355dc886"
+    },
+    {
+      "path": "/api/v1/auth/mfa/enrollments/01a17ad2-8c82-7912-97fd-2933ec153547",
+      "status": 200,
+      "requestId": "01a17ad2-8da3-75f6-9ee3-e17bfa0f28db"
+    }
+  ],
+  "enrollmentId": "01a17ad2-8c82-7912-97fd-2933ec153547",
+  "status": "failed",
+  "failure": "page.evaluate: TypeError: r.status is not a function\n    at eval (eval at evaluate (:370:30), <anonymous>:1:108)\n    at async <anonymous>:396:30"
+}

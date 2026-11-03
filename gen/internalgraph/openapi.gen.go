@@ -161,27 +161,29 @@ func (e SignedContextEnvelopeSource) Valid() bool {
 
 // GraphQuery defines model for GraphQuery.
 type GraphQuery struct {
-	AfterCanonicalId   *string              `json:"afterCanonicalId,omitempty"`
-	CanonicalId        string               `json:"canonicalId"`
-	CanonicalIds       *[]string            `json:"canonicalIds,omitempty"`
-	CursorRevision     *GraphRevision       `json:"cursorRevision,omitempty"`
-	Direction          *GraphQueryDirection `json:"direction,omitempty"`
-	Domain             *GraphQueryDomain    `json:"domain,omitempty"`
-	ExpectedOwnerEpoch int64                `json:"expectedOwnerEpoch"`
-	Health             *string              `json:"health,omitempty"`
-	IncludeDomains     *bool                `json:"includeDomains,omitempty"`
-	Kind               *string              `json:"kind,omitempty"`
-	Label              *string              `json:"label,omitempty"`
-	MaxDepth           int                  `json:"maxDepth"`
-	MaxEdges           int                  `json:"maxEdges"`
-	MaxNodes           int                  `json:"maxNodes"`
-	Name               *string              `json:"name,omitempty"`
-	Namespace          *string              `json:"namespace,omitempty"`
-	Order              *GraphQueryOrder     `json:"order,omitempty"`
-	QueryKind          GraphQueryQueryKind  `json:"queryKind"`
-	RelationKinds      []string             `json:"relationKinds"`
-	Scope              Scope                `json:"scope"`
-	Sort               *string              `json:"sort,omitempty"`
+	AfterCanonicalId     *string              `json:"afterCanonicalId,omitempty"`
+	CanonicalId          string               `json:"canonicalId"`
+	CanonicalIds         *[]string            `json:"canonicalIds,omitempty"`
+	CursorRevision       *GraphRevision       `json:"cursorRevision,omitempty"`
+	Direction            *GraphQueryDirection `json:"direction,omitempty"`
+	Domain               *GraphQueryDomain    `json:"domain,omitempty"`
+	ExpectedOwnerEpoch   int64                `json:"expectedOwnerEpoch"`
+	Health               *string              `json:"health,omitempty"`
+	IncludeDomains       *bool                `json:"includeDomains,omitempty"`
+	IncludeFilterOptions *bool                `json:"includeFilterOptions,omitempty"`
+	Kind                 *string              `json:"kind,omitempty"`
+	Label                *string              `json:"label,omitempty"`
+	MaxDepth             int                  `json:"maxDepth"`
+	MaxEdges             int                  `json:"maxEdges"`
+	MaxNodes             int                  `json:"maxNodes"`
+	Name                 *string              `json:"name,omitempty"`
+	Namespace            *string              `json:"namespace,omitempty"`
+	Order                *GraphQueryOrder     `json:"order,omitempty"`
+	Q                    *string              `json:"q,omitempty"`
+	QueryKind            GraphQueryQueryKind  `json:"queryKind"`
+	RelationKinds        []string             `json:"relationKinds"`
+	Scope                Scope                `json:"scope"`
+	Sort                 *string              `json:"sort,omitempty"`
 }
 
 // GraphQueryDirection defines model for GraphQuery.Direction.

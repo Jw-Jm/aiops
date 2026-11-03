@@ -1,0 +1,192 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a17c41-30b1-7aa5-8a56-d9720f83fb56"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a17c41-3140-7d1a-a5ec-a92fd2bdd568"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17c41-3212-7841-8b8c-e171086db983"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a17c41-326b-7d0c-b86d-e762dac16955"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a17c41-326a-78f4-8a1f-631a79bb54e6"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17c41-356c-7720-abc0-17497ccc252f"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/resources",
+      "status": 403,
+      "requestId": "01a17c41-357f-7b8b-8217-b529ccfb72a2"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/overview",
+      "status": 403,
+      "requestId": "01a17c41-3592-76a3-90c8-1cf7c25523df"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17c41-3665-74d9-91fe-04a3e66e98c4"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c41-3671-7bca-baed-5320e358cbca:verify",
+      "status": 200,
+      "requestId": "01a17c41-3689-7dd3-b687-231c17081300"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c41-3671-7bca-baed-5320e358cbca:verify",
+      "status": 200,
+      "requestId": "01a17c41-3708-7b92-919f-4761c0a76fe0"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/users",
+      "status": 201,
+      "requestId": "01a17c41-37b3-73c1-bf20-b908739dd2e9"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a17c41-383e-77e8-a553-b48b2bc8b41d"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17c41-5ad1-7c48-8c93-070877a9e3b3"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c41-5ae2-7d72-975e-f7ef955184df:verify",
+      "status": 200,
+      "requestId": "01a17c41-5af2-7a71-bef5-9f38160c086c"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c41-5ae2-7d72-975e-f7ef955184df:verify",
+      "status": 200,
+      "requestId": "01a17c41-5b64-77ba-8ca5-9c5461b9ff49"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/role-bindings",
+      "status": 201,
+      "requestId": "01a17c41-5be1-7f29-8431-975fb174fd7b"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17c41-5c54-790d-a3f2-2cef35fd448a"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a17c41-5c8d-7234-addb-6e26aedcf64f"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a17c41-5c8e-70e3-98b0-121e48d49602"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a17c41-5f8a-7cf5-97e5-edf84dd36a21"
+    }
+  ],
+  "checks": [
+    "platform_admin session has zero operator grants and zero authorized clusters; /api/v1/resources and /api/v1/overview both answer 403 FORBIDDEN, so the administrator role does not imply operator access",
+    "created the operator account through the real UI: 201 with password+TOTP proof, row shows 尚未授权 (no implicit role)",
+    "operator grant written through the real dialog (role + one cluster + namespace + reason, password+TOTP proof) and re-read after a full page reload: exactly one active operator grant with the declared cluster UID and namespace",
+    "the grant response carries an advanced authorization version; no administrator role was added to the operator account or to the current administrator"
+  ],
+  "failure": null,
+  "adminSession": {
+    "status": 200,
+    "roles": [
+      "platform_admin"
+    ],
+    "authorizedClusters": 0,
+    "administratorState": {
+      "activeAdministrators": 1,
+      "isAdministrator": true,
+      "isLastActiveAdministrator": true
+    }
+  },
+  "adminReads": {
+    "resources": {
+      "status": 403,
+      "code": "FORBIDDEN"
+    },
+    "overview": {
+      "status": 403,
+      "code": "FORBIDDEN"
+    }
+  },
+  "grant": {
+    "bindingId": "2a1b6a46-707e-45df-ac2d-de4185f41c12",
+    "authorizationVersion": 2,
+    "scope": {
+      "clusterUids": [
+        "79014400-9453-4cb4-9678-0fae47981d79"
+      ],
+      "namespaces": [
+        "ops-native-v12-r24-20261026"
+      ]
+    },
+    "persisted": [
+      {
+        "role": "operator",
+        "scope": {
+          "namespaces": [
+            "ops-native-v12-r24-20261026"
+          ],
+          "clusterUids": [
+            "79014400-9453-4cb4-9678-0fae47981d79"
+          ]
+        },
+        "userId": "01a17c41-37c8-7d27-a35c-5c9f540e55dc",
+        "tenantId": "01a177f1-372f-75b7-be90-e8121d1445f5",
+        "bindingId": "2a1b6a46-707e-45df-ac2d-de4185f41c12",
+        "grantedAt": "2026-10-27T07:27:00.596416+00:00",
+        "revokedAt": null,
+        "authorizationVersion": 2
+      }
+    ]
+  },
+  "status": "passed"
+}

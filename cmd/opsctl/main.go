@@ -289,8 +289,12 @@ func runOpenBao(ctx context.Context, args []string, stdout, stderr io.Writer) er
 	shareIndex := flags.Int("share-index", -1, "zero-based Shamir share index for unseal")
 	executionSSHUser := flags.String("command-ssh-user", "", "explicit SP07 ordinary SSH principal; configure exact short-lived execution roles")
 	investigationSigning := flags.Bool("investigation-signing", false, "configure the nonexportable SP06 Context signing key during configure")
+	nativeMFAKey := flags.String("native-mfa-key", "", "existing nonexportable native MFA Transit key; grant only the API workload encrypt/decrypt")
 	if err := flags.Parse(args[1:]); err != nil {
 		return err
+	}
+	if *nativeMFAKey != "" && operation != "configure" && operation != "status" {
+		return errors.New("--native-mfa-key is valid only for openbao configure|status")
 	}
 	if flags.NArg() != 0 || *profilePath == "" || *caFile == "" {
 		return errors.New("openbao command requires --profile <resolved> --ca-file <path>")
@@ -367,6 +371,7 @@ func runOpenBao(ctx context.Context, args []string, stdout, stderr io.Writer) er
 		BundleDirectory: *bundleDirectory,
 		ServiceDomain:   serviceDomain,
 		ExpectedVersion: component.Version,
+		NativeMFAKey:    *nativeMFAKey,
 	})
 	if err != nil {
 		return err

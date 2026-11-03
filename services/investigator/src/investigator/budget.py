@@ -48,6 +48,7 @@ class BudgetedLLM(DefaultLLM):
     assistant_task = False
     assistant_task_kind = "data_query"
     requires_query = False
+    structured_output_mode = "json_schema"
 
     def get_maximum_output_token(self):
         # Context packing must reserve the frozen output cap, not a catalog guess.
@@ -85,7 +86,9 @@ class BudgetedLLM(DefaultLLM):
             # Official provider formatting extension; the original Holmes loop
             # still selects and executes tools. Only committed semantic Ledger
             # evidence IDs can appear in the formal result's reference array.
-            if self.assistant_task:
+            if self.structured_output_mode == "json_object":
+                kwargs["response_format"]={"type":"json_object"}
+            elif self.assistant_task:
                 from .assistant_binding import output_schema_for_steps as assistant_schema_for_steps
                 kwargs["response_format"]={"type":"json_schema","json_schema":{"name":"AssistantAnswer","strict":True,"schema":assistant_schema_for_steps(self.job_api.request("/steps"), self.assistant_task_kind)}}
             else:

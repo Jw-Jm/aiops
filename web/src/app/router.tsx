@@ -93,19 +93,22 @@ export const router = createBrowserRouter([
               {
                 path: "/overview",
                 lazy: async () => ({
-                  Component: (await import("../pages/OverviewPage")).OverviewPage,
+                  Component: (await import("../pages/OverviewPage"))
+                    .OverviewPage,
                 }),
               },
               {
                 path: "/assistant",
                 lazy: async () => ({
-                  Component: (await import("../pages/AssistantPage")).AssistantPage,
+                  Component: (await import("../pages/AssistantPage"))
+                    .AssistantPage,
                 }),
               },
               {
                 path: "/resources",
                 lazy: async () => ({
-                  Component: (await import("../pages/ResourcesPage")).ResourcesPage,
+                  Component: (await import("../pages/ResourcesPage"))
+                    .ResourcesPage,
                 }),
               },
               {
@@ -117,22 +120,23 @@ export const router = createBrowserRouter([
               },
               {
                 path: "/resources/topology",
-                element: unavailable(
-                  "关系拓扑",
-                  "查看根资源、关系图与影响范围。",
-                  "当前版本暂不提供关系拓扑。请先使用资源目录查看单个资源。",
-                ),
+                lazy: async () => ({
+                  Component: (await import("../pages/TopologyPage"))
+                    .TopologyPage,
+                }),
               },
               {
                 path: "/events/alerts",
                 lazy: async () => ({
-                  Component: (await import("../pages/FindingsPage")).FindingsPage,
+                  Component: (await import("../pages/FindingsPage"))
+                    .FindingsPage,
                 }),
               },
               {
                 path: "/events/incidents",
                 lazy: async () => {
-                  const { FindingsPage } = await import("../pages/FindingsPage");
+                  const { FindingsPage } =
+                    await import("../pages/FindingsPage");
                   return { Component: () => <FindingsPage incidents /> };
                 },
               },
@@ -143,9 +147,14 @@ export const router = createBrowserRouter([
                     .IncidentWorkspace,
                 }),
               },
+              {
+                path: "/observe/logs",
+                lazy: async () => ({
+                  Component: (await import("../pages/LogsPage")).LogsPage,
+                }),
+              },
               ...[
                 ["metrics", "指标查询"],
-                ["logs", "日志查询"],
                 ["network", "网络观测"],
                 ["hardware", "硬件健康"],
               ].map(([key, title]) => ({
@@ -207,7 +216,8 @@ export const router = createBrowserRouter([
               {
                 path: "/access/sources",
                 lazy: async () => {
-                  const { AdminPage } = await import("../pages/admin/AdminPage");
+                  const { AdminPage } =
+                    await import("../pages/admin/AdminPage");
                   return { Component: () => <AdminPage section="sources" /> };
                 },
               },
@@ -228,19 +238,24 @@ export const router = createBrowserRouter([
               },
               {
                 path: "/settings/permissions",
-                lazy: async () => ({ Component: (await import("../pages/admin/UsersPage")).UsersPage }),
+                lazy: async () => ({
+                  Component: (await import("../pages/admin/UsersPage"))
+                    .UsersPage,
+                }),
               },
               {
                 path: "/settings/policies",
                 lazy: async () => {
-                  const { AdminPage } = await import("../pages/admin/AdminPage");
+                  const { AdminPage } =
+                    await import("../pages/admin/AdminPage");
                   return { Component: () => <AdminPage section="policies" /> };
                 },
               },
               {
                 path: "/settings/execution",
                 lazy: async () => {
-                  const { AdminPage } = await import("../pages/admin/AdminPage");
+                  const { AdminPage } =
+                    await import("../pages/admin/AdminPage");
                   return {
                     Component: () => <AdminPage section="execution-profiles" />,
                   };
@@ -249,14 +264,28 @@ export const router = createBrowserRouter([
               {
                 path: "/settings/deployment",
                 lazy: async () => {
-                  const { AdminPage } = await import("../pages/admin/AdminPage");
-                  return { Component: () => <AdminPage section="deployment" /> };
+                  const { AdminPage } =
+                    await import("../pages/admin/AdminPage");
+                  return {
+                    Component: () => <AdminPage section="deployment" />,
+                  };
+                },
+              },
+              {
+                path: "/settings/audit/assistant",
+                lazy: async () => {
+                  const { AssistantPage } =
+                    await import("../pages/AssistantPage");
+                  return {
+                    Component: () => <AssistantPage initialDomain="audit" />,
+                  };
                 },
               },
               {
                 path: "/settings/audit",
                 lazy: async () => ({
-                  Component: (await import("../pages/admin/AuditPage")).AuditPage,
+                  Component: (await import("../pages/admin/AuditPage"))
+                    .AuditPage,
                 }),
               },
             ],
@@ -265,7 +294,10 @@ export const router = createBrowserRouter([
           { path: "/incidents", element: <Legacy to="/events/incidents" /> },
           { path: "/incidents/:incidentId", element: <LegacyIncident /> },
           { path: "/admin/sources", element: <Legacy to="/access/sources" /> },
-          { path: "/admin/policies", element: <Legacy to="/settings/policies" /> },
+          {
+            path: "/admin/policies",
+            element: <Legacy to="/settings/policies" />,
+          },
           {
             path: "/admin/execution-profiles",
             element: <Legacy to="/settings/execution" />,

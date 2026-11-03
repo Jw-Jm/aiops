@@ -1,0 +1,583 @@
+{
+  "at": "2026-10-29T03:38:13.243Z",
+  "requests": [
+    {
+      "path": "/api/v1/resources",
+      "query": "clusterUid=79014400-9453-4cb4-9678-0fae47981d79&canonicalIds=k8s%2Bv1%3A%2F%2F01a177f1-372f-75b7-be90-e8121d1445f5%2F79014400-9453-4cb4-9678-0fae47981d79%2Fcore%2FPod%2F0e648683-1088-4032-9b39-0a122ff475be&limit=1",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/resources/by-canonical-id",
+      "query": "canonicalId=k8s%2Bv1%3A%2F%2F01a177f1-372f-75b7-be90-e8121d1445f5%2F79014400-9453-4cb4-9678-0fae47981d79%2Fcore%2FPod%2F0e648683-1088-4032-9b39-0a122ff475be",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/resources/neighbors",
+      "query": "canonicalId=k8s%2Bv1%3A%2F%2F01a177f1-372f-75b7-be90-e8121d1445f5%2F79014400-9453-4cb4-9678-0fae47981d79%2Fcore%2FPod%2F0e648683-1088-4032-9b39-0a122ff475be&depth=2&maxNodes=200&maxEdges=400",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/resources/by-canonical-id",
+      "query": "canonicalId=k8s%2Bv1%3A%2F%2F01a177f1-372f-75b7-be90-e8121d1445f5%2F79014400-9453-4cb4-9678-0fae47981d79%2Fcore%2FConfigMap%2Fe2d7038d-79f4-491b-aca3-598522e9f039",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/findings",
+      "query": "clusterUid=79014400-9453-4cb4-9678-0fae47981d79&resourceCanonicalId=k8s%2Bv1%3A%2F%2F01a177f1-372f-75b7-be90-e8121d1445f5%2F79014400-9453-4cb4-9678-0fae47981d79%2Fcore%2FPod%2F0e648683-1088-4032-9b39-0a122ff475be&limit=20",
+      "status": 409
+    },
+    {
+      "path": "/api/v1/incidents",
+      "query": "clusterUid=79014400-9453-4cb4-9678-0fae47981d79&resourceCanonicalId=k8s%2Bv1%3A%2F%2F01a177f1-372f-75b7-be90-e8121d1445f5%2F79014400-9453-4cb4-9678-0fae47981d79%2Fcore%2FPod%2F0e648683-1088-4032-9b39-0a122ff475be&limit=20",
+      "status": 409
+    }
+  ],
+  "errors": [],
+  "businessWrites": 0,
+  "logQueries": 0,
+  "captures": [
+    {
+      "file": "/data/ops-v12-native-visual-r24-20261026/r46/detail-summary.png",
+      "at": "2026-10-29T03:38:15.379Z",
+      "probes": [],
+      "postProbes": [],
+      "publicUuidCount": 5
+    },
+    {
+      "file": "/data/ops-v12-native-visual-r24-20261026/r46/detail-summary-full.png",
+      "at": "2026-10-29T03:38:15.468Z",
+      "probes": [],
+      "postProbes": [],
+      "publicUuidCount": 5
+    }
+  ],
+  "indexSHA256": "ca48a90efadbf03a2d07073d22c1ea3bb1d0553466b26e3b2a95cde3bd293131",
+  "resource": {
+    "data": {
+      "observationSources": [
+        {
+          "sourceRegistrationId": "01a17c3c-ef66-70cf-9ff1-cad25a8bee34",
+          "revision": 3,
+          "scopeDigest": "sha256:b7bae2c3b4693cd7a306d3eac85f823b8f8207ac64380b2b6208ce96d97a2dd2"
+        }
+      ],
+      "directlyAffected": [],
+      "indirectlyAffected": [],
+      "dependencyOnly": [],
+      "schemaVersion": "resource-graph/v2",
+      "graphRevision": {
+        "ownerEpoch": 19,
+        "graphGeneration": 26
+      },
+      "ownerInstance": "03240066-81e9-4b20-aa5a-5f05c8088260",
+      "collectedAt": "2026-10-29T03:38:14.828211003Z",
+      "freshness": "fresh",
+      "partial": true,
+      "warnings": [
+        "scope_limited"
+      ],
+      "degradedSources": [],
+      "nodes": [
+        {
+          "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+          "kind": "Pod",
+          "name": "ops-seaweedfs-0",
+          "updatedAt": "2026-10-29T02:17:56.506752546Z",
+          "tenantId": "01a177f1-372f-75b7-be90-e8121d1445f5",
+          "domain": "k8s",
+          "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+          "apiGroup": "core",
+          "stableId": "0e648683-1088-4032-9b39-0a122ff475be",
+          "namespace": "ops-native-v12-r24-20261026",
+          "labels": {
+            "app.kubernetes.io/name": "ops-seaweedfs",
+            "apps.kubernetes.io/pod-index": "0",
+            "controller-revision-hash": "ops-seaweedfs-6fff566b58",
+            "ops.platform.io/component": "seaweedfs",
+            "ops.platform.io/mode": "bundled",
+            "ops.platform.io/release": "ops-r24",
+            "statefulset.kubernetes.io/pod-name": "ops-seaweedfs-0"
+          },
+          "attributes": {
+            "health": "normal",
+            "resourceDomain": "kubernetes",
+            "status": {
+              "conditions": [
+                {
+                  "lastTransitionTime": "2026-10-26T11:23:07Z",
+                  "status": "True",
+                  "type": "PodReadyToStartContainers"
+                },
+                {
+                  "lastTransitionTime": "2026-10-26T11:22:37Z",
+                  "status": "True",
+                  "type": "Initialized"
+                },
+                {
+                  "lastTransitionTime": "2026-10-26T11:25:22Z",
+                  "status": "True",
+                  "type": "Ready"
+                },
+                {
+                  "lastTransitionTime": "2026-10-26T11:25:22Z",
+                  "status": "True",
+                  "type": "ContainersReady"
+                },
+                {
+                  "lastTransitionTime": "2026-10-26T11:22:37Z",
+                  "status": "True",
+                  "type": "PodScheduled"
+                }
+              ],
+              "containerStatuses": [
+                {
+                  "containerID": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+                  "imageID": "docker.io/chrislusf/seaweedfs@sha256:ce9e796f1fe6f06968f4c04bdaf8f678dad9c8acdfef3d244133d71bfa6bf882",
+                  "lastState": {},
+                  "name": "seaweedfs",
+                  "ready": true,
+                  "restartCount": 0,
+                  "state": {
+                    "running": {
+                      "startedAt": "2026-10-26T11:24:51Z"
+                    }
+                  }
+                }
+              ],
+              "phase": "Running"
+            }
+          },
+          "sourceRefs": [
+            "01a17c3c-ef66-70cf-9ff1-cad25a8bee34"
+          ],
+          "firstObservedAt": "2026-10-29T02:17:56.506752546Z",
+          "lastObservedAt": "2026-10-29T02:17:56.506752546Z"
+        }
+      ],
+      "edges": [],
+      "budgets": {
+        "maxDepth": 1,
+        "storageMaxDepth": 1,
+        "maxNodes": 200,
+        "maxEdges": 400,
+        "nodeCount": 4,
+        "edgeCount": 3,
+        "truncated": false
+      },
+      "rankedEvidence": [],
+      "conflicts": null
+    },
+    "meta": {
+      "nextCursor": ""
+    },
+    "requestId": "01a185bc-a1d0-7765-b3df-206859a1aa58"
+  },
+  "entity": {
+    "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+    "kind": "Pod",
+    "name": "ops-seaweedfs-0",
+    "updatedAt": "2026-10-29T02:17:56.506752546Z",
+    "tenantId": "01a177f1-372f-75b7-be90-e8121d1445f5",
+    "domain": "k8s",
+    "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+    "apiGroup": "core",
+    "stableId": "0e648683-1088-4032-9b39-0a122ff475be",
+    "namespace": "ops-native-v12-r24-20261026",
+    "labels": {
+      "app.kubernetes.io/name": "ops-seaweedfs",
+      "apps.kubernetes.io/pod-index": "0",
+      "controller-revision-hash": "ops-seaweedfs-6fff566b58",
+      "ops.platform.io/component": "seaweedfs",
+      "ops.platform.io/mode": "bundled",
+      "ops.platform.io/release": "ops-r24",
+      "statefulset.kubernetes.io/pod-name": "ops-seaweedfs-0"
+    },
+    "attributes": {
+      "health": "normal",
+      "resourceDomain": "kubernetes",
+      "status": {
+        "conditions": [
+          {
+            "lastTransitionTime": "2026-10-26T11:23:07Z",
+            "status": "True",
+            "type": "PodReadyToStartContainers"
+          },
+          {
+            "lastTransitionTime": "2026-10-26T11:22:37Z",
+            "status": "True",
+            "type": "Initialized"
+          },
+          {
+            "lastTransitionTime": "2026-10-26T11:25:22Z",
+            "status": "True",
+            "type": "Ready"
+          },
+          {
+            "lastTransitionTime": "2026-10-26T11:25:22Z",
+            "status": "True",
+            "type": "ContainersReady"
+          },
+          {
+            "lastTransitionTime": "2026-10-26T11:22:37Z",
+            "status": "True",
+            "type": "PodScheduled"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "containerID": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+            "imageID": "docker.io/chrislusf/seaweedfs@sha256:ce9e796f1fe6f06968f4c04bdaf8f678dad9c8acdfef3d244133d71bfa6bf882",
+            "lastState": {},
+            "name": "seaweedfs",
+            "ready": true,
+            "restartCount": 0,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-26T11:24:51Z"
+              }
+            }
+          }
+        ],
+        "phase": "Running"
+      }
+    },
+    "sourceRefs": [
+      "01a17c3c-ef66-70cf-9ff1-cad25a8bee34"
+    ],
+    "firstObservedAt": "2026-10-29T02:17:56.506752546Z",
+    "lastObservedAt": "2026-10-29T02:17:56.506752546Z"
+  },
+  "sourceVersion": {
+    "sourceRegistrationId": "01a17c3c-ef66-70cf-9ff1-cad25a8bee34",
+    "revision": 3,
+    "scopeDigest": "sha256:b7bae2c3b4693cd7a306d3eac85f823b8f8207ac64380b2b6208ce96d97a2dd2"
+  },
+  "copiedCanonical": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+  "aiHref": "/assistant?clusterUid=79014400-9453-4cb4-9678-0fae47981d79&canonicalId=k8s%2Bv1%3A%2F%2F01a177f1-372f-75b7-be90-e8121d1445f5%2F79014400-9453-4cb4-9678-0fae47981d79%2Fcore%2FPod%2F0e648683-1088-4032-9b39-0a122ff475be",
+  "layout": {
+    "width": 1142,
+    "gap": "20px",
+    "cards": [
+      {
+        "width": 561,
+        "headHeight": 60,
+        "padding": "20px"
+      },
+      {
+        "width": 561,
+        "headHeight": 60,
+        "padding": "20px"
+      }
+    ]
+  },
+  "neighbors": {
+    "data": {
+      "observationSources": [
+        {
+          "sourceRegistrationId": "01a17c3c-ef66-70cf-9ff1-cad25a8bee34",
+          "revision": 3,
+          "scopeDigest": "sha256:b7bae2c3b4693cd7a306d3eac85f823b8f8207ac64380b2b6208ce96d97a2dd2"
+        }
+      ],
+      "directlyAffected": [],
+      "indirectlyAffected": [],
+      "dependencyOnly": [],
+      "schemaVersion": "resource-graph/v2",
+      "graphRevision": {
+        "ownerEpoch": 19,
+        "graphGeneration": 26
+      },
+      "ownerInstance": "03240066-81e9-4b20-aa5a-5f05c8088260",
+      "collectedAt": "2026-10-29T03:38:15.958139867Z",
+      "freshness": "stale",
+      "partial": true,
+      "warnings": [
+        "source_continuity_unverified",
+        "scope_limited"
+      ],
+      "degradedSources": [
+        "kubernetes"
+      ],
+      "nodes": [
+        {
+          "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+          "kind": "Pod",
+          "name": "ops-seaweedfs-0",
+          "updatedAt": "2026-10-29T02:17:56.506752546Z",
+          "tenantId": "01a177f1-372f-75b7-be90-e8121d1445f5",
+          "domain": "k8s",
+          "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+          "apiGroup": "core",
+          "stableId": "0e648683-1088-4032-9b39-0a122ff475be",
+          "namespace": "ops-native-v12-r24-20261026",
+          "labels": {
+            "app.kubernetes.io/name": "ops-seaweedfs",
+            "apps.kubernetes.io/pod-index": "0",
+            "controller-revision-hash": "ops-seaweedfs-6fff566b58",
+            "ops.platform.io/component": "seaweedfs",
+            "ops.platform.io/mode": "bundled",
+            "ops.platform.io/release": "ops-r24",
+            "statefulset.kubernetes.io/pod-name": "ops-seaweedfs-0"
+          },
+          "attributes": {
+            "health": "normal",
+            "resourceDomain": "kubernetes",
+            "status": {
+              "conditions": [
+                {
+                  "lastTransitionTime": "2026-10-26T11:23:07Z",
+                  "status": "True",
+                  "type": "PodReadyToStartContainers"
+                },
+                {
+                  "lastTransitionTime": "2026-10-26T11:22:37Z",
+                  "status": "True",
+                  "type": "Initialized"
+                },
+                {
+                  "lastTransitionTime": "2026-10-26T11:25:22Z",
+                  "status": "True",
+                  "type": "Ready"
+                },
+                {
+                  "lastTransitionTime": "2026-10-26T11:25:22Z",
+                  "status": "True",
+                  "type": "ContainersReady"
+                },
+                {
+                  "lastTransitionTime": "2026-10-26T11:22:37Z",
+                  "status": "True",
+                  "type": "PodScheduled"
+                }
+              ],
+              "containerStatuses": [
+                {
+                  "containerID": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+                  "imageID": "docker.io/chrislusf/seaweedfs@sha256:ce9e796f1fe6f06968f4c04bdaf8f678dad9c8acdfef3d244133d71bfa6bf882",
+                  "lastState": {},
+                  "name": "seaweedfs",
+                  "ready": true,
+                  "restartCount": 0,
+                  "state": {
+                    "running": {
+                      "startedAt": "2026-10-26T11:24:51Z"
+                    }
+                  }
+                }
+              ],
+              "phase": "Running"
+            }
+          },
+          "sourceRefs": [
+            "01a17c3c-ef66-70cf-9ff1-cad25a8bee34"
+          ],
+          "firstObservedAt": "2026-10-29T02:17:56.506752546Z",
+          "lastObservedAt": "2026-10-29T02:17:56.506752546Z"
+        },
+        {
+          "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/ConfigMap/e2d7038d-79f4-491b-aca3-598522e9f039",
+          "kind": "ConfigMap",
+          "name": "ops-seaweedfs-master-config",
+          "updatedAt": "2026-10-29T02:17:57.7607787Z",
+          "tenantId": "01a177f1-372f-75b7-be90-e8121d1445f5",
+          "domain": "k8s",
+          "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+          "apiGroup": "core",
+          "stableId": "e2d7038d-79f4-491b-aca3-598522e9f039",
+          "namespace": "ops-native-v12-r24-20261026",
+          "labels": {
+            "ops.platform.io/component": "seaweedfs",
+            "ops.platform.io/mode": "bundled",
+            "ops.platform.io/release": "ops-r24"
+          },
+          "attributes": {
+            "health": "unknown",
+            "resourceDomain": "kubernetes"
+          },
+          "sourceRefs": [
+            "01a17c3c-ef66-70cf-9ff1-cad25a8bee34"
+          ],
+          "firstObservedAt": "2026-10-29T02:17:57.7607787Z",
+          "lastObservedAt": "2026-10-29T02:17:57.7607787Z"
+        },
+        {
+          "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/apps/StatefulSet/28b06281-5bfa-4d50-ab0f-880af7269fd2",
+          "kind": "StatefulSet",
+          "name": "ops-seaweedfs",
+          "updatedAt": "2026-10-29T02:17:55.374819857Z",
+          "tenantId": "01a177f1-372f-75b7-be90-e8121d1445f5",
+          "domain": "k8s",
+          "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+          "apiGroup": "apps",
+          "stableId": "28b06281-5bfa-4d50-ab0f-880af7269fd2",
+          "namespace": "ops-native-v12-r24-20261026",
+          "labels": {
+            "app.kubernetes.io/name": "ops-seaweedfs",
+            "ops.platform.io/component": "seaweedfs",
+            "ops.platform.io/mode": "bundled",
+            "ops.platform.io/release": "ops-r24"
+          },
+          "attributes": {
+            "health": "unknown",
+            "resourceDomain": "kubernetes"
+          },
+          "sourceRefs": [
+            "01a17c3c-ef66-70cf-9ff1-cad25a8bee34"
+          ],
+          "firstObservedAt": "2026-10-29T02:17:55.374819857Z",
+          "lastObservedAt": "2026-10-29T02:17:55.374819857Z"
+        },
+        {
+          "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Service/eb2e67c6-221e-4178-a757-cdc652775c98",
+          "kind": "Service",
+          "name": "ops-seaweedfs-s3",
+          "updatedAt": "2026-10-29T02:17:57.384266581Z",
+          "tenantId": "01a177f1-372f-75b7-be90-e8121d1445f5",
+          "domain": "k8s",
+          "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+          "apiGroup": "core",
+          "stableId": "eb2e67c6-221e-4178-a757-cdc652775c98",
+          "namespace": "ops-native-v12-r24-20261026",
+          "labels": {
+            "app.kubernetes.io/name": "ops-seaweedfs",
+            "ops.platform.io/component": "seaweedfs",
+            "ops.platform.io/mode": "bundled",
+            "ops.platform.io/release": "ops-r24"
+          },
+          "attributes": {
+            "health": "unknown",
+            "resourceDomain": "network"
+          },
+          "sourceRefs": [
+            "01a17c3c-ef66-70cf-9ff1-cad25a8bee34"
+          ],
+          "firstObservedAt": "2026-10-29T02:17:57.384266581Z",
+          "lastObservedAt": "2026-10-29T02:17:57.384266581Z"
+        },
+        {
+          "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/discovery.k8s.io/EndpointSlice/587b6e4f-ca8a-474b-a2e9-75216471b0a4",
+          "kind": "EndpointSlice",
+          "name": "ops-seaweedfs-s3-qztbx",
+          "updatedAt": "2026-10-29T02:17:58.012229151Z",
+          "tenantId": "01a177f1-372f-75b7-be90-e8121d1445f5",
+          "domain": "k8s",
+          "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+          "apiGroup": "discovery.k8s.io",
+          "stableId": "587b6e4f-ca8a-474b-a2e9-75216471b0a4",
+          "namespace": "ops-native-v12-r24-20261026",
+          "labels": {
+            "app.kubernetes.io/name": "ops-seaweedfs",
+            "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+            "kubernetes.io/service-name": "ops-seaweedfs-s3",
+            "ops.platform.io/component": "seaweedfs",
+            "ops.platform.io/mode": "bundled",
+            "ops.platform.io/release": "ops-r24"
+          },
+          "attributes": {
+            "health": "unknown",
+            "resourceDomain": "network"
+          },
+          "sourceRefs": [
+            "01a17c3c-ef66-70cf-9ff1-cad25a8bee34"
+          ],
+          "firstObservedAt": "2026-10-29T02:17:58.012229151Z",
+          "lastObservedAt": "2026-10-29T02:17:58.012229151Z"
+        }
+      ],
+      "edges": [
+        {
+          "from": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+          "to": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/ConfigMap/e2d7038d-79f4-491b-aca3-598522e9f039",
+          "kind": "related_to",
+          "provenance": {
+            "sourceRegistrationId": "01a17c3c-ef66-70cf-9ff1-cad25a8bee34",
+            "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+            "sourceValues": null,
+            "observedAt": "2026-10-29T02:17:56.506752546Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-29T02:17:56.506752546Z",
+          "validFrom": "2026-10-29T02:17:56.506752546Z",
+          "ttl": 0
+        },
+        {
+          "from": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+          "to": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/apps/StatefulSet/28b06281-5bfa-4d50-ab0f-880af7269fd2",
+          "kind": "managed_by",
+          "provenance": {
+            "sourceRegistrationId": "01a17c3c-ef66-70cf-9ff1-cad25a8bee34",
+            "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+            "sourceValues": null,
+            "observedAt": "2026-10-29T02:17:56.506752546Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-29T02:17:56.506752546Z",
+          "validFrom": "2026-10-29T02:17:56.506752546Z",
+          "ttl": 0
+        },
+        {
+          "from": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Service/eb2e67c6-221e-4178-a757-cdc652775c98",
+          "to": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+          "kind": "selects_pod",
+          "provenance": {
+            "sourceRegistrationId": "01a17c3c-ef66-70cf-9ff1-cad25a8bee34",
+            "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/selector/identity-projection-v1",
+            "sourceValues": null,
+            "observedAt": "2026-10-29T02:17:57.384266581Z"
+          },
+          "confidence": 0.95,
+          "observedAt": "2026-10-29T02:17:57.384266581Z",
+          "validFrom": "2026-10-29T02:17:57.384266581Z",
+          "ttl": 0
+        },
+        {
+          "from": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/discovery.k8s.io/EndpointSlice/587b6e4f-ca8a-474b-a2e9-75216471b0a4",
+          "to": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Service/eb2e67c6-221e-4178-a757-cdc652775c98",
+          "kind": "managed_by",
+          "provenance": {
+            "sourceRegistrationId": "01a17c3c-ef66-70cf-9ff1-cad25a8bee34",
+            "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+            "sourceValues": null,
+            "observedAt": "2026-10-29T02:17:58.012229151Z"
+          },
+          "confidence": 1,
+          "observedAt": "2026-10-29T02:17:58.012229151Z",
+          "validFrom": "2026-10-29T02:17:58.012229151Z",
+          "ttl": 0
+        }
+      ],
+      "budgets": {
+        "maxDepth": 2,
+        "storageMaxDepth": 2,
+        "maxNodes": 200,
+        "maxEdges": 400,
+        "nodeCount": 5,
+        "edgeCount": 4,
+        "truncated": false
+      },
+      "rankedEvidence": [],
+      "conflicts": null
+    },
+    "meta": {
+      "nextCursor": ""
+    },
+    "requestId": "01a185bc-a65c-7362-84f6-e9b03b4d3890"
+  },
+  "neighborHref": "/resources/detail?clusterUid=79014400-9453-4cb4-9678-0fae47981d79&canonicalId=k8s%2Bv1%3A%2F%2F01a177f1-372f-75b7-be90-e8121d1445f5%2F79014400-9453-4cb4-9678-0fae47981d79%2Fcore%2FConfigMap%2Fe2d7038d-79f4-491b-aca3-598522e9f039",
+  "relationsViewLocal": true,
+  "events": [
+    {
+      "kind": "findings",
+      "status": 409,
+      "body": {
+        "code": "CAPABILITY_DISABLED",
+        "message": "SP05 runtime is disabled",
+        "requestId": "01a185bc-ae2b-77a4-8708-267e642f76ed",
+        "retryable": false,
+        "schemaVersion": "error-envelope/v2"
+      }
+    }
+  ],
+  "status": "failed",
+  "failure": "event API failed findings 409"
+}

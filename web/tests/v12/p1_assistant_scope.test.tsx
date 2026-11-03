@@ -1,11 +1,24 @@
 import { beforeEach, expect, it, vi } from "vitest";
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { useState } from "react";
 import { MemoryRouter, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AssistantPage } from "../../src/pages/AssistantPage";
-import { ClusterScopeProvider, useClusterScope } from "../../src/app/ClusterContext";
+import {
+  ClusterScopeProvider,
+  useClusterScope,
+} from "../../src/app/ClusterContext";
+import { observation } from "../../src/api/observation";
+import { ApiError } from "../../src/api/client";
 import { setCredentials } from "../../src/api/client";
+
+vi.mock("../../src/api/observation", () => ({ observation: vi.fn() }));
 
 const api = vi.hoisted(() => ({
   capabilities: vi.fn(),
@@ -57,12 +70,16 @@ const capabilitiesEnvelope = {
   headers: new Headers(),
   data: {
     data: {
-    enabled: true,
-    taskKinds: ["data_query", "incident_followup", "resource_troubleshooting"],
-    catalog: { datasets: [] },
-    sourceCapabilities: [],
-    networkCapabilities: [],
-    faultChainEnabled: false,
+      enabled: true,
+      taskKinds: [
+        "data_query",
+        "incident_followup",
+        "resource_troubleshooting",
+      ],
+      catalog: { datasets: [] },
+      sourceCapabilities: [],
+      networkCapabilities: [],
+      faultChainEnabled: false,
     },
   },
 };
@@ -73,18 +90,24 @@ function ScopeControls() {
   return (
     <div>
       <span data-testid="scope-result">{result || scope.pendingSwitch}</span>
-      <button onClick={() => setResult(scope.requestCluster("uid-b"))}>switch-scope</button>
+      <button onClick={() => setResult(scope.requestCluster("uid-b"))}>
+        switch-scope
+      </button>
     </div>
   );
 }
 
 function LocationProbe() {
   const location = useLocation();
-  return <span data-testid="location">{location.pathname + location.search}</span>;
+  return (
+    <span data-testid="location">{location.pathname + location.search}</span>
+  );
 }
 
 function renderAssistant(initial: string) {
-  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
   const utils = render(
     <QueryClientProvider client={client}>
       <MemoryRouter initialEntries={[initial]}>
@@ -107,6 +130,7 @@ function renderAssistant(initial: string) {
 }
 
 beforeEach(() => {
+  vi.mocked(observation).mockReset();
   setCredentials("fixture", "tenant");
   api.capabilities.mockResolvedValue(capabilitiesEnvelope);
   api.conversations.mockResolvedValue({
@@ -123,10 +147,13 @@ beforeEach(() => {
 it.each([
   ["incident", "/assistant?clusterUid=uid-a&incidentId=INC-2096"],
   ["resource", "/assistant?clusterUid=uid-a&canonicalId=pod-1"],
-])("keeps the %s deep link in troubleshoot mode on first mount", async (_kind, initial) => {
-  renderAssistant(initial);
-  expect(await screen.findByText("故障排查")).toBeInTheDocument();
-});
+])(
+  "keeps the %s deep link in troubleshoot mode on first mount",
+  async (_kind, initial) => {
+    renderAssistant(initial);
+    expect(await screen.findByText("故障排查")).toBeInTheDocument();
+  },
+);
 
 function deferred<T>() {
   let resolve!: (value: T) => void;
@@ -154,7 +181,9 @@ it.each(["resolve", "reject", "pending"] as const)(
     await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));
     fireEvent.click(screen.getByText("switch-scope"));
     await waitFor(() =>
-      expect(screen.getByTestId("location")).toHaveTextContent("clusterUid=uid-b"),
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        "clusterUid=uid-b",
+      ),
     );
     if (finish === "resolve") {
       await act(async () => {
@@ -180,16 +209,16 @@ it.each(["resolve", "reject", "pending"] as const)(
 it("does not navigate to a conversation created for the old scope after a same-tick scope switch", async () => {
   const pending = deferred<{ conversationId: string }>();
   api.create.mockReturnValueOnce(pending.promise);
-  renderAssistant(
-    "/assistant?clusterUid=uid-a&canonicalId=pod-1",
-  );
+  renderAssistant("/assistant?clusterUid=uid-a&canonicalId=pod-1");
   const createButton = (await screen.findByText("创建会话")).closest("button")!;
   await waitFor(() => expect(createButton).toBeEnabled());
   fireEvent.click(createButton);
   await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));
   fireEvent.click(screen.getByText("switch-scope"));
   await waitFor(() =>
-    expect(screen.getByTestId("location")).toHaveTextContent("clusterUid=uid-b"),
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "clusterUid=uid-b",
+    ),
   );
   await act(async () => {
     pending.resolve({ conversationId: "conversation-old-scope" });
@@ -208,15 +237,15 @@ it("keeps the busy state of the newer request when the older one finishes", asyn
   const second = deferred<{ conversationId: string }>();
   api.create.mockReturnValueOnce(first.promise);
   renderAssistant("/assistant?clusterUid=uid-a");
-  const createButton = (await screen.findByText("创建会话")).closest(
-    "button",
-  )!;
+  const createButton = (await screen.findByText("创建会话")).closest("button")!;
   await waitFor(() => expect(createButton).toBeEnabled());
   fireEvent.click(createButton);
   await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));
   fireEvent.click(screen.getByText("switch-scope"));
   await waitFor(() =>
-    expect(screen.getByTestId("location")).toHaveTextContent("clusterUid=uid-b"),
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "clusterUid=uid-b",
+    ),
   );
   api.create.mockReturnValueOnce(second.promise);
   const newButton = (await screen.findByText("创建会话")).closest("button")!;
@@ -238,9 +267,7 @@ it("keeps the busy state of the newer request when the older one finishes", asyn
 it("discards a late created conversation when AssistantPage unmounts", async () => {
   const pending = deferred<{ conversationId: string }>();
   api.create.mockReturnValueOnce(pending.promise);
-  const view = renderAssistant(
-    "/assistant?clusterUid=uid-a&canonicalId=pod-1",
-  );
+  const view = renderAssistant("/assistant?clusterUid=uid-a&canonicalId=pod-1");
   expect(await screen.findByText("故障排查")).toBeInTheDocument();
   fireEvent.click((await screen.findByText("创建会话")).closest("button")!);
   await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));
@@ -249,4 +276,125 @@ it("discards a late created conversation when AssistantPage unmounts", async () 
     pending.resolve({ conversationId: "conversation-after-unmount" });
   });
   expect(api.create).toHaveBeenCalledTimes(1);
+});
+
+const logResult = {
+  queryId: "log-one",
+  resource: {
+    canonicalId: "pod-from-log",
+    namespaceScope: { namespace: "apps" },
+  },
+  source: { registrationId: "log-source", registrationRevision: 3 },
+  window: {
+    from: "2026-10-28T01:30:00.150326Z",
+    to: "2026-10-28T02:00:00.150326Z",
+    timezone: "Asia/Shanghai",
+  },
+};
+it("rechecks the log reference and creates only the exact resource/window draft", async () => {
+  vi.mocked(observation).mockResolvedValue(logResult);
+  api.create.mockResolvedValue({
+    status: 201,
+    headers: new Headers(),
+    data: envelope({ conversationId: "log-conversation" }),
+  });
+  renderAssistant("/assistant?clusterUid=uid-a&logQuery=log-one");
+  expect(
+    await screen.findByText("按日志资源与时间创建排查会话"),
+  ).toBeInTheDocument();
+  expect(screen.getByRole("combobox", { name: "授权集群" })).toBeDisabled();
+  expect(
+    screen.queryByRole("combobox", { name: "资源调查时间" }),
+  ).not.toBeInTheDocument();
+  expect(api.create).not.toHaveBeenCalled();
+  fireEvent.change(screen.getByPlaceholderText("描述现象"), {
+    target: { value: "排查该窗口日志异常" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "创建会话" }));
+  await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));
+  expect(observation).toHaveBeenCalledTimes(2);
+  expect(api.create.mock.calls[0][0]).toMatchObject({
+    mode: "troubleshoot",
+    authorizationDomain: "operational",
+    clusterUid: "uid-a",
+    namespaceSelection: ["apps"],
+    includeClusterScoped: false,
+    resourceCanonicalIds: ["pod-from-log"],
+    timeRange: logResult.window,
+  });
+  expect(api.submit).not.toHaveBeenCalled();
+  await waitFor(() =>
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "conversation=log-conversation",
+    ),
+  );
+  expect(screen.getByTestId("location")).not.toHaveTextContent("logQuery");
+});
+it.each([403, 410])(
+  "blocks log handoff creation on a %s recheck without cached fallback",
+  async (status) => {
+    vi.mocked(observation).mockResolvedValueOnce(logResult);
+    renderAssistant("/assistant?clusterUid=uid-a&logQuery=log-one");
+    expect(
+      await screen.findByText("按日志资源与时间创建排查会话"),
+    ).toBeInTheDocument();
+    vi.mocked(observation).mockRejectedValue(
+      new ApiError(
+        status,
+        status === 410 ? "RESULT_EXPIRED" : "DENIED",
+        "reference rejected",
+        "request-denied",
+      ),
+    );
+    fireEvent.click(screen.getByRole("button", { name: /创建会话/ }));
+    await waitFor(() => expect(observation).toHaveBeenCalledTimes(2));
+    await waitFor(() =>
+      expect(
+        screen.queryByText("按日志资源与时间创建排查会话"),
+      ).not.toBeInTheDocument(),
+    );
+    if (status === 410)
+      expect(screen.getByText("查询结果已过期")).toBeInTheDocument();
+    expect(api.create).not.toHaveBeenCalled();
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /创建会话/ })).toBeDisabled(),
+    );
+  },
+);
+it("discards a late log reference after a cluster change", async () => {
+  const late = deferred<unknown>();
+  vi.mocked(observation).mockReturnValue(late.promise);
+  renderAssistant("/assistant?clusterUid=uid-a&logQuery=log-one");
+  await waitFor(() => expect(observation).toHaveBeenCalledTimes(1));
+  fireEvent.click(screen.getByText("switch-scope"));
+  await act(async () => late.resolve(logResult));
+  await waitFor(() =>
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "clusterUid=uid-b",
+    ),
+  );
+  expect(screen.getByTestId("location")).not.toHaveTextContent("logQuery");
+  expect(screen.queryByText("pod-from-log")).not.toBeInTheDocument();
+  expect(api.create).not.toHaveBeenCalled();
+});
+
+it("keeps the existing model task gate for a valid linked log context", async () => {
+  vi.mocked(observation).mockResolvedValue(logResult);
+  api.capabilities.mockResolvedValue({
+    ...capabilitiesEnvelope,
+    data: {
+      data: { ...capabilitiesEnvelope.data.data, taskKinds: ["data_query"] },
+    },
+  });
+  renderAssistant("/assistant?clusterUid=uid-a&logQuery=log-one");
+  expect(
+    await screen.findByText("按日志资源与时间创建排查会话"),
+  ).toBeInTheDocument();
+  expect(
+    await screen.findByText(
+      "当前模型 Profile 未开放此会话模式，请选择已开放模式。",
+    ),
+  ).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "创建会话" })).toBeDisabled();
+  expect(api.create).not.toHaveBeenCalled();
 });

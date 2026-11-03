@@ -413,7 +413,7 @@ func (h *AssistantHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					fail(err)
 					return
 				}
-				conversation, err := h.Repository.Get(r.Context(), actor.TenantID, id, actor.Subject)
+				conversation, err := h.Repository.GetReadable(r.Context(), actor.TenantID, id, actor.Subject)
 				if err != nil {
 					fail(err)
 					return

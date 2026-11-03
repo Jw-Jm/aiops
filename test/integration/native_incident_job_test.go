@@ -56,9 +56,9 @@ func (f *nativeJobFixture) newIncident(t *testing.T) nativeIncidentSeed {
 func (f *nativeJobFixture) newIncidentFamily(t *testing.T, family, symptom, stableID string) nativeIncidentSeed {
 	t.Helper()
 	sourceID := uuid.Must(uuid.NewV7())
-	backend := "native-incident-" + sourceID.String()[:8]
+	backend := "native-incident-" + sourceID.String()
 	mappingRaw, _ := json.Marshal(map[string]any{"scopes": map[string][]string{"cluster": {f.clusterUID}, "namespace": {"apps"}}})
-	if _, err := f.db.ExecContext(f.ctx, `INSERT INTO platform.source_registrations(tenant_id,source_id,cluster_id,source_type,instance_key,auth_ref,allowed_schemas,backend_logical_id,data_scope_mapping) VALUES($1,$2,$3,'kubernetes',$4,'openbao://native-incident/readonly',ARRAY['finding-envelope/v2'],$5,$6)`, f.tenantID, sourceID, f.clusterID, "native-incident-"+sourceID.String()[:8], backend, mappingRaw); err != nil {
+	if _, err := f.db.ExecContext(f.ctx, `INSERT INTO platform.source_registrations(tenant_id,source_id,cluster_id,source_type,instance_key,auth_ref,allowed_schemas,backend_logical_id,data_scope_mapping) VALUES($1,$2,$3,'kubernetes',$4,'openbao://native-incident/readonly',ARRAY['finding-envelope/v2'],$5,$6)`, f.tenantID, sourceID, f.clusterID, "native-incident-"+sourceID.String(), backend, mappingRaw); err != nil {
 		t.Fatalf("register incident source: %v", err)
 	}
 	b := source.BoundSourceContext{TenantID: f.tenantID, SourceID: sourceID, ClusterID: f.clusterID, ClusterUID: f.clusterUID, RegistrationRevision: 1, CredentialRevision: 1}

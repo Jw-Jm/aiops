@@ -1,0 +1,22 @@
+{
+  "contracts": [
+    "C-002"
+  ],
+  "slice": "SL-008",
+  "task": "P3-01",
+  "chain": [
+    "ResourcesPage includeFilterOptions=true and URL-bound kind/namespace",
+    "generated getResources / native current authorization / ResourceHandlers.ServeHTTP",
+    "signed graph.Query IncludeFilterOptions bound into QueryDigest and schema",
+    "Worker Graph.Query uses ontologyReader.GetNode and Scope.Allows before candidate accumulation",
+    "whole authorized snapshot kinds/namespaces/clusterScoped before listMatches, sorted unique; matched summary/pagination unchanged",
+    "meta.summary.filterOptions -> Select; reset deletes filters/cursor/sort while retaining cluster and page size"
+  ],
+  "namespaceSelector": "__cluster__ is reserved (invalid as Kubernetes namespace); only matches empty namespace after authorization; no grant expansion",
+  "failureHandling": "failed read removes cached popup and disables candidates; no fallback scope or auto submission",
+  "runtime": "browser-filters.json; oracle-persistence.json",
+  "limitations": [
+    "cluster-scope positive and second authorized namespace fixtures only",
+    "no visual or whole-slice promotion"
+  ]
+}

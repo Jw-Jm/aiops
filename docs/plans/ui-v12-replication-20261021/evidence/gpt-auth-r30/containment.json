@@ -1,0 +1,177 @@
+{
+  "capturedAt": "2026-10-27T06:10Z",
+  "reason": "the quarantined r30 captures may have shown factor material before the capture policy existed",
+  "environment": {
+    "host": "mssc / 10.10.10.2 (ssh mssc-direct)",
+    "database": "ui_v12_r24_native on 127.0.0.1:15454, schema70",
+    "queries": "read-only psql; every change below went through the real administrator MFA reset UI"
+  },
+  "before": [
+    {
+      "login": "r30.accept.1793072399113",
+      "liveEnrollments": 0,
+      "unusedCodes": 0,
+      "liveSessions": 0
+    },
+    {
+      "login": "r30.accept.1793072954003",
+      "liveEnrollments": 1,
+      "unusedCodes": 0,
+      "liveSessions": 3
+    },
+    {
+      "login": "r30.accept.1793073057210",
+      "liveEnrollments": 2,
+      "unusedCodes": 10,
+      "liveSessions": 4,
+      "confirmedAt": "2026-10-27T03:52:05.881817Z"
+    },
+    {
+      "login": "r30.accept.1793073194616",
+      "liveEnrollments": 2,
+      "unusedCodes": 10,
+      "liveSessions": 2,
+      "confirmedAt": "2026-10-27T03:53:32.603321Z"
+    },
+    {
+      "login": "r30.accept.1793073230556",
+      "liveEnrollments": 1,
+      "unusedCodes": 10,
+      "liveSessions": 1,
+      "confirmedAt": "2026-10-27T04:32:00.378986Z"
+    },
+    {
+      "login": "r30.accept.1793075578401",
+      "liveEnrollments": 2,
+      "unusedCodes": 10,
+      "liveSessions": 2,
+      "confirmedAt": "2026-10-27T04:33:49.712115Z"
+    },
+    {
+      "login": "r30.accept.1793076459493",
+      "liveEnrollments": 2,
+      "unusedCodes": 10,
+      "liveSessions": 3,
+      "confirmedAt": "2026-10-27T04:47:47.406149Z"
+    },
+    {
+      "login": "r30.accept.1793076561495",
+      "liveEnrollments": 1,
+      "unusedCodes": 0,
+      "liveSessions": 2
+    },
+    {
+      "login": "r30.accept.1793076604986",
+      "liveEnrollments": 1,
+      "unusedCodes": 10,
+      "liveSessions": 2,
+      "confirmedAt": "2026-10-27T04:52:00.571619Z"
+    }
+  ],
+  "resetReceipts": [
+    {
+      "loginName": "r30.accept.1793072399113",
+      "status": 200,
+      "requestId": "01a17bd6-bd0f-7e99-b77e-bb712401a3e0",
+      "sessionsRevoked": 0,
+      "credentialVersion": 3
+    },
+    {
+      "loginName": "r30.accept.1793072954003",
+      "status": 200,
+      "requestId": "01a17bd7-2941-7d67-844a-46c43c91d8a6",
+      "sessionsRevoked": 3,
+      "credentialVersion": 3
+    },
+    {
+      "loginName": "r30.accept.1793073057210",
+      "status": 200,
+      "requestId": "01a17bd7-9e71-7306-afe7-8332093a13b7",
+      "sessionsRevoked": 4,
+      "credentialVersion": 3
+    },
+    {
+      "loginName": "r30.accept.1793073194616",
+      "status": 200,
+      "requestId": "01a17bd8-1383-7a40-9aba-9ebcd41f5f62",
+      "sessionsRevoked": 2,
+      "credentialVersion": 3
+    },
+    {
+      "loginName": "r30.accept.1793073230556",
+      "status": 200,
+      "requestId": "01a17bd8-88af-71ae-a8b1-25e7079070d7",
+      "sessionsRevoked": 1,
+      "credentialVersion": 12
+    },
+    {
+      "loginName": "r30.accept.1793075578401",
+      "status": 200,
+      "requestId": "01a17bd8-fdde-75d2-8585-00d2aafec541",
+      "sessionsRevoked": 2,
+      "credentialVersion": 5
+    },
+    {
+      "loginName": "r30.accept.1793076459493",
+      "status": 200,
+      "requestId": "01a17bd9-7550-7e81-ae6e-31115a5ebdd7",
+      "sessionsRevoked": 3,
+      "credentialVersion": 3
+    },
+    {
+      "loginName": "r30.accept.1793076561495",
+      "status": 200,
+      "requestId": "01a17bda-5d6b-765a-b0b7-d48fb0849d71",
+      "sessionsRevoked": 2,
+      "credentialVersion": 3
+    },
+    {
+      "loginName": "r30.accept.1793076604986",
+      "status": 200,
+      "requestId": "01a17bda-d2a7-7af3-b53f-f3a54be78087",
+      "sessionsRevoked": 2,
+      "credentialVersion": 3
+    }
+  ],
+  "after": {
+    "allNine": "mfa_reset_required=t, live_enrollments=0, unused_codes=0, live_sessions=0",
+    "verifiedWith": "read-only psql snapshot executed after the resets"
+  },
+  "untouched": {
+    "v12.r24.admin": {
+      "status": "active",
+      "mustChangePassword": false,
+      "mfaResetRequired": false,
+      "credentialVersion": 4,
+      "confirmedEnrollments": 1,
+      "unusedCodes": 10
+    },
+    "r24.member.1793014545618": {
+      "status": "active",
+      "mustChangePassword": false,
+      "mfaResetRequired": false,
+      "credentialVersion": 6,
+      "confirmedEnrollments": 1,
+      "unusedCodes": 10
+    },
+    "note": "neither identity was created, reset or edited by this round"
+  },
+  "quarantine": {
+    "location": "old task private-evidence-quarantine (directory 0700, files 0600)",
+    "count": 17,
+    "handling": "not displayed, not copied back into Git, not sent to a model; metadata only in the old task quarantine.json",
+    "remoteLocation": "/data/ops-v12-native-visual-r24-20261026/private-evidence-quarantine (directory 0700, files 0600)",
+    "remoteCount": 23,
+    "remoteFilesDesc": "17 mfa-* captures named by the review plus the uncertain visual-account-security-admin.png, probe-security.png and the three extra mfa-status-* captures found on the host",
+    "remoteHandling": "moved out of the browsable r30-auth/shots directory with 0600 permissions; not opened, not copied back into Git"
+  },
+  "repositoryCaptureScan": {
+    "policy": "evidence/gpt-auth-r30/harness/screenshot-policy.md",
+    "shotsRemaining": 15,
+    "shotsDesc": "the 13 earlier non-secret captures plus security-confirmed-no-secret.png, security-binding-cancelled.png and security-admin-no-secret.png re-captured under harness/safe-capture.mjs",
+    "secretBearingStates": "recorded as JSON assertions (runs/*.json) and never as images",
+    "textScan": "no otpauth URI, base32 secret, recovery code or one-time code found in the r30 runs/*.json, runs/*.log or the markdown/json evidence",
+    "otherRounds": "gpt-completion-r23/mfa-confirmed.png masks the recovery-code tags at capture time; gpt-login-r29/runtime/mfa-expired.png asserts zero otpauth elements before capture"
+  },
+  "conclusion": "every factor secret that could appear in a quarantined image is now dead: no enrolment, no recovery codes and no session survives for the nine acceptance identities"
+}

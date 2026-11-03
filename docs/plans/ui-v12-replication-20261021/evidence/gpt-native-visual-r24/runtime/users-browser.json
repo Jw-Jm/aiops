@@ -1,0 +1,102 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "checks": [
+    "real create201 with password+TOTP exact operation proof; no implicit role",
+    "detail drawer/edit readonly/cancel; no-cluster operator denied; independent administrator201 and role table"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a177fe-be2b-7a36-b80e-dfda81ed3ea2"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a177fe-bebb-734e-bde4-be87ab1e6f3b"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a177fe-bf8a-75a8-b80b-9f258f1b9c44"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a177fe-bfe1-7e76-b3b6-ff5970a2d253"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a177fe-bfe3-74b0-bfda-6d0f819b04fd"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a177fe-c3a2-748f-bf6d-03ac2805f420"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a177fe-c3b1-72b9-be7b-5f3c3da3bfd7:verify",
+      "status": 200,
+      "requestId": "01a177fe-c3bf-7211-ba4f-7a215753d1e6"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a177fe-c3b1-72b9-be7b-5f3c3da3bfd7:verify",
+      "status": 200,
+      "requestId": "01a177fe-c44c-7126-9af0-ee4bb4e6fa2f"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 201,
+      "requestId": "01a177fe-c4db-785c-8ffa-c1b94da45fa9"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a177fe-c561-723d-9cad-02d7128aabe5"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a177fe-f62b-7217-ba79-43c2831b1a39"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a177fe-f63a-70f7-9fa8-d24dc23d5090:verify",
+      "status": 200,
+      "requestId": "01a177fe-f647-7db5-a0c3-56a2f4c82930"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a177fe-f63a-70f7-9fa8-d24dc23d5090:verify",
+      "status": 200,
+      "requestId": "01a177fe-f6c2-7d52-a6da-981d66043e52"
+    },
+    {
+      "path": "/api/v1/admin/role-bindings",
+      "status": 201,
+      "requestId": "01a177fe-f7bc-757f-a075-e6ad2c30621d"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a177fe-f7e1-700a-801d-558714a89a99"
+    }
+  ],
+  "screenshots": [
+    "users-list",
+    "users-create",
+    "user-detail",
+    "user-edit",
+    "user-grant-no-clusters",
+    "user-grant-verified",
+    "role-bindings"
+  ],
+  "geometry": {
+    "drawer": {
+      "x": 900,
+      "y": 0,
+      "width": 540,
+      "height": 960
+    }
+  },
+  "status": "passed"
+}

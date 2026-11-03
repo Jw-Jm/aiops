@@ -39,7 +39,7 @@ func TestResourceSyncerListWatch410AndProjection(t *testing.T) {
 	var snapshots []Snapshot
 	ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
 	defer cancel()
-	client.Run(ctx, CoreRequiredGVRs()[0], func(s Snapshot) error { snapshots = append(snapshots, s); return nil })
+	client.Run(ctx, CoreRequiredGVRs()[0], []string{"apps"}, func(s Snapshot) error { snapshots = append(snapshots, s); return nil })
 	if lists < 2 {
 		t.Fatalf("410 failed to relist, lists=%d", lists)
 	}
@@ -112,7 +112,7 @@ func TestNativeListItemsInheritListTypeMetadata(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
 	defer cancel()
 	seen := false
-	c.Run(ctx, GVR{Version: "v1", Resource: "pods"}, func(s Snapshot) error {
+	c.Run(ctx, GVR{Version: "v1", Resource: "pods"}, []string{"apps"}, func(s Snapshot) error {
 		if len(s.Objects) > 0 && s.State.WatchConnected {
 			seen = true
 			if s.Objects[0].GetKind() != "Pod" || s.Objects[0].GetAPIVersion() != "v1" {

@@ -1,0 +1,2086 @@
+
+ RUN  v5.0.3 /Users/mssc/Documents/Code/ops/platform/web
+
+stderr | tests/topology.test.tsx > queries an authorized root then bounded neighbors; local view changes do not read sources again
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/topology.test.tsx > queries an authorized root then bounded neighbors; local view changes do not read sources again
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/topology.test.tsx > keeps same-name roots distinct by canonical UID and namespace, and rereads detail
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/topology.test.tsx > keeps same-name roots distinct by canonical UID and namespace, and rereads detail
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/topology.test.tsx > rejects an explicit foreign-cluster root without neighbor fallback
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/topology.test.tsx > rejects an explicit foreign-cluster root without neighbor fallback
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/topology.test.tsx > does not substitute the first candidate when an explicit root is missing
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/topology.test.tsx > does not substitute the first candidate when an explicit root is missing
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/topology.test.tsx > loads additional authorized root pages only on request
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/topology.test.tsx > loads additional authorized root pages only on request
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/topology.test.tsx > discards a late graph after a cluster switch
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/topology.test.tsx > discards a late graph after a cluster switch
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/topology.test.tsx > hides the graph and drawer on a denied neighbor refresh
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+stderr | tests/topology.test.tsx > hides the graph and drawer on a denied neighbor refresh
+Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead.
+
+ ❯ tests/topology.test.tsx (8 tests | 7 failed) 7393ms
+   × queries an authorized root then bounded neighbors; local view changes do not read sources again 1116ms
+   × keeps same-name roots distinct by canonical UID and namespace, and rereads detail 1034ms
+   × rejects an explicit foreign-cluster root without neighbor fallback 1031ms
+   × does not substitute the first candidate when an explicit root is missing 1033ms
+   × loads additional authorized root pages only on request 1043ms
+   × discards a late graph after a cluster switch 1082ms
+   × hides the graph and drawer on a denied neighbor refresh 1033ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/topology.test.tsx > queries an authorized root then bounded neighbors; local view changes do not read sources again
+TestingLibraryElementError: Unable to find an element by: [data-testid="real-graph"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"v12-page-head"[39m
+    [36m>[39m
+      [36m<div>[39m
+        [36m<h1>[39m
+          [0m关系拓扑[0m
+        [36m</h1>[39m
+        [36m<p>[39m
+          [0m从一个资源出发查看依赖、归属与影响，不推断未经验证的因果。[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"v12-actions"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+          [33mdisabled[39m=[32m""[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m查看根资源[0m
+          [36m</span>[39m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</header>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"v12-topology-page"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"v12-surface"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-surface-head"[39m
+        [36m>[39m
+          [36m<h2>[39m
+            [0m关系范围[0m
+          [36m</h2>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-topology-toolbar"[39m
+        [36m>[39m
+          [36m<label>[39m
+            [0m根资源[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"根资源"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label>[39m
+            [0m关系深度[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"关系深度"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"1"[39m
+              [36m>[39m
+                [0m1 层[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"2"[39m
+              [36m>[39m
+                [0m2 层[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"拓扑展示方式"[39m
+            [33mclass[39m=[32m"v12-topology-modes"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"true"[39m
+              [33mclass[39m=[32m"active"[39m
+            [36m>[39m
+              [0m关系图[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m关系列表[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert ant-alert-error ant-alert-outlined ant-alert-with-description css-var-root css-dev-only-do-not-override-oc1rc0"[39m
+          [33mdata-show[39m=[32m"true"[39m
+          [33mrole[39m=[32m"alert"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ant-alert-icon"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+          [36m</span>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-alert-section"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-title"[39m
+            [36m>[39m
+              [0m接口暂时不可用[0m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-description"[39m
+            [36m>[39m
+              [36m<p>[39m
+                [0mUNAUTHENTICATED · 请登录[0m
+              [36m</p>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0m重新加载[0m
+                [36m</span>[39m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"v12-page-head"[39m
+    [36m>[39m
+      [36m<div>[39m
+        [36m<h1>[39m
+          [0m关系拓扑[0m
+        [36m</h1>[39m
+        [36m<p>[39m
+          [0m从一个资源出发查看依赖、归属与影响，不推断未经验证的因果。[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"v12-actions"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+          [33mdisabled[39m=[32m""[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m查看根资源[0m
+          [36m</span>[39m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</header>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"v12-topology-page"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"v12-surface"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-surface-head"[39m
+        [36m>[39m
+          [36m<h2>[39m
+            [0m关系范围[0m
+          [36m</h2>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-topology-toolbar"[39m
+        [36m>[39m
+          [36m<label>[39m
+            [0m根资源[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"根资源"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label>[39m
+            [0m关系深度[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"关系深度"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"1"[39m
+              [36m>[39m
+                [0m1 层[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"2"[39m
+              [36m>[39m
+                [0m2 层[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"拓扑展示方式"[39m
+            [33mclass[39m=[32m"v12-topology-modes"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"true"[39m
+              [33mclass[39m=[32m"active"[39m
+            [36m>[39m
+              [0m关系图[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m关系列表[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert ant-alert-error ant-alert-outlined ant-alert-with-description css-var-root css-dev-only-do-not-override-oc1rc0"[39m
+          [33mdata-show[39m=[32m"true"[39m
+          [33mrole[39m=[32m"alert"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ant-alert-icon"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+          [36m</span>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-alert-section"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-title"[39m
+            [36m>[39m
+              [0m接口暂时不可用[0m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-description"[39m
+            [36m>[39m
+              [36m<p>[39m
+                [0mUNAUTHENTICATED · 请登录[0m
+              [36m</p>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0m重新加载[0m
+                [36m</span>[39m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/topology.test.tsx:115:16
+    113| it("queries an authorized root then bounded neighbors; local view chan…
+    114|   render(view());
+    115|   await screen.findByTestId("real-graph");
+       |                ^
+    116|   expect(api.resources).toHaveBeenCalledWith(
+    117|     expect.objectContaining({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  tests/topology.test.tsx > keeps same-name roots distinct by canonical UID and namespace, and rereads detail
+TestingLibraryElementError: Unable to find an element by: [data-testid="real-graph"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"v12-page-head"[39m
+    [36m>[39m
+      [36m<div>[39m
+        [36m<h1>[39m
+          [0m关系拓扑[0m
+        [36m</h1>[39m
+        [36m<p>[39m
+          [0m从一个资源出发查看依赖、归属与影响，不推断未经验证的因果。[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"v12-actions"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+          [33mdisabled[39m=[32m""[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m查看根资源[0m
+          [36m</span>[39m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</header>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"v12-topology-page"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"v12-surface"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-surface-head"[39m
+        [36m>[39m
+          [36m<h2>[39m
+            [0m关系范围[0m
+          [36m</h2>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-topology-toolbar"[39m
+        [36m>[39m
+          [36m<label>[39m
+            [0m根资源[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"根资源"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label>[39m
+            [0m关系深度[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"关系深度"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"1"[39m
+              [36m>[39m
+                [0m1 层[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"2"[39m
+              [36m>[39m
+                [0m2 层[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"拓扑展示方式"[39m
+            [33mclass[39m=[32m"v12-topology-modes"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"true"[39m
+              [33mclass[39m=[32m"active"[39m
+            [36m>[39m
+              [0m关系图[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m关系列表[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert ant-alert-error ant-alert-outlined ant-alert-with-description css-var-root css-dev-only-do-not-override-oc1rc0"[39m
+          [33mdata-show[39m=[32m"true"[39m
+          [33mrole[39m=[32m"alert"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ant-alert-icon"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+          [36m</span>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-alert-section"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-title"[39m
+            [36m>[39m
+              [0m接口暂时不可用[0m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-description"[39m
+            [36m>[39m
+              [36m<p>[39m
+                [0mUNAUTHENTICATED · 请登录[0m
+              [36m</p>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0m重新加载[0m
+                [36m</span>[39m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"v12-page-head"[39m
+    [36m>[39m
+      [36m<div>[39m
+        [36m<h1>[39m
+          [0m关系拓扑[0m
+        [36m</h1>[39m
+        [36m<p>[39m
+          [0m从一个资源出发查看依赖、归属与影响，不推断未经验证的因果。[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"v12-actions"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+          [33mdisabled[39m=[32m""[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m查看根资源[0m
+          [36m</span>[39m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</header>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"v12-topology-page"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"v12-surface"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-surface-head"[39m
+        [36m>[39m
+          [36m<h2>[39m
+            [0m关系范围[0m
+          [36m</h2>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-topology-toolbar"[39m
+        [36m>[39m
+          [36m<label>[39m
+            [0m根资源[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"根资源"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label>[39m
+            [0m关系深度[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"关系深度"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"1"[39m
+              [36m>[39m
+                [0m1 层[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"2"[39m
+              [36m>[39m
+                [0m2 层[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"拓扑展示方式"[39m
+            [33mclass[39m=[32m"v12-topology-modes"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"true"[39m
+              [33mclass[39m=[32m"active"[39m
+            [36m>[39m
+              [0m关系图[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m关系列表[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert ant-alert-error ant-alert-outlined ant-alert-with-description css-var-root css-dev-only-do-not-override-oc1rc0"[39m
+          [33mdata-show[39m=[32m"true"[39m
+          [33mrole[39m=[32m"alert"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ant-alert-icon"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+          [36m</span>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-alert-section"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-title"[39m
+            [36m>[39m
+              [0m接口暂时不可用[0m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-description"[39m
+            [36m>[39m
+              [36m<p>[39m
+                [0mUNAUTHENTICATED · 请登录[0m
+              [36m</p>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0m重新加载[0m
+                [36m</span>[39m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/topology.test.tsx:148:16
+    146| it("keeps same-name roots distinct by canonical UID and namespace, and…
+    147|   render(view());
+    148|   await screen.findByTestId("real-graph");
+       |                ^
+    149|   const options = screen
+    150|     .getAllByRole("option")
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  tests/topology.test.tsx > rejects an explicit foreign-cluster root without neighbor fallback
+TestingLibraryElementError: Unable to find an element with the text: 没有此范围的访问权限. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"v12-page-head"[39m
+    [36m>[39m
+      [36m<div>[39m
+        [36m<h1>[39m
+          [0m关系拓扑[0m
+        [36m</h1>[39m
+        [36m<p>[39m
+          [0m从一个资源出发查看依赖、归属与影响，不推断未经验证的因果。[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"v12-actions"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+          [33mdisabled[39m=[32m""[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m查看根资源[0m
+          [36m</span>[39m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</header>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"v12-topology-page"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"v12-surface"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-surface-head"[39m
+        [36m>[39m
+          [36m<h2>[39m
+            [0m关系范围[0m
+          [36m</h2>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-topology-toolbar"[39m
+        [36m>[39m
+          [36m<label>[39m
+            [0m根资源[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"根资源"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"foreign-root"[39m
+              [36m>[39m
+                [0m核对指定资源[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+          [36m<label>[39m
+            [0m关系深度[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"关系深度"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"1"[39m
+              [36m>[39m
+                [0m1 层[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"2"[39m
+              [36m>[39m
+                [0m2 层[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"拓扑展示方式"[39m
+            [33mclass[39m=[32m"v12-topology-modes"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"true"[39m
+              [33mclass[39m=[32m"active"[39m
+            [36m>[39m
+              [0m关系图[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m关系列表[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert ant-alert-error ant-alert-outlined ant-alert-with-description css-var-root css-dev-only-do-not-override-oc1rc0"[39m
+          [33mdata-show[39m=[32m"true"[39m
+          [33mrole[39m=[32m"alert"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ant-alert-icon"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+          [36m</span>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-alert-section"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-title"[39m
+            [36m>[39m
+              [0m接口暂时不可用[0m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-description"[39m
+            [36m>[39m
+              [36m<p>[39m
+                [0mUNAUTHENTICATED · 请登录[0m
+              [36m</p>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0m重新加载[0m
+                [36m</span>[39m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"v12-page-head"[39m
+    [36m>[39m
+      [36m<div>[39m
+        [36m<h1>[39m
+          [0m关系拓扑[0m
+        [36m</h1>[39m
+        [36m<p>[39m
+          [0m从一个资源出发查看依赖、归属与影响，不推断未经验证的因果。[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"v12-actions"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+          [33mdisabled[39m=[32m""[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m查看根资源[0m
+          [36m</span>[39m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</header>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"v12-topology-page"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"v12-surface"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-surface-head"[39m
+        [36m>[39m
+          [36m<h2>[39m
+            [0m关系范围[0m
+          [36m</h2>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-topology-toolbar"[39m
+        [36m>[39m
+          [36m<label>[39m
+            [0m根资源[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"根资源"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"foreign-root"[39m
+              [36m>[39m
+                [0m核对指定资源[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+          [36m<label>[39m
+            [0m关系深度[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"关系深度"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"1"[39m
+              [36m>[39m
+                [0m1 层[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"2"[39m
+              [36m>[39m
+                [0m2 层[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"拓扑展示方式"[39m
+            [33mclass[39m=[32m"v12-topology-modes"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"true"[39m
+              [33mclass[39m=[32m"active"[39m
+            [36m>[39m
+              [0m关系图[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m关系列表[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert ant-alert-error ant-alert-outlined ant-alert-with-description css-var-root css-dev-only-do-not-override-oc1rc0"[39m
+          [33mdata-show[39m=[32m"true"[39m
+          [33mrole[39m=[32m"alert"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ant-alert-icon"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+          [36m</span>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-alert-section"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-title"[39m
+            [36m>[39m
+              [0m接口暂时不可用[0m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-description"[39m
+            [36m>[39m
+              [36m<p>[39m
+                [0mUNAUTHENTICATED · 请登录[0m
+              [36m</p>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0m重新加载[0m
+                [36m</span>[39m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/topology.test.tsx:189:16
+    187|     view("/resources/topology?clusterUid=cluster-a&canonicalId=foreign…
+    188|   );
+    189|   await screen.findByText("没有此范围的访问权限");
+       |                ^
+    190|   expect(api.neighbors).not.toHaveBeenCalled();
+    191|   expect(screen.queryByTestId("real-graph")).toBeNull();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  tests/topology.test.tsx > does not substitute the first candidate when an explicit root is missing
+TestingLibraryElementError: Unable to find an element with the text: 当前筛选范围没有正式数据. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"v12-page-head"[39m
+    [36m>[39m
+      [36m<div>[39m
+        [36m<h1>[39m
+          [0m关系拓扑[0m
+        [36m</h1>[39m
+        [36m<p>[39m
+          [0m从一个资源出发查看依赖、归属与影响，不推断未经验证的因果。[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"v12-actions"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+          [33mdisabled[39m=[32m""[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m查看根资源[0m
+          [36m</span>[39m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</header>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"v12-topology-page"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"v12-surface"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-surface-head"[39m
+        [36m>[39m
+          [36m<h2>[39m
+            [0m关系范围[0m
+          [36m</h2>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-topology-toolbar"[39m
+        [36m>[39m
+          [36m<label>[39m
+            [0m根资源[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"根资源"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"deleted-root"[39m
+              [36m>[39m
+                [0m核对指定资源[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+          [36m<label>[39m
+            [0m关系深度[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"关系深度"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"1"[39m
+              [36m>[39m
+                [0m1 层[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"2"[39m
+              [36m>[39m
+                [0m2 层[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"拓扑展示方式"[39m
+            [33mclass[39m=[32m"v12-topology-modes"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"true"[39m
+              [33mclass[39m=[32m"active"[39m
+            [36m>[39m
+              [0m关系图[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m关系列表[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert ant-alert-error ant-alert-outlined ant-alert-with-description css-var-root css-dev-only-do-not-override-oc1rc0"[39m
+          [33mdata-show[39m=[32m"true"[39m
+          [33mrole[39m=[32m"alert"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ant-alert-icon"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+          [36m</span>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-alert-section"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-title"[39m
+            [36m>[39m
+              [0m接口暂时不可用[0m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-description"[39m
+            [36m>[39m
+              [36m<p>[39m
+                [0mUNAUTHENTICATED · 请登录[0m
+              [36m</p>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0m重新加载[0m
+                [36m</span>[39m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"v12-page-head"[39m
+    [36m>[39m
+      [36m<div>[39m
+        [36m<h1>[39m
+          [0m关系拓扑[0m
+        [36m</h1>[39m
+        [36m<p>[39m
+          [0m从一个资源出发查看依赖、归属与影响，不推断未经验证的因果。[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"v12-actions"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+          [33mdisabled[39m=[32m""[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m查看根资源[0m
+          [36m</span>[39m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</header>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"v12-topology-page"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"v12-surface"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-surface-head"[39m
+        [36m>[39m
+          [36m<h2>[39m
+            [0m关系范围[0m
+          [36m</h2>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-topology-toolbar"[39m
+        [36m>[39m
+          [36m<label>[39m
+            [0m根资源[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"根资源"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"deleted-root"[39m
+              [36m>[39m
+                [0m核对指定资源[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+          [36m<label>[39m
+            [0m关系深度[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"关系深度"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"1"[39m
+              [36m>[39m
+                [0m1 层[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"2"[39m
+              [36m>[39m
+                [0m2 层[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"拓扑展示方式"[39m
+            [33mclass[39m=[32m"v12-topology-modes"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"true"[39m
+              [33mclass[39m=[32m"active"[39m
+            [36m>[39m
+              [0m关系图[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m关系列表[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert ant-alert-error ant-alert-outlined ant-alert-with-description css-var-root css-dev-only-do-not-override-oc1rc0"[39m
+          [33mdata-show[39m=[32m"true"[39m
+          [33mrole[39m=[32m"alert"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ant-alert-icon"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+          [36m</span>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-alert-section"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-title"[39m
+            [36m>[39m
+              [0m接口暂时不可用[0m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-description"[39m
+            [36m>[39m
+              [36m<p>[39m
+                [0mUNAUTHENTICATED · 请登录[0m
+              [36m</p>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0m重新加载[0m
+                [36m</span>[39m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/topology.test.tsx:197:16
+    195|     view("/resources/topology?clusterUid=cluster-a&canonicalId=deleted…
+    196|   );
+    197|   await screen.findByText("当前筛选范围没有正式数据");
+       |                ^
+    198|   expect(api.neighbors).not.toHaveBeenCalled();
+    199| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  tests/topology.test.tsx > loads additional authorized root pages only on request
+TestingLibraryElementError: Unable to find an element by: [data-testid="real-graph"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"v12-page-head"[39m
+    [36m>[39m
+      [36m<div>[39m
+        [36m<h1>[39m
+          [0m关系拓扑[0m
+        [36m</h1>[39m
+        [36m<p>[39m
+          [0m从一个资源出发查看依赖、归属与影响，不推断未经验证的因果。[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"v12-actions"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+          [33mdisabled[39m=[32m""[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m查看根资源[0m
+          [36m</span>[39m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</header>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"v12-topology-page"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"v12-surface"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-surface-head"[39m
+        [36m>[39m
+          [36m<h2>[39m
+            [0m关系范围[0m
+          [36m</h2>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-topology-toolbar"[39m
+        [36m>[39m
+          [36m<label>[39m
+            [0m根资源[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"根资源"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label>[39m
+            [0m关系深度[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"关系深度"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"1"[39m
+              [36m>[39m
+                [0m1 层[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"2"[39m
+              [36m>[39m
+                [0m2 层[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"拓扑展示方式"[39m
+            [33mclass[39m=[32m"v12-topology-modes"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"true"[39m
+              [33mclass[39m=[32m"active"[39m
+            [36m>[39m
+              [0m关系图[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m关系列表[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert ant-alert-error ant-alert-outlined ant-alert-with-description css-var-root css-dev-only-do-not-override-oc1rc0"[39m
+          [33mdata-show[39m=[32m"true"[39m
+          [33mrole[39m=[32m"alert"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ant-alert-icon"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+          [36m</span>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-alert-section"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-title"[39m
+            [36m>[39m
+              [0m接口暂时不可用[0m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-description"[39m
+            [36m>[39m
+              [36m<p>[39m
+                [0mUNAUTHENTICATED · 请登录[0m
+              [36m</p>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0m重新加载[0m
+                [36m</span>[39m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"v12-page-head"[39m
+    [36m>[39m
+      [36m<div>[39m
+        [36m<h1>[39m
+          [0m关系拓扑[0m
+        [36m</h1>[39m
+        [36m<p>[39m
+          [0m从一个资源出发查看依赖、归属与影响，不推断未经验证的因果。[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"v12-actions"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+          [33mdisabled[39m=[32m""[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m查看根资源[0m
+          [36m</span>[39m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</header>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"v12-topology-page"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"v12-surface"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-surface-head"[39m
+        [36m>[39m
+          [36m<h2>[39m
+            [0m关系范围[0m
+          [36m</h2>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-topology-toolbar"[39m
+        [36m>[39m
+          [36m<label>[39m
+            [0m根资源[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"根资源"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label>[39m
+            [0m关系深度[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"关系深度"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"1"[39m
+              [36m>[39m
+                [0m1 层[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"2"[39m
+              [36m>[39m
+                [0m2 层[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"拓扑展示方式"[39m
+            [33mclass[39m=[32m"v12-topology-modes"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"true"[39m
+              [33mclass[39m=[32m"active"[39m
+            [36m>[39m
+              [0m关系图[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m关系列表[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert ant-alert-error ant-alert-outlined ant-alert-with-description css-var-root css-dev-only-do-not-override-oc1rc0"[39m
+          [33mdata-show[39m=[32m"true"[39m
+          [33mrole[39m=[32m"alert"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ant-alert-icon"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+          [36m</span>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-alert-section"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-title"[39m
+            [36m>[39m
+              [0m接口暂时不可用[0m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-description"[39m
+            [36m>[39m
+              [36m<p>[39m
+                [0mUNAUTHENTICATED · 请登录[0m
+              [36m</p>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0m重新加载[0m
+                [36m</span>[39m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/topology.test.tsx:209:16
+    207|   );
+    208|   render(view());
+    209|   await screen.findByTestId("real-graph");
+       |                ^
+    210|   expect(screen.queryByRole("option", { name: /ns-b/ })).toBeNull();
+    211|   fireEvent.click(screen.getByRole("button", { name: "更多根资源" }));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  tests/topology.test.tsx > discards a late graph after a cluster switch
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"v12-page-head"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1>[39m
+            [0m关系拓扑[0m
+          [36m</h1>[39m
+          [36m<p>[39m
+            [0m从一个资源出发查看依赖、归属与影响，不推断未经验证的因果。[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-actions"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span>[39m
+              [0m查看根资源[0m
+            [36m</span>[39m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"v12-topology-page"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"v12-surface"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"v12-surface-head"[39m
+          [36m>[39m
+            [36m<h2>[39m
+              [0m关系范围[0m
+            [36m</h2>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"v12-topology-toolbar"[39m
+          [36m>[39m
+            [36m<label>[39m
+              [0m根资源[0m
+              [0m [0m
+              [36m<select[39m
+                [33maria-label[39m=[32m"根资源"[39m
+              [36m/>[39m
+            [36m</label>[39m
+            [36m<label>[39m
+              [0m关系深度[0m
+              [0m [0m
+              [36m<select[39m
+                [33maria-label[39m=[32m"关系深度"[39m
+              [36m>[39m
+                [36m<option[39m
+                  [33mvalue[39m=[32m"1"[39m
+                [36m>[39m
+                  [0m1 层[0m
+                [36m</option>[39m
+                [36m<option[39m
+                  [33mvalue[39m=[32m"2"[39m
+                [36m>[39m
+                  [0m2 层[0m
+                [36m</option>[39m
+              [36m</select>[39m
+            [36m</label>[39m
+            [36m<div[39m
+              [33maria-label[39m=[32m"拓扑展示方式"[39m
+              [33mclass[39m=[32m"v12-topology-modes"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33maria-pressed[39m=[32m"true"[39m
+                [33mclass[39m=[32m"active"[39m
+              [36m>[39m
+                [0m关系图[0m
+              [36m</button>[39m
+              [36m<button[39m
+                [33maria-pressed[39m=[32m"false"[39m
+                [33mclass[39m=[32m""[39m
+              [36m>[39m
+                [0m关系列表[0m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-alert ant-alert-error ant-alert-outlined ant-alert-with-description css-var-root css-dev-only-do-not-override-oc1rc0"[39m
+            [33mdata-show[39m=[32m"true"[39m
+            [33mrole[39m=[32m"alert"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"ant-alert-icon"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-label[39m=[32m"close-circle"[39m
+                [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+                [33mrole[39m=[32m"img"[39m
+              [36m>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mdata-icon[39m=[32m"close-circle"[39m
+                  [33mfill[39m=[32m"currentColor"[39m
+                  [33mfill-rule[39m=[32m"evenodd"[39m
+                  [33mfocusable[39m=[32m"false"[39m
+                  [33mheight[39m=[32m"1em"[39m
+                  [33mviewBox[39m=[32m"64 64 896 896"[39m
+                  [33mwidth[39m=[32m"1em"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</span>[39m
+            [36m</span>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-section"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-alert-title"[39m
+              [36m>[39m
+                [0m接口暂时不可用[0m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-alert-description"[39m
+              [36m>[39m
+                [36m<p>[39m
+                  [0mUNAUTHENTICATED · 请登录[0m
+                [36m</p>[39m
+                [36m<button[39m
+                  [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [36m<span>[39m
+                    [0m重新加载[0m
+                  [36m</span>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</section>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m...
+ ❯ tests/topology.test.tsx:231:45
+    229|   );
+    230|   const rendered = render(view());
+    231|   await waitFor(() => expect(api.neighbors).toHaveBeenCalledTimes(1));
+       |                                             ^
+    232|   scope.clusterUid = "cluster-b";
+    233|   scope.scopeKey = "b:1";
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  tests/topology.test.tsx > hides the graph and drawer on a denied neighbor refresh
+TestingLibraryElementError: Unable to find an element by: [data-testid="real-graph"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"v12-page-head"[39m
+    [36m>[39m
+      [36m<div>[39m
+        [36m<h1>[39m
+          [0m关系拓扑[0m
+        [36m</h1>[39m
+        [36m<p>[39m
+          [0m从一个资源出发查看依赖、归属与影响，不推断未经验证的因果。[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"v12-actions"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+          [33mdisabled[39m=[32m""[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m查看根资源[0m
+          [36m</span>[39m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</header>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"v12-topology-page"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"v12-surface"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-surface-head"[39m
+        [36m>[39m
+          [36m<h2>[39m
+            [0m关系范围[0m
+          [36m</h2>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-topology-toolbar"[39m
+        [36m>[39m
+          [36m<label>[39m
+            [0m根资源[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"根资源"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label>[39m
+            [0m关系深度[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"关系深度"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"1"[39m
+              [36m>[39m
+                [0m1 层[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"2"[39m
+              [36m>[39m
+                [0m2 层[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"拓扑展示方式"[39m
+            [33mclass[39m=[32m"v12-topology-modes"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"true"[39m
+              [33mclass[39m=[32m"active"[39m
+            [36m>[39m
+              [0m关系图[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m关系列表[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert ant-alert-error ant-alert-outlined ant-alert-with-description css-var-root css-dev-only-do-not-override-oc1rc0"[39m
+          [33mdata-show[39m=[32m"true"[39m
+          [33mrole[39m=[32m"alert"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ant-alert-icon"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+          [36m</span>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-alert-section"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-title"[39m
+            [36m>[39m
+              [0m接口暂时不可用[0m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-description"[39m
+            [36m>[39m
+              [36m<p>[39m
+                [0mUNAUTHENTICATED · 请登录[0m
+              [36m</p>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0m重新加载[0m
+                [36m</span>[39m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"v12-page-head"[39m
+    [36m>[39m
+      [36m<div>[39m
+        [36m<h1>[39m
+          [0m关系拓扑[0m
+        [36m</h1>[39m
+        [36m<p>[39m
+          [0m从一个资源出发查看依赖、归属与影响，不推断未经验证的因果。[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"v12-actions"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+          [33mdisabled[39m=[32m""[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m查看根资源[0m
+          [36m</span>[39m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</header>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"v12-topology-page"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"v12-surface"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-surface-head"[39m
+        [36m>[39m
+          [36m<h2>[39m
+            [0m关系范围[0m
+          [36m</h2>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"v12-topology-toolbar"[39m
+        [36m>[39m
+          [36m<label>[39m
+            [0m根资源[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"根资源"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label>[39m
+            [0m关系深度[0m
+            [0m [0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"关系深度"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"1"[39m
+              [36m>[39m
+                [0m1 层[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"2"[39m
+              [36m>[39m
+                [0m2 层[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"拓扑展示方式"[39m
+            [33mclass[39m=[32m"v12-topology-modes"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"true"[39m
+              [33mclass[39m=[32m"active"[39m
+            [36m>[39m
+              [0m关系图[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m关系列表[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-alert ant-alert-error ant-alert-outlined ant-alert-with-description css-var-root css-dev-only-do-not-override-oc1rc0"[39m
+          [33mdata-show[39m=[32m"true"[39m
+          [33mrole[39m=[32m"alert"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"ant-alert-icon"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"close-circle"[39m
+              [33mclass[39m=[32m"anticon anticon-close-circle"[39m
+              [33mrole[39m=[32m"img"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mdata-icon[39m=[32m"close-circle"[39m
+                [33mfill[39m=[32m"currentColor"[39m
+                [33mfill-rule[39m=[32m"evenodd"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mheight[39m=[32m"1em"[39m
+                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                [33mwidth[39m=[32m"1em"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+          [36m</span>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-alert-section"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-title"[39m
+            [36m>[39m
+              [0m接口暂时不可用[0m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"ant-alert-description"[39m
+            [36m>[39m
+              [36m<p>[39m
+                [0mUNAUTHENTICATED · 请登录[0m
+              [36m</p>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"ant-btn css-dev-only-do-not-override-oc1rc0 css-var-root ant-btn-default ant-btn-color-default ant-btn-variant-outlined"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0m重新加载[0m
+                [36m</span>[39m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/topology.test.tsx:243:16
+    241| it("hides the graph and drawer on a denied neighbor refresh", async ()…
+    242|   render(view());
+    243|   await screen.findByTestId("real-graph");
+       |                ^
+    244|   api.neighbors.mockRejectedValue(
+    245|     new ApiError(403, "FORBIDDEN", "scope revoked"),
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  7 failed | 6 passed (13)
+   Start at  09:50:52
+   Duration  9.02s (tests 70%, import 16%, environment 10%, setup 3%, transform 1%)
+

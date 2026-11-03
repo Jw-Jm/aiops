@@ -165,14 +165,16 @@ func TestNativeInternalWorkerRPC(t *testing.T) {
 		VALUES ($1,$2,$3,'internal rpc','active',1)
 	`, f.tenantA, clusterID, clusterUID)
 	nativeMFAHardeningOwnerExec(t, f, f.tenantA, `
-		INSERT INTO identity.role_grants
-			(tenant_id, user_id, binding_id, role, scope, authorization_version, status)
-		VALUES ($1,$2,$3,'operator',$4::jsonb,1,'active')
-	`, f.tenantA, userID, uuid.Must(uuid.NewV7()),
+		UPDATE identity.role_grants SET scope=$3::jsonb
+		WHERE tenant_id=$1 AND user_id=$2 AND role='operator' AND status='active'
+	`, f.tenantA, userID,
 		`{"clusterUids":["`+clusterUID+`"],"namespaces":[]}`)
 
 	frozen := nativeInternalScope(t, f, userID, clusterUID, 1)
-	payload := []byte(`{"queryKind":"entity","canonicalId":"node:one","expectedOwnerEpoch":1,"maxDepth":1,"maxNodes":1,"maxEdges":1,"scope":` + mustJSON(t, frozen) + `,"relationKinds":[]}`)
+	payload, err := json.Marshal(graph.Query{QueryKind: "list", Kind: "Pod", Scope: frozen, ExpectedOwnerEpoch: 1, MaxDepth: 1, MaxNodes: 1, MaxEdges: 1, RelationKinds: []string{}})
+	if err != nil {
+		t.Fatal(err)
+	}
 	pki := newNativeInternalPKI(t)
 	handler := graph.InternalHandler{
 		Key:           f.internalPublicKey,
@@ -201,23 +203,33 @@ func TestNativeInternalWorkerRPC(t *testing.T) {
 		Scope:   frozen,
 	}
 	// Authorized: reaches the lease stage (no lease configured in this test).
-	if status := nativeInternalPost(t, pki.client, server.URL, sign(interactive), payload); status == http.StatusForbidden || status == http.StatusConflict {
-		t.Fatalf("authorized worker rpc = %d, want it to pass the authorization boundary", status)
+	if status := nativeInternalPost(t, pki.client, server.URL, sign(interactive), payload); status != http.StatusServiceUnavailable {
+		t.Fatalf("authorized worker rpc = %d, want 503 at the unconfigured lease boundary", status)
 	}
-	// The same request without the worker-verified client certificate must fail.
-	if status := nativeInternalPost(t, &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{
+	// No certificate is rejected during TLS, before an HTTP status can exist.
+	noCert := &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{
 		InsecureSkipVerify: true, //nolint:gosec // test-only throwaway CA
 		MinVersion:         tls.VersionTLS13,
-	}}}, server.URL, sign(interactive), payload); status != http.StatusForbidden {
-		t.Fatalf("rpc without a client certificate = %d, want 403", status)
+	}}}
+	request, err := http.NewRequest(http.MethodPost, server.URL+"/internal/v1/graph:query", bytes.NewReader(payload))
+	if err != nil {
+		t.Fatal(err)
+	}
+	request.Header.Set("Authorization", "Bearer "+sign(interactive))
+	response, err := noCert.Do(request)
+	if response != nil {
+		_ = response.Body.Close()
+	}
+	if err == nil || !strings.Contains(err.Error(), "certificate required") {
+		t.Fatalf("rpc without a client certificate = %v, want TLS certificate rejection", err)
 	}
 
 	// Legacy source has no legacy binding for this subject and must not borrow
 	// the native operator grant.
 	if status := nativeInternalPost(t, pki.client, server.URL, sign(graph.Claims{
 		Source: graph.SourceLegacy, Subject: session.subject, Scope: frozen,
-	}), payload); status != http.StatusForbidden {
-		t.Fatalf("legacy claim over a worker rpc = %d, want 403", status)
+	}), payload); status != http.StatusConflict {
+		t.Fatalf("legacy claim over a worker rpc = %d, want 409 at current authority reproof", status)
 	}
 	// A widened signed scope is refused.
 	widened := frozen
@@ -250,101 +262,8 @@ func TestNativeInternalWorkerRPC(t *testing.T) {
 		t.Fatalf("worker role cannot call the narrow resolver: %v", err)
 	}
 
-	// Persisted task source: the worker re-proves the whole frozen task.
-	// The persisted positive needs a real policy registry chain (drafts, versions,
-	// activations) before the task can be Valid; that fixture is not built yet, so
-	// this section is skipped instead of asserting a fabricated task.
-	t.Skip("persisted-task RPC positive pending a real policy registry fixture")
-	taskJob := nativeInternalV3Task(t, f, userID, session.subject, clusterUID, frozen, session.authorizationV)
-	taskClaims := graph.Claims{Source: graph.SourceNativeTask, Native: &graph.NativeProof{JobID: taskJob.String()},
-		Subject: session.subject, Scope: frozen, GrantSnapshotDigest: graph.ScopeDigest(frozen)}
-	if status := nativeInternalPost(t, pki.client, server.URL, sign(taskClaims), payload); status == http.StatusForbidden || status == http.StatusConflict {
-		t.Fatalf("persisted task rpc = %d, want it to pass the task authority re-proof", status)
-	}
-	// Cancelling the task invalidates the persisted authority.
-	nativeMFAHardeningOwnerExec(t, f, f.tenantA, `
-		UPDATE investigation.jobs SET state='cancelled' WHERE tenant_id=$1 AND job_id=$2
-	`, f.tenantA, taskJob)
-	if status := nativeInternalPost(t, pki.client, server.URL, sign(taskClaims), payload); status != http.StatusForbidden {
-		t.Fatalf("cancelled task rpc = %d, want 403", status)
-	}
-
-}
-
-// nativeInternalV3Task persists one complete v3 assistant task whose frozen
-// authority is the native operator grant of this account. The deferred assistant
-// foreign keys require every row in a single transaction.
-func nativeInternalV3Task(t *testing.T, f *nativeMFAHardeningFixture, userID uuid.UUID, subject, clusterUID string, frozen graph.Scope, authorizationVersion int) uuid.UUID {
-	t.Helper()
-	conversationID := uuid.Must(uuid.NewV7())
-	turnID := uuid.Must(uuid.NewV7())
-	jobID := uuid.Must(uuid.NewV7())
-	messageID := uuid.Must(uuid.NewV7())
-	frozenDigest := graph.ScopeDigest(frozen)
-	scopeJSON := mustJSON(t, frozen)
-	inputDigest := "sha256:" + strings.Repeat("1", 64)
-	contextDigest := "sha256:" + strings.Repeat("2", 64)
-	binding := map[string]any{
-		"conversationId":       conversationID.String(),
-		"turnId":               turnID.String(),
-		"taskKind":             "resource_troubleshooting",
-		"inputDigest":          inputDigest,
-		"contextDigest":        contextDigest,
-		"grantSnapshot":        json.RawMessage(scopeJSON),
-		"grantSnapshotDigest":  frozenDigest,
-		"authorizationSource":  "native",
-		"authorizationUserId":  userID.String(),
-		"authorizationVersion": authorizationVersion,
-		"authorizationDomain":  "operational",
-		"catalogVersion":       "assistant-tools/v2",
-		"promptVersion":        "assistant/v1",
-	}
-	bindingJSON := mustJSON(t, binding)
-	tx, err := f.adminDB.BeginTx(f.ctx, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer func() { _ = tx.Rollback() }()
-	statements := []struct {
-		sql  string
-		args []any
-	}{
-		{`INSERT INTO investigation.assistant_conversations
-			(tenant_id, conversation_id, owner_subject, title, mode, authorization_domain, cluster_uid, binding)
-			VALUES ($1,$2,$3,'internal authority','troubleshoot','operational',$4,'{}'::jsonb)`,
-			[]any{f.tenantA, conversationID, subject, clusterUID}},
-		{`INSERT INTO investigation.assistant_messages
-			(tenant_id, message_id, conversation_id, sequence, role, content)
-			VALUES ($1,$2,$3,1,'user','{"text":"q"}'::jsonb)`,
-			[]any{f.tenantA, messageID, conversationID}},
-		{`INSERT INTO investigation.jobs
-			(tenant_id, job_id, state, schema_version, requesting_subject, trigger_kind,
-			 policy_version, effective_scope, effective_scope_digest, tool_catalog_digest,
-			 budget, budget_reserved, budget_consumed, expires_at, assistant_binding)
-			VALUES ($1,$2,'running','investigation-job/v3',$3,'manual','policy-v1',$4::jsonb,$5,
-			 'catalog-v1','{}'::jsonb,'{}'::jsonb,'{}'::jsonb, clock_timestamp() + interval '30 minutes',$6::jsonb)`,
-			[]any{f.tenantA, jobID, subject, scopeJSON, frozenDigest, bindingJSON}},
-		{`INSERT INTO investigation.assistant_turns
-			(tenant_id, turn_id, conversation_id, job_id, user_message_id, input,
-			 input_digest, context_digest, state, base_conversation_revision)
-			VALUES ($1,$2,$3,$4,$5,'{"text":"q"}'::jsonb,$6,$7,'running',1)`,
-			[]any{f.tenantA, turnID, conversationID, jobID, messageID, inputDigest, contextDigest}},
-	}
-	for index, statement := range statements {
-		if _, err := tx.ExecContext(f.ctx, "SET LOCAL ROLE schema_owner"); err != nil {
-			t.Fatal(err)
-		}
-		if _, err := tx.ExecContext(f.ctx, "SELECT set_config('app.tenant_id',$1,true)", f.tenantA.String()); err != nil {
-			t.Fatal(err)
-		}
-		if _, err := tx.ExecContext(f.ctx, statement.sql, statement.args...); err != nil {
-			t.Fatalf("task statement %d: %v", index, err)
-		}
-	}
-	if err := tx.Commit(); err != nil {
-		t.Fatalf("task commit: %v", err)
-	}
-	return jobID
+	// Full persisted-task 200, lease publication and revocation are exercised by
+	// TestMainReviewNativeInteractiveAndTaskGraphRPC200 using the real Submit path.
 }
 
 func mustJSON(t *testing.T, value any) string {

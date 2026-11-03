@@ -1,0 +1,68 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "checks": [
+    "opening and cancelling the self password dialog issues no API request"
+  ],
+  "screenshots": [
+    "visual-sl001-login",
+    "visual-sl003-my-account",
+    "visual-sl004-change-password",
+    "visual-account-security-admin",
+    "visual-users-page"
+  ],
+  "geometry": {
+    "account": {
+      "x": 390,
+      "y": 268.09375,
+      "width": 660,
+      "height": 423.8125
+    },
+    "accountHeader": {
+      "x": 390,
+      "y": 268.09375,
+      "width": 660,
+      "height": 76
+    },
+    "accountClose": {
+      "x": 994,
+      "y": 290.09375,
+      "width": 31,
+      "height": 31
+    },
+    "accountFooter": {
+      "x": 390,
+      "y": 623.46875,
+      "width": 660,
+      "height": 68.4375
+    },
+    "password": {
+      "x": 390,
+      "y": 233.6875,
+      "width": 660,
+      "height": 492.625
+    },
+    "securityPage": {
+      "x": 268,
+      "y": 101,
+      "width": 1142,
+      "height": 900.75
+    }
+  },
+  "failure": null,
+  "states": {
+    "breadcrumb": "账号 / 账号安全",
+    "surfaces": [
+      "双因素状态",
+      "使用恢复码",
+      "管理员重置 MFA（高风险）"
+    ]
+  },
+  "status": "passed",
+  "screenshotDisposition": {
+    "visual-sl001-login": "kept as shots/sl001-login-empty.png (login page, no secret state)",
+    "visual-sl003-my-account": "kept as shots/visual-sl003-my-account.png (account dialog, no factor material)",
+    "visual-sl004-change-password": "kept as shots/visual-sl004-change-password.png (password dialog, inputs are masked by the browser)",
+    "visual-account-security-admin": "withdrawn: the capture-time state could not be proven secret free, so the file was quarantined and replaced by shots/security-admin-no-secret.png, produced through harness/safe-capture.mjs",
+    "visual-users-page": "kept on the host only (administrator user list, no factor material); not copied into Git"
+  }
+}

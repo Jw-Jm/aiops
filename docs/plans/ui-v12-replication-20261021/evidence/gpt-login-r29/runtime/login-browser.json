@@ -1,0 +1,40 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "scope": "actual native login rejection; held real401 response for pending; network abort; fixed1440x960; reused existing reference",
+  "checks": [
+    "held actual401: all login inputs and submit disabled; no duplicate submit",
+    "real401 constant non-enumerating error; source-matching no-icon form strip; retry controls enabled",
+    "network failure shown separately; retry re-enabled; no fabricated success"
+  ],
+  "apiRequests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login"
+    }
+  ],
+  "rejection": {
+    "status": 401,
+    "requestId": "01a17b4b-aca1-74af-a530-4541cc4763cd"
+  },
+  "geometry": {
+    "x": 902.5,
+    "y": 547.28125,
+    "width": 355,
+    "height": 39.796875,
+    "color": "rgb(201, 71, 83)",
+    "background": "rgb(253, 240, 241)",
+    "font": "12px",
+    "lineHeight": "19.8px",
+    "padding": "10px 13px",
+    "borderRadius": "5px"
+  },
+  "status": "passed"
+}

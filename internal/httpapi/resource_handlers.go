@@ -84,10 +84,17 @@ func (h *SP04Handlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		q.IncludeDomains = value == "true"
+		value = r.URL.Query().Get("includeFilterOptions")
+		if value != "" && value != "true" && value != "false" {
+			fail(400, "INVALID_ARGUMENT")
+			return
+		}
+		q.IncludeFilterOptions = value == "true"
 		q.Domain = r.URL.Query().Get("domain")
 		q.Kind = r.URL.Query().Get("kind")
 		q.Namespace = r.URL.Query().Get("namespace")
 		q.Name = r.URL.Query().Get("name")
+		q.Search = r.URL.Query().Get("q")
 		q.Health = r.URL.Query().Get("health")
 		q.Label = r.URL.Query().Get("label")
 		q.Sort = r.URL.Query().Get("sort")
@@ -285,7 +292,7 @@ func (h *SP04Handlers) callWithGrantDigest(ctx context.Context, endpoint, path, 
 		var e struct{ Code string }
 		json.Unmarshal(raw, &e)
 		switch e.Code {
-		case "CAPABILITY_DISABLED", "SOURCE_CAPABILITY_UNAVAILABLE", "SOURCE_DEGRADED", "FORBIDDEN", "STALE_CONTEXT", "SOURCE_SCOPE_UNVERIFIED", "GRAPH_NOT_READY", "INVALID_ARGUMENT", "BUDGET_EXHAUSTED":
+		case "RESULT_EXPIRED", "CONFLICT", "NOT_FOUND", "CAPABILITY_DISABLED", "SOURCE_CAPABILITY_UNAVAILABLE", "SOURCE_DEGRADED", "FORBIDDEN", "STALE_CONTEXT", "SOURCE_SCOPE_UNVERIFIED", "GRAPH_NOT_READY", "INVALID_ARGUMENT", "BUDGET_EXHAUSTED":
 			return nil, callError{res.StatusCode, e.Code}
 		default:
 			return nil, callError{503, "GRAPH_NOT_READY"}

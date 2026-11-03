@@ -216,6 +216,46 @@ it("posts the real Login form through generated fetch and does not return to /lo
   );
 });
 
+it("keeps a pending login single-flight even when the form is submitted again", async () => {
+  let release!: () => void;
+  loginGate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  render(
+    <MemoryRouter initialEntries={["/login"]}>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/overview" element={<div>overview home</div>} />
+        </Routes>
+      </AuthProvider>
+    </MemoryRouter>,
+  );
+  const login = await screen.findByLabelText("用户名");
+  fireEvent.change(login, { target: { value: "fetch.admin" } });
+  fireEvent.change(screen.getByLabelText("密码"), {
+    target: { value: "native-fetch-password" },
+  });
+  const form = login.closest("form")!;
+  fireEvent.submit(form);
+  await waitFor(() =>
+    expect(calls.filter((c) => c.url.endsWith("/auth/login"))).toHaveLength(1),
+  );
+  expect(screen.getByRole("button", { name: /登\s*录/ })).toBeDisabled();
+  expect(login).toBeDisabled();
+  expect(screen.getByLabelText("密码")).toBeDisabled();
+  const signal = calls.find((c) => c.url.endsWith("/auth/login"))!.init?.signal;
+  await act(async () => {
+    fireEvent.submit(form);
+  });
+  expect(calls.filter((c) => c.url.endsWith("/auth/login"))).toHaveLength(1);
+  expect(signal?.aborted).toBe(false);
+  await act(async () => {
+    release();
+  });
+  expect(await screen.findByText("overview home")).toBeVisible();
+});
+
 it.each(["platform_admin", "operator"] as const)(
   "recovers CSRF and uses the new %s session for first-password navigation",
   async (role) => {

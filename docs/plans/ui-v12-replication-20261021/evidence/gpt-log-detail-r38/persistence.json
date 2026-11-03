@@ -1,0 +1,58 @@
+{
+  "at": "2026-10-28T05:30:30.134364+00:00",
+  "status": "passed",
+  "database": "ui_v12_r24_native",
+  "checks": [
+    "inspector digest matches immutable stored result",
+    "level query persisted exact same resource/source/window/budget with only level changed",
+    "filtered result is a fresh measured population"
+  ],
+  "rows": [
+    {
+      "queryId": "9da1a116-9791-429f-8096-cd71df3eeb24",
+      "state": "completed",
+      "resourceUid": "0e648683-1088-4032-9b39-0a122ff475be",
+      "sourceId": "01a1805f-2214-7373-82a4-c20276c68d43",
+      "window": {
+        "to": "2026-10-28T02:36:13Z",
+        "from": "2026-10-28T02:06:14Z",
+        "bounds": "[from,to)",
+        "timezone": "Asia/Shanghai"
+      },
+      "filters": [],
+      "resultDigest": "sha256:82d87575c72b89289c26f204e2e31ec3f1bea68be935af396824616dc243fc53",
+      "population": {
+        "basis": "exact",
+        "count": 186,
+        "method": "source_total"
+      },
+      "returned": "20"
+    },
+    {
+      "queryId": "a5699a01-63f8-4303-96a6-588cfb0c0443",
+      "state": "completed",
+      "resourceUid": "0e648683-1088-4032-9b39-0a122ff475be",
+      "sourceId": "01a1805f-2214-7373-82a4-c20276c68d43",
+      "window": {
+        "to": "2026-10-28T02:36:13Z",
+        "from": "2026-10-28T02:06:14Z",
+        "bounds": "[from,to)",
+        "timezone": "Asia/Shanghai"
+      },
+      "filters": [
+        {
+          "field": "level",
+          "value": "error",
+          "operator": "eq"
+        }
+      ],
+      "resultDigest": "sha256:43803ae459fd60fc2cdbaa0aeacc128c462b92b311029ad5d27c7b67d34a54d4",
+      "population": {
+        "basis": "exact",
+        "count": 180,
+        "method": "source_total"
+      },
+      "returned": "20"
+    }
+  ]
+}

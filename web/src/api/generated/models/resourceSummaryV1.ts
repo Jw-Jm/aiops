@@ -6,10 +6,12 @@
  */
 import type { ResourceSummaryV1ByHealth } from './resourceSummaryV1ByHealth.ts';
 import type { ResourceSummaryV1ByKind } from './resourceSummaryV1ByKind.ts';
+import type { ResourceSummaryV1FilterOptions } from './resourceSummaryV1FilterOptions.ts';
 
 export interface ResourceSummaryV1 {
   /** @minimum 0 */
   total: number;
+  filterOptions?: ResourceSummaryV1FilterOptions;
   byKind: ResourceSummaryV1ByKind;
   byHealth: ResourceSummaryV1ByHealth;
 }

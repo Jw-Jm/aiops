@@ -1,0 +1,409 @@
+{
+  "date": "2026-10-27T02:43:45.769411+00:00",
+  "namespace": "ops-native-v12-r24-20261026",
+  "origin": "https://192.168.0.63:30471",
+  "schema": 70,
+  "jobs": [
+    {
+      "jobId": "01a17b2e-7857-7d6b-973b-205c44bb3912",
+      "state": "succeeded",
+      "errorCode": "",
+      "epoch": 1,
+      "policyVersion": "01a17b22-56d7-757c-8cfe-99339a3a6e30",
+      "authoritySource": "native",
+      "authorizationUserId": "01a177f1-372c-7f0f-a9de-85df928fbe31",
+      "authorizationVersion": "1",
+      "modelProfileVersion": "deepseek-trusted-r28/v2@sha256:d8b72dde6c40aca9230797abe702cef1b89bb009324ed1d616a109da4a60d9b5",
+      "budgetConsumed": {
+        "toolCalls": 3,
+        "graphNodes": 0,
+        "rawQueries": 1,
+        "inputTokens": 17659,
+        "resultBytes": 256288,
+        "outputTokens": 1568,
+        "evidenceItems": 0,
+        "modelRequests": 3,
+        "modelCostMicros": 0
+      },
+      "steps": [
+        {
+          "stepId": "01a17b2e-7d26-709c-88d7-31fcc6a2854e",
+          "tool": "get_assistant_context",
+          "state": "succeeded",
+          "errorCode": "",
+          "responseId": null,
+          "returnedModel": null,
+          "providerUsage": null
+        },
+        {
+          "stepId": "01a17b2e-80db-7777-8d45-9c06b02c84a1",
+          "tool": "model",
+          "state": "succeeded",
+          "errorCode": "",
+          "responseId": "fd183070-9328-4651-a307-6f761735040d",
+          "returnedModel": "deepseek-flash",
+          "providerUsage": {
+            "total_tokens": 4257,
+            "prompt_tokens": 4220,
+            "completion_tokens": 37,
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 1152,
+              "cache_write_tokens": null
+            },
+            "prompt_cache_hit_tokens": 1152,
+            "prompt_cache_miss_tokens": 3068,
+            "completion_tokens_details": null
+          }
+        },
+        {
+          "stepId": "01a17b2e-857b-74ef-9b01-ab2ae94705ce",
+          "tool": "describe_analysis_dataset",
+          "state": "succeeded",
+          "errorCode": "",
+          "responseId": null,
+          "returnedModel": null,
+          "providerUsage": null
+        },
+        {
+          "stepId": "01a17b2e-86c7-7d84-825d-8c8fca513cf2",
+          "tool": "model",
+          "state": "succeeded",
+          "errorCode": "",
+          "responseId": "0ed8da21-8840-4521-89fe-5baa5eb7479d",
+          "returnedModel": "deepseek-flash",
+          "providerUsage": {
+            "total_tokens": 5834,
+            "prompt_tokens": 5678,
+            "completion_tokens": 156,
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 2176,
+              "cache_write_tokens": null
+            },
+            "prompt_cache_hit_tokens": 2176,
+            "prompt_cache_miss_tokens": 3502,
+            "completion_tokens_details": null
+          }
+        },
+        {
+          "stepId": "01a17b2e-8ab8-725d-a334-8df902c7d631",
+          "tool": "execute_analysis_query",
+          "state": "succeeded",
+          "errorCode": "",
+          "responseId": null,
+          "returnedModel": null,
+          "providerUsage": null
+        },
+        {
+          "stepId": "01a17b2e-9059-7f2c-923b-8a309de36519",
+          "tool": "model",
+          "state": "succeeded",
+          "errorCode": "",
+          "responseId": "199f47d1-5ba7-4ba5-844c-e27246163c79",
+          "returnedModel": "deepseek-flash",
+          "providerUsage": {
+            "total_tokens": 9136,
+            "prompt_tokens": 7761,
+            "completion_tokens": 1375,
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 2432,
+              "cache_write_tokens": null
+            },
+            "prompt_cache_hit_tokens": 2432,
+            "prompt_cache_miss_tokens": 5329,
+            "completion_tokens_details": null
+          }
+        }
+      ],
+      "contexts": [
+        {
+          "contextId": "e2def381-bd4a-4fee-ad11-262c60104651",
+          "audience": "platform-job-api",
+          "generation": 1
+        },
+        {
+          "contextId": "75e594b2-184b-4d8d-9ab5-c1dc164389c6",
+          "audience": "platform-mcp-gateway",
+          "generation": 1
+        }
+      ]
+    },
+    {
+      "jobId": "01a17b32-5aa1-7b41-83bc-e184097281fd",
+      "state": "cancelled",
+      "errorCode": "CANCELLED",
+      "epoch": 2,
+      "policyVersion": "01a17b22-56d7-757c-8cfe-99339a3a6e30",
+      "authoritySource": "native",
+      "authorizationUserId": "01a177f1-372c-7f0f-a9de-85df928fbe31",
+      "authorizationVersion": "1",
+      "modelProfileVersion": "deepseek-trusted-r28/v2@sha256:d8b72dde6c40aca9230797abe702cef1b89bb009324ed1d616a109da4a60d9b5",
+      "budgetConsumed": {
+        "toolCalls": 1,
+        "graphNodes": 0,
+        "rawQueries": 0,
+        "inputTokens": 65536,
+        "resultBytes": 73310,
+        "outputTokens": 4096,
+        "evidenceItems": 0,
+        "modelRequests": 1,
+        "modelCostMicros": 0
+      },
+      "steps": [
+        {
+          "stepId": "01a17b32-5d9e-75ed-9fc9-a2125aae0edf",
+          "tool": "get_assistant_context",
+          "state": "succeeded",
+          "errorCode": "",
+          "responseId": null,
+          "returnedModel": null,
+          "providerUsage": null
+        },
+        {
+          "stepId": "01a17b32-5fdd-7350-8cd9-6fc639944003",
+          "tool": "model",
+          "state": "failed",
+          "errorCode": "UNKNOWN_OUTCOME",
+          "responseId": null,
+          "returnedModel": null,
+          "providerUsage": null
+        }
+      ],
+      "contexts": [
+        {
+          "contextId": "258499e2-05de-48fe-9cb5-b15eb2ef71b8",
+          "audience": "platform-job-api",
+          "generation": 1
+        },
+        {
+          "contextId": "8a3d5061-fdd9-4a22-8907-cf135bdf11e5",
+          "audience": "platform-mcp-gateway",
+          "generation": 1
+        }
+      ]
+    },
+    {
+      "jobId": "01a17b32-9ece-73bc-8f9b-24bdf9270048",
+      "state": "succeeded",
+      "errorCode": "",
+      "epoch": 2,
+      "policyVersion": "01a17b22-56d7-757c-8cfe-99339a3a6e30",
+      "authoritySource": "native",
+      "authorizationUserId": "01a177f1-372c-7f0f-a9de-85df928fbe31",
+      "authorizationVersion": "1",
+      "modelProfileVersion": "deepseek-trusted-r28/v2@sha256:d8b72dde6c40aca9230797abe702cef1b89bb009324ed1d616a109da4a60d9b5",
+      "budgetConsumed": {
+        "toolCalls": 3,
+        "graphNodes": 0,
+        "rawQueries": 1,
+        "inputTokens": 17519,
+        "resultBytes": 271588,
+        "outputTokens": 1572,
+        "evidenceItems": 0,
+        "modelRequests": 3,
+        "modelCostMicros": 0
+      },
+      "steps": [
+        {
+          "stepId": "01a17b32-a328-765e-9d38-79598b1dabb5",
+          "tool": "get_assistant_context",
+          "state": "succeeded",
+          "errorCode": "",
+          "responseId": null,
+          "returnedModel": null,
+          "providerUsage": null
+        },
+        {
+          "stepId": "01a17b32-a4ea-77ec-9042-0c4021acbd83",
+          "tool": "model",
+          "state": "succeeded",
+          "errorCode": "",
+          "responseId": "82046c8f-1f22-4ecb-aa8e-26f7d84b44c3",
+          "returnedModel": "deepseek-flash",
+          "providerUsage": {
+            "total_tokens": 4259,
+            "prompt_tokens": 4222,
+            "completion_tokens": 37,
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 1152,
+              "cache_write_tokens": null
+            },
+            "prompt_cache_hit_tokens": 1152,
+            "prompt_cache_miss_tokens": 3070,
+            "completion_tokens_details": null
+          }
+        },
+        {
+          "stepId": "01a17b32-aa9c-7d83-b1c3-f436307dd7c2",
+          "tool": "describe_analysis_dataset",
+          "state": "succeeded",
+          "errorCode": "",
+          "responseId": null,
+          "returnedModel": null,
+          "providerUsage": null
+        },
+        {
+          "stepId": "01a17b33-5b89-7e0b-bbe1-b27b5f851fd8",
+          "tool": "model",
+          "state": "succeeded",
+          "errorCode": "",
+          "responseId": "ad68715d-64da-4cb0-b25b-852432777383",
+          "returnedModel": "deepseek-flash",
+          "providerUsage": {
+            "total_tokens": 5731,
+            "prompt_tokens": 5575,
+            "completion_tokens": 156,
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 2176,
+              "cache_write_tokens": null
+            },
+            "prompt_cache_hit_tokens": 2176,
+            "prompt_cache_miss_tokens": 3399,
+            "completion_tokens_details": null
+          }
+        },
+        {
+          "stepId": "01a17b33-6c55-74e6-a51f-54243716c671",
+          "tool": "execute_analysis_query",
+          "state": "succeeded",
+          "errorCode": "",
+          "responseId": null,
+          "returnedModel": null,
+          "providerUsage": null
+        },
+        {
+          "stepId": "01a17b33-74a0-7105-8d78-ea6c9367f736",
+          "tool": "model",
+          "state": "succeeded",
+          "errorCode": "",
+          "responseId": "ad4d0d79-03cc-4ee9-b11d-f804121e80b7",
+          "returnedModel": "deepseek-flash",
+          "providerUsage": {
+            "total_tokens": 9101,
+            "prompt_tokens": 7722,
+            "completion_tokens": 1379,
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 2432,
+              "cache_write_tokens": null
+            },
+            "prompt_cache_hit_tokens": 2432,
+            "prompt_cache_miss_tokens": 5290,
+            "completion_tokens_details": null
+          }
+        }
+      ],
+      "contexts": [
+        {
+          "contextId": "132bf898-90ee-4cf7-a50f-4483dfaae1b7",
+          "audience": "platform-job-api",
+          "generation": 1
+        },
+        {
+          "contextId": "2f57af97-f19d-4df0-a316-87e42c81dc40",
+          "audience": "platform-mcp-gateway",
+          "generation": 1
+        },
+        {
+          "contextId": "f8640b65-87d6-442f-97fd-64e9a4796598",
+          "audience": "platform-job-api",
+          "generation": 2
+        },
+        {
+          "contextId": "20592a16-d8f9-401a-a021-0e1d01ee9885",
+          "audience": "platform-mcp-gateway",
+          "generation": 2
+        }
+      ]
+    },
+    {
+      "jobId": "01a17b35-92b8-7c80-9907-cc01d6c6da90",
+      "state": "failed",
+      "errorCode": "AUTHORIZATION_REVOKED",
+      "epoch": 2,
+      "policyVersion": "01a17b22-56d7-757c-8cfe-99339a3a6e30",
+      "authoritySource": "native",
+      "authorizationUserId": "01a177fe-c4ed-7b86-9e45-5ec3d167a26c",
+      "authorizationVersion": "4",
+      "modelProfileVersion": "deepseek-trusted-r28/v2@sha256:d8b72dde6c40aca9230797abe702cef1b89bb009324ed1d616a109da4a60d9b5",
+      "budgetConsumed": {
+        "toolCalls": 1,
+        "graphNodes": 0,
+        "rawQueries": 0,
+        "inputTokens": 65536,
+        "resultBytes": 73306,
+        "outputTokens": 4096,
+        "evidenceItems": 0,
+        "modelRequests": 1,
+        "modelCostMicros": 0
+      },
+      "steps": [
+        {
+          "stepId": "01a17b35-9736-7bb6-adbb-2e839adcc7d7",
+          "tool": "get_assistant_context",
+          "state": "succeeded",
+          "errorCode": "",
+          "responseId": null,
+          "returnedModel": null,
+          "providerUsage": null
+        },
+        {
+          "stepId": "01a17b35-989f-7143-9337-2531fa15b8fe",
+          "tool": "model",
+          "state": "failed",
+          "errorCode": "UNKNOWN_OUTCOME",
+          "responseId": null,
+          "returnedModel": null,
+          "providerUsage": null
+        }
+      ],
+      "contexts": [
+        {
+          "contextId": "1e80daf5-3164-4f77-9118-dac67234deed",
+          "audience": "platform-job-api",
+          "generation": 1
+        },
+        {
+          "contextId": "eb85c96f-ab99-4ffc-894a-d99dae7012c2",
+          "audience": "platform-mcp-gateway",
+          "generation": 1
+        }
+      ]
+    }
+  ],
+  "pods": [
+    {
+      "name": "ops-api",
+      "uid": "b93e4139-6955-4bb4-9229-fb357ef7ef84",
+      "ready": true,
+      "images": [
+        "ops.local/verification-20261019/platform-api@sha256:494817ba463482a5959c1c3e10968b3e28db1affc458dbdbe2cec0be5d4878a7"
+      ]
+    },
+    {
+      "name": "ops-worker",
+      "uid": "424b57a1-79e9-4af5-a279-b5e35bd966f6",
+      "ready": true,
+      "images": [
+        "ops.local/verification-20261019/platform-worker@sha256:48d3700cd7595781e5384821b07e8fa38aaf172ada0fe2b55832fedd661a92ad"
+      ]
+    },
+    {
+      "name": "ops-investigator",
+      "uid": "bf5652b7-84b2-48bc-81f2-bd9e66eb38b3",
+      "ready": true,
+      "images": [
+        "ops.local/verification-20261019/holmesgpt@sha256:7ecb3550a6cbff97b243ffbad07f80b8f640c63ac9b9531ffec4e8f8b8655ae3"
+      ]
+    }
+  ],
+  "apiSHA256": "8fe8d7bde1a141ab76bf311ec2f02b1e136a82c8b153367d649417ee895243d1",
+  "workerSHA256": "735a9044d8b51e4a85945b4c2f42b4b8ae2c5aeeb1315de72afffb95333ac8a2",
+  "sourceArchiveSHA256": "a497ca98e3771bc6c833ecd97c0d1b4dacf7e1be787ff9db1a5e5592ad23704b",
+  "billingNote": "token budgets are enforced; interrupted calls conservatively consume reservations; modelCostMicros is an unpriced legacy field, not a zero-charge assertion",
+  "releaseScope": "source canary in existing exact images; not a rebuilt signed OCI/Bundle acceptance"
+}

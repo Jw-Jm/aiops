@@ -279,13 +279,17 @@ func sourceRegistrationJSON(value source.SourceRegistration) map[string]any {
 	if value.ClusterID != uuid.Nil {
 		clusterID = value.ClusterID
 	}
+	reason := "adapter_scope_verification_pending"
+	if !value.ScopeSupported() {
+		reason = "incompatible_data_scope_mapping"
+	}
 	return map[string]any{
 		"tenantId": value.TenantID, "sourceId": value.SourceID, "sourceType": value.SourceType,
 		"instanceKey": value.InstanceKey, "clusterId": clusterID, "clusterUid": value.ClusterUID,
 		"authRef": value.AuthRef, "credentialRevision": value.CredentialRevision,
 		"allowedSchemas":   value.AllowedSchemas,
 		"backendLogicalId": value.BackendLogicalID, "dataScopeMapping": value.DataScopeMapping,
-		"queryCapability": map[string]string{"state": "disabled", "verification": "unverified", "reason": "adapter_scope_verification_pending"},
+		"queryCapability": map[string]string{"state": "disabled", "verification": "unverified", "reason": reason},
 		"status":          value.Status, "revision": value.Revision, "createdAt": value.CreatedAt, "updatedAt": value.UpdatedAt,
 	}
 }
@@ -362,6 +366,8 @@ func writeSourceServiceError(w http.ResponseWriter, err error, requestID string)
 		writeSourceError(w, http.StatusUnauthorized, "UNAUTHENTICATED", "a verified request context is required", false, requestID)
 	case errors.Is(err, source.ErrUnauthorized), errors.Is(err, auth.ErrForbidden):
 		writeSourceError(w, http.StatusForbidden, "FORBIDDEN", "platform_admin authorization is required", false, requestID)
+	case errors.Is(err, source.ErrScopeIncompatible):
+		writeSourceError(w, http.StatusBadRequest, "INVALID_ARGUMENT", "source data scope is not supported by its source type", false, requestID)
 	case errors.Is(err, source.ErrInvalidInput):
 		writeSourceError(w, http.StatusBadRequest, "INVALID_ARGUMENT", "source or cluster registration input is invalid", false, requestID)
 	case errors.Is(err, source.ErrRevisionConflict), errors.Is(err, source.ErrIdentityConflict):

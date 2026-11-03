@@ -1,7 +1,7 @@
 // Native account security: TOTP enrolment, password+TOTP step-up, recovery
 // codes and administrator MFA reset. Every assurance level shown here comes
 // from a server response; nothing is derived from a checkbox or a cookie.
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Alert,
   Button,
@@ -10,7 +10,7 @@ import {
   Divider,
   Form,
   Input,
-  InputNumber,
+  Select,
   Result,
   Space,
   Tag,
@@ -22,6 +22,7 @@ import {
   createNativeMFAEnrollment,
   createNativeStepUpChallenge,
   getNativeMFAStatus,
+  getNativeUsers,
   resetNativeUserMFA,
   verifyNativeMFAEnrollment,
   verifyNativeRecoveryCode,
@@ -32,6 +33,8 @@ import type {
   NativeStepUpSessionV1,
 } from "../api/generated/models";
 import { PageHeading } from "../components/PageHeading";
+import { QueryState } from "../components/QueryState";
+import { useQuery } from "@tanstack/react-query";
 
 type Target = Record<string, unknown> & { kind: string; revision: number };
 
@@ -58,7 +61,32 @@ function operationLabel(operation: string) {
 export function AccountSecurity() {
   const auth = useAuth();
   const session = auth.nativeSession;
-  const [status, setStatus] = useState<NativeMFAStatusV1 | null>(null);
+  const [adminCursor, setAdminCursor] = useState<string>();
+  const [adminForm] = Form.useForm();
+  const adminUsers = useQuery({
+    queryKey: ["native-users", adminCursor],
+    enabled:
+      auth.authMode === "native" &&
+      !!session?.authorization.grants.some(
+        (g) => g.role === "platform_admin" && !g.revokedAt,
+      ),
+    queryFn: ({ signal }) =>
+      checkedAPI(
+        getNativeUsers(
+          { limit: 50, cursor: adminCursor },
+          requestOptions(signal),
+        ),
+        false,
+      ),
+  });
+  const statusQuery = useQuery({
+    queryKey: ["native-mfa-status", session?.subject, session?.sessionRef],
+    enabled: auth.authMode === "native" && !!session,
+    queryFn: ({ signal }) =>
+      checkedAPI(getNativeMFAStatus(requestOptions(signal)), false),
+  });
+  const status = statusQuery.data?.data as NativeMFAStatusV1 | undefined;
+  const load = () => statusQuery.refetch();
   const [error, setError] = useState<Error | null>(null);
   const [busy, setBusy] = useState(false);
   const [enrollment, setEnrollment] = useState<{
@@ -97,24 +125,6 @@ export function AccountSecurity() {
     );
   }
 
-  const load = useCallback(async () => {
-    try {
-      const payload = (await checked(
-        getNativeMFAStatus(requestOptions(controller.current.signal)),
-        false,
-      )) as unknown as { data: NativeMFAStatusV1 };
-      setStatus(payload.data);
-    } catch (cause) {
-      setError(
-        cause instanceof Error ? cause : new Error("无法读取双因素状态"),
-      );
-    }
-  }, []);
-
-  useEffect(() => {
-    if (auth.authMode === "native" && session) void load();
-  }, [auth.authMode, session, load]);
-
   if (auth.authMode !== "native" || !session || !session.accountRevision) {
     return (
       <Result
@@ -131,6 +141,21 @@ export function AccountSecurity() {
     revision: session.accountRevision!,
   });
 
+  const cancelBinding = (message: string | null) => {
+    operationGeneration.current++;
+    controller.current.abort();
+    controller.current = new AbortController();
+    inFlight.current = false;
+    setBusy(false);
+    setEnrollment(null);
+    setChallenge(null);
+    setStepUp(null);
+    setCompleted([]);
+    setCodes(null);
+    setError(null);
+    setNotice(message);
+  };
+
   const guard = async (action: () => Promise<void>) => {
     if (inFlight.current) return;
     inFlight.current = true;
@@ -143,6 +168,11 @@ export function AccountSecurity() {
       if (generation !== operationGeneration.current || !active.current) return;
       if (cause instanceof DOMException && cause.name === "AbortError") return;
       if (cause instanceof ApiError) {
+        if (cause.status === 409 && (enrollment || challenge)) {
+          cancelBinding(null);
+          setError(new Error("本次验证已失效或版本已变化，请重新开始验证。"));
+          return;
+        }
         // The account/factor failure budget and password-work capacity are server
         // decisions, not client-side state: show the cooldown truthfully and let
         // the server decide when the next attempt is allowed.
@@ -150,11 +180,19 @@ export function AccountSecurity() {
           setChallenge(null);
           setStepUp(null);
           setCompleted([]);
-          setError(new Error("该账户的验证失败次数已达上限，已进入服务端冷却时间，请稍后重新开始验证。"));
+          setError(
+            new Error(
+              "该账户的验证失败次数已达上限，已进入服务端冷却时间，请稍后重新开始验证。",
+            ),
+          );
           return;
         }
         if (cause.code === "UNAVAILABLE") {
-          setError(new Error("密码校验暂时繁忙，本次请求未判定为密码错误，请稍后重试。"));
+          setError(
+            new Error(
+              "密码校验暂时繁忙，本次请求未判定为密码错误，请稍后重试。",
+            ),
+          );
           return;
         }
         setError(new Error(cause.message));
@@ -221,11 +259,15 @@ export function AccountSecurity() {
           ? null
           : { ...challenge, revision: payload.data.revision },
       );
-      if (payload.data.failureCode) {
+      const closed = ["revoked", "expired"].includes(
+        payload.data.challengeState,
+      );
+      if (payload.data.failureCode || closed) {
+        if (closed) cancelBinding(null);
         setError(
           new Error(
-            payload.data.challengeState === "revoked"
-              ? "尝试次数已用尽，请重新开始验证。"
+            closed
+              ? "本次验证已失效，请重新开始验证。"
               : "当前密码不正确，挑战仍待完成。",
           ),
         );
@@ -266,7 +308,17 @@ export function AccountSecurity() {
           : { ...challenge, revision: payload.data.revision },
       );
       if (payload.data.failureCode || !payload.data.stepUpSession) {
-        setError(new Error("动态码不正确或该挑战已失效。"));
+        const closed = ["revoked", "expired"].includes(
+          payload.data.challengeState,
+        );
+        if (closed) cancelBinding(null);
+        setError(
+          new Error(
+            closed
+              ? "本次验证已失效，请重新开始验证。"
+              : "动态码不正确或该挑战已失效。",
+          ),
+        );
         return;
       }
       setStepUp(payload.data.stepUpSession);
@@ -427,40 +479,46 @@ export function AccountSecurity() {
       ) : null}
 
       <Card title="双因素状态" size="small" style={{ marginBottom: 16 }}>
-        <Descriptions column={2} size="small">
-          <Descriptions.Item label="状态">{stateTag()}</Descriptions.Item>
-          <Descriptions.Item label="当前保证级别">
-            {session.acr === "urn:ops:loa:2" ? (
-              <Tag color="blue">LoA 2（密码 + 动态码）</Tag>
+        <QueryState
+          loading={statusQuery.isFetching || statusQuery.isPending}
+          error={statusQuery.error}
+          retry={() => void load()}
+        >
+          <Descriptions column={2} size="small">
+            <Descriptions.Item label="状态">{stateTag()}</Descriptions.Item>
+            <Descriptions.Item label="当前保证级别">
+              {session.acr === "urn:ops:loa:2" ? (
+                <Tag color="blue">LoA 2（密码 + 动态码）</Tag>
+              ) : (
+                <Tag>LoA 1（仅密码）</Tag>
+              )}
+            </Descriptions.Item>
+            <Descriptions.Item label="剩余恢复码">
+              {status?.recoveryCodesRemaining ?? 0}
+            </Descriptions.Item>
+            <Descriptions.Item label="确认时间">
+              {status?.confirmedAt ?? "—"}
+            </Descriptions.Item>
+          </Descriptions>
+          <Space style={{ marginTop: 12 }}>
+            <Button onClick={() => void load()} loading={busy}>
+              刷新状态
+            </Button>
+            {status?.state === "confirmed" ? (
+              <Button onClick={() => void startEnrollment()} loading={busy}>
+                重新绑定双因素
+              </Button>
             ) : (
-              <Tag>LoA 1（仅密码）</Tag>
+              <Button
+                type="primary"
+                onClick={() => void startEnrollment()}
+                loading={busy}
+              >
+                启用双因素
+              </Button>
             )}
-          </Descriptions.Item>
-          <Descriptions.Item label="剩余恢复码">
-            {status?.recoveryCodesRemaining ?? 0}
-          </Descriptions.Item>
-          <Descriptions.Item label="确认时间">
-            {status?.confirmedAt ?? "—"}
-          </Descriptions.Item>
-        </Descriptions>
-        <Space style={{ marginTop: 12 }}>
-          <Button onClick={() => void load()} loading={busy}>
-            刷新状态
-          </Button>
-          {status?.state === "confirmed" ? (
-            <Button onClick={() => void startEnrollment()} loading={busy}>
-              重新绑定双因素
-            </Button>
-          ) : (
-            <Button
-              type="primary"
-              onClick={() => void startEnrollment()}
-              loading={busy}
-            >
-              启用双因素
-            </Button>
-          )}
-        </Space>
+          </Space>
+        </QueryState>
       </Card>
 
       {enrollment ? (
@@ -548,25 +606,27 @@ export function AccountSecurity() {
               </Form>
             ) : null}
             <Button
-              onClick={() => {
-                operationGeneration.current++;
-                controller.current.abort();
-                controller.current = new AbortController();
-                inFlight.current = false;
-                setBusy(false);
-                setEnrollment(null);
-                setChallenge(null);
-                setStepUp(null);
-                setCodes(null);
-                setNotice(
+              onClick={() =>
+                cancelBinding(
                   "已停止等待本次验证。服务器可能已处理请求，请刷新状态确认；未确认的密钥将到期失效。",
-                );
-              }}
+                )
+              }
             >
               取消绑定
             </Button>
             <Typography.Text type="secondary">
-              已完成方法：{completed.length ? completed.join(" + ") : "无"}
+              已完成验证：
+              {completed.length
+                ? completed
+                    .map((method) =>
+                      method === "password"
+                        ? "密码"
+                        : method === "totp"
+                          ? "动态码"
+                          : method,
+                    )
+                    .join(" + ")
+                : "无"}
             </Typography.Text>
           </Space>
         </Card>
@@ -643,17 +703,22 @@ export function AccountSecurity() {
             type="warning"
             showIcon
             style={{ marginBottom: 12 }}
-            message="需要目标用户绑定的再次验证；重置会递增凭据与会话版本、撤销旧会话并使旧恢复码失效。"
+            message="需由当前管理员使用密码和动态码验证本次重置；目标账号的现有会话与恢复码将失效。"
           />
           <Form
+            form={adminForm}
             layout="vertical"
+            disabled={busy || adminUsers.isPending || !!adminUsers.error}
             onFinish={(values) =>
               guard(async () => {
                 const targetUserId = String(values.userId ?? "");
-                const revision = Number(values.expectedUserRevision ?? 0);
-                const credentialVersion = Number(
-                  values.expectedCredentialVersion ?? 0,
+                const target = adminUsers.data?.data.find(
+                  (user) => user.userId === targetUserId,
                 );
+                if (!target)
+                  throw new Error("请选择当前页的目标账号，再核对登录名。");
+                const revision = target.revision;
+                const credentialVersion = target.revocation.credentialVersion;
                 // 1) Create the target-bound challenge and complete password+TOTP.
                 const created = (await checked(
                   createNativeStepUpChallenge(
@@ -730,19 +795,64 @@ export function AccountSecurity() {
                     auditRecordId: string;
                   };
                 };
+                void adminUsers.refetch();
+                adminForm.resetFields([
+                  "password",
+                  "totp",
+                  "confirmLoginName",
+                  "userId",
+                ]);
                 setNotice(
-                  `重置完成：撤销 ${payload.data.sessionsRevoked} 个会话，凭据版本 ${payload.data.credentialVersion}，审计 ${payload.data.auditRecordId}。`,
+                  `重置完成：撤销 ${payload.data.sessionsRevoked} 个会话。该账号需要重新登录并设置双因素。`,
                 );
               })
             }
           >
             <Form.Item
               name="userId"
-              label="目标用户 ID"
-              rules={[{ required: true, message: "请输入目标用户 ID" }]}
+              label="目标账号（本页）"
+              rules={[{ required: true, message: "请选择目标账号" }]}
             >
-              <Input />
+              <Select
+                aria-label="目标账号（本页）"
+                showSearch
+                optionFilterProp="label"
+                options={(adminUsers.data?.data ?? []).map((user) => ({
+                  value: user.userId,
+                  label: `${user.displayName} / ${user.loginName}`,
+                }))}
+                onChange={() =>
+                  adminForm.setFieldValue("confirmLoginName", undefined)
+                }
+              />
             </Form.Item>
+            <QueryState
+              loading={adminUsers.isPending}
+              error={adminUsers.error}
+              retry={() => void adminUsers.refetch()}
+            />
+            {adminCursor || adminUsers.data?.meta.nextCursor ? (
+              <Space style={{ marginBottom: 16 }}>
+                <Button
+                  disabled={!adminCursor || busy}
+                  onClick={() => {
+                    setAdminCursor(undefined);
+                    adminForm.setFieldValue("userId", undefined);
+                  }}
+                >
+                  首页
+                </Button>
+                <Button
+                  disabled={!adminUsers.data?.meta.nextCursor || busy}
+                  onClick={() => {
+                    setAdminCursor(adminUsers.data?.meta.nextCursor);
+                    adminForm.setFieldValue("userId", undefined);
+                  }}
+                >
+                  下一页
+                </Button>
+              </Space>
+            ) : null}
             <Form.Item
               name="confirmLoginName"
               label="确认登录名"
@@ -750,22 +860,6 @@ export function AccountSecurity() {
             >
               <Input autoComplete="off" />
             </Form.Item>
-            <Space>
-              <Form.Item
-                name="expectedUserRevision"
-                label="目标账号 revision"
-                rules={[{ required: true, message: "必填" }]}
-              >
-                <InputNumber min={1} />
-              </Form.Item>
-              <Form.Item
-                name="expectedCredentialVersion"
-                label="目标凭据版本"
-                rules={[{ required: true, message: "必填" }]}
-              >
-                <InputNumber min={1} />
-              </Form.Item>
-            </Space>
             <Form.Item
               name="reason"
               label="原因"
@@ -795,13 +889,18 @@ export function AccountSecurity() {
                 <Input maxLength={6} autoComplete="one-time-code" />
               </Form.Item>
             </Space>
-            <Button htmlType="submit" danger loading={busy}>
+            <Button
+              htmlType="submit"
+              danger
+              loading={busy}
+              disabled={busy || adminUsers.isPending || !!adminUsers.error}
+            >
               执行管理员重置
             </Button>
           </Form>
           {stepUp ? (
             <Typography.Text type="secondary">
-              已获得再次验证会话 {stepUp.sessionRef}
+              本次操作已完成密码和动态码验证。
             </Typography.Text>
           ) : null}
         </Card>

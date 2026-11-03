@@ -1,0 +1,27 @@
+=== RUN   TestNativeStepUpBudgetWindowReset
+2026/10/26 13:57:45 goose: no migrations to run. current version: 69
+2026/10/26 13:57:45 OK   00070_native_stepup_budget_window.sql (2.61ms)
+2026/10/26 13:57:45 goose: successfully migrated database to version: 70
+{"time":"2026-10-26T13:57:45.6334483+08:00","level":"INFO","msg":"http request complete","request_id":"01a176c9-49b6-7ef6-991e-d56aaf9e5862","method":"POST","status_code":201,"duration_ms":106}
+{"time":"2026-10-26T13:57:45.820952222+08:00","level":"INFO","msg":"http request complete","request_id":"01a176c9-4a22-7e5c-9cb5-48e339a3b88a","method":"POST","status_code":201,"duration_ms":185}
+{"time":"2026-10-26T13:57:45.90639762+08:00","level":"INFO","msg":"http request complete","request_id":"01a176c9-4add-70cf-b282-85a388eac412","method":"POST","status_code":201,"duration_ms":85}
+{"time":"2026-10-26T13:57:45.91168252+08:00","level":"INFO","msg":"http request complete","request_id":"01a176c9-4b33-7ccd-af90-a9ef7211e7fd","method":"POST","status_code":201,"duration_ms":3}
+{"time":"2026-10-26T13:57:45.917080067+08:00","level":"INFO","msg":"http request complete","request_id":"01a176c9-4b37-7b0a-80e1-39b9ac23a2ec","method":"POST","status_code":201,"duration_ms":5}
+{"time":"2026-10-26T13:57:45.99957313+08:00","level":"INFO","msg":"http request complete","request_id":"01a176c9-4b3d-71dc-8162-6b0088830cd7","method":"POST","status_code":200,"duration_ms":82}
+{"time":"2026-10-26T13:57:46.008079407+08:00","level":"INFO","msg":"http request complete","request_id":"01a176c9-4b8f-79ca-8ccd-327449dbb3db","method":"POST","status_code":200,"duration_ms":8}
+{"time":"2026-10-26T13:57:46.014750067+08:00","level":"INFO","msg":"http request complete","request_id":"01a176c9-4b98-7256-a296-f8bcfbf184aa","method":"POST","status_code":200,"duration_ms":6}
+{"time":"2026-10-26T13:57:46.095984942+08:00","level":"INFO","msg":"http request complete","request_id":"01a176c9-4b9e-7c0a-8044-cf23c09c748c","method":"POST","status_code":201,"duration_ms":81}
+=== RUN   TestNativeStepUpBudgetWindowReset/expired_window_and_lock
+=== RUN   TestNativeStepUpBudgetWindowReset/expired_window_without_lock
+=== RUN   TestNativeStepUpBudgetWindowReset/open_window_below_limit
+=== RUN   TestNativeStepUpBudgetWindowReset/open_window_reaches_limit
+=== RUN   TestNativeStepUpBudgetWindowReset/active_lock
+=== RUN   TestNativeStepUpBudgetWindowReset/expired_window_live_lock
+--- PASS: TestNativeStepUpBudgetWindowReset (0.78s)
+    --- PASS: TestNativeStepUpBudgetWindowReset/expired_window_and_lock (0.00s)
+    --- PASS: TestNativeStepUpBudgetWindowReset/expired_window_without_lock (0.00s)
+    --- PASS: TestNativeStepUpBudgetWindowReset/open_window_below_limit (0.00s)
+    --- PASS: TestNativeStepUpBudgetWindowReset/open_window_reaches_limit (0.00s)
+    --- PASS: TestNativeStepUpBudgetWindowReset/active_lock (0.00s)
+    --- PASS: TestNativeStepUpBudgetWindowReset/expired_window_live_lock (0.00s)
+PASS

@@ -1,0 +1,98 @@
+{
+  "at": "2026-10-28T05:29:36.668Z",
+  "origin": "https://192.168.0.63:30471",
+  "viewport": {
+    "width": 1440,
+    "height": 960
+  },
+  "checks": [
+    "20 returned samples sort and wrap locally, population stays 186",
+    "detail fields/raw and adjacent navigation preserve resource, namespace, source, window and query; clipboard matches current sample",
+    "inspector summary/request/result and clipboard use persisted response, not current form or fabricated budget",
+    "field level filter creates a real new query with the same UID/source/window and exact level"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a180fc-3e21-73d7-9194-224b85d0725f"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a180fc-3eb9-7887-8b09-446f593d84ba"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a180fc-4137-71b4-95f4-91429f5577b3"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a180fc-4351-7ca0-a524-80490641ac7b"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a180fc-4d8d-707c-8e71-f25a6293829a"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "method": "POST",
+      "status": 202,
+      "requestId": "01a180fc-56d8-74eb-aea5-3b7b41aa3a80"
+    },
+    {
+      "path": "/api/v1/observability/queries/9da1a116-9791-429f-8096-cd71df3eeb24",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a180fc-62ae-7cd8-93f9-426dbada8cef"
+    },
+    {
+      "path": "/api/v1/observability/queries/9da1a116-9791-429f-8096-cd71df3eeb24/results",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a180fc-6557-7824-a4fb-ad31e48e00cb"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "method": "POST",
+      "status": 202,
+      "requestId": "01a180fc-7ab4-7cfd-9d06-f2a7336e96c8"
+    },
+    {
+      "path": "/api/v1/observability/queries/a5699a01-63f8-4303-96a6-588cfb0c0443",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a180fc-8431-78fe-b72a-bfe359b0c377"
+    },
+    {
+      "path": "/api/v1/observability/queries/a5699a01-63f8-4303-96a6-588cfb0c0443/results",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a180fc-88bc-7856-8af5-88270d1fe8d1"
+    }
+  ],
+  "queryId": "9da1a116-9791-429f-8096-cd71df3eeb24",
+  "resultDigest": "sha256:82d87575c72b89289c26f204e2e31ec3f1bea68be935af396824616dc243fc53",
+  "window": {
+    "bounds": "[from,to)",
+    "from": "2026-10-28T02:06:14Z",
+    "timezone": "Asia/Shanghai",
+    "to": "2026-10-28T02:36:13Z"
+  },
+  "screenshot": {
+    "captured": false,
+    "probes": [
+      "recovery-code"
+    ],
+    "note": "strict screenshot probe retained; JSON interactions are not visual acceptance"
+  },
+  "status": "passed"
+}

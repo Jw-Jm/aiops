@@ -1,0 +1,132 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "scope": "real admin UI session + real step-up bound to the exact request",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a17c3c-7cc5-7339-ba02-72692c00a43d"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a17c3c-7d66-71d7-ab91-bae20ef7e77b"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17c3c-7e32-76bb-8004-b8f53d0147fd"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a17c3c-7e89-734d-8429-2c0b81c0ffe3"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a17c3c-7e8a-797c-af7d-e98f36431529"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17c3c-7eff-7b3e-b931-50976e8c615d"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17c3c-7f14-7a41-bdda-d8319f77159e"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c3c-7f2a-743e-9081-487b66804d29:verify",
+      "status": 200,
+      "requestId": "01a17c3c-7f3f-708d-b00b-ab4fdb0f2672"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c3c-7f2a-743e-9081-487b66804d29:verify",
+      "status": 200,
+      "requestId": "01a17c3c-7fcc-7047-9ebe-2780321cbc0f"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/clusters",
+      "status": 201,
+      "requestId": "01a17c3c-80c4-704d-ae0e-219769db67c6"
+    }
+  ],
+  "checks": [
+    "registered through the real POST /api/v1/admin/clusters route with a password+TOTP step-up bound to that exact method/path/body digest",
+    "the stored clusterUid is the live kube-system namespace UID of this development cluster; endpoint/CA reference is a real OpenBao descriptor, not an invented value"
+  ],
+  "failure": null,
+  "steps": {
+    "session": {
+      "status": 200,
+      "userId": null
+    },
+    "challenge": {
+      "status": 201,
+      "challengeId": "01a17c3c-7f2a-743e-9081-487b66804d29",
+      "revision": 1,
+      "required": [
+        "password",
+        "totp"
+      ]
+    },
+    "password": {
+      "status": 200,
+      "completed": [
+        "password"
+      ],
+      "state": null
+    },
+    "totp": {
+      "status": 200,
+      "completed": [
+        "password",
+        "totp"
+      ],
+      "state": null
+    },
+    "create": {
+      "status": 201,
+      "requestId": "01a17c3c-80c4-704d-ae0e-219769db67c6",
+      "code": null
+    }
+  },
+  "cluster": {
+    "clusterId": "01a17c3c-80db-783b-9388-c6eee037f89b",
+    "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+    "displayName": "mssc 开发集群 r31",
+    "status": "active",
+    "revision": 1,
+    "apiEndpointRef": "openbao://secret/data/ops/r31-cluster/endpoint",
+    "distribution": "kubeadm",
+    "actualVersions": {
+      "containerd": "2.2.2",
+      "etcd": "3.6.8-0",
+      "kubernetes": "v1.36.3"
+    },
+    "capabilities": {
+      "csi": true,
+      "csinodes": true,
+      "endpointslices": true,
+      "horizontalpodautoscaler": true,
+      "ingress": true,
+      "metrics": true,
+      "networkpolicy": true,
+      "poddisruptionbudget": true,
+      "rbac": true
+    }
+  },
+  "status": "passed"
+}

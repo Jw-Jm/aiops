@@ -62,6 +62,32 @@ it("renders the portal skin and keeps a long drawer footer reachable", () => {
   expect(screen.getByText("底部操作")).toBeInTheDocument();
 });
 
+it("gives a new dialog the same initial focus as the prototype native dialog", async () => {
+  render(
+    <LayerProvider>
+      <V12Modal open title="我的账号" onClose={() => {}}>
+        <p>账号信息</p>
+      </V12Modal>
+    </LayerProvider>,
+  );
+  // The production shell renders antd in zh-CN ("关闭"); the unit harness keeps
+  // the library default, so both names are accepted here.
+  const close = await screen.findByRole("button", { name: /关闭|Close/ });
+  await waitFor(() => expect(document.activeElement).toBe(close));
+});
+
+it("keeps an explicit data-autofocus control ahead of the close button", async () => {
+  render(
+    <LayerProvider>
+      <V12Modal open title="确认退出" onClose={() => {}}>
+        <button data-autofocus>确认</button>
+      </V12Modal>
+    </LayerProvider>,
+  );
+  const confirm = await screen.findByText("确认");
+  await waitFor(() => expect(document.activeElement).toBe(confirm));
+});
+
 it("restores focus to the trigger after a real portal layer closes", async () => {
   render(
     <LayerProvider>

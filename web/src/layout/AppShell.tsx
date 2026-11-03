@@ -1,11 +1,25 @@
 import { Alert, Button, Select, Space, Tag, Typography } from "antd";
 import { LogoutOutlined, SwapOutlined } from "@ant-design/icons";
-import { Link, Outlet, useBlocker, useLocation, useNavigate } from "react-router-dom";
+import {
+  Link,
+  Outlet,
+  useBlocker,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "../auth/AuthProvider";
+import { MyAccount } from "../auth/MyAccount";
 import { ClusterScopeProvider, useClusterScope } from "../app/ClusterContext";
-import { NAV, navGroup, navItem, navModule, scopedHref, type NavEntry } from "../app/navigation";
+import {
+  NAV,
+  navGroup,
+  navItem,
+  navModule,
+  scopedHref,
+  type NavEntry,
+} from "../app/navigation";
 import { V12Drawer, ConfirmDialog } from "../components/v12/Layer";
 import { Field } from "../components/v12/primitives";
 import { checked, requestOptions } from "../api/client";
@@ -34,67 +48,77 @@ function NavList() {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   return (
     <nav className="v12-nav-scroll" aria-label="平台功能">
-      {NAV.filter((group) => !group.role || roles.includes(group.role)).map((group) => (
-        <div key={group.label}>
-          <div className="v12-nav-label">{group.label}</div>
-          {group.items.map((item: NavEntry) => {
-            const active =
-              item.path === current?.path ||
-              item.children?.some((child) => child.path === current?.path);
-            if (!item.children) {
+      {NAV.filter((group) => !group.role || roles.includes(group.role)).map(
+        (group) => (
+          <div key={group.label}>
+            <div className="v12-nav-label">{group.label}</div>
+            {group.items.map((item: NavEntry) => {
+              const active =
+                item.path === current?.path ||
+                item.children?.some((child) => child.path === current?.path);
+              if (!item.children) {
+                return (
+                  <Link
+                    key={item.path}
+                    to={scopedPath(item.path!, scope, false)}
+                    className="v12-nav-link"
+                    aria-current={active ? "page" : undefined}
+                  >
+                    <span aria-hidden="true">{item.icon}</span>
+                    <span>{item.name}</span>
+                  </Link>
+                );
+              }
               return (
-                <Link
-                  key={item.path}
-                  to={scopedPath(item.path!, scope, false)}
-                  className="v12-nav-link"
-                  aria-current={active ? "page" : undefined}
+                <details
+                  key={item.name}
+                  className="v12-nav-group"
+                  open={active || !!expanded[item.name]}
+                  onToggle={(event) =>
+                    setExpanded((previous) => ({
+                      ...previous,
+                      [item.name]: (event.target as HTMLDetailsElement).open,
+                    }))
+                  }
                 >
-                  <span aria-hidden="true">{item.icon}</span>
-                  <span>{item.name}</span>
-                </Link>
+                  <summary className="v12-nav-summary">
+                    <span aria-hidden="true">{item.icon}</span>
+                    <span>{item.name}</span>
+                    <span className="v12-nav-chevron" aria-hidden="true">
+                      ›
+                    </span>
+                  </summary>
+                  {item.children.map((child) => {
+                    const childActive = child.path === current?.path;
+                    return (
+                      <Link
+                        key={child.path}
+                        to={scopedPath(
+                          child.path,
+                          scope,
+                          group.role === "platform_admin",
+                        )}
+                        className="v12-nav-link v12-nav-child"
+                        aria-current={childActive ? "page" : undefined}
+                      >
+                        <span className="v12-nav-dot" aria-hidden="true" />
+                        <span>{child.name}</span>
+                        {!child.available ? (
+                          <Tag
+                            style={{ marginInlineStart: "auto", fontSize: 10 }}
+                          >
+                            未接入
+                          </Tag>
+                        ) : null}
+                      </Link>
+                    );
+                  })}
+                </details>
               );
-            }
-            return (
-              <details
-                key={item.name}
-                className="v12-nav-group"
-                open={active || !!expanded[item.name]}
-                onToggle={(event) =>
-                  setExpanded((previous) => ({
-                    ...previous,
-                    [item.name]: (event.target as HTMLDetailsElement).open,
-                  }))
-                }
-              >
-                <summary className="v12-nav-summary">
-                  <span aria-hidden="true">{item.icon}</span>
-                  <span>{item.name}</span>
-                  <span className="v12-nav-chevron" aria-hidden="true">›</span>
-                </summary>
-                {item.children.map((child) => {
-                  const childActive = child.path === current?.path;
-                  return (
-                    <Link
-                      key={child.path}
-                      to={scopedPath(child.path, scope, group.role === "platform_admin")}
-                      className="v12-nav-link v12-nav-child"
-                      aria-current={childActive ? "page" : undefined}
-                    >
-                      <span className="v12-nav-dot" aria-hidden="true" />
-                      <span>{child.name}</span>
-                      {!child.available ? (
-                        <Tag style={{ marginInlineStart: "auto", fontSize: 10 }}>
-                          未接入
-                        </Tag>
-                      ) : null}
-                    </Link>
-                  );
-                })}
-              </details>
-            );
-          })}
-        </div>
-      ))}
+            })}
+          </div>
+        ),
+      )}
     </nav>
   );
 }
@@ -161,9 +185,7 @@ function ClusterControls({
             }))}
             onChange={(value) => scope.requestConfigCluster(value)}
           />
-          {scope.configError ? (
-            <Tag color="warning">注册集群不可用</Tag>
-          ) : null}
+          {scope.configError ? <Tag color="warning">注册集群不可用</Tag> : null}
         </div>
       ) : null}
       <V12Drawer
@@ -227,7 +249,8 @@ function ClusterControls({
 }
 
 function Shell() {
-  const { session, user, loading, logout } = useAuth();
+  const { session, user, loading, logout, authMode, nativeSession } = useAuth();
+  const [accountOpen, setAccountOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const scope = useClusterScope();
@@ -247,7 +270,10 @@ function Shell() {
       // identity is already gone, so the truthful report belongs to the login
       // route, which keeps the unconfirmed notice and the retry action.
       if (outcome.status !== "confirmed") {
-        navigate("/login", { replace: true, state: { revocation: outcome.status } });
+        navigate("/login", {
+          replace: true,
+          state: { revocation: outcome.status },
+        });
       }
     } catch (cause) {
       // logout() only throws for an unexpected client-side failure. Report it
@@ -290,15 +316,20 @@ function Shell() {
   const navScroll = useRef<HTMLElement | null>(null);
   useLayoutEffect(() => {
     const node = document.querySelector<HTMLElement>(".v12-nav-scroll");
-    if (node) node.scrollTop = Number(sessionStorage.getItem("v12:nav-scroll") || 0);
+    if (node)
+      node.scrollTop = Number(sessionStorage.getItem("v12:nav-scroll") || 0);
     navScroll.current = node;
     return () => {
-      if (node) sessionStorage.setItem("v12:nav-scroll", String(node.scrollTop));
+      if (node)
+        sessionStorage.setItem("v12:nav-scroll", String(node.scrollTop));
     };
   }, []);
   useEffect(() => {
     if (navScroll.current) {
-      sessionStorage.setItem("v12:nav-scroll", String(navScroll.current.scrollTop));
+      sessionStorage.setItem(
+        "v12:nav-scroll",
+        String(navScroll.current.scrollTop),
+      );
     }
   }, [location.pathname]);
   return (
@@ -307,12 +338,25 @@ function Shell() {
         跳到主要内容
       </a>
       <aside className="v12-sider desktop-nav" aria-label="主导航">
-        <Link className="v12-brand" to={session?.roles.includes("operator") ? "/overview" : "/access/sources"}>
-          <span className="v12-brand-mark">O</span>
-          <span className="v12-brand-text">
-            OPS
-            <small>智能运维工作台</small>
+        <Link
+          className="v12-brand"
+          to={
+            session?.roles.includes("operator")
+              ? "/overview"
+              : "/access/sources"
+          }
+        >
+          <span className="v12-brand-mark" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            >
+              <path d="m12 3 9 5-9 5-9-5zM3 12l9 5 9-5M3 16l9 5 9-5" />
+            </svg>
           </span>
+          <span className="v12-brand-text">智能运维平台</span>
         </Link>
         <NavList />
         <div className="v12-nav-note">
@@ -322,7 +366,7 @@ function Shell() {
         </div>
       </aside>
       <div className="v12-main-shell" style={{ minWidth: 0 }}>
-        <header className="v12-header topbar">
+        <header className="v12-header">
           <Space wrap>
             <div className="v12-breadcrumb">
               {group?.label ? <span>{group.label} / </span> : null}
@@ -337,12 +381,29 @@ function Shell() {
             />
           </Space>
           <div className="v12-header-user">
-            <Typography.Text ellipsis className="subject" title={session?.subject}>
-              {user?.profile.preferred_username ||
-                user?.profile.name ||
-                session?.subject ||
-                "当前用户"}
-            </Typography.Text>
+            {authMode === "native" ? (
+              <Button
+                type="text"
+                className="subject"
+                aria-label="我的账号"
+                onClick={() => setAccountOpen(true)}
+              >
+                {nativeSession?.displayName ||
+                  nativeSession?.loginName ||
+                  "我的账号"}
+              </Button>
+            ) : (
+              <Typography.Text
+                ellipsis
+                className="subject"
+                title={session?.subject}
+              >
+                {user?.profile.preferred_username ||
+                  user?.profile.name ||
+                  session?.subject ||
+                  "当前用户"}
+              </Typography.Text>
+            )}
             {session?.roles.map((role) => (
               <Tag key={role} title={role}>
                 {role === "operator"
@@ -368,6 +429,19 @@ function Shell() {
             </Button>
           </div>
         </header>
+        <div className="v12-environment-strip">
+          <span>平台内置账号 · 按当前授权访问</span>
+          <span>桌面端工作空间</span>
+        </div>
+        {accountOpen ? (
+          <MyAccount
+            onClose={() => setAccountOpen(false)}
+            onLogout={() => {
+              setAccountOpen(false);
+              void signOut();
+            }}
+          />
+        ) : null}
         {signOutError ? (
           <Alert
             type="error"

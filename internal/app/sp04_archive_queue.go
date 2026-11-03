@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"errors"
 	"github.com/google/uuid"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"ops-platform/internal/evidence"
@@ -14,14 +15,15 @@ import (
 // forces a collector retry and is visible in Graph health; it never drops a
 // short-lived fact while advertising complete collection.
 type projectionArchiveQueue struct {
-	ctx     context.Context
-	cluster SP04Cluster
-	graph   *graph.Graph
-	archive *evidence.ArchiveService
-	jobs    chan projectionJob
-	mu      sync.Mutex
-	pending map[string]bool
-	failed  map[string]bool
+	ctx       context.Context
+	cluster   SP04Cluster
+	graph     *graph.Graph
+	archive   *evidence.ArchiveService
+	jobs      chan projectionJob
+	mu        sync.Mutex
+	pending   map[string]bool
+	failed    map[string]bool
+	conflicts map[string]bool
 }
 type projectionJob struct {
 	key string
@@ -44,6 +46,9 @@ func (q *projectionArchiveQueue) healthLocked() {
 	if len(q.failed) > 0 {
 		reason = "archive_backpressure_or_unavailable"
 	}
+	if len(q.conflicts) > 0 {
+		reason = "projection_archive_identity_conflict"
+	}
 	q.graph.SetSourceDegraded(q.cluster.SourceID+"/archive", reason)
 }
 func (q *projectionArchiveQueue) enqueue(o unstructured.Unstructured) error {
@@ -56,7 +61,16 @@ func (q *projectionArchiveQueue) enqueue(o unstructured.Unstructured) error {
 	q.mu.Unlock()
 	id, err := prepareProjection(q.ctx, q.cluster, o, q.archive)
 	if err != nil {
-		q.graph.SetSourceDegraded(q.cluster.SourceID+"/archive", "archive_prepare_unavailable")
+		q.mu.Lock()
+		if errors.Is(err, errProjectionArchiveConflict) {
+			if q.conflicts == nil {
+				q.conflicts = map[string]bool{}
+			}
+			q.conflicts[key] = true
+		}
+		q.failed[key] = true
+		q.healthLocked()
+		q.mu.Unlock()
 		return err
 	}
 	q.mu.Lock()
@@ -64,6 +78,7 @@ func (q *projectionArchiveQueue) enqueue(o unstructured.Unstructured) error {
 	if q.pending[key] {
 		return nil
 	}
+	delete(q.conflicts, key)
 	select {
 	case q.jobs <- projectionJob{key, id}:
 		q.pending[key] = true

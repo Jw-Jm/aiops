@@ -29,6 +29,17 @@ export interface NativeSessionViewV1 {
      * @maxLength 256
      */
   subject: string;
+  /**
+     * Current authenticated account login name; never inferred from subject.
+     * @minLength 1
+     * @maxLength 128
+     */
+  loginName?: string;
+  /**
+     * @minLength 1
+     * @maxLength 256
+     */
+  displayName?: string;
   tenantId: string;
   mode: NativeSessionViewV1Mode;
   /**

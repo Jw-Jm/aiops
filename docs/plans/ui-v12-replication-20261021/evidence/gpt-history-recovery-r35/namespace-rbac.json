@@ -1,0 +1,101 @@
+{
+  "before": {
+    "secondPods": "no",
+    "outsidePods": "no"
+  },
+  "role": {
+    "apiVersion": "rbac.authorization.k8s.io/v1",
+    "kind": "Role",
+    "metadata": {
+      "name": "r35-sp04-collect",
+      "namespace": "ops-native-v12-r35-scope"
+    },
+    "rules": [
+      {
+        "apiGroups": [
+          ""
+        ],
+        "resources": [
+          "pods",
+          "services",
+          "configmaps",
+          "persistentvolumeclaims",
+          "events"
+        ],
+        "verbs": [
+          "get",
+          "list",
+          "watch"
+        ]
+      },
+      {
+        "apiGroups": [
+          "apps"
+        ],
+        "resources": [
+          "deployments",
+          "replicasets",
+          "statefulsets",
+          "daemonsets"
+        ],
+        "verbs": [
+          "get",
+          "list",
+          "watch"
+        ]
+      },
+      {
+        "apiGroups": [
+          "batch"
+        ],
+        "resources": [
+          "jobs"
+        ],
+        "verbs": [
+          "get",
+          "list",
+          "watch"
+        ]
+      },
+      {
+        "apiGroups": [
+          "discovery.k8s.io"
+        ],
+        "resources": [
+          "endpointslices"
+        ],
+        "verbs": [
+          "get",
+          "list",
+          "watch"
+        ]
+      }
+    ]
+  },
+  "binding": {
+    "apiVersion": "rbac.authorization.k8s.io/v1",
+    "kind": "RoleBinding",
+    "metadata": {
+      "name": "r35-sp04-collect",
+      "namespace": "ops-native-v12-r35-scope"
+    },
+    "roleRef": {
+      "apiGroup": "rbac.authorization.k8s.io",
+      "kind": "Role",
+      "name": "r35-sp04-collect"
+    },
+    "subjects": [
+      {
+        "kind": "ServiceAccount",
+        "name": "ops-worker",
+        "namespace": "ops-native-v12-r24-20261026"
+      }
+    ]
+  },
+  "after": {
+    "secondPods": "yes",
+    "outsidePods": "no",
+    "secrets": "no",
+    "podWrite": "no"
+  }
+}

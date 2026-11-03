@@ -1,0 +1,133 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "checks": [
+    "real administrator grant revoked200; survives refreshed role projection",
+    "actual status write committed200 while response held; Escape abort retains uncertain warning; reload confirms disabled persistence",
+    "restore200 persists without reviving the revoked administrator grant"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a17802-b697-78f5-8e21-1fa952405f9d"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a17802-b729-78cd-b2a6-ae684bb1b11c"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17802-bb60-7d0f-bd11-b5aa231a16b3"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a17802-bbb3-7832-bca8-0b819f029ffd"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a17802-bbb4-7c31-b5f5-4ee1ed9f0901"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17802-be9e-784f-82aa-246e9355530e"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a17802-beaa-7cf9-b857-22e748be283f:verify",
+      "status": 200,
+      "requestId": "01a17802-beba-76e7-9fa6-77150af5fb2a"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a17802-beaa-7cf9-b857-22e748be283f:verify",
+      "status": 200,
+      "requestId": "01a17802-bf3e-754a-b931-2935f896c80d"
+    },
+    {
+      "path": "/api/v1/admin/role-bindings/bd3934b3-c072-485b-b9b0-3e2c07c8f77f/status",
+      "status": 200,
+      "requestId": "01a17802-c03a-70df-a61b-eb79d258b139"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a17802-c068-700b-85d4-4f06aed13209"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17803-14d0-79c5-83e7-175d715bbeec"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a17803-14e0-70fb-9fd7-f08b1b539523:verify",
+      "status": 200,
+      "requestId": "01a17803-14f2-764c-a623-af47dd92e21a"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a17803-14e0-70fb-9fd7-f08b1b539523:verify",
+      "status": 200,
+      "requestId": "01a17803-1573-765e-8fe5-5e22c4bd0856"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17803-170b-78bb-8c8d-7b1155f1f97b"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a17803-1cb6-71ae-9bed-e00da6319a0d"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a17803-1cb5-75b5-8582-35abf92560d9"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17803-8a1b-7086-855f-e1a768fe520c"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a17803-8a2a-7ba2-ac6b-ba6d375544fd:verify",
+      "status": 200,
+      "requestId": "01a17803-8a3a-7940-931d-d956faae0137"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a17803-8a2a-7ba2-ac6b-ba6d375544fd:verify",
+      "status": 200,
+      "requestId": "01a17803-8ab5-7222-b8a6-72de51e29b4c"
+    },
+    {
+      "path": "/api/v1/admin/users/01a177fe-c4ed-7b86-9e45-5ec3d167a26c",
+      "status": 200,
+      "requestId": "01a17803-8b4a-74ab-a588-a68e57aeb088"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17803-8bc6-7f23-9828-1141c671a2ad"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a17803-8c07-7100-9f82-d4fbbe06a651"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a17803-8c08-751c-a98a-e3842437e565"
+    }
+  ],
+  "screenshots": [
+    "user-revoke-verified",
+    "user-status-pending",
+    "user-status-uncertain"
+  ],
+  "geometry": {},
+  "committedStatus": 200,
+  "status": "passed"
+}

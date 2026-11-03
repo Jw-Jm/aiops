@@ -1,0 +1,11 @@
+{
+ "at": "2026-10-27T15:36:30+08:00",
+ "command": "ops-r24-final-opsctl identity import-subject-inventory --input <0600 private bootstrap DSN> --inventory <0600 reviewed inventory>",
+ "attemptedLegacySubject": "r31.legacy.fixture.1793086590594 (clearly marked isolated fixture, target r31.hist.1793086582839)",
+ "result": "refused by the server",
+ "serverMessage": "reviewed inventory import refused; check dedicated migration duty, tenant, history and target identities",
+ "serverGuard": "identity.import_subject_inventory requires the legacy subject to already exist in this tenant's role_bindings, assistant_conversations, investigation.jobs or action.executions",
+ "whyThisIsCorrect": "there is no legacy history in this task database, so any mapping would have been invented; the guard refused exactly that",
+ "mappingsAfter": "0 rows in identity.subject_mappings, 0 rows in identity.subject_mapping_inventories",
+ "conclusion": "no historical ownership was fabricated or modified; the evidence-backed mapping path stayed closed for a subject with no history"
+}

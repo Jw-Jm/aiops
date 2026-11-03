@@ -1,6 +1,17 @@
 import { beforeEach, expect, it, vi } from "vitest";
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { createMemoryRouter, RouterProvider, useLocation, useNavigate } from "react-router-dom";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import {
+  createMemoryRouter,
+  RouterProvider,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppShell } from "../../src/layout/AppShell";
 import { AssistantPage } from "../../src/pages/AssistantPage";
@@ -95,22 +106,26 @@ function LocationProbe() {
 
 function NavigationProbe({ target }: { target: string }) {
   const navigate = useNavigate();
-  return (
-    <button onClick={() => navigate(target)}>navigate-target</button>
-  );
+  return <button onClick={() => navigate(target)}>navigate-target</button>;
 }
 
-function AssistantHarness({ target }: { target: string }) {
+function AssistantHarness({
+  target,
+  audit = false,
+}: {
+  target: string;
+  audit?: boolean;
+}) {
   return (
     <>
       <LocationProbe />
       <NavigationProbe target={target} />
-      <AssistantPage />
+      <AssistantPage initialDomain={audit ? "audit" : undefined} />
     </>
   );
 }
 
-function renderShell(initial: string, target: string) {
+function renderShell(initial: string, target: string, audit = false) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
@@ -120,7 +135,10 @@ function renderShell(initial: string, target: string) {
         path: "/",
         element: <AppShell />,
         children: [
-          { path: "assistant", element: <AssistantHarness target={target} /> },
+          {
+            path: "assistant",
+            element: <AssistantHarness target={target} audit={audit} />,
+          },
           { path: "overview", element: <div>overview</div> },
         ],
       },
@@ -205,7 +223,9 @@ it("commits the confirmed deep link with pathname, search and hash, clears the o
 });
 
 it("uses the new same-scope incident deep link in the real create body", async () => {
-  api.create.mockResolvedValueOnce(successConversation("conversation-incident"));
+  api.create.mockResolvedValueOnce(
+    successConversation("conversation-incident"),
+  );
   renderShell(
     "/assistant?clusterUid=uid-a",
     "/assistant?clusterUid=uid-a&incidentId=INC-2096",
@@ -225,8 +245,12 @@ it("uses the new same-scope incident deep link in the real create body", async (
 
 it("does not commit a valid late create success after switching to another cluster", async () => {
   const pending = {
-    promise: undefined as unknown as Promise<ReturnType<typeof successConversation>>,
-    resolve: undefined as unknown as (value: ReturnType<typeof successConversation>) => void,
+    promise: undefined as unknown as Promise<
+      ReturnType<typeof successConversation>
+    >,
+    resolve: undefined as unknown as (
+      value: ReturnType<typeof successConversation>,
+    ) => void,
   };
   pending.promise = new Promise((resolve) => {
     pending.resolve = resolve;
@@ -242,7 +266,9 @@ it("does not commit a valid late create success after switching to another clust
   await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));
   fireEvent.click(screen.getByText("navigate-target"));
   await waitFor(() =>
-    expect(screen.getByTestId("location")).toHaveTextContent("clusterUid=uid-b"),
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "clusterUid=uid-b",
+    ),
   );
   await act(async () => {
     pending.resolve(successConversation("conversation-old"));
@@ -256,8 +282,12 @@ it("does not commit a valid late create success after switching to another clust
 
 it("discards a valid late create success after the real AssistantPage unmounts", async () => {
   const pending = {
-    promise: undefined as unknown as Promise<ReturnType<typeof successConversation>>,
-    resolve: undefined as unknown as (value: ReturnType<typeof successConversation>) => void,
+    promise: undefined as unknown as Promise<
+      ReturnType<typeof successConversation>
+    >,
+    resolve: undefined as unknown as (
+      value: ReturnType<typeof successConversation>,
+    ) => void,
   };
   pending.promise = new Promise((resolve) => {
     pending.resolve = resolve;
@@ -284,6 +314,8 @@ it("aborts the old conversation SSE when authorization scope changes", async () 
       200,
       envelope({
         conversationId: "conversation-old",
+        ownerSubject: "operator-a",
+        binding: {},
         title: "old",
         mode: "data_query",
         authorizationDomain: "operational",
@@ -295,13 +327,13 @@ it("aborts the old conversation SSE when authorization scope changes", async () 
   );
   api.messages.mockResolvedValue(response(200, envelope([])));
   const signals: AbortSignal[] = [];
-  vi.mocked(streamJSONEvents).mockImplementation(
-    async function* (...args: Parameters<typeof streamJSONEvents>) {
-      const options = args[2];
-      if (options?.signal) signals.push(options.signal);
-      await new Promise(() => {});
-    } as never,
-  );
+  vi.mocked(streamJSONEvents).mockImplementation(async function* (
+    ...args: Parameters<typeof streamJSONEvents>
+  ) {
+    const options = args[2];
+    if (options?.signal) signals.push(options.signal);
+    await new Promise(() => {});
+  } as never);
   renderShell(
     "/assistant?clusterUid=uid-a&conversation=conversation-old",
     "/assistant?clusterUid=uid-b&canonicalId=new-object",
@@ -309,4 +341,69 @@ it("aborts the old conversation SSE when authorization scope changes", async () 
   await waitFor(() => expect(streamJSONEvents).toHaveBeenCalledTimes(1));
   fireEvent.click(screen.getByText("navigate-target"));
   await waitFor(() => expect(signals[0]?.aborted).toBe(true));
+});
+
+it("starts the audit entry in the independent audit domain even for a dual-role account", async () => {
+  auth.roles = ["operator", "platform_admin"];
+  api.create.mockResolvedValue(successConversation("audit-entry"));
+  const view = renderShell("/assistant", "/overview", true);
+  const button = (await screen.findByText("创建会话")).closest("button")!;
+  await waitFor(() => expect(button.disabled).toBe(false));
+  fireEvent.click(button);
+  await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));
+  expect(api.create.mock.calls[0][0]).toMatchObject({
+    authorizationDomain: "audit",
+    mode: "data_query",
+  });
+  expect(api.create.mock.calls[0][0]).not.toHaveProperty("clusterUid");
+  view.unmount();
+});
+
+it("keeps explicitly mapped history read-only without opening an owner SSE stream", async () => {
+  api.conversation.mockResolvedValue(
+    response(
+      200,
+      envelope({
+        conversationId: "mapped-history",
+        ownerSubject: "legacy-subject",
+        title: "保留原主体",
+        mode: "data_query",
+        authorizationDomain: "operational",
+        clusterUid: "uid-a",
+        binding: {},
+        revision: 1,
+        activeTurn: null,
+      }),
+    ),
+  );
+  api.messages.mockResolvedValue(
+    response(
+      200,
+      envelope([
+        {
+          messageId: "message-a",
+          turnId: "turn-a",
+          sequence: 1,
+          role: "user",
+          content: { text: "保留的历史问题" },
+        },
+      ]),
+    ),
+  );
+  renderShell(
+    "/assistant?clusterUid=uid-a&conversation=mapped-history",
+    "/assistant",
+  );
+  expect(await screen.findByText("历史会话只读")).toBeInTheDocument();
+  expect(await screen.findByText("保留的历史问题")).toBeInTheDocument();
+  expect(
+    screen.getByText("此为原主体冻结的历史范围，不会转为新任务授权。"),
+  ).toBeInTheDocument();
+  expect(screen.getByText("历史用户")).toBeInTheDocument();
+  expect(screen.getByRole("textbox", { name: "问题" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: /^发\s*送$/ })).toBeDisabled();
+  expect(screen.getByRole("button", { name: /^归\s*档$/ })).toBeDisabled();
+  expect(streamJSONEvents).not.toHaveBeenCalled();
+  expect(api.submit).not.toHaveBeenCalled();
+  expect(api.archive).not.toHaveBeenCalled();
 });

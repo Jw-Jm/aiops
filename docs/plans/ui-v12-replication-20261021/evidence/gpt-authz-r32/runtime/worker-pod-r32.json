@@ -1,0 +1,197 @@
+{
+ "apiVersion": "v1",
+ "kind": "Pod",
+ "metadata": {
+  "name": "ops-worker",
+  "namespace": "ops-native-v12-r24-20261026",
+  "labels": {
+   "app": "ops-worker"
+  }
+ },
+ "spec": {
+  "automountServiceAccountToken": false,
+  "containers": [
+   {
+    "command": [
+     "/data/ops-v12-native-visual-r24-20261026/r32-worker/ops-worker"
+    ],
+    "env": [
+     {
+      "name": "SP04_RUNTIME_FILE",
+      "value": "/etc/r28/sp04.json"
+     },
+     {
+      "name": "SP06_RUNTIME_FILE",
+      "value": "/etc/r28/sp06.json"
+     }
+    ],
+    "envFrom": [
+     {
+      "secretRef": {
+       "name": "ops-worker-env"
+      }
+     }
+    ],
+    "image": "ops.local/verification-20261019/platform-worker@sha256:48d3700cd7595781e5384821b07e8fa38aaf172ada0fe2b55832fedd661a92ad",
+    "imagePullPolicy": "Never",
+    "name": "worker",
+    "resources": {},
+    "terminationMessagePath": "/dev/termination-log",
+    "terminationMessagePolicy": "File",
+    "volumeMounts": [
+     {
+      "mountPath": "/data/ops-v12-native-visual-r24-20261026/r28-worker/ops-worker",
+      "name": "binary",
+      "readOnly": true
+     },
+     {
+      "mountPath": "/etc/ops/runtime",
+      "name": "runtime",
+      "readOnly": true
+     },
+     {
+      "mountPath": "/data/ops-v12-native-visual-r24-20261026/registry-trust.json",
+      "name": "trust",
+      "readOnly": true
+     },
+     {
+      "mountPath": "/var/run/secrets/ops-platform/openbao",
+      "name": "projected",
+      "readOnly": true
+     },
+     {
+      "mountPath": "/etc/ops/archive",
+      "name": "archive-credentials",
+      "readOnly": true
+     },
+     {
+      "mountPath": "/etc/r28",
+      "name": "r28-runtime",
+      "readOnly": true
+     },
+     {
+      "name": "r31-cluster-read",
+      "mountPath": "/etc/r31",
+      "readOnly": true
+     },
+     {
+      "name": "r32-cluster-token",
+      "mountPath": "/etc/r31-projected",
+      "readOnly": true
+     },
+     {
+      "name": "binary-r32",
+      "mountPath": "/data/ops-v12-native-visual-r24-20261026/r32-worker/ops-worker",
+      "readOnly": true
+     }
+    ]
+   }
+  ],
+  "dnsPolicy": "ClusterFirstWithHostNet",
+  "enableServiceLinks": true,
+  "hostNetwork": true,
+  "nodeName": "mssc",
+  "preemptionPolicy": "PreemptLowerPriority",
+  "priority": 0,
+  "restartPolicy": "Always",
+  "schedulerName": "default-scheduler",
+  "securityContext": {},
+  "serviceAccount": "ops-worker",
+  "serviceAccountName": "ops-worker",
+  "terminationGracePeriodSeconds": 30,
+  "tolerations": [
+   {
+    "effect": "NoExecute",
+    "key": "node.kubernetes.io/not-ready",
+    "operator": "Exists",
+    "tolerationSeconds": 300
+   },
+   {
+    "effect": "NoExecute",
+    "key": "node.kubernetes.io/unreachable",
+    "operator": "Exists",
+    "tolerationSeconds": 300
+   }
+  ],
+  "volumes": [
+   {
+    "hostPath": {
+     "path": "/data/ops-v12-native-visual-r24-20261026/r28-worker/ops-worker",
+     "type": "File"
+    },
+    "name": "binary"
+   },
+   {
+    "configMap": {
+     "defaultMode": 420,
+     "name": "r24-public-runtime"
+    },
+    "name": "runtime"
+   },
+   {
+    "hostPath": {
+     "path": "/data/ops-v12-native-visual-r24-20261026/r28-worker/registry-trust.json",
+     "type": "File"
+    },
+    "name": "trust"
+   },
+   {
+    "name": "projected",
+    "projected": {
+     "defaultMode": 292,
+     "sources": [
+      {
+       "serviceAccountToken": {
+        "audience": "openbao",
+        "expirationSeconds": 600,
+        "path": "token"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "name": "archive-credentials",
+    "secret": {
+     "defaultMode": 292,
+     "secretName": "r24-worker-archive"
+    }
+   },
+   {
+    "configMap": {
+     "defaultMode": 420,
+     "name": "r28-runtime"
+    },
+    "name": "r28-runtime"
+   },
+   {
+    "name": "r31-cluster-read",
+    "secret": {
+     "secretName": "r31-cluster-read",
+     "defaultMode": 288
+    }
+   },
+   {
+    "name": "r32-cluster-token",
+    "projected": {
+     "defaultMode": 288,
+     "sources": [
+      {
+       "serviceAccountToken": {
+        "path": "token",
+        "expirationSeconds": 600
+       }
+      }
+     ]
+    }
+   },
+   {
+    "name": "binary-r32",
+    "hostPath": {
+     "path": "/data/ops-v12-native-visual-r24-20261026/r32-worker/ops-worker",
+     "type": "File"
+    }
+   }
+  ]
+ }
+}

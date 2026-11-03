@@ -17,7 +17,7 @@ func TestSP04ChartUsesExistingWorkerAndSeparateCredentials(t *testing.T) {
 	for _, name := range []string{"api", "worker", "web"} {
 		values["components"].(map[string]any)[name] = map[string]any{"image": "registry.example.invalid/platform/" + name + "@sha256:0000000000000000000000000000000000000000000000000000000000000000"}
 	}
-	values["sp04"] = map[string]any{"enabled": true, "allowedWorkerCIDRs": []string{"10.0.0.0/24"}, "archiveBackendLogicalID": "archive-qualified", "kubernetesAPI": map[string]any{"localCollector": true, "cidrs": []string{"10.96.0.1/32"}}, "leaseNames": []string{"sp04-graph"}, "clusters": []any{map[string]any{"Tenant": "tenant-a", "ClusterUID": "cluster-a", "SourceID": "source-a", "SourceRevision": 1, "BackendLogicalID": "cluster-a", "Endpoint": "https://10.96.0.1:443", "TokenFile": "/var/run/secrets/ops-platform/kubernetes/token", "CAFile": "/var/run/secrets/ops-platform/kubernetes/ca.pem", "LeaseNamespace": "ops-system", "LeaseName": "sp04-graph"}}}
+	values["sp04"] = map[string]any{"enabled": true, "allowedWorkerCIDRs": []string{"10.0.0.0/24"}, "archiveBackendLogicalID": "archive-qualified", "kubernetesAPI": map[string]any{"localCollector": true, "cidrs": []string{"10.96.0.1/32"}}, "leaseNames": []string{"sp04-graph"}, "clusters": []any{map[string]any{"Tenant": "tenant-a", "ClusterUID": "cluster-a", "SourceID": "source-a", "SourceRevision": 1, "BackendLogicalID": "cluster-a", "Endpoint": "https://10.96.0.1:443", "TokenFile": "/var/run/secrets/ops-platform/kubernetes/token", "CAFile": "/var/run/secrets/ops-platform/kubernetes/ca.pem", "LeaseNamespace": "ops-system", "LeaseName": "sp04-graph", "Namespaces": []string{"ops-system"}}}}
 	path := filepath.Join(t.TempDir(), "values.yaml")
 	raw, _ := yaml.Marshal(values)
 	if err := os.WriteFile(path, raw, 0600); err != nil {
@@ -110,7 +110,53 @@ func TestSP04ChartUsesExistingWorkerAndSeparateCredentials(t *testing.T) {
 	if deployments != 3 || !foundRuntime || !foundIngress {
 		t.Fatalf("third service or incomplete wiring: deployments=%d runtime=%v ingress=%v", deployments, foundRuntime, foundIngress)
 	}
+
+	// Pod log access is opt-in and stays namespace-scoped, get-only.
+	if bytes.Contains(output, []byte("pods/log")) {
+		t.Fatal("native log permission granted by default")
+	}
+	command.Args = append(command.Args, "--set", "sp04.clusters[0].PodLogs=true")
+	command = exec.Command("helm", command.Args[1:]...)
+	logs, err := command.CombinedOutput()
+	if err != nil {
+		t.Fatalf("native log chart: %s %v", logs, err)
+	}
+	documents := yaml.NewDecoder(bytes.NewReader(logs))
+	foundLogs := false
+	for {
+		var object map[string]any
+		err := documents.Decode(&object)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		if object == nil {
+			continue
+		}
+		rules, _ := object["rules"].([]any)
+		for _, raw := range rules {
+			rule := raw.(map[string]any)
+			encoded, _ := json.Marshal(rule["resources"])
+			if !bytes.Contains(encoded, []byte("pods/log")) {
+				continue
+			}
+			if object["kind"] != "Role" || object["metadata"].(map[string]any)["namespace"] != "ops-system" {
+				t.Fatal("log permission escaped configured namespace")
+			}
+			verbs, _ := json.Marshal(rule["verbs"])
+			if string(verbs) != `["get"]` {
+				t.Fatal("log permission gained write/stream verbs")
+			}
+			foundLogs = true
+		}
+	}
+	if !foundLogs {
+		t.Fatal("explicit native log permission missing")
+	}
 	command.Args = append(command.Args, "--set", "sp04.workerReplicas=3")
+	command = exec.Command("helm", command.Args[1:]...)
 	if _, err := command.CombinedOutput(); err == nil {
 		t.Fatal("unbudgeted third Worker accepted")
 	}

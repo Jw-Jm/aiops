@@ -1,0 +1,18 @@
+// Read back the existing result; match each frozen state's controls without new source queries.
+import {chromium} from '/data/ops-ui-v12-http-20261022-r1/preview-r1/playwright-core/index.mjs';
+import {readFileSync,writeFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {safeLogShot} from './safe-log-capture.mjs';
+import {safeErrorMessage} from '../r37/safe-error.mjs';
+const root='/data/ops-v12-native-visual-r24-20261026',work=root+'/r40',origin='https://192.168.0.63:30471',account=JSON.parse(readFileSync(root+'/private/r31-operator-account.json','utf8')),run=JSON.parse(readFileSync(work+'/browser-layout.json','utf8'));
+const receipt={at:new Date().toISOString(),queryId:run.original.queryId,captures:[],creates:0};
+const browser=await chromium.launch({executablePath:'/opt/ops-assistant-browser-20261014/chrome-linux64/chrome',headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
+try{
+ const context=await browser.newContext({ignoreHTTPSErrors:true,viewport:{width:1440,height:960},locale:'zh-CN',timezoneId:'Asia/Shanghai'}),page=await context.newPage();page.on('response',r=>{if(new URL(r.url()).pathname==='/api/v1/observability/queries'&&r.request().method()==='POST')receipt.creates++});
+ await page.goto(origin+'/login');await page.getByLabel('用户名',{exact:true}).fill(account.loginName);await page.getByLabel('密码',{exact:true}).fill(account.password);await page.getByRole('button',{name:/^登\s*录/}).click();await page.waitForURL(u=>u.pathname!='/login');const navigation=await page.goto(origin+'/observe/logs');receipt.indexSHA256=createHash('sha256').update(await navigation.body()).digest('hex');await page.getByRole('button',{name:/查询历史/}).click();
+ const row=page.locator('tr[data-row-key="'+run.original.queryId+'"]');await row.getByRole('button',{name:/查\s*看/}).waitFor();const response=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/v1/observability/queries/'+run.original.queryId+'/results');await row.getByRole('button',{name:/查\s*看/}).click();const result=(await (await response).json()).data;if(result.resultDigest!==run.original.resultDigest)throw Error('stored result digest changed');await page.getByText(/来源总体 186 条 · 本次脱敏样例 20 条/).waitFor();await page.getByRole('button',{name:'时间：倒序',exact:true}).waitFor();await page.getByRole('button',{name:'自动换行',exact:true}).waitFor();
+ for(const [name,slice,fullPage] of [['logs-default','SL-050',false],['logs-default-full','SL-050',true]])receipt.captures.push({name,slice,controlState:'descending/nowrap/no local filter',...await safeLogShot(page,work+'/shots/r40b-'+name+'.png',run.publicIds,{fullPage})});
+ await page.getByRole('button',{name:'自动换行',exact:true}).click();receipt.captures.push({name:'logs-wrap',slice:'SL-291',controlState:'descending/wrap',...await safeLogShot(page,work+'/shots/r40b-logs-wrap.png',run.publicIds)});await page.getByRole('button',{name:'关闭换行',exact:true}).click();await page.getByRole('textbox',{name:'关键词（脱敏样例内检索）'}).fill('r40-missing-sample');await page.getByRole('heading',{name:'没有匹配的返回样例',exact:true}).waitFor();receipt.captures.push({name:'logs-keyword-empty',slice:'SL-056',controlState:'descending/nowrap/local keyword without matches',...await safeLogShot(page,work+'/shots/r40b-logs-keyword-empty.png',run.publicIds)});
+ if(receipt.creates!==0)throw Error('read-only captures created a new source query');receipt.status='passed';
+}catch(error){receipt.status='failed';receipt.failure=safeErrorMessage(error,[account.password]);process.exitCode=1}
+finally{await browser.close();writeFileSync(work+'/capture-states-r40b.json',JSON.stringify(receipt,null,2));console.log(JSON.stringify({status:receipt.status,creates:receipt.creates,captures:receipt.captures.map(c=>c.name),failure:receipt.failure}))}

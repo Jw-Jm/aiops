@@ -1,0 +1,104 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a17c3f-af8a-7ad3-9920-99f4949592ef"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a17c3f-b01c-7ca8-90f1-bab04769b37c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17c3f-b0f5-7349-b260-6e321b84f316"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a17c3f-b153-7b09-b77a-9f99012410ab"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a17c3f-b154-7eff-8773-c74837083e26"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17c3f-b1c2-7d6b-871b-a3ae0e4f1606"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17c3f-b1d8-7e43-b14b-386e9f25237b"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c3f-b1eb-721b-b34e-a2bcab8eead2:verify",
+      "status": 200,
+      "requestId": "01a17c3f-b1ff-76bf-b114-8520575e525a"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c3f-b1eb-721b-b34e-a2bcab8eead2:verify",
+      "status": 200,
+      "requestId": "01a17c3f-b28f-7bda-bc10-9731b7099f4c"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/admin/source-registrations/01a17c3c-ef66-70cf-9ff1-cad25a8bee34",
+      "status": 200,
+      "requestId": "01a17c3f-b3d3-7062-aaa2-179eb2802dd4"
+    }
+  ],
+  "checks": [
+    "scope corrected through the real PATCH /api/v1/admin/source-registrations/{id} route (step-up bound to that request); no SQL write and no direct table edit",
+    "the declaration now carries only cluster UID + task namespace, which is what the collector requires; the cluster UID and namespace are unchanged"
+  ],
+  "failure": null,
+  "steps": {
+    "challenge": {
+      "status": 201,
+      "challengeId": "01a17c3f-b1eb-721b-b34e-a2bcab8eead2"
+    },
+    "password": {
+      "status": 200
+    },
+    "totp": {
+      "status": 200
+    },
+    "update": {
+      "status": 200,
+      "requestId": "01a17c3f-b3d3-7062-aaa2-179eb2802dd4",
+      "code": null
+    }
+  },
+  "source": {
+    "sourceId": "01a17c3c-ef66-70cf-9ff1-cad25a8bee34",
+    "revision": 2,
+    "dataScopeMapping": {
+      "scopes": {
+        "cluster": [
+          "79014400-9453-4cb4-9678-0fae47981d79"
+        ],
+        "namespace": [
+          "ops-native-v12-r24-20261026"
+        ]
+      }
+    },
+    "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+    "status": "active"
+  },
+  "status": "passed"
+}

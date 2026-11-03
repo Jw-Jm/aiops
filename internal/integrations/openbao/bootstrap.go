@@ -251,6 +251,9 @@ func (c *Client) Configure(ctx context.Context) error {
 	if err := c.ensureSSHRole(ctx); err != nil {
 		return err
 	}
+	if err := c.configureNativeMFA(ctx); err != nil {
+		return err
+	}
 	for name, policy := range runtimePolicies {
 		if err := c.ensurePolicy(ctx, name, policy); err != nil {
 			return err
@@ -331,6 +334,9 @@ func (c *Client) ConfigureWorkloadAuthentication(ctx context.Context) error {
 	if err := c.ensureAuthMethod(ctx); err != nil {
 		return err
 	}
+	if err := c.configureNativeMFA(ctx); err != nil {
+		return err
+	}
 	for _, serviceAccount := range workloadServiceAccounts {
 		role, err := WorkloadAuthRoleName(serviceAccount)
 		if err != nil {
@@ -355,7 +361,7 @@ func (c *Client) ConfigureWorkloadAuthentication(ctx context.Context) error {
 		if err := c.verifyObject(ctx, "/v1/auth/kubernetes/role/"+role, map[string]any{
 			"bound_service_account_names":      []any{serviceAccount},
 			"bound_service_account_namespaces": []any{namespaceFromServiceDomain(c.serviceDomain)},
-			"audience":                         "openbao", "policies": []any{role}, "token_policies": []any{role},
+			"audience":                         "openbao", "policies": c.workloadPolicies(role), "token_policies": c.workloadPolicies(role),
 			"token_ttl": "15m", "token_max_ttl": "1h",
 		}); err != nil {
 			return err
@@ -627,10 +633,30 @@ func (c *Client) ensureKubernetesWorkloadRole(ctx context.Context, name, service
 		"bound_service_account_names":      []any{serviceAccount},
 		"bound_service_account_namespaces": []any{namespaceFromServiceDomain(c.serviceDomain)},
 		"audience":                         "openbao",
-		"policies":                         []any{name},
-		"token_policies":                   []any{name},
+		"policies":                         c.workloadPolicies(name),
+		"token_policies":                   c.workloadPolicies(name),
 		"token_ttl":                        "15m",
 		"token_max_ttl":                    "1h",
+	}
+	if name == "ops-api-workload" && c.nativeMFAKey != "" {
+		var existing dataResponse
+		path := "/v1/auth/kubernetes/role/" + name
+		if err := c.request(ctx, http.MethodGet, path, nil, &existing); err == nil && !containsExpected(existing.Data, expected) {
+			// The explicit native switch may extend only the exact previous API
+			// role. Never overwrite foreign namespaces, audiences or extra policies.
+			base := make(map[string]any, len(expected))
+			for key, value := range expected {
+				base[key] = value
+			}
+			base["policies"], base["token_policies"] = []any{name}, []any{name}
+			if !containsExpected(existing.Data, base) {
+				return fmt.Errorf("%w: native MFA cannot replace a foreign API workload role", ErrConfigurationDrift)
+			}
+			if err := c.request(ctx, http.MethodPost, path, expected, nil); err != nil {
+				return err
+			}
+			return c.verifyObject(ctx, path, expected)
+		}
 	}
 	return c.ensureObject(ctx, "/v1/auth/kubernetes/role/"+name, expected)
 }
@@ -651,6 +677,9 @@ func (c *Client) ensureObject(ctx context.Context, path string, expected map[str
 }
 
 func (c *Client) verifyConfiguration(ctx context.Context) error {
+	if err := c.verifyNativeMFA(ctx); err != nil {
+		return err
+	}
 	var mounts dataResponse
 	if err := c.request(ctx, http.MethodGet, "/v1/sys/mounts", nil, &mounts); err != nil {
 		return err
@@ -737,7 +766,7 @@ func (c *Client) verifyConfiguration(ctx context.Context) error {
 		if err := c.verifyObject(ctx, "/v1/auth/kubernetes/role/"+role, map[string]any{
 			"bound_service_account_names":      []any{serviceAccount},
 			"bound_service_account_namespaces": []any{namespaceFromServiceDomain(c.serviceDomain)},
-			"audience":                         "openbao", "policies": []any{role}, "token_policies": []any{role},
+			"audience":                         "openbao", "policies": c.workloadPolicies(role), "token_policies": c.workloadPolicies(role),
 			"token_ttl": "15m", "token_max_ttl": "1h",
 		}); err != nil {
 			return err

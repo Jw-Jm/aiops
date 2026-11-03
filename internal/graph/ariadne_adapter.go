@@ -59,37 +59,45 @@ func (s Scope) Allows(id, ns string) bool {
 }
 
 type Query struct {
-	IncludeDomains     bool      `json:"includeDomains,omitempty"`
-	Domain             string    `json:"domain,omitempty"`
-	CanonicalIDs       []string  `json:"canonicalIds,omitempty"`
-	Direction          string    `json:"direction,omitempty"`
-	Name               string    `json:"name,omitempty"`
-	Health             string    `json:"health,omitempty"`
-	Label              string    `json:"label,omitempty"`
-	Sort               string    `json:"sort,omitempty"`
-	Order              string    `json:"order,omitempty"`
-	QueryKind          string    `json:"queryKind"`
-	CanonicalID        string    `json:"canonicalId"`
-	ExpectedOwnerEpoch int64     `json:"expectedOwnerEpoch"`
-	MaxDepth           int       `json:"maxDepth"`
-	MaxNodes           int       `json:"maxNodes"`
-	MaxEdges           int       `json:"maxEdges"`
-	Scope              Scope     `json:"scope"`
-	RelationKinds      []string  `json:"relationKinds"`
-	CursorRevision     *Revision `json:"cursorRevision,omitempty"`
-	AfterCanonicalID   string    `json:"afterCanonicalId,omitempty"`
-	Kind               string    `json:"kind,omitempty"`
-	Namespace          string    `json:"namespace,omitempty"`
+	IncludeFilterOptions bool      `json:"includeFilterOptions,omitempty"`
+	IncludeDomains       bool      `json:"includeDomains,omitempty"`
+	Domain               string    `json:"domain,omitempty"`
+	CanonicalIDs         []string  `json:"canonicalIds,omitempty"`
+	Direction            string    `json:"direction,omitempty"`
+	Name                 string    `json:"name,omitempty"`
+	Search               string    `json:"q,omitempty"`
+	Health               string    `json:"health,omitempty"`
+	Label                string    `json:"label,omitempty"`
+	Sort                 string    `json:"sort,omitempty"`
+	Order                string    `json:"order,omitempty"`
+	QueryKind            string    `json:"queryKind"`
+	CanonicalID          string    `json:"canonicalId"`
+	ExpectedOwnerEpoch   int64     `json:"expectedOwnerEpoch"`
+	MaxDepth             int       `json:"maxDepth"`
+	MaxNodes             int       `json:"maxNodes"`
+	MaxEdges             int       `json:"maxEdges"`
+	Scope                Scope     `json:"scope"`
+	RelationKinds        []string  `json:"relationKinds"`
+	CursorRevision       *Revision `json:"cursorRevision,omitempty"`
+	AfterCanonicalID     string    `json:"afterCanonicalId,omitempty"`
+	Kind                 string    `json:"kind,omitempty"`
+	Namespace            string    `json:"namespace,omitempty"`
 }
 type DomainSummary struct {
 	Total    int            `json:"total"`
 	ByHealth map[string]int `json:"byHealth"`
 }
+type ResourceFilterOptions struct {
+	Kinds         []string `json:"kinds"`
+	Namespaces    []string `json:"namespaces"`
+	ClusterScoped bool     `json:"clusterScoped"`
+}
 type ResourceSummary struct {
-	ByDomain map[string]DomainSummary `json:"byDomain,omitempty"`
-	Total    int                      `json:"total"`
-	ByKind   map[string]int           `json:"byKind"`
-	ByHealth map[string]int           `json:"byHealth"`
+	FilterOptions *ResourceFilterOptions   `json:"filterOptions,omitempty"`
+	ByDomain      map[string]DomainSummary `json:"byDomain,omitempty"`
+	Total         int                      `json:"total"`
+	ByKind        map[string]int           `json:"byKind"`
+	ByHealth      map[string]int           `json:"byHealth"`
 }
 type Result struct {
 	ObservationSources []SourceAuthority        `json:"observationSources,omitempty"`
@@ -403,17 +411,39 @@ func (g *Graph) queryLocked(ctx context.Context, q Query) (Result, error) {
 		out := Result{SchemaVersion: "resource-graph/v2", GraphRevision: revision, OwnerInstance: g.instance, CollectedAt: now, Freshness: "fresh", Warnings: []string{}, DegradedSources: []string{}, Nodes: []resource.Entity{}, Edges: []resource.Relation{}, RankedEvidence: []api.RankedEvidence{}, Conflicts: []api.DiagnosticConflict{}}
 
 		candidates := []resource.Entity{}
+		kinds, namespaces := map[string]bool{}, map[string]bool{}
+		clusterScoped := false
 		for id := range g.current.identities {
 			n, ok := reader.GetNode(modelID(id))
 			if !ok {
 				continue
 			}
 			entity := g.projectEntity(id, n.Attributes)
+			if q.IncludeFilterOptions {
+				kinds[entity.Kind] = true
+				if entity.Namespace == "" {
+					clusterScoped = true
+				} else {
+					namespaces[entity.Namespace] = true
+				}
+			}
 			if listMatches(q, entity) {
 				candidates = append(candidates, entity)
 			}
 		}
 		out.Summary = &ResourceSummary{Total: len(candidates), ByKind: map[string]int{}, ByHealth: map[string]int{}}
+		if q.IncludeFilterOptions {
+			options := &ResourceFilterOptions{Kinds: []string{}, Namespaces: []string{}, ClusterScoped: clusterScoped}
+			for kind := range kinds {
+				options.Kinds = append(options.Kinds, kind)
+			}
+			for namespace := range namespaces {
+				options.Namespaces = append(options.Namespaces, namespace)
+			}
+			slices.Sort(options.Kinds)
+			slices.Sort(options.Namespaces)
+			out.Summary.FilterOptions = options
+		}
 		if q.IncludeDomains {
 			out.Summary.ByDomain = map[string]DomainSummary{}
 		}

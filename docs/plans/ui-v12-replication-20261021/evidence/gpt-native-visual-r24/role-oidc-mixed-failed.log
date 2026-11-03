@@ -1,0 +1,64 @@
+
+ RUN  v5.0.3 /Users/mssc/Documents/Code/ops/platform/web
+
+stderr | tests/auth_recovery.test.tsx > refreshes the current authenticated identity immediately after an API denial, then returns to login on expiry
+Warning: [antd: Spin] `tip` is deprecated. Please use `description` instead.
+
+ ❯ tests/auth_recovery.test.tsx (6 tests | 1 failed) 1353ms
+   × refreshes the current authenticated identity immediately after an API denial, then returns to login on expiry 1021ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/auth_recovery.test.tsx > refreshes the current authenticated identity immediately after an API denial, then returns to login on expiry
+TestingLibraryElementError: Unable to find an element with the text: 当前身份没有可用授权. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<button>[39m
+      [0m刷新测试授权[0m
+    [36m</button>[39m
+    [36m<span>[39m
+      [0m身份已验证[0m
+    [36m</span>[39m
+    [36m<div>[39m
+      [0m已授权工作区[0m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<button>[39m
+      [0m刷新测试授权[0m
+    [36m</button>[39m
+    [36m<span>[39m
+      [0m身份已验证[0m
+    [36m</span>[39m
+    [36m<div>[39m
+      [0m已授权工作区[0m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/auth_recovery.test.tsx:149:23
+    147|   });
+    148|   act(() => authEvents.dispatchEvent(new Event("forbidden")));
+    149|   expect(await screen.findByText("当前身份没有可用授权")).toBeVisible();
+       |                       ^
+    150|   act(() => authEvents.dispatchEvent(new Event("expired")));
+    151|   expect(await screen.findByText("使用 OIDC 登录")).toBeVisible();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  1 failed | 22 passed (23)
+   Start at  19:45:41
+   Duration  4.34s (import 39%, tests 35%, environment 19%, setup 5%, transform 2%)
+
+    Isolate  4 workers spawned · ~454ms startup each (spawn + environment, per file)
+             at least ~454ms faster with isolate: false — reuses workers across files instead of one per file
+

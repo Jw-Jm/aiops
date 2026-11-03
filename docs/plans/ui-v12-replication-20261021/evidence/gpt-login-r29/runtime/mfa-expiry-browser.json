@@ -1,0 +1,20 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "scope": "controlled fault injection sets only this task-owned pending challenge expired; real API409/UI recovery; not natural wall-clock expiry or factor replacement",
+  "checks": [
+    "only the task challenge is forward-expired; real409 removes pending URI/proof/form and shows restart guidance",
+    "new real challenge can be created and cancelled; existing confirmed factor and recovery count preserved"
+  ],
+  "expired": {
+    "challengeId": "01a17b5c-ef71-7c32-b73d-1085507871fa",
+    "status": 409,
+    "requestId": "01a17b5c-f122-7cab-82f1-409e0812114e"
+  },
+  "activeFactor": {
+    "beforeState": "confirmed",
+    "afterState": "confirmed",
+    "confirmationUnchanged": true,
+    "recoveryCountUnchanged": true
+  },
+  "status": "passed"
+}

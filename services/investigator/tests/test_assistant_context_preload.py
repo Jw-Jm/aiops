@@ -93,3 +93,19 @@ def test_missing_context_tool_fails_before_model_admission():
         investigate(job, model, api, bridge)
     api.allocate.assert_not_called()
     model.provider.assert_not_called()
+
+
+def test_json_mode_supplies_exact_output_contract_on_initial_call_and_repair():
+    job,api,bridge,model,steps=setup_runtime()
+    model.provider.return_value.structured_output_mode="json_object"
+    with patch("investigator.holmes_adapter.ToolCallingLLM") as agent:
+        agent.return_value.call.side_effect=[SimpleNamespace(result="invalid-json"),SimpleNamespace(result="{}")]
+        investigate(job,model,api,bridge)
+        assert agent.return_value.call.call_count==2
+        for call in agent.return_value.call.call_args_list:
+            prompt=call.kwargs["messages"]
+            messages=[m["content"] for m in prompt if m.get("role")=="system" and "exact output schema" in m.get("content","")]
+            assert len(messages)==1
+            schema=json.loads(messages[0].split("fields. ",1)[1])
+            assert schema["additionalProperties"] is False
+            assert "answerKind" in schema["required"]

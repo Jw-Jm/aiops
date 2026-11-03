@@ -25,12 +25,12 @@ def _release_job_slot(job_api, bridge, gate):
 
 def serve(config):
     config=RuntimeConfig.model_validate(config).checked()
-    model=ModelContract.model_validate(config["model"])
+    model=ModelContract.model_validate(config["model"]) if config.get("model") is not None else None
     from .model_profile import AssistantModelProfile
     assistant_model=AssistantModelProfile.model_validate(config["assistantModelProfile"]) if config.get("assistantModelProfile") is not None else None
     # Locked upstream official environment setting, before importing its LLM.
-    os.environ["LLM_REQUEST_TIMEOUT"]=str(model.timeout)
-    os.environ["OVERRIDE_MAX_OUTPUT_TOKEN"]=str(model.token_budget)
+    os.environ["LLM_REQUEST_TIMEOUT"]=str(assistant_model.timeoutSeconds if assistant_model is not None else model.timeout)
+    os.environ["OVERRIDE_MAX_OUTPUT_TOKEN"]=str(assistant_model.outputTokenLimit if assistant_model is not None else model.token_budget)
     os.environ["LITELLM_LOCAL_MODEL_COST_MAP"]="True"
     from .mcp_bridge import MCPBridge
     from .budget import ModelCallError
@@ -76,6 +76,8 @@ def serve(config):
                     payload=json.loads(self.rfile.read(length))
                     from .assistant_binding import validate_dispatch
                     validate_dispatch(payload,config.get("assistantModelProfileVersion"))
+                    if payload["job"]["schemaVersion"]!="investigation-job/v3" and model is None:
+                        raise ValueError("LEGACY_MODEL_UNAVAILABLE")
                     if payload["job"]["schemaVersion"]=="investigation-job/v3" and (assistant_model is None or payload["job"]["assistant"]["taskKind"] not in assistant_model.taskKinds):
                         raise ValueError("MODEL_PROFILE_TASK_UNAVAILABLE")
                 except (ValueError,UnicodeError):

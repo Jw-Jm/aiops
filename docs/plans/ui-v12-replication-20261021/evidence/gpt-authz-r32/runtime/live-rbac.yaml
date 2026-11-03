@@ -1,0 +1,155 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"rbac.authorization.k8s.io/v1","kind":"Role","metadata":{"annotations":{},"labels":{"ops.platform/task":"r32-collect-scope"},"name":"r32-sp04-collect","namespace":"ops-native-v12-r24-20261026"},"rules":[{"apiGroups":[""],"resources":["pods","services","configmaps","persistentvolumeclaims","events"],"verbs":["get","list","watch"]},{"apiGroups":["apps"],"resources":["deployments","replicasets","statefulsets","daemonsets"],"verbs":["get","list","watch"]},{"apiGroups":["batch"],"resources":["jobs"],"verbs":["get","list","watch"]},{"apiGroups":["discovery.k8s.io"],"resources":["endpointslices"],"verbs":["get","list","watch"]}]}
+  creationTimestamp: "2026-10-27T08:11:43Z"
+  labels:
+    ops.platform/task: r32-collect-scope
+  name: r32-sp04-collect
+  namespace: ops-native-v12-r24-20261026
+  resourceVersion: "1844229"
+  uid: 54654353-ad80-45e6-980d-f2f47f6c3681
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - services
+  - configmaps
+  - persistentvolumeclaims
+  - events
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  - replicasets
+  - statefulsets
+  - daemonsets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - discovery.k8s.io
+  resources:
+  - endpointslices
+  verbs:
+  - get
+  - list
+  - watch
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"rbac.authorization.k8s.io/v1","kind":"RoleBinding","metadata":{"annotations":{},"labels":{"ops.platform/task":"r32-collect-scope"},"name":"r32-sp04-collect","namespace":"ops-native-v12-r24-20261026"},"roleRef":{"apiGroup":"rbac.authorization.k8s.io","kind":"Role","name":"r32-sp04-collect"},"subjects":[{"kind":"ServiceAccount","name":"ops-worker","namespace":"ops-native-v12-r24-20261026"}]}
+  creationTimestamp: "2026-10-27T08:11:43Z"
+  labels:
+    ops.platform/task: r32-collect-scope
+  name: r32-sp04-collect
+  namespace: ops-native-v12-r24-20261026
+  resourceVersion: "1844230"
+  uid: 2ca7c668-6ee0-464a-891b-09756b6f1c1e
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: r32-sp04-collect
+subjects:
+- kind: ServiceAccount
+  name: ops-worker
+  namespace: ops-native-v12-r24-20261026
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"rbac.authorization.k8s.io/v1","kind":"RoleBinding","metadata":{"annotations":{},"labels":{"ops.platform/task":"r32-collect-scope"},"name":"r32-sp04-lease","namespace":"ops-native-v12-r24-20261026"},"roleRef":{"apiGroup":"rbac.authorization.k8s.io","kind":"Role","name":"r31-sp04-lease"},"subjects":[{"kind":"ServiceAccount","name":"ops-worker","namespace":"ops-native-v12-r24-20261026"}]}
+  creationTimestamp: "2026-10-27T08:11:43Z"
+  labels:
+    ops.platform/task: r32-collect-scope
+  name: r32-sp04-lease
+  namespace: ops-native-v12-r24-20261026
+  resourceVersion: "1844233"
+  uid: ea102e4d-2282-4985-b34b-5e6eee2631b5
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: r31-sp04-lease
+subjects:
+- kind: ServiceAccount
+  name: ops-worker
+  namespace: ops-native-v12-r24-20261026
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"rbac.authorization.k8s.io/v1","kind":"ClusterRole","metadata":{"annotations":{},"labels":{"ops.platform/task":"r32-collect-scope"},"name":"ops-native-v12-r24-20261026-r32-sp04-cluster-read"},"rules":[{"apiGroups":[""],"resources":["nodes"],"verbs":["get","list","watch"]},{"apiGroups":[""],"resources":["persistentvolumes"],"verbs":["get","list","watch"]},{"apiGroups":["storage.k8s.io"],"resources":["storageclasses","csidrivers","csinodes","volumeattachments"],"verbs":["get","list","watch"]}]}
+  creationTimestamp: "2026-10-27T08:11:43Z"
+  labels:
+    ops.platform/task: r32-collect-scope
+  name: ops-native-v12-r24-20261026-r32-sp04-cluster-read
+  resourceVersion: "1844231"
+  uid: d9441bf0-abbf-43ec-9bae-d10e655a93ce
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - persistentvolumes
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - storage.k8s.io
+  resources:
+  - storageclasses
+  - csidrivers
+  - csinodes
+  - volumeattachments
+  verbs:
+  - get
+  - list
+  - watch
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"rbac.authorization.k8s.io/v1","kind":"ClusterRoleBinding","metadata":{"annotations":{},"labels":{"ops.platform/task":"r32-collect-scope"},"name":"ops-native-v12-r24-20261026-r32-sp04-cluster-read"},"roleRef":{"apiGroup":"rbac.authorization.k8s.io","kind":"ClusterRole","name":"ops-native-v12-r24-20261026-r32-sp04-cluster-read"},"subjects":[{"kind":"ServiceAccount","name":"ops-worker","namespace":"ops-native-v12-r24-20261026"}]}
+  creationTimestamp: "2026-10-27T08:11:43Z"
+  labels:
+    ops.platform/task: r32-collect-scope
+  name: ops-native-v12-r24-20261026-r32-sp04-cluster-read
+  resourceVersion: "1844232"
+  uid: da8a3c71-9bd6-4a41-a489-0f2ca9dca360
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: ops-native-v12-r24-20261026-r32-sp04-cluster-read
+subjects:
+- kind: ServiceAccount
+  name: ops-worker
+  namespace: ops-native-v12-r24-20261026

@@ -1,0 +1,109 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "checks": [
+    "selected actual account; server-owned account and credential versions; password+TOTP proof; MFA reset200 revokes an active cookie401",
+    "relogin requires re-enrollment; old recovery count0; zero-grant target still receives admin403"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a17abc-576b-78c5-b587-9c63866f84a5"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a17abc-5804-795a-82f1-c6fe5e4d6916"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a17abc-58f9-7aab-8ec9-3e4b776e588c"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17abc-5aed-741c-9af0-283b22b04d5d"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a17abc-5b44-7308-8049-ef3787927280"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a17abc-5b43-7d76-8a24-739f6a36756a"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "status": 200,
+      "requestId": "01a17abc-5b45-7a6f-9659-f580845b8901"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17abc-5dc1-724c-90c5-2dc4f598b540"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a17abc-5dd1-7964-bac0-91ee39c6c3c0:verify",
+      "status": 200,
+      "requestId": "01a17abc-5de9-7699-8505-169e10e33768"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a17abc-5dd1-7964-bac0-91ee39c6c3c0:verify",
+      "status": 200,
+      "requestId": "01a17abc-5e73-7c8a-b212-a6d60d2c48d3"
+    },
+    {
+      "path": "/api/v1/admin/users/01a177fe-c4ed-7b86-9e45-5ec3d167a26c/mfa:reset",
+      "status": 200,
+      "requestId": "01a17abc-5f7e-765d-b5f2-52a36028170c"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "status": 200,
+      "requestId": "01a17abc-5fa7-7423-a24a-c77168f0d338"
+    }
+  ],
+  "screenshots": [
+    "mfa-admin-reset-target",
+    "mfa-admin-reset-result"
+  ],
+  "geometry": {},
+  "actorSessionRef": "session:01a17abc-587a-7491-9a3f-7e9bdb2641cd",
+  "before": {
+    "factorState": "confirmed",
+    "recoveryCodesRemaining": 10
+  },
+  "reset": {
+    "auditRecordId": "01a17abc-5f91-7e62-bcf5-5b9e2fe29018",
+    "credentialVersion": 6,
+    "mfaState": "reset_required",
+    "revocation": {
+      "authorizationVersion": 3,
+      "credentialVersion": 6,
+      "sessionVersion": 11
+    },
+    "sessionsRevoked": 2,
+    "userId": "01a177fe-c4ed-7b86-9e45-5ec3d167a26c",
+    "writeRecheck": {
+      "actualCommandDigest": null,
+      "authorizationVersion": 1,
+      "checkedAt": "2026-10-27T00:22:08.01791928Z",
+      "credentialVersion": 4,
+      "objectDigest": "sha256:bae92d47d121ceefdf6bd3191ee8ceaafb2472f3528557d0553ba7a35f592c1b",
+      "result": "passed",
+      "sessionDigest": "sha256:79c5675b8e476e9ea05d6e873953ac299e8b682c46bd0e85bbdeec33a1ca4a6b",
+      "writeAttemptId": "01a17abc-5fa5-73f8-8433-848a5e361f08",
+      "writeOperation": "mfa_reset"
+    }
+  },
+  "after": {
+    "factorState": "reset_required",
+    "recoveryCodesRemaining": 0,
+    "mustReenrollMfa": true
+  },
+  "status": "failed",
+  "failure": "chmodSync is not defined"
+}

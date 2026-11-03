@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	kubejson "k8s.io/apimachinery/pkg/util/json"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -32,6 +33,52 @@ func (g GVR) Path() string {
 	}
 	return "/apis/" + g.Group + "/" + g.Version + "/" + g.Resource
 }
+
+// PathIn addresses the same resource inside one namespace. Collection of a
+// namespaced Kind must use this path: filtering an all-namespaces list on the
+// client would require a credential that can already read every namespace.
+func (g GVR) PathIn(namespace string) string {
+	if g.Group == "" {
+		return "/api/" + g.Version + "/namespaces/" + url.PathEscape(namespace) + "/" + g.Resource
+	}
+	return "/apis/" + g.Group + "/" + g.Version + "/namespaces/" + url.PathEscape(namespace) + "/" + g.Resource
+}
+
+// collectionScopes records the native scope of every resource the runtime may
+// collect. A resource that is absent here cannot be collected: silently
+// defaulting to cluster scope would hand a namespaced Kind a cluster-wide
+// credential.
+var collectionScopes = map[string]struct{ namespaced bool }{
+	"/v1/pods":                            {true},
+	"/v1/services":                        {true},
+	"/v1/configmaps":                      {true},
+	"/v1/persistentvolumeclaims":          {true},
+	"/v1/events":                          {true},
+	"apps/v1/deployments":                 {true},
+	"apps/v1/replicasets":                 {true},
+	"apps/v1/statefulsets":                {true},
+	"apps/v1/daemonsets":                  {true},
+	"batch/v1/jobs":                       {true},
+	"discovery.k8s.io/v1/endpointslices":  {true},
+	"/v1/nodes":                           {false},
+	"/v1/persistentvolumes":               {false},
+	"storage.k8s.io/v1/storageclasses":    {false},
+	"storage.k8s.io/v1/csidrivers":        {false},
+	"storage.k8s.io/v1/csinodes":          {false},
+	"storage.k8s.io/v1/volumeattachments": {false},
+}
+
+// Collected reports whether this exact Group/Version/Resource has a known
+// native scope. Startup refuses an unclassified requirement rather than
+// guessing.
+func (g GVR) Collected() bool {
+	_, ok := collectionScopes[g.Key()]
+	return ok
+}
+
+// Namespaced reports whether the resource lives inside a namespace.
+func (g GVR) Namespaced() bool { return collectionScopes[g.Key()].namespaced }
+
 func CoreRequiredGVRs() []GVR {
 	return []GVR{{"", "v1", "pods", "Pod"}, {"", "v1", "nodes", "Node"}, {"", "v1", "services", "Service"}, {"", "v1", "configmaps", "ConfigMap"}, {"", "v1", "persistentvolumeclaims", "PersistentVolumeClaim"}, {"", "v1", "persistentvolumes", "PersistentVolume"}, {"", "v1", "events", "Event"}, {"apps", "v1", "deployments", "Deployment"}, {"apps", "v1", "replicasets", "ReplicaSet"}, {"apps", "v1", "statefulsets", "StatefulSet"}, {"apps", "v1", "daemonsets", "DaemonSet"}, {"batch", "v1", "jobs", "Job"}, {"storage.k8s.io", "v1", "storageclasses", "StorageClass"}, {"storage.k8s.io", "v1", "csidrivers", "CSIDriver"}, {"storage.k8s.io", "v1", "csinodes", "CSINode"}, {"storage.k8s.io", "v1", "volumeattachments", "VolumeAttachment"}, {"discovery.k8s.io", "v1", "endpointslices", "EndpointSlice"}}
 }
@@ -210,10 +257,74 @@ func pause(ctx context.Context, d time.Duration) bool {
 		return true
 	}
 }
-func (c *Client) Run(ctx context.Context, gvr GVR, publish func(Snapshot) error) error {
+
+// Run collects one resource. A namespaced Kind requires an explicit namespace
+// scope and is then listed/watched through namespaced endpoints only; a
+// cluster-scoped Kind rejects a namespace scope. Every required resource must
+// be classified in collectionScopes.
+func (c *Client) Run(ctx context.Context, gvr GVR, namespaces []string, publish func(Snapshot) error) error {
 	if publish == nil {
 		return errors.New("projection sink required")
 	}
+	if !gvr.Collected() {
+		return errors.New("unclassified collection resource")
+	}
+	seen := map[string]bool{}
+	for _, ns := range namespaces {
+		if ns == "" || seen[ns] {
+			return errors.New("invalid collection namespace scope")
+		}
+		seen[ns] = true
+	}
+	if gvr.Namespaced() && len(namespaces) == 0 {
+		// An empty scope would silently become an all-namespaces list.
+		return errors.New("namespaced collection requires an explicit namespace scope")
+	}
+	if !gvr.Namespaced() && len(namespaces) > 0 {
+		return errors.New("cluster-scoped collection does not accept a namespace scope")
+	}
+	if len(namespaces) <= 1 {
+		path := gvr.Path()
+		if len(namespaces) == 1 {
+			path = gvr.PathIn(namespaces[0])
+		}
+		return c.runEndpoint(ctx, gvr, path, publish)
+	}
+	// Several namespaces cannot be watched through one namespaced endpoint, so
+	// each namespace keeps its own list/watch and the sink publishes their
+	// union under this single GVR identity.
+	collector := newNamespaceUnion(gvr, namespaces, publish)
+	fanContext, cancel := context.WithCancel(ctx)
+	defer cancel()
+	var group sync.WaitGroup
+	var firstErr error
+	var errMu sync.Mutex
+	for _, namespace := range namespaces {
+		namespace := namespace
+		group.Add(1)
+		go func() {
+			defer group.Done()
+			err := c.runEndpoint(fanContext, gvr, gvr.PathIn(namespace), collector.sink(namespace))
+			if err != nil && fanContext.Err() == nil {
+				errMu.Lock()
+				if firstErr == nil {
+					firstErr = err
+				}
+				errMu.Unlock()
+				cancel()
+			}
+		}()
+	}
+	group.Wait()
+	errMu.Lock()
+	defer errMu.Unlock()
+	if firstErr != nil {
+		return firstErr
+	}
+	return ctx.Err()
+}
+
+func (c *Client) runEndpoint(ctx context.Context, gvr GVR, endpoint string, publish func(Snapshot) error) error {
 	state := GVRState{}
 	objects := map[string]unstructured.Unstructured{}
 	tombstones := map[string]bool{}
@@ -263,7 +374,7 @@ func (c *Client) Run(ctx context.Context, gvr GVR, publish func(Snapshot) error)
 				if continuation != "" {
 					query.Set("continue", continuation)
 				}
-				res, err := c.Do(ctx, "GET", gvr.Path()+"?"+query.Encode(), nil)
+				res, err := c.Do(ctx, "GET", endpoint+"?"+query.Encode(), nil)
 				if err != nil {
 					listErr = err
 					break
@@ -294,12 +405,12 @@ func (c *Client) Run(ctx context.Context, gvr GVR, publish func(Snapshot) error)
 				}
 				listRV = list.Metadata.ResourceVersion
 				for _, encoded := range list.Items {
-					var fields map[string]any
-					if json.Unmarshal(encoded, &fields) != nil {
+					// Use the same integer-preserving decoder as watch events.
+					var raw unstructured.Unstructured
+					if kubejson.Unmarshal(encoded, &raw.Object) != nil {
 						listErr = errors.New("invalid_list_object")
 						break
 					}
-					raw := unstructured.Unstructured{Object: fields}
 					if raw.GetKind() == "" {
 						raw.SetKind(strings.TrimSuffix(list.Kind, "List"))
 					}
@@ -355,7 +466,7 @@ func (c *Client) Run(ctx context.Context, gvr GVR, publish func(Snapshot) error)
 		}
 		watchContext, cancel := context.WithTimeout(ctx, 35*time.Second)
 		query := url.Values{"watch": {"true"}, "resourceVersion": {rv}, "allowWatchBookmarks": {"true"}, "timeoutSeconds": {"30"}, "sendInitialEvents": {"true"}, "resourceVersionMatch": {"NotOlderThan"}}
-		res, err := c.Do(watchContext, "GET", gvr.Path()+"?"+query.Encode(), nil)
+		res, err := c.Do(watchContext, "GET", endpoint+"?"+query.Encode(), nil)
 		if err != nil || res.StatusCode != 200 {
 			if res != nil {
 				if res.StatusCode == 410 {
@@ -416,7 +527,7 @@ func (c *Client) Run(ctx context.Context, gvr GVR, publish func(Snapshot) error)
 				probeContext, probeCancel := context.WithTimeout(watchContext, 3*time.Second)
 				// This separate List checks authorization/connectivity without
 				// treating the resourceVersion as a wall clock or rebuilding.
-				probe, probeErr := c.Do(probeContext, "GET", gvr.Path()+"?limit=1", nil)
+				probe, probeErr := c.Do(probeContext, "GET", endpoint+"?limit=1", nil)
 				if probe != nil {
 					if probe.StatusCode != 200 {
 						probeErr = errors.New("probe_unavailable")

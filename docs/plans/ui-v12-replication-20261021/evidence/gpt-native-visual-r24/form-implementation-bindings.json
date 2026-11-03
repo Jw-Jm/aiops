@@ -1,0 +1,31 @@
+{
+  "accountView": {
+    "contracts": [
+      "C-007",
+      "C-010",
+      "C-011"
+    ],
+    "fields": "loginName/displayName/grants/authorizedClusters come from server session projection; subject is not a login name; no overview data needed to open account",
+    "ui": "web/src/auth/MyAccount.tsx",
+    "handlers": "NativeAuthHandlers.Session/Logout/ChangePassword"
+  },
+  "adminMFAReset": {
+    "contracts": [
+      "C-014",
+      "C-012",
+      "C-013",
+      "C-176"
+    ],
+    "fields": {
+      "userId": "selected actual GET admin/users row",
+      "expectedUserRevision": "selected row.revision",
+      "expectedCredentialVersion": "selected row.revocation.credentialVersion",
+      "confirmLoginName": "explicit operator confirmation; validated on server",
+      "reason": "explicit operator reason",
+      "stepUp": "fresh target-bound password+TOTP challenge and actual sessionRef"
+    },
+    "chain": "AccountSecurity -> generated resetNativeUserMFA -> NativeMFAHandlers.AdminResetMFA -> MFARepository.AdminReset -> authz.RequireAdmin in transaction + identity stored mutation + audit -> reset result and cookie revocation",
+    "evidence": "runtime/mfa-admin-reset-validation.json",
+    "stillRequired": "exact target and credential/session/authorization revisions, CSRF, explicit actor admin authorization and transaction recheck; no role inference"
+  }
+}

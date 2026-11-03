@@ -225,6 +225,15 @@ def validate():
             assert row['handler'] not in ('', 'n/a') and row['service'] not in ('', 'n/a'), sid
             assert row['service_evidence'] != 'n/a', sid
 
+    adaptations = json.loads((ROOT / 'evidence/contract-adaptations.json').read_text())
+    assert set(adaptations) <= {row['slice_id'] for row in acceptance}
+    original_by_id = {row['slice_id']: row for row in original}
+    for sid, adaptation in adaptations.items():
+        assert adaptation['reason'].strip() and adaptation['added'], sid
+        assert (REPO / adaptation['source']).is_file(), sid
+        assert (ROOT / adaptation['evidence']).is_file(), sid
+        assert len(adaptation['added']) == len(set(adaptation['added'])), sid
+
     statuses = {'not_verified', 'passed', 'failed', 'blocked', 'not_applicable'}
     dimensions = ('visual', 'interaction', 'api', 'persistence', 'authorization', 'live')
     for item in acceptance:
@@ -238,7 +247,10 @@ def validate():
                 assert item['evidence_refs'].strip(), (sid, 'evidence/reason required')
         candidates = set(filter(None, item['contract_candidates'].split(';')))
         assert candidates <= contract_ids, sid
-        assert item['contract_candidates'] == original[[r['slice_id'] for r in original].index(sid)]['contract_ids'], sid
+        baseline_candidates = set(filter(None, original_by_id[sid]['contract_ids'].split(';')))
+        added = set(adaptations.get(sid, {}).get('added', []))
+        assert not baseline_candidates & added, sid
+        assert candidates == baseline_candidates | added, (sid, 'unrecorded contract adaptation')
         assert state['primary_contract'] in contract_ids, sid
         assert state['primary_contract'] in candidates, (sid, state['primary_contract'])
         pcontract = contract_by_id[state['primary_contract']]

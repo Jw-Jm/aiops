@@ -1,0 +1,139 @@
+{
+  "at": "2026-10-29T07:35:47.323942+00:00",
+  "status": "passed_native_log_source_persistence_and_uid_oracle",
+  "transaction": "READ ONLY",
+  "browserIndexSHA256": "b05931cb456937624fc41e221bbb77b3e09bd827791c6167dbbbf40f029f3e1d",
+  "schema": 72,
+  "source": {
+    "sourceId": "01a17c3c-ef66-70cf-9ff1-cad25a8bee34",
+    "type": "kubernetes",
+    "revision": 3,
+    "credentialRevision": 1,
+    "status": "active"
+  },
+  "queries": [
+    {
+      "queryId": "9708b6c4-033e-42cb-afca-bc0c8b51db23",
+      "matchedNativeSamples": 20,
+      "window": {
+        "from": "2026-10-29T06:56:19.000Z",
+        "to": "2026-10-29T07:26:19Z",
+        "timezone": "Asia/Shanghai",
+        "bounds": "[from,to)"
+      },
+      "resultDigest": "sha256:18cb1143b400bd2407bd31bf6bcb97e545e0fb6a6e6301d00c006c8f022424f6"
+    },
+    {
+      "queryId": "372c6a92-aab7-459d-ba1e-470edd693b4e",
+      "matchedNativeSamples": 20,
+      "window": {
+        "from": "2026-10-29T06:56:44.000Z",
+        "to": "2026-10-29T07:26:44Z",
+        "timezone": "Asia/Shanghai",
+        "bounds": "[from,to)"
+      },
+      "resultDigest": "sha256:f27ff07569aecc22f295962b25ea6ea30c49774b8076837fe8809da7fcc3d80d"
+    }
+  ],
+  "rows": [
+    {
+      "queryId": "9708b6c4-033e-42cb-afca-bc0c8b51db23",
+      "state": "completed",
+      "source": {
+        "registrationId": "01a17c3c-ef66-70cf-9ff1-cad25a8bee34",
+        "collectorVersion": "kubernetes-pod-logs/v1",
+        "credentialRevision": 1,
+        "qualificationDigest": "sha256:962a1f6568c2991dbf702c2c715b95bed0cebd499fa03b9ce0a89e435f4ae905",
+        "registrationRevision": 3
+      },
+      "window": {
+        "to": "2026-10-29T07:26:19Z",
+        "from": "2026-10-29T06:56:19Z",
+        "bounds": "[from,to)",
+        "timezone": "Asia/Shanghai"
+      },
+      "population": {
+        "basis": "not_measured",
+        "method": null
+      },
+      "sampleCount": "20",
+      "resultDigest": "sha256:18cb1143b400bd2407bd31bf6bcb97e545e0fb6a6e6301d00c006c8f022424f6",
+      "createdAt": "2026-10-29T07:26:21.034533+00:00",
+      "expiresAt": "2026-11-28T07:26:21.034533+00:00"
+    },
+    {
+      "queryId": "372c6a92-aab7-459d-ba1e-470edd693b4e",
+      "state": "completed",
+      "source": {
+        "registrationId": "01a17c3c-ef66-70cf-9ff1-cad25a8bee34",
+        "collectorVersion": "kubernetes-pod-logs/v1",
+        "credentialRevision": 1,
+        "qualificationDigest": "sha256:962a1f6568c2991dbf702c2c715b95bed0cebd499fa03b9ce0a89e435f4ae905",
+        "registrationRevision": 3
+      },
+      "window": {
+        "to": "2026-10-29T07:26:44Z",
+        "from": "2026-10-29T06:56:44Z",
+        "bounds": "[from,to)",
+        "timezone": "Asia/Shanghai"
+      },
+      "population": {
+        "basis": "not_measured",
+        "method": null
+      },
+      "sampleCount": "20",
+      "resultDigest": "sha256:f27ff07569aecc22f295962b25ea6ea30c49774b8076837fe8809da7fcc3d80d",
+      "createdAt": "2026-10-29T07:26:49.119591+00:00",
+      "expiresAt": "2026-11-28T07:26:49.119591+00:00"
+    },
+    {
+      "sourceId": "01a17c3c-ef66-70cf-9ff1-cad25a8bee34",
+      "type": "kubernetes",
+      "revision": 3,
+      "credentialRevision": 1,
+      "status": "active"
+    },
+    {
+      "oldSnapshotQueryId": "e630a865-c1c8-49f4-b3f5-5685ed117df4",
+      "oldDigest": "sha256:14f0d1e40f283dc68fcaebb0b71d82014d97aa1b6325b77a65af4f3387dd21dd"
+    },
+    {
+      "schema": 72
+    }
+  ],
+  "kubernetesIdentity": {
+    "podUID": "0e648683-1088-4032-9b39-0a122ff475be",
+    "namespaceUID": "731f0e88-1893-4836-844b-a29374c1ca11",
+    "container": "seaweedfs",
+    "resourceVersion": "1773922"
+  },
+  "components": [
+    {
+      "component": "ops-worker",
+      "artifact": "ops-v12-r48b-worker",
+      "sha256": "eac57680c353368adff0e50b854ed4c959d804ecfd7b186d91e70b84193b1b56",
+      "previousArtifactPreserved": "/data/ops-v12-native-visual-r24-20261026/r48/ops-v12-r48-worker",
+      "previousPodUID": "0f0f74a1-05c7-44ce-ab9b-ca08f1f7b256",
+      "podUID": "71de47ce-99f8-4c91-b1de-8ad9c44a4ee6"
+    },
+    {
+      "component": "ops-api",
+      "artifact": "ops-v12-r48b-api",
+      "sha256": "f956282b651b79b16c16cb4f3d3a33c94ec714dda9e72db0894a865d12d6cb3d",
+      "previousArtifactPreserved": "/data/ops-v12-native-visual-r24-20261026/r48/ops-v12-r48-api",
+      "previousPodUID": "8f600566-8bf8-4929-97db-c327d60f2364",
+      "podUID": "4975f864-5724-4722-80f6-80e1181b270e"
+    }
+  ],
+  "currentRuntimeSnapshotSources": 0,
+  "SP05Enabled": false,
+  "modelTaskKinds": [
+    "data_query"
+  ],
+  "independent30472Running": true,
+  "limits": [
+    "Actual on-demand current single container logs, not continuous forwarding/archival ingestion",
+    "Source rotation/history completeness and total population remain unknown",
+    "No two-cluster, multi-container, full visual, long load or model quality acceptance"
+  ]
+}

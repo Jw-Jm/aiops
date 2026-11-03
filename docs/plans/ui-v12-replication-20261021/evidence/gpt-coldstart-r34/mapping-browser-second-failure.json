@@ -1,0 +1,66 @@
+{
+  "controlledFixture": true,
+  "origin": "https://192.168.0.63:30472",
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a17d15-f80d-71af-a8f9-aa0b8b4c1c90"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a17d15-f8a4-76e0-806b-bbfc491c99cf"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a17d15-fa75-77ac-8045-45c899000f48"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a17d15-faea-7d7e-81a9-b098031169db"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d15-fbb2-7cd6-b1cd-768858eb5253"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d15-fc12-7025-97dd-7cb00a9f49ff"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d15-fc10-7a53-86e9-a7090318d5b9"
+    },
+    {
+      "path": "/api/v1/admin/subject-mappings",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d15-fc9c-789e-bc5e-22f8b1de0e9c"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d16-6e5b-71f6-bd90-aab4927c4f04"
+    }
+  ],
+  "checks": [
+    "same login name as legacy owner does not inherit history or roles"
+  ],
+  "sameNameBeforeMapping": 404,
+  "status": "failed",
+  "failure": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByRole('option').filter({ hasText: 'r34.legacy.owner' })\n"
+}

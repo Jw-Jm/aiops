@@ -15,6 +15,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 )
@@ -23,6 +24,31 @@ type faultMirror struct {
 	mu    sync.Mutex
 	value OwnershipMirror
 	fail  bool
+}
+
+func TestLeaseTickMissingDependencyInvalidatesOwnership(t *testing.T) {
+	for _, missing := range []string{"client", "graph", "mirror"} {
+		t.Run(missing, func(t *testing.T) {
+			g := New("tenant-a", "cluster-a", "instance", nil)
+			g.SetOwner(1, time.Now().Add(8*time.Second))
+			lease := &Lease{Client: &kubernetes.Client{}, Graph: g, Mirror: &faultMirror{}}
+			lease.pending.Store(&ownershipSnapshot{epoch: 1, leaseUID: "native", instance: "instance"})
+			switch missing {
+			case "client":
+				lease.Client = nil
+			case "graph":
+				lease.Graph = nil
+			case "mirror":
+				lease.Mirror = nil
+			}
+			if err := lease.Tick(context.Background()); !errors.Is(err, ErrNotReady) {
+				t.Fatalf("missing %s: got %v, want ErrNotReady", missing, err)
+			}
+			if lease.pending.Load() != nil || (lease.Graph != nil && !g.deadline.IsZero()) {
+				t.Fatal("missing dependency retained ownership")
+			}
+		})
+	}
 }
 
 func (m *faultMirror) Load(context.Context, string, string) (OwnershipMirror, error) {
@@ -205,7 +231,7 @@ func TestCancelledLeaseConfirmationDoesNotInvalidateOtherReaders(t *testing.T) {
 	}
 	g := New("tenant-a", "cluster-a", "instance", nil)
 	g.SetOwner(1, time.Now().Add(8*time.Second))
-	lease := &Lease{Client: client, Graph: g, Namespace: "owned", Name: "graph", leaseUID: "native", epoch: 1, observed: true}
+	lease := confirmedOwnership(&Lease{Client: client, Graph: g, Namespace: "owned", Name: "graph"}, 1, "native")
 	g.mu.RLock()
 	deadline := g.deadline
 	g.mu.RUnlock()
@@ -276,7 +302,7 @@ func TestLeaseResponseCancellationStillFencesKnownOwnershipChange(t *testing.T) 
 			}
 			g := New("tenant-a", "cluster-a", "instance", nil)
 			g.SetOwner(1, time.Now().Add(8*time.Second))
-			lease := &Lease{Client: client, Graph: g, Namespace: "owned", Name: "graph", leaseUID: "native", epoch: 1, observed: true}
+			lease := confirmedOwnership(&Lease{Client: client, Graph: g, Namespace: "owned", Name: "graph"}, 1, "native")
 			if lease.Confirm(ctx, 1) == nil {
 				t.Fatal("cancelled response accepted")
 			}
@@ -321,7 +347,7 @@ func TestLeaseConfirmTransportFailureKeepsConfirmedOwnership(t *testing.T) {
 	}
 	g := New("tenant-a", "cluster-a", "instance", nil)
 	g.SetOwner(1, time.Now().Add(8*time.Second))
-	lease := &Lease{Client: client, Graph: g, Namespace: "owned", Name: "graph", leaseUID: "native", epoch: 1, observed: true}
+	lease := confirmedOwnership(&Lease{Client: client, Graph: g, Namespace: "owned", Name: "graph"}, 1, "native")
 	if err := lease.Confirm(context.Background(), 1); err == nil {
 		t.Fatal("transport failure accepted as ownership proof")
 	}
@@ -336,11 +362,12 @@ func TestLeaseConfirmTransportFailureKeepsConfirmedOwnership(t *testing.T) {
 	}
 }
 
-// The renewal loop holds the fence across one API-server round trip. A request
-// path used to inherit that latency: during the 2026-10-18 page run a follow-up
-// get_assistant_context was killed at 3007ms while the owner was renewing. A
-// fenced request must fail closed instead of blocking behind the renewal.
-func TestConfirmDoesNotInheritRenewalLatency(t *testing.T) {
+// The renewal loop holds its fence across one API-server round trip. The query
+// path must not inherit that latency or turn it into a failure: during the
+// 2026-10-27 independent read 3 of 12 valid requests returned GRAPH_NOT_READY
+// while the owner was renewing. Ownership is proven by the native Lease
+// document, never by winning a local mutex.
+func TestConfirmSucceedsWhileRenewalHoldsTheFence(t *testing.T) {
 	doc := LeaseDocument{APIVersion: "coordination.k8s.io/v1", Kind: "Lease"}
 	doc.Metadata.Name, doc.Metadata.Namespace = "graph", "owned"
 	doc.Metadata.UID = "native"
@@ -350,10 +377,10 @@ func TestConfirmDoesNotInheritRenewalLatency(t *testing.T) {
 	doc.Spec.LeaseDurationSeconds = 15
 	doc.Spec.RenewTime = metav1.NewMicroTime(time.Now())
 	payload, _ := json.Marshal(doc)
-	var first sync.Once
+	reads := atomic.Int64{}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
-			first.Do(func() { time.Sleep(1200 * time.Millisecond) })
+			reads.Add(1)
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(payload)
@@ -365,20 +392,29 @@ func TestConfirmDoesNotInheritRenewalLatency(t *testing.T) {
 	}
 	g := New("tenant-a", "cluster-a", "instance", nil)
 	g.SetOwner(1, time.Now().Add(8*time.Second))
-	lease := &Lease{Client: client, Graph: g, Mirror: &faultMirror{}, Namespace: "owned", Name: "graph", Endpoint: "https://127.0.0.1:9444", leaseUID: "native", epoch: 1, observed: true}
-	renewed := make(chan error, 1)
-	go func() { renewed <- lease.Tick(context.Background()) }()
-	time.Sleep(100 * time.Millisecond)
-	started := time.Now()
-	err = lease.Confirm(context.Background(), 1)
-	elapsed := time.Since(started)
-	if err == nil {
-		t.Fatal("request path accepted ownership proof without reading the native Lease")
+	lease := confirmedOwnership(&Lease{Client: client, Graph: g, Mirror: &faultMirror{}, Namespace: "owned", Name: "graph", Endpoint: "https://127.0.0.1:9444"}, 1, "native")
+	// Hold the renewal fence exactly as a renewal inside a native round trip does.
+	lease.renewOnce.Do(func() { lease.renewal = make(chan struct{}, 1); lease.renewal <- struct{}{} })
+	<-lease.renewal
+	if !lease.renewing() {
+		t.Fatal("test did not hold the renewal fence")
 	}
-	if elapsed > 700*time.Millisecond {
-		t.Fatalf("request path blocked %s behind one renewal", elapsed)
+	for attempt := 0; attempt < 3; attempt++ {
+		started := time.Now()
+		if err := lease.Confirm(context.Background(), 1); err != nil {
+			t.Fatalf("confirm %d failed while the owner was renewing: %v", attempt, err)
+		}
+		if elapsed := time.Since(started); elapsed > 250*time.Millisecond {
+			t.Fatalf("confirm %d queued %s behind the renewal fence", attempt, elapsed)
+		}
 	}
-	if tickErr := <-renewed; tickErr != nil {
-		t.Fatalf("renewal itself failed: %v", tickErr)
+	if reads.Load() < 3 {
+		t.Fatal("confirm accepted ownership without reading the native Lease")
 	}
+	lease.renewal <- struct{}{}
+}
+
+func confirmedOwnership(lease *Lease, epoch int64, leaseUID string) *Lease {
+	lease.pending.Store(&ownershipSnapshot{epoch: epoch, leaseUID: leaseUID, instance: lease.Graph.instance})
+	return lease
 }

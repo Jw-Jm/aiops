@@ -1,0 +1,45 @@
+{
+  "status": "passed",
+  "checks": [
+    "blank submit: client validation only, zero auth request",
+    "real 401 shows one constant credential message and re-enables retry; account existence is not disclosed",
+    "in-flight login disables the only submit control (real request, held response)",
+    "aborted request reports service unavailability instead of a credential verdict",
+    "first-password session survives a reload and still reads no business API",
+    "confirmation mismatch and 12-character policy are enforced before the request",
+    "cancel revokes the first-password session server-side (old cookie 401)",
+    "real change 201 rotates the session, the old cookie is 401, and a reload still reads the server session"
+  ],
+  "states": {
+    "formatRejection": {
+      "status": 400,
+      "requestId": "01a17b7a-16f4-7d55-8517-b3adc6fdcea5",
+      "box": {
+        "x": 902.5,
+        "y": 577.1875,
+        "width": 355,
+        "height": 39.796875
+      }
+    },
+    "loading": {
+      "disabled": true,
+      "text": "登录"
+    },
+    "firstPasswordDialog": {
+      "x": 390,
+      "y": 233.6875,
+      "width": 660,
+      "height": 492.625
+    },
+    "wrongCurrent": {
+      "status": 401,
+      "requestId": "01a17b7a-2d7d-705c-8e4b-e40af7f3ce9d"
+    },
+    "afterChange": {
+      "path": "/access/sources",
+      "status": 201,
+      "requestId": "01a17b7a-3be8-7ea1-ac00-3cf3e9542db3"
+    }
+  },
+  "failure": null
+}

@@ -271,7 +271,7 @@ func (h *InvestigationHandlers) stream(w http.ResponseWriter, r *http.Request, a
 				return
 			}
 			// Revalidate before each disclosure, including events already fetched in this batch.
-			if _, err = h.Repository.Get(r.Context(), a.TenantID, id); err != nil {
+			if _, _, err = h.Repository.Events(r.Context(), a.TenantID, id, a.Subject, after); err != nil {
 				return
 			}
 			cursor := h.cursor(investigationCursor{a.TenantID, id, e.EventID, job.EffectiveScopeDigest, time.Now().Add(24 * time.Hour).Unix(), "investigation"})

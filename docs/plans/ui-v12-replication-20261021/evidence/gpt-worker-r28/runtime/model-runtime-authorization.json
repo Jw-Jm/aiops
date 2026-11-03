@@ -1,0 +1,11 @@
+{
+  "decision": "deepseek就当作是内部模型",
+  "scope": "user-approved trusted DeepSeek model in existing internal Worker flow; no extra external governance",
+  "endpoint": "https://api.deepseek.com/v1",
+  "model": "deepseek-flash",
+  "billing": "provider-metered; bounded by existing model request/input/output token budgets; currency is not calculated by this runtime",
+  "alias": "provider-managed; profile freezes route and declared model, not hosted weights",
+  "protocolEvidenceDigest": "sha256:13654a6f84639ed2e0a26d93d71f299eb67bf151feb2fc05a8637c660c2f7dae",
+  "documentationDigest": "sha256:50490e85b6a47700cef1c847cfb505afb136a0d45ce48f519255960c7f63b9f3",
+  "checks": "Go modelprofile/app/contract checks and24 Python profile/runtime/provider/ledger/failure tests passed; real protocol probe passed"
+}

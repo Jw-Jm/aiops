@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "assistant-model-profile/v2",
+  "version": "deepseek-hosted-test/v2",
+  "modelID": "deepseek-flash",
+  "modelVersion": "provider-alias-deepseek-flash",
+  "baseURL": "https://api.deepseek.com/v1",
+  "apiKeyRef": "secret://model/api-key",
+  "contextWindow": 16384,
+  "outputTokenLimit": 2048,
+  "tokenAccounting": "reserve-context-bound",
+  "costPolicy": "provider-metered-token-bounded",
+  "toolCalling": true,
+  "structuredOutput": true,
+  "taskKinds": [
+    "data_query"
+  ],
+  "timeoutSeconds": 120,
+  "retries": 0,
+  "evaluationVersion": "fixture-smoke/v1",
+  "evaluationDigest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "admissionEvidenceDigest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+  "admissionState": "pending",
+  "hosted": {
+    "provider": "deepseek",
+    "protocol": "openai-chat-completions",
+    "revisionPolicy": "provider-managed-alias",
+    "documentationURL": "https://api-docs.deepseek.com/",
+    "documentationDigest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "protocolEvidenceDigest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+  }
+}

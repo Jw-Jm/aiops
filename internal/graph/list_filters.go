@@ -6,6 +6,7 @@ import (
 	"ops-platform/internal/resource"
 	"slices"
 	"strings"
+	"unicode/utf8"
 )
 
 func QueryDigest(q Query) string {
@@ -22,6 +23,9 @@ func validateList(q Query) error {
 		return errors.New("INVALID_ARGUMENT")
 	}
 	if !slices.Contains([]string{"", "hardware", "kubernetes", "network", "storage"}, q.Domain) {
+		return errors.New("INVALID_ARGUMENT")
+	}
+	if !utf8.ValidString(q.Search) || utf8.RuneCountInString(q.Search) > 256 {
 		return errors.New("INVALID_ARGUMENT")
 	}
 	if len(q.CanonicalIDs) > 50 {
@@ -111,8 +115,14 @@ func listMatches(q Query, e resource.Entity) bool {
 	if len(q.CanonicalIDs) > 0 && !slices.Contains(q.CanonicalIDs, e.CanonicalID) {
 		return false
 	}
-	if q.Kind != "" && q.Kind != e.Kind || q.Namespace != "" && q.Namespace != e.Namespace || q.Name != "" && q.Name != e.Name || q.Health != "" && q.Health != entityHealth(e) {
+	if q.Kind != "" && q.Kind != e.Kind || q.Namespace != "" && !(q.Namespace == "__cluster__" && e.Namespace == "") && q.Namespace != e.Namespace || q.Name != "" && q.Name != e.Name || q.Health != "" && q.Health != entityHealth(e) {
 		return false
+	}
+	if q.Search != "" {
+		id, err := resource.ParseCanonicalID(e.CanonicalID)
+		if err != nil || !strings.Contains(strings.ToLower(e.Name+" "+e.Kind+" "+id.StableID), strings.ToLower(q.Search)) {
+			return false
+		}
 	}
 	if q.Label != "" {
 		pair := strings.SplitN(q.Label, "=", 2)

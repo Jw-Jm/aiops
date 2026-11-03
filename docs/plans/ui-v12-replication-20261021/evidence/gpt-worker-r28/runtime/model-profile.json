@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "assistant-model-profile/v2",
+  "version": "deepseek-trusted-r28/v2",
+  "modelID": "deepseek-flash",
+  "modelVersion": "provider-deepseek-v4.1-flash-1017",
+  "baseURL": "https://api.deepseek.com/v1",
+  "apiKeyRef": "secret://model/api-key",
+  "contextWindow": 65536,
+  "outputTokenLimit": 4096,
+  "tokenAccounting": "reserve-context-bound",
+  "costPolicy": "provider-metered-token-bounded",
+  "toolCalling": true,
+  "structuredOutput": true,
+  "taskKinds": [
+    "data_query"
+  ],
+  "timeoutSeconds": 120,
+  "retries": 0,
+  "hosted": {
+    "provider": "deepseek",
+    "protocol": "openai-chat-completions",
+    "revisionPolicy": "provider-managed-alias",
+    "documentationURL": "https://api-docs.deepseek.com/",
+    "documentationDigest": "sha256:50490e85b6a47700cef1c847cfb505afb136a0d45ce48f519255960c7f63b9f3",
+    "protocolEvidenceDigest": "sha256:13654a6f84639ed2e0a26d93d71f299eb67bf151feb2fc05a8637c660c2f7dae"
+  },
+  "evaluationVersion": "deepseek-protocol-r27/v1",
+  "evaluationDigest": "sha256:13654a6f84639ed2e0a26d93d71f299eb67bf151feb2fc05a8637c660c2f7dae",
+  "admissionEvidenceDigest": "sha256:2ceb69cf52039c964e7eac9b4db9617457bc69cd5b0c6c187afc113f7222c121",
+  "admissionState": "admitted"
+}

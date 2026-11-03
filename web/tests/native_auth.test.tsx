@@ -24,9 +24,10 @@ const auth = vi.hoisted(() => ({
   logout: vi.fn(),
   nativeSession: null as null | {
     mode: "full" | "first_password_only";
+    mustReenrollMfa?: boolean;
     revocation: { credentialVersion: number; sessionVersion: number };
   },
-  session: null,
+  session: null as null | { roles: string[] },
   authMode: "native" as const,
   loading: false,
   error: null,
@@ -87,9 +88,43 @@ it("logs in with the native account and navigates to the requested page", async 
   expect(screen.queryByRole("button", { name: /OIDC/ })).toBeNull();
 });
 
-it("shows a constant failure for rejected native credentials", async () => {
+it.each([400, 401])(
+  "shows a constant failure for rejected native credentials (%s)",
+  async (status) => {
+    auth.nativeLogin.mockRejectedValue(
+      new ApiError(
+        status,
+        status === 401 ? "UNAUTHENTICATED" : "INVALID_ARGUMENT",
+        "login credentials were not accepted",
+      ),
+    );
+    render(
+      <MemoryRouter initialEntries={["/login"]}>
+        <Login />
+      </MemoryRouter>,
+    );
+    fireEvent.change(screen.getByLabelText("用户名"), {
+      target: { value: "root.admin" },
+    });
+    fireEvent.change(screen.getByLabelText("密码"), {
+      target: { value: "wrong-password-value" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /登\s*录/ }));
+    await waitFor(() => expect(auth.nativeLogin).toHaveBeenCalledTimes(1));
+    const error = await screen.findByRole("alert");
+    expect(error.textContent).toBe("用户名或密码错误，或账号不可用。");
+    expect(error.querySelector("svg")).toBeNull();
+    expect(auth.nativeLogin).toHaveBeenCalledTimes(1);
+  },
+);
+
+it("never reports a transport failure as a rejected credential", async () => {
   auth.nativeLogin.mockRejectedValue(
-    new ApiError(401, "UNAUTHENTICATED", "login credentials were not accepted"),
+    new ApiError(
+      503,
+      "NETWORK_UNAVAILABLE",
+      "接口连接中断，请先核对持久记录",
+    ),
   );
   render(
     <MemoryRouter initialEntries={["/login"]}>
@@ -103,9 +138,33 @@ it("shows a constant failure for rejected native credentials", async () => {
     target: { value: "wrong-password-value" },
   });
   fireEvent.click(screen.getByRole("button", { name: /登\s*录/ }));
-  await waitFor(() => expect(auth.nativeLogin).toHaveBeenCalledTimes(1));
-  expect(await screen.findByText(/登录名或密码不正确/)).toBeVisible();
-  expect(auth.nativeLogin).toHaveBeenCalledTimes(1);
+  const error = await screen.findByRole("alert");
+  expect(error.textContent).toBe("登录服务暂时不可用，请稍后重试。");
+  expect(error.textContent).not.toContain("用户名或密码错误");
+  expect(error.textContent).not.toContain("持久记录");
+  expect(await screen.findByRole("button", { name: /登\s*录/ })).toBeEnabled();
+});
+
+it("sends an already restored session with a forced factor reset to the security page", async () => {
+  auth.session = { roles: [] };
+  auth.nativeSession = {
+    mode: "full",
+    mustReenrollMfa: true,
+    revocation: { credentialVersion: 1, sessionVersion: 1 },
+  };
+  render(
+    <MemoryRouter initialEntries={["/login"]}>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="*" element={<Location />} />
+      </Routes>
+    </MemoryRouter>,
+  );
+  // The page redirect must agree with the destination the login itself returns;
+  // otherwise a forced factor reset can be raced into the ordinary home page.
+  await waitFor(() =>
+    expect(screen.getByTestId("location")).toHaveTextContent("/account/security"),
+  );
 });
 
 it("requires the current password during first password setup and rotates the session", async () => {

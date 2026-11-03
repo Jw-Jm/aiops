@@ -1548,6 +1548,21 @@ func (e NativeWriteRecheckV1WriteOperation) Valid() bool {
 	}
 }
 
+// Defines values for ObservationCapabilitiesV1SchemaVersion.
+const (
+	UiV12ObservabilityCapabilitiesv1 ObservationCapabilitiesV1SchemaVersion = "ui-v12-observability-capabilities/v1"
+)
+
+// Valid indicates whether the value is a known member of the ObservationCapabilitiesV1SchemaVersion enum.
+func (e ObservationCapabilitiesV1SchemaVersion) Valid() bool {
+	switch e {
+	case UiV12ObservabilityCapabilitiesv1:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for OperatorRoleBindingStatusUpdateRequestStatus.
 const (
 	OperatorRoleBindingStatusUpdateRequestStatusActive   OperatorRoleBindingStatusUpdateRequestStatus = "active"
@@ -2106,12 +2121,15 @@ func (e SourceRegistrationAllowedSchemas) Valid() bool {
 // Defines values for SourceRegistrationQueryCapabilityReason.
 const (
 	AdapterScopeVerificationPending SourceRegistrationQueryCapabilityReason = "adapter_scope_verification_pending"
+	IncompatibleDataScopeMapping    SourceRegistrationQueryCapabilityReason = "incompatible_data_scope_mapping"
 )
 
 // Valid indicates whether the value is a known member of the SourceRegistrationQueryCapabilityReason enum.
 func (e SourceRegistrationQueryCapabilityReason) Valid() bool {
 	switch e {
 	case AdapterScopeVerificationPending:
+		return true
+	case IncompatibleDataScopeMapping:
 		return true
 	default:
 		return false
@@ -4301,10 +4319,14 @@ type NativeSessionViewV1 struct {
 	Authorization struct {
 		Grants []IdentityRoleGrantV1 `json:"grants"`
 	} `json:"authorization"`
-	AuthorizedClusters []AuthorizedClusterV1   `json:"authorizedClusters"`
-	Csrf               IdentityCsrfV1          `json:"csrf"`
-	IdleExpiresAt      time.Time               `json:"idleExpiresAt"`
-	IssuedAt           time.Time               `json:"issuedAt"`
+	AuthorizedClusters []AuthorizedClusterV1 `json:"authorizedClusters"`
+	Csrf               IdentityCsrfV1        `json:"csrf"`
+	DisplayName        *string               `json:"displayName,omitempty"`
+	IdleExpiresAt      time.Time             `json:"idleExpiresAt"`
+	IssuedAt           time.Time             `json:"issuedAt"`
+
+	// LoginName Current authenticated account login name; never inferred from subject.
+	LoginName          *string                 `json:"loginName,omitempty"`
 	Mode               NativeSessionViewV1Mode `json:"mode"`
 	MustChangePassword bool                    `json:"mustChangePassword"`
 
@@ -4484,6 +4506,306 @@ type NativeWriteRecheckV1Result string
 
 // NativeWriteRecheckV1WriteOperation defines model for NativeWriteRecheckV1.WriteOperation.
 type NativeWriteRecheckV1WriteOperation string
+
+// ObservationBudgetV1 defines model for ObservationBudgetV1.
+type ObservationBudgetV1 struct {
+	MaxBytes           int `json:"maxBytes"`
+	MaxDurationSeconds int `json:"maxDurationSeconds"`
+	MaxRows            int `json:"maxRows"`
+	MaxSourceCalls     int `json:"maxSourceCalls"`
+}
+
+// ObservationCancelRequestV1 defines model for ObservationCancelRequestV1.
+type ObservationCancelRequestV1 struct {
+	ExpectedRevision ObservationRevisionV1 `json:"expectedRevision"`
+	Reason           string                `json:"reason"`
+}
+
+// ObservationCancelResultV1 Accepting a cancel request is not the same as the source having stopped. termination is only present after the backend confirmed it.
+type ObservationCancelResultV1 struct {
+	CancelRequestedAt ObservationTimestampV1   `json:"cancelRequestedAt"`
+	QueryId           openapi_types.UUID       `json:"queryId"`
+	State             interface{}              `json:"state"`
+	Termination       ObservationTerminationV1 `json:"termination"`
+}
+
+// ObservationCancelResultV1Envelope defines model for ObservationCancelResultV1Envelope.
+type ObservationCancelResultV1Envelope struct {
+	// Data Accepting a cancel request is not the same as the source having stopped. termination is only present after the backend confirmed it.
+	Data      ObservationCancelResultV1 `json:"data"`
+	RequestId string                    `json:"requestId"`
+}
+
+// ObservationCapabilitiesEnvelopeV1 defines model for ObservationCapabilitiesEnvelopeV1.
+type ObservationCapabilitiesEnvelopeV1 struct {
+	Data      ObservationCapabilitiesV1 `json:"data"`
+	RequestId string                    `json:"requestId"`
+}
+
+// ObservationCapabilitiesV1 defines model for ObservationCapabilitiesV1.
+type ObservationCapabilitiesV1 struct {
+	Budget    ObservationBudgetV1 `json:"budget"`
+	Resources []struct {
+		CanonicalId string  `json:"canonicalId"`
+		ClusterUid  string  `json:"clusterUid"`
+		DisplayName *string `json:"displayName,omitempty"`
+
+		// NamespaceScope A namespaced object carries both the namespace name and its UID. A cluster-scoped object (Node, PersistentVolume, PhysicalServer) states that scope explicitly and must not invent a namespace UID.
+		NamespaceScope ObservationNamespaceScopeV1 `json:"namespaceScope"`
+		Uid            string                      `json:"uid"`
+	} `json:"resources"`
+	SchemaVersion ObservationCapabilitiesV1SchemaVersion `json:"schemaVersion"`
+	Sources       []struct {
+		CoverageFrom     time.Time                  `json:"coverageFrom"`
+		CoverageTo       time.Time                  `json:"coverageTo"`
+		MaxWindowSeconds int                        `json:"maxWindowSeconds"`
+		Name             string                     `json:"name"`
+		Source           ObservationSourceBindingV1 `json:"source"`
+		VerifiedUntil    time.Time                  `json:"verifiedUntil"`
+	} `json:"sources"`
+	Templates []string `json:"templates"`
+}
+
+// ObservationCapabilitiesV1SchemaVersion defines model for ObservationCapabilitiesV1.SchemaVersion.
+type ObservationCapabilitiesV1SchemaVersion string
+
+// ObservationCoverageV1 defines model for ObservationCoverageV1.
+type ObservationCoverageV1 struct {
+	Basis       interface{}            `json:"basis"`
+	Complete    bool                   `json:"complete"`
+	CoveredFrom ObservationTimestampV1 `json:"coveredFrom"`
+	CoveredTo   ObservationTimestampV1 `json:"coveredTo"`
+	Gaps        []struct {
+		From   ObservationTimestampV1 `json:"from"`
+		Reason string                 `json:"reason"`
+		To     ObservationTimestampV1 `json:"to"`
+	} `json:"gaps"`
+}
+
+// ObservationCreateRequestV1 A manual query has no conversationId or turnId. Those fields are unknown and must be rejected so that an observation cannot be smuggled into an AI session.
+type ObservationCreateRequestV1 struct {
+	Budget    ObservationBudgetV1    `json:"budget"`
+	Filters   *[]ObservationFilterV1 `json:"filters,omitempty"`
+	GroupBy   *[]string              `json:"groupBy,omitempty"`
+	QueryKind interface{}            `json:"queryKind"`
+
+	// Resource Canonical ID, stable UID and cluster UID are always required; the namespace scope is discriminated so a cluster-scoped object is not forced to fabricate a namespace UID.
+	Resource        ObservationResourceIdentityV1 `json:"resource"`
+	SchemaVersion   interface{}                   `json:"schemaVersion"`
+	Source          ObservationSourceBindingV1    `json:"source"`
+	TemplateId      string                        `json:"templateId"`
+	TemplateVersion string                        `json:"templateVersion"`
+
+	// Window bounds makes the half-open semantics explicit. to must be greater than from; that ordering is checked by the implementation, not by JSON Schema.
+	Window ObservationWindowV1 `json:"window"`
+}
+
+// ObservationFailureV1 defines model for ObservationFailureV1.
+type ObservationFailureV1 struct {
+	Code      interface{} `json:"code"`
+	Message   string      `json:"message"`
+	Retryable bool        `json:"retryable"`
+}
+
+// ObservationFilterV1 Structured filters only. No free-form query language or backend expression is accepted from the browser.
+type ObservationFilterV1 struct {
+	Field    string      `json:"field"`
+	Operator interface{} `json:"operator"`
+	Value    string      `json:"value"`
+}
+
+// ObservationHistoryEnvelopeV1 defines model for ObservationHistoryEnvelopeV1.
+type ObservationHistoryEnvelopeV1 struct {
+	Data       []ObservationQueryViewV1 `json:"data"`
+	NextCursor openapi_types.UUID       `json:"nextCursor"`
+	RequestId  string                   `json:"requestId"`
+}
+
+// ObservationNamespaceScopeV1 A namespaced object carries both the namespace name and its UID. A cluster-scoped object (Node, PersistentVolume, PhysicalServer) states that scope explicitly and must not invent a namespace UID.
+type ObservationNamespaceScopeV1 struct {
+	union json.RawMessage
+}
+
+// ObservationNamespaceScopeV10 defines model for ObservationNamespaceScopeV1.0.
+type ObservationNamespaceScopeV10 struct {
+	Kind         interface{} `json:"kind"`
+	Namespace    string      `json:"namespace"`
+	NamespaceUid string      `json:"namespaceUid"`
+}
+
+// ObservationNamespaceScopeV11 defines model for ObservationNamespaceScopeV1.1.
+type ObservationNamespaceScopeV11 struct {
+	Kind         interface{} `json:"kind"`
+	Namespace    interface{} `json:"namespace"`
+	NamespaceUid interface{} `json:"namespaceUid"`
+}
+
+// ObservationOptionalTimestampV1 defines model for ObservationOptionalTimestampV1.
+type ObservationOptionalTimestampV1 = time.Time
+
+// ObservationPopulationV1 basis exact requires a measured population count; not_measured must not carry a count; not_applicable is used for metric, resource and hardware results that have no log population at all.
+type ObservationPopulationV1 struct {
+	Basis  interface{} `json:"basis"`
+	Count  *int        `json:"count,omitempty"`
+	Method interface{} `json:"method"`
+}
+
+// ObservationQueryViewV1 defines model for ObservationQueryViewV1.
+type ObservationQueryViewV1 struct {
+	CancelRequestedAt ObservationOptionalTimestampV1 `json:"cancelRequestedAt"`
+	Coverage          ObservationCoverageV1          `json:"coverage"`
+	CreatedAt         ObservationTimestampV1         `json:"createdAt"`
+	ExpiresAt         ObservationTimestampV1         `json:"expiresAt"`
+	Failure           ObservationFailureV1           `json:"failure"`
+	Filters           *[]ObservationFilterV1         `json:"filters,omitempty"`
+	OwnerSubject      string                         `json:"ownerSubject"`
+	QueryId           openapi_types.UUID             `json:"queryId"`
+
+	// Reauthorization Every read of a stored query or result re-checks the current authorization and source qualification. The record contains the actual check time, the versions it checked against and the outcome; the requirement to check is an implementation rule, not an asserted boolean.
+	Reauthorization ObservationReauthorizationV1 `json:"reauthorization"`
+
+	// Request A manual query has no conversationId or turnId. Those fields are unknown and must be rejected so that an observation cannot be smuggled into an AI session.
+	Request *ObservationCreateRequestV1 `json:"request,omitempty"`
+
+	// Resource Canonical ID, stable UID and cluster UID are always required; the namespace scope is discriminated so a cluster-scoped object is not forced to fabricate a namespace UID.
+	Resource      ObservationResourceIdentityV1 `json:"resource"`
+	ResultRef     ObservationResultRefV1        `json:"resultRef"`
+	Revision      ObservationRevisionV1         `json:"revision"`
+	SchemaVersion interface{}                   `json:"schemaVersion"`
+	Source        ObservationSourceBindingV1    `json:"source"`
+	State         interface{}                   `json:"state"`
+	TenantId      string                        `json:"tenantId"`
+	Termination   ObservationTerminationV1      `json:"termination"`
+	UpdatedAt     ObservationTimestampV1        `json:"updatedAt"`
+
+	// Window bounds makes the half-open semantics explicit. to must be greater than from; that ordering is checked by the implementation, not by JSON Schema.
+	Window ObservationWindowV1 `json:"window"`
+}
+
+// ObservationQueryViewV1Envelope defines model for ObservationQueryViewV1Envelope.
+type ObservationQueryViewV1Envelope struct {
+	Data      ObservationQueryViewV1 `json:"data"`
+	RequestId string                 `json:"requestId"`
+}
+
+// ObservationReauthorizationV1 Every read of a stored query or result re-checks the current authorization and source qualification. The record contains the actual check time, the versions it checked against and the outcome; the requirement to check is an implementation rule, not an asserted boolean.
+type ObservationReauthorizationV1 struct {
+	AuthorizationVersion       ObservationRevisionV1  `json:"authorizationVersion"`
+	CheckedAt                  ObservationTimestampV1 `json:"checkedAt"`
+	DenialCode                 interface{}            `json:"denialCode"`
+	Result                     interface{}            `json:"result"`
+	SourceRegistrationRevision ObservationRevisionV1  `json:"sourceRegistrationRevision"`
+}
+
+// ObservationResourceIdentityV1 Canonical ID, stable UID and cluster UID are always required; the namespace scope is discriminated so a cluster-scoped object is not forced to fabricate a namespace UID.
+type ObservationResourceIdentityV1 struct {
+	CanonicalId string `json:"canonicalId"`
+	ClusterUid  string `json:"clusterUid"`
+
+	// NamespaceScope A namespaced object carries both the namespace name and its UID. A cluster-scoped object (Node, PersistentVolume, PhysicalServer) states that scope explicitly and must not invent a namespace UID.
+	NamespaceScope ObservationNamespaceScopeV1 `json:"namespaceScope"`
+	Uid            string                      `json:"uid"`
+}
+
+// ObservationResultRefV1 defines model for ObservationResultRefV1.
+type ObservationResultRefV1 struct {
+	Digest    string                 `json:"digest"`
+	ExpiresAt ObservationTimestampV1 `json:"expiresAt"`
+	ResultId  openapi_types.UUID     `json:"resultId"`
+}
+
+// ObservationResultViewV1 defines model for ObservationResultViewV1.
+type ObservationResultViewV1 struct {
+	ComputedAt ObservationTimestampV1 `json:"computedAt"`
+	Coverage   ObservationCoverageV1  `json:"coverage"`
+	Exact      bool                   `json:"exact"`
+	ExpiresAt  ObservationTimestampV1 `json:"expiresAt"`
+
+	// Population basis exact requires a measured population count; not_measured must not carry a count; not_applicable is used for metric, resource and hardware results that have no log population at all.
+	Population ObservationPopulationV1 `json:"population"`
+	QueryId    openapi_types.UUID      `json:"queryId"`
+
+	// Reauthorization Every read of a stored query or result re-checks the current authorization and source qualification. The record contains the actual check time, the versions it checked against and the outcome; the requirement to check is an implementation rule, not an asserted boolean.
+	Reauthorization ObservationReauthorizationV1 `json:"reauthorization"`
+
+	// Resource Canonical ID, stable UID and cluster UID are always required; the namespace scope is discriminated so a cluster-scoped object is not forced to fabricate a namespace UID.
+	Resource     ObservationResourceIdentityV1 `json:"resource"`
+	ResultDigest string                        `json:"resultDigest"`
+	ResultId     openapi_types.UUID            `json:"resultId"`
+	ResultKind   interface{}                   `json:"resultKind"`
+
+	// Samples Bounded, non-representative examples. An empty items array is a valid outcome for an aggregate query and does not mean the population is empty.
+	Samples       ObservationSamplesV1       `json:"samples"`
+	SchemaVersion interface{}                `json:"schemaVersion"`
+	Source        ObservationSourceBindingV1 `json:"source"`
+	Statistics    []ObservationStatisticV1   `json:"statistics"`
+	Status        interface{}                `json:"status"`
+	Truncation    struct {
+		Reasons   []interface{} `json:"reasons"`
+		Truncated bool          `json:"truncated"`
+	} `json:"truncation"`
+	Warnings []string `json:"warnings"`
+
+	// Window bounds makes the half-open semantics explicit. to must be greater than from; that ordering is checked by the implementation, not by JSON Schema.
+	Window ObservationWindowV1 `json:"window"`
+}
+
+// ObservationResultViewV1Envelope defines model for ObservationResultViewV1Envelope.
+type ObservationResultViewV1Envelope struct {
+	Data      ObservationResultViewV1 `json:"data"`
+	RequestId string                  `json:"requestId"`
+}
+
+// ObservationRevisionV1 defines model for ObservationRevisionV1.
+type ObservationRevisionV1 = int
+
+// ObservationSamplesV1 Bounded, non-representative examples. An empty items array is a valid outcome for an aggregate query and does not mean the population is empty.
+type ObservationSamplesV1 struct {
+	InferredPopulation interface{} `json:"inferredPopulation"`
+	Items              []struct {
+		Fields    *map[string]string     `json:"fields,omitempty"`
+		Level     interface{}            `json:"level"`
+		Message   string                 `json:"message"`
+		Timestamp ObservationTimestampV1 `json:"timestamp"`
+	} `json:"items"`
+	Returned int `json:"returned"`
+}
+
+// ObservationSourceBindingV1 defines model for ObservationSourceBindingV1.
+type ObservationSourceBindingV1 struct {
+	CollectorVersion     string                `json:"collectorVersion"`
+	CredentialRevision   ObservationRevisionV1 `json:"credentialRevision"`
+	QualificationDigest  string                `json:"qualificationDigest"`
+	RegistrationId       openapi_types.UUID    `json:"registrationId"`
+	RegistrationRevision ObservationRevisionV1 `json:"registrationRevision"`
+}
+
+// ObservationStatisticV1 defines model for ObservationStatisticV1.
+type ObservationStatisticV1 struct {
+	Basis interface{} `json:"basis"`
+	Key   string      `json:"key"`
+	Unit  string      `json:"unit"`
+	Value float32     `json:"value"`
+}
+
+// ObservationTerminationV1 defines model for ObservationTerminationV1.
+type ObservationTerminationV1 struct {
+	DeliveredAt   ObservationTimestampV1 `json:"deliveredAt"`
+	ReceiptDigest string                 `json:"receiptDigest"`
+	RequestedAt   ObservationTimestampV1 `json:"requestedAt"`
+	SourceStopped bool                   `json:"sourceStopped"`
+}
+
+// ObservationTimestampV1 defines model for ObservationTimestampV1.
+type ObservationTimestampV1 = time.Time
+
+// ObservationWindowV1 bounds makes the half-open semantics explicit. to must be greater than from; that ordering is checked by the implementation, not by JSON Schema.
+type ObservationWindowV1 struct {
+	Bounds   interface{}            `json:"bounds"`
+	From     ObservationTimestampV1 `json:"from"`
+	Timezone string                 `json:"timezone"`
+	To       ObservationTimestampV1 `json:"to"`
+}
 
 // OnboardExecutionHostRequest defines model for OnboardExecutionHostRequest.
 type OnboardExecutionHostRequest struct {
@@ -4904,9 +5226,14 @@ type ResourceRelationV2 struct {
 
 // ResourceSummaryV1 defines model for ResourceSummaryV1.
 type ResourceSummaryV1 struct {
-	ByHealth map[string]int `json:"byHealth"`
-	ByKind   map[string]int `json:"byKind"`
-	Total    int            `json:"total"`
+	ByHealth      map[string]int `json:"byHealth"`
+	ByKind        map[string]int `json:"byKind"`
+	FilterOptions *struct {
+		ClusterScoped bool     `json:"clusterScoped"`
+		Kinds         []string `json:"kinds"`
+		Namespaces    []string `json:"namespaces"`
+	} `json:"filterOptions,omitempty"`
+	Total int `json:"total"`
 }
 
 // SP04ErrorEnvelopeV2 defines model for SP04ErrorEnvelopeV2.
@@ -5808,6 +6135,40 @@ type CancelInvestigationdefaultJSONResponseBody struct {
 	union json.RawMessage
 }
 
+// GetObservationCapabilitiesParams defines parameters for GetObservationCapabilities.
+type GetObservationCapabilitiesParams struct {
+	ClusterUid  string  `form:"clusterUid" json:"clusterUid"`
+	CanonicalId *string `form:"canonicalId,omitempty" json:"canonicalId,omitempty"`
+}
+
+// ListObservationQueriesParams defines parameters for ListObservationQueries.
+type ListObservationQueriesParams struct {
+	ClusterUid string              `form:"clusterUid" json:"clusterUid"`
+	Cursor     *openapi_types.UUID `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit      *int                `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// CreateObservationQueryParams defines parameters for CreateObservationQuery.
+type CreateObservationQueryParams struct {
+	ClusterUid     string             `form:"clusterUid" json:"clusterUid"`
+	IdempotencyKey openapi_types.UUID `json:"Idempotency-Key"`
+}
+
+// GetObservationQueryParams defines parameters for GetObservationQuery.
+type GetObservationQueryParams struct {
+	ClusterUid string `form:"clusterUid" json:"clusterUid"`
+}
+
+// GetObservationQueryResultsParams defines parameters for GetObservationQueryResults.
+type GetObservationQueryResultsParams struct {
+	ClusterUid string `form:"clusterUid" json:"clusterUid"`
+}
+
+// CancelObservationQueryParams defines parameters for CancelObservationQuery.
+type CancelObservationQueryParams struct {
+	ClusterUid string `form:"clusterUid" json:"clusterUid"`
+}
+
 // GetOverviewParams defines parameters for GetOverview.
 type GetOverviewParams struct {
 	ClusterUid *string `form:"clusterUid,omitempty" json:"clusterUid,omitempty"`
@@ -5815,17 +6176,24 @@ type GetOverviewParams struct {
 
 // GetResourcesParams defines parameters for GetResources.
 type GetResourcesParams struct {
-	IncludeDomains *bool                     `form:"includeDomains,omitempty" json:"includeDomains,omitempty"`
-	Domain         *GetResourcesParamsDomain `form:"domain,omitempty" json:"domain,omitempty"`
+	// IncludeFilterOptions Return sorted kind and namespace candidates from the whole current authorized snapshot before list filters and pagination. No extra access is granted.
+	IncludeFilterOptions *bool                     `form:"includeFilterOptions,omitempty" json:"includeFilterOptions,omitempty"`
+	IncludeDomains       *bool                     `form:"includeDomains,omitempty" json:"includeDomains,omitempty"`
+	Domain               *GetResourcesParamsDomain `form:"domain,omitempty" json:"domain,omitempty"`
 
 	// CanonicalIds Resolve at most 50 exact resource identifiers within current authorization; this filter does not expand scope.
 	CanonicalIds *[]CanonicalID `form:"canonicalIds,omitempty" json:"canonicalIds,omitempty"`
 	Kind         *string        `form:"kind,omitempty" json:"kind,omitempty"`
 	ClusterUid   *string        `form:"clusterUid,omitempty" json:"clusterUid,omitempty"`
-	Namespace    *string        `form:"namespace,omitempty" json:"namespace,omitempty"`
-	Name         *string        `form:"name,omitempty" json:"name,omitempty"`
-	Health       *string        `form:"health,omitempty" json:"health,omitempty"`
-	Label        *string        `form:"label,omitempty" json:"label,omitempty"`
+
+	// Namespace Exact namespace; __cluster__ selects authorized cluster-scoped resources only.
+	Namespace *string `form:"namespace,omitempty" json:"namespace,omitempty"`
+	Name      *string `form:"name,omitempty" json:"name,omitempty"`
+
+	// Q Case-insensitive substring of authorized resource name, kind or stable UID; intersects all other filters.
+	Q      *string `form:"q,omitempty" json:"q,omitempty"`
+	Health *string `form:"health,omitempty" json:"health,omitempty"`
+	Label  *string `form:"label,omitempty" json:"label,omitempty"`
 
 	// Cursor Opaque cursor for keyset pagination.
 	Cursor *string                  `form:"cursor,omitempty" json:"cursor,omitempty"`
@@ -6063,6 +6431,12 @@ type MergeIncidentsJSONRequestBody = IncidentMergeV2
 
 // CancelInvestigationJSONRequestBody defines body for CancelInvestigation for application/json ContentType.
 type CancelInvestigationJSONRequestBody = CancelInvestigationJSONBody
+
+// CreateObservationQueryJSONRequestBody defines body for CreateObservationQuery for application/json ContentType.
+type CreateObservationQueryJSONRequestBody = ObservationCreateRequestV1
+
+// CancelObservationQueryJSONRequestBody defines body for CancelObservationQuery for application/json ContentType.
+type CancelObservationQueryJSONRequestBody = ObservationCancelRequestV1
 
 // IngestFindingV2JSONRequestBody defines body for IngestFindingV2 for application/json ContentType.
 type IngestFindingV2JSONRequestBody = FindingEnvelopeV2
@@ -6608,6 +6982,68 @@ func (t *NativeIdentityAccountUpdateRequestV1) UnmarshalJSON(b []byte) error {
 		}
 	}
 
+	return err
+}
+
+// AsObservationNamespaceScopeV10 returns the union data inside the ObservationNamespaceScopeV1 as a ObservationNamespaceScopeV10
+func (t ObservationNamespaceScopeV1) AsObservationNamespaceScopeV10() (ObservationNamespaceScopeV10, error) {
+	var body ObservationNamespaceScopeV10
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromObservationNamespaceScopeV10 overwrites any union data inside the ObservationNamespaceScopeV1 as the provided ObservationNamespaceScopeV10
+func (t *ObservationNamespaceScopeV1) FromObservationNamespaceScopeV10(v ObservationNamespaceScopeV10) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeObservationNamespaceScopeV10 performs a merge with any union data inside the ObservationNamespaceScopeV1, using the provided ObservationNamespaceScopeV10
+func (t *ObservationNamespaceScopeV1) MergeObservationNamespaceScopeV10(v ObservationNamespaceScopeV10) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsObservationNamespaceScopeV11 returns the union data inside the ObservationNamespaceScopeV1 as a ObservationNamespaceScopeV11
+func (t ObservationNamespaceScopeV1) AsObservationNamespaceScopeV11() (ObservationNamespaceScopeV11, error) {
+	var body ObservationNamespaceScopeV11
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromObservationNamespaceScopeV11 overwrites any union data inside the ObservationNamespaceScopeV1 as the provided ObservationNamespaceScopeV11
+func (t *ObservationNamespaceScopeV1) FromObservationNamespaceScopeV11(v ObservationNamespaceScopeV11) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeObservationNamespaceScopeV11 performs a merge with any union data inside the ObservationNamespaceScopeV1, using the provided ObservationNamespaceScopeV11
+func (t *ObservationNamespaceScopeV1) MergeObservationNamespaceScopeV11(v ObservationNamespaceScopeV11) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ObservationNamespaceScopeV1) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ObservationNamespaceScopeV1) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
 	return err
 }
 
@@ -9443,7 +9879,7 @@ type ServerInterface interface {
 	// GetIncidentEvidence getIncidentEvidence
 	// (GET /api/v1/incidents/{incidentId}/evidence)
 	GetIncidentEvidence(w http.ResponseWriter, r *http.Request, incidentId string, params GetIncidentEvidenceParams)
-	// GetIncidentInvestigations List currently authorized investigations requested by this subject
+	// GetIncidentInvestigations List owned or explicitly mapped legacy investigations under current operator scope
 	// (GET /api/v1/incidents/{incidentId}/investigations)
 	GetIncidentInvestigations(w http.ResponseWriter, r *http.Request, incidentId openapi_types.UUID, params GetIncidentInvestigationsParams)
 	// CreateInvestigation createInvestigation
@@ -9482,6 +9918,24 @@ type ServerInterface interface {
 	// CancelInvestigation cancelInvestigation
 	// (POST /api/v1/investigations/{jobId}:cancel)
 	CancelInvestigation(w http.ResponseWriter, r *http.Request, jobId string, params CancelInvestigationParams)
+
+	// (GET /api/v1/observability/capabilities)
+	GetObservationCapabilities(w http.ResponseWriter, r *http.Request, params GetObservationCapabilitiesParams)
+
+	// (GET /api/v1/observability/queries)
+	ListObservationQueries(w http.ResponseWriter, r *http.Request, params ListObservationQueriesParams)
+
+	// (POST /api/v1/observability/queries)
+	CreateObservationQuery(w http.ResponseWriter, r *http.Request, params CreateObservationQueryParams)
+
+	// (GET /api/v1/observability/queries/{queryId})
+	GetObservationQuery(w http.ResponseWriter, r *http.Request, queryId openapi_types.UUID, params GetObservationQueryParams)
+
+	// (GET /api/v1/observability/queries/{queryId}/results)
+	GetObservationQueryResults(w http.ResponseWriter, r *http.Request, queryId openapi_types.UUID, params GetObservationQueryResultsParams)
+
+	// (POST /api/v1/observability/queries/{queryId}:cancel)
+	CancelObservationQuery(w http.ResponseWriter, r *http.Request, queryId openapi_types.UUID, params CancelObservationQueryParams)
 	// GetOverview getOverview
 	// (GET /api/v1/overview)
 	GetOverview(w http.ResponseWriter, r *http.Request, params GetOverviewParams)
@@ -10041,7 +10495,7 @@ func (_ Unimplemented) GetIncidentEvidence(w http.ResponseWriter, r *http.Reques
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// GetIncidentInvestigations List currently authorized investigations requested by this subject
+// GetIncidentInvestigations List owned or explicitly mapped legacy investigations under current operator scope
 // (GET /api/v1/incidents/{incidentId}/investigations)
 func (_ Unimplemented) GetIncidentInvestigations(w http.ResponseWriter, r *http.Request, incidentId openapi_types.UUID, params GetIncidentInvestigationsParams) {
 	w.WriteHeader(http.StatusNotImplemented)
@@ -10116,6 +10570,36 @@ func (_ Unimplemented) GetInvestigationSteps(w http.ResponseWriter, r *http.Requ
 // CancelInvestigation cancelInvestigation
 // (POST /api/v1/investigations/{jobId}:cancel)
 func (_ Unimplemented) CancelInvestigation(w http.ResponseWriter, r *http.Request, jobId string, params CancelInvestigationParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (GET /api/v1/observability/capabilities)
+func (_ Unimplemented) GetObservationCapabilities(w http.ResponseWriter, r *http.Request, params GetObservationCapabilitiesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (GET /api/v1/observability/queries)
+func (_ Unimplemented) ListObservationQueries(w http.ResponseWriter, r *http.Request, params ListObservationQueriesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (POST /api/v1/observability/queries)
+func (_ Unimplemented) CreateObservationQuery(w http.ResponseWriter, r *http.Request, params CreateObservationQueryParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (GET /api/v1/observability/queries/{queryId})
+func (_ Unimplemented) GetObservationQuery(w http.ResponseWriter, r *http.Request, queryId openapi_types.UUID, params GetObservationQueryParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (GET /api/v1/observability/queries/{queryId}/results)
+func (_ Unimplemented) GetObservationQueryResults(w http.ResponseWriter, r *http.Request, queryId openapi_types.UUID, params GetObservationQueryResultsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (POST /api/v1/observability/queries/{queryId}:cancel)
+func (_ Unimplemented) CancelObservationQuery(w http.ResponseWriter, r *http.Request, queryId openapi_types.UUID, params CancelObservationQueryParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -14876,6 +15360,295 @@ func (siw *ServerInterfaceWrapper) CancelInvestigation(w http.ResponseWriter, r 
 	handler.ServeHTTP(w, r)
 }
 
+// GetObservationCapabilities operation middleware
+func (siw *ServerInterfaceWrapper) GetObservationCapabilities(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetObservationCapabilitiesParams
+
+	// ------------- Required query parameter "clusterUid" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "clusterUid", r.URL.Query(), &params.ClusterUid, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "clusterUid"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "clusterUid", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "canonicalId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "canonicalId", r.URL.Query(), &params.CanonicalId, runtime.BindQueryParameterOptions{Type: "string", Format: "canonical-id"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "canonicalId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "canonicalId", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetObservationCapabilities(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListObservationQueries operation middleware
+func (siw *ServerInterfaceWrapper) ListObservationQueries(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListObservationQueriesParams
+
+	// ------------- Required query parameter "clusterUid" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "clusterUid", r.URL.Query(), &params.ClusterUid, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "clusterUid"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "clusterUid", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListObservationQueries(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateObservationQuery operation middleware
+func (siw *ServerInterfaceWrapper) CreateObservationQuery(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateObservationQueryParams
+
+	// ------------- Required query parameter "clusterUid" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "clusterUid", r.URL.Query(), &params.ClusterUid, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "clusterUid"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "clusterUid", Err: err})
+		}
+		return
+	}
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey openapi_types.UUID
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: "uuid"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateObservationQuery(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetObservationQuery operation middleware
+func (siw *ServerInterfaceWrapper) GetObservationQuery(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "queryId" -------------
+	var queryId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "queryId", chi.URLParam(r, "queryId"), &queryId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "queryId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetObservationQueryParams
+
+	// ------------- Required query parameter "clusterUid" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "clusterUid", r.URL.Query(), &params.ClusterUid, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "clusterUid"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "clusterUid", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetObservationQuery(w, r, queryId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetObservationQueryResults operation middleware
+func (siw *ServerInterfaceWrapper) GetObservationQueryResults(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "queryId" -------------
+	var queryId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "queryId", chi.URLParam(r, "queryId"), &queryId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "queryId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetObservationQueryResultsParams
+
+	// ------------- Required query parameter "clusterUid" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "clusterUid", r.URL.Query(), &params.ClusterUid, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "clusterUid"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "clusterUid", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetObservationQueryResults(w, r, queryId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CancelObservationQuery operation middleware
+func (siw *ServerInterfaceWrapper) CancelObservationQuery(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "queryId" -------------
+	var queryId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "queryId", chi.URLParam(r, "queryId"), &queryId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "queryId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CancelObservationQueryParams
+
+	// ------------- Required query parameter "clusterUid" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "clusterUid", r.URL.Query(), &params.ClusterUid, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "clusterUid"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "clusterUid", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CancelObservationQuery(w, r, queryId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetOverview operation middleware
 func (siw *ServerInterfaceWrapper) GetOverview(w http.ResponseWriter, r *http.Request) {
 
@@ -14917,6 +15690,19 @@ func (siw *ServerInterfaceWrapper) GetResources(w http.ResponseWriter, r *http.R
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetResourcesParams
+
+	// ------------- Optional query parameter "includeFilterOptions" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "includeFilterOptions", r.URL.Query(), &params.IncludeFilterOptions, runtime.BindQueryParameterOptions{Type: "boolean", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "includeFilterOptions"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "includeFilterOptions", Err: err})
+		}
+		return
+	}
 
 	// ------------- Optional query parameter "includeDomains" -------------
 
@@ -15005,6 +15791,19 @@ func (siw *ServerInterfaceWrapper) GetResources(w http.ResponseWriter, r *http.R
 			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "name"})
 		} else {
 			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "name", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "q" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "q", r.URL.Query(), &params.Q, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "q"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "q", Err: err})
 		}
 		return
 	}
@@ -15420,6 +16219,24 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		ErrorHandlerFunc:   options.ErrorHandlerFunc,
 	}
 
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/observability/capabilities", wrapper.GetObservationCapabilities)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/observability/queries", wrapper.ListObservationQueries)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/observability/queries", wrapper.CreateObservationQuery)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/observability/queries/{queryId}", wrapper.GetObservationQuery)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/observability/queries/{queryId}/results", wrapper.GetObservationQueryResults)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/observability/queries/{queryId}:cancel", wrapper.CancelObservationQuery)
+	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/assistant/legal-holds", wrapper.SetAssistantLegalHold)
 	})
@@ -20086,6 +20903,245 @@ func (response CancelInvestigationdefaultJSONResponse) VisitCancelInvestigationR
 	return err
 }
 
+type GetObservationCapabilitiesRequestObject struct {
+	Params GetObservationCapabilitiesParams
+}
+
+type GetObservationCapabilitiesResponseObject interface {
+	VisitGetObservationCapabilitiesResponse(w http.ResponseWriter) error
+}
+
+type GetObservationCapabilities200JSONResponse ObservationCapabilitiesEnvelopeV1
+
+func (response GetObservationCapabilities200JSONResponse) VisitGetObservationCapabilitiesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetObservationCapabilitiesdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response GetObservationCapabilitiesdefaultJSONResponse) VisitGetObservationCapabilitiesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListObservationQueriesRequestObject struct {
+	Params ListObservationQueriesParams
+}
+
+type ListObservationQueriesResponseObject interface {
+	VisitListObservationQueriesResponse(w http.ResponseWriter) error
+}
+
+type ListObservationQueries200JSONResponse ObservationHistoryEnvelopeV1
+
+func (response ListObservationQueries200JSONResponse) VisitListObservationQueriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListObservationQueriesdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response ListObservationQueriesdefaultJSONResponse) VisitListObservationQueriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateObservationQueryRequestObject struct {
+	Params CreateObservationQueryParams
+	Body   *CreateObservationQueryJSONRequestBody
+}
+
+type CreateObservationQueryResponseObject interface {
+	VisitCreateObservationQueryResponse(w http.ResponseWriter) error
+}
+
+type CreateObservationQuery202JSONResponse ObservationQueryViewV1Envelope
+
+func (response CreateObservationQuery202JSONResponse) VisitCreateObservationQueryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(202)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateObservationQuerydefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response CreateObservationQuerydefaultJSONResponse) VisitCreateObservationQueryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetObservationQueryRequestObject struct {
+	QueryId openapi_types.UUID `json:"queryId"`
+	Params  GetObservationQueryParams
+}
+
+type GetObservationQueryResponseObject interface {
+	VisitGetObservationQueryResponse(w http.ResponseWriter) error
+}
+
+type GetObservationQuery200JSONResponse ObservationQueryViewV1Envelope
+
+func (response GetObservationQuery200JSONResponse) VisitGetObservationQueryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetObservationQuerydefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response GetObservationQuerydefaultJSONResponse) VisitGetObservationQueryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetObservationQueryResultsRequestObject struct {
+	QueryId openapi_types.UUID `json:"queryId"`
+	Params  GetObservationQueryResultsParams
+}
+
+type GetObservationQueryResultsResponseObject interface {
+	VisitGetObservationQueryResultsResponse(w http.ResponseWriter) error
+}
+
+type GetObservationQueryResults200JSONResponse ObservationResultViewV1Envelope
+
+func (response GetObservationQueryResults200JSONResponse) VisitGetObservationQueryResultsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetObservationQueryResultsdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response GetObservationQueryResultsdefaultJSONResponse) VisitGetObservationQueryResultsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CancelObservationQueryRequestObject struct {
+	QueryId openapi_types.UUID `json:"queryId"`
+	Params  CancelObservationQueryParams
+	Body    *CancelObservationQueryJSONRequestBody
+}
+
+type CancelObservationQueryResponseObject interface {
+	VisitCancelObservationQueryResponse(w http.ResponseWriter) error
+}
+
+type CancelObservationQuery200JSONResponse ObservationCancelResultV1Envelope
+
+func (response CancelObservationQuery200JSONResponse) VisitCancelObservationQueryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CancelObservationQuerydefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response CancelObservationQuerydefaultJSONResponse) VisitCancelObservationQueryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type GetOverviewRequestObject struct {
 	Params GetOverviewParams
 }
@@ -20595,7 +21651,7 @@ type StrictServerInterface interface {
 	// GetIncidentEvidence getIncidentEvidence
 	// (GET /api/v1/incidents/{incidentId}/evidence)
 	GetIncidentEvidence(ctx context.Context, request GetIncidentEvidenceRequestObject) (GetIncidentEvidenceResponseObject, error)
-	// GetIncidentInvestigations List currently authorized investigations requested by this subject
+	// GetIncidentInvestigations List owned or explicitly mapped legacy investigations under current operator scope
 	// (GET /api/v1/incidents/{incidentId}/investigations)
 	GetIncidentInvestigations(ctx context.Context, request GetIncidentInvestigationsRequestObject) (GetIncidentInvestigationsResponseObject, error)
 	// CreateInvestigation createInvestigation
@@ -20634,6 +21690,24 @@ type StrictServerInterface interface {
 	// CancelInvestigation cancelInvestigation
 	// (POST /api/v1/investigations/{jobId}:cancel)
 	CancelInvestigation(ctx context.Context, request CancelInvestigationRequestObject) (CancelInvestigationResponseObject, error)
+
+	// (GET /api/v1/observability/capabilities)
+	GetObservationCapabilities(ctx context.Context, request GetObservationCapabilitiesRequestObject) (GetObservationCapabilitiesResponseObject, error)
+
+	// (GET /api/v1/observability/queries)
+	ListObservationQueries(ctx context.Context, request ListObservationQueriesRequestObject) (ListObservationQueriesResponseObject, error)
+
+	// (POST /api/v1/observability/queries)
+	CreateObservationQuery(ctx context.Context, request CreateObservationQueryRequestObject) (CreateObservationQueryResponseObject, error)
+
+	// (GET /api/v1/observability/queries/{queryId})
+	GetObservationQuery(ctx context.Context, request GetObservationQueryRequestObject) (GetObservationQueryResponseObject, error)
+
+	// (GET /api/v1/observability/queries/{queryId}/results)
+	GetObservationQueryResults(ctx context.Context, request GetObservationQueryResultsRequestObject) (GetObservationQueryResultsResponseObject, error)
+
+	// (POST /api/v1/observability/queries/{queryId}:cancel)
+	CancelObservationQuery(ctx context.Context, request CancelObservationQueryRequestObject) (CancelObservationQueryResponseObject, error)
 	// GetOverview getOverview
 	// (GET /api/v1/overview)
 	GetOverview(ctx context.Context, request GetOverviewRequestObject) (GetOverviewResponseObject, error)
@@ -23762,6 +24836,179 @@ func (sh *strictHandler) CancelInvestigation(w http.ResponseWriter, r *http.Requ
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(CancelInvestigationResponseObject); ok {
 		if err := validResponse.VisitCancelInvestigationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetObservationCapabilities operation middleware
+func (sh *strictHandler) GetObservationCapabilities(w http.ResponseWriter, r *http.Request, params GetObservationCapabilitiesParams) {
+	var request GetObservationCapabilitiesRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetObservationCapabilities(ctx, request.(GetObservationCapabilitiesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetObservationCapabilities")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetObservationCapabilitiesResponseObject); ok {
+		if err := validResponse.VisitGetObservationCapabilitiesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListObservationQueries operation middleware
+func (sh *strictHandler) ListObservationQueries(w http.ResponseWriter, r *http.Request, params ListObservationQueriesParams) {
+	var request ListObservationQueriesRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListObservationQueries(ctx, request.(ListObservationQueriesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListObservationQueries")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListObservationQueriesResponseObject); ok {
+		if err := validResponse.VisitListObservationQueriesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateObservationQuery operation middleware
+func (sh *strictHandler) CreateObservationQuery(w http.ResponseWriter, r *http.Request, params CreateObservationQueryParams) {
+	var request CreateObservationQueryRequestObject
+
+	request.Params = params
+
+	var body CreateObservationQueryJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateObservationQuery(ctx, request.(CreateObservationQueryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateObservationQuery")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateObservationQueryResponseObject); ok {
+		if err := validResponse.VisitCreateObservationQueryResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetObservationQuery operation middleware
+func (sh *strictHandler) GetObservationQuery(w http.ResponseWriter, r *http.Request, queryId openapi_types.UUID, params GetObservationQueryParams) {
+	var request GetObservationQueryRequestObject
+
+	request.QueryId = queryId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetObservationQuery(ctx, request.(GetObservationQueryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetObservationQuery")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetObservationQueryResponseObject); ok {
+		if err := validResponse.VisitGetObservationQueryResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetObservationQueryResults operation middleware
+func (sh *strictHandler) GetObservationQueryResults(w http.ResponseWriter, r *http.Request, queryId openapi_types.UUID, params GetObservationQueryResultsParams) {
+	var request GetObservationQueryResultsRequestObject
+
+	request.QueryId = queryId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetObservationQueryResults(ctx, request.(GetObservationQueryResultsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetObservationQueryResults")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetObservationQueryResultsResponseObject); ok {
+		if err := validResponse.VisitGetObservationQueryResultsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CancelObservationQuery operation middleware
+func (sh *strictHandler) CancelObservationQuery(w http.ResponseWriter, r *http.Request, queryId openapi_types.UUID, params CancelObservationQueryParams) {
+	var request CancelObservationQueryRequestObject
+
+	request.QueryId = queryId
+	request.Params = params
+
+	var body CancelObservationQueryJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CancelObservationQuery(ctx, request.(CancelObservationQueryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CancelObservationQuery")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CancelObservationQueryResponseObject); ok {
+		if err := validResponse.VisitCancelObservationQueryResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

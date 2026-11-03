@@ -1,0 +1,16 @@
+{
+  "task": "P3-01",
+  "slices": [
+    "SL-008"
+  ],
+  "contracts": [
+    "C-002",
+    "C-003"
+  ],
+  "search": "UI q -> public GET /resources -> graph.Query.Search -> signed internal q (optional, <=256 Unicode codepoints) -> authorized listMatches -> same filtered summary, sort and query-bound cursor",
+  "identity": "exact name filter retained; q searches name/kind/stable UID only; case-insensitive substring, not global fuzzy or semantic search",
+  "projection": "projectEntity clones immutable attributes and returns entityHealth/entityDomain results in attributes.health/resourceDomain; canonical identity domain remains unchanged",
+  "detail": "explicit quickview -> fresh C003 -> exact canonical result -> cluster/canonical detail/topology links; denied read hides old data and links",
+  "persistence": "business rows/results not rewritten; UI query parameters persist in URL; current PG/Kubernetes oracle and binary hashes verified",
+  "remaining": "full catalogue visual/filter facets/selection+compare/export/service ownership integration and complete resource/detail states remain"
+}

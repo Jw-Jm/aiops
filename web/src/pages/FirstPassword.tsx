@@ -13,6 +13,14 @@ function changeMessage(error: unknown) {
   if (error.status === 401) return "当前密码不正确。";
   if (error.status === 403)
     return "浏览器请求未通过同源检查。请重新登录后继续。";
+  // As with the login form: transport and envelope failures never prove that
+  // the submitted password was wrong.
+  if (
+    error.code === "NETWORK_UNAVAILABLE" ||
+    error.code === "INVALID_RESPONSE" ||
+    error.status >= 500
+  )
+    return "修改服务暂时不可用，请稍后重试。";
   return error.message;
 }
 

@@ -67,3 +67,45 @@ func TestProfileMillionTokenContextBoundary(t *testing.T) {
 		t.Fatal("unbounded context accepted")
 	}
 }
+
+func TestHostedProfileIsExplicitAndPendingCannotRun(t *testing.T) {
+	raw, err := os.ReadFile("../../test/fixtures/assistant/model-profile-hosted.fixture.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var p Profile
+	if err = json.Unmarshal(raw, &p); err != nil {
+		t.Fatal(err)
+	}
+	if p.Valid(":8083") {
+		t.Fatal("pending hosted profile ran")
+	}
+	p.AdmissionState = "admitted"
+	if !p.Valid(":8083") {
+		t.Fatal("explicit admitted hosted profile rejected")
+	}
+	for _, mutate := range []func(*Profile){
+		func(p *Profile) { p.BaseURL = "http://api.deepseek.com/v1" },
+		func(p *Profile) { p.BaseURL = "https://api.deepseek.com.evil.test/v1" },
+		func(p *Profile) { p.BaseURL = "https://api.deepseek.com:443/v1" },
+		func(p *Profile) { p.ModelID = "unknown" },
+		func(p *Profile) { p.CostPolicy = "zero-charge" },
+		func(p *Profile) { p.Hosted = nil },
+		func(p *Profile) {
+			p.WeightsDigest = "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+		},
+		func(p *Profile) { p.AdmissionState = "fixture_only" },
+		func(p *Profile) { p.SchemaVersion = "assistant-model-profile/v1" },
+	} {
+		bad := p
+		mutate(&bad)
+		if bad.Valid(":8083") {
+			t.Fatalf("invalid hosted profile accepted: %s %s %s", bad.SchemaVersion, bad.BaseURL, bad.CostPolicy)
+		}
+	}
+	before := p.Reference()
+	p.Hosted = &HostedEvidence{Provider: "deepseek"}
+	if before == p.Reference() {
+		t.Fatal("hosted evidence omitted from frozen reference")
+	}
+}

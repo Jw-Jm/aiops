@@ -1,0 +1,106 @@
+{
+  "at": "2026-10-28T04:14:29.275Z",
+  "origin": "https://192.168.0.63:30471",
+  "viewport": {
+    "width": 1440,
+    "height": 960
+  },
+  "checks": [
+    "real population 186 / bounded samples 20",
+    "local filter preserves population and Enter does not resubmit",
+    "sanitized sample modal opens",
+    "source revision qualification and incomplete coverage shown"
+  ],
+  "captures": [
+    {
+      "name": "logs-idle",
+      "captured": false,
+      "probes": [
+        "recovery-code"
+      ]
+    },
+    {
+      "name": "logs-success",
+      "captured": false,
+      "probes": [
+        "recovery-code"
+      ]
+    },
+    {
+      "name": "logs-sample",
+      "captured": false,
+      "probes": [
+        "recovery-code"
+      ]
+    },
+    {
+      "name": "logs-source",
+      "captured": false,
+      "probes": [
+        "recovery-code"
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "method": "GET",
+      "requestId": "01a180b7-772e-71ee-87f9-7a3a912a4c85"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "method": "POST",
+      "requestId": "01a180b7-77cd-7ccb-82ef-1d5b7a09aa01"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b7-7886-73d2-bce8-1d9aabae6305"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b7-78dc-7248-a453-4c8f28bbf2b9"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b7-7c49-7384-b344-32320e64e1ea"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "status": 202,
+      "method": "POST",
+      "requestId": "01a180b7-7fca-7073-b7db-e7b1605d62d8"
+    },
+    {
+      "path": "/api/v1/observability/queries/d0d6d8a9-e6ee-4d3e-9fb1-5b3fcf55ddfc",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b7-88c5-7f0a-8af1-bf153d6d4640"
+    },
+    {
+      "path": "/api/v1/observability/queries/d0d6d8a9-e6ee-4d3e-9fb1-5b3fcf55ddfc/results",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b7-8cb5-7b2b-903f-3da49ea06e9f"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b7-ee0d-7b64-bb7c-d7581128da1c"
+    }
+  ],
+  "windowInputs": [
+    "2026-10-28T10:06:14",
+    "2026-10-28T10:36:13"
+  ],
+  "status": "failed",
+  "failure": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByRole('button', { name: '查询历史', exact: true })\n"
+}

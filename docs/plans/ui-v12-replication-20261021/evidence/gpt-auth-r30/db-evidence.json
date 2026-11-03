@@ -1,0 +1,128 @@
+{
+  "capturedAt": "2026-10-27T04:55Z",
+  "environment": {
+    "host": "mssc / 10.10.10.2 (ssh mssc-direct)",
+    "database": "ui_v12_r24_native on 127.0.0.1:15454, schema70",
+    "queries": "read-only psql inside ops-v12-native-r24-pg"
+  },
+  "accounts": [
+    {
+      "login": "r30.accept.1793072399113",
+      "status": "active",
+      "mustChange": false,
+      "resetRequired": false,
+      "credentialVersion": 2,
+      "revision": 2
+    },
+    {
+      "login": "r30.accept.1793073194616",
+      "status": "active",
+      "mustChange": false,
+      "resetRequired": false,
+      "credentialVersion": 2,
+      "revision": 2
+    },
+    {
+      "login": "r30.accept.1793073230556",
+      "status": "active",
+      "mustChange": false,
+      "resetRequired": false,
+      "credentialVersion": 11,
+      "revision": 11
+    },
+    {
+      "login": "r30.accept.1793075578401",
+      "status": "active",
+      "mustChange": false,
+      "resetRequired": false,
+      "credentialVersion": 4,
+      "revision": 4
+    },
+    {
+      "login": "r30.accept.1793076604986",
+      "status": "active",
+      "mustChange": false,
+      "resetRequired": false,
+      "credentialVersion": 2,
+      "revision": 2
+    }
+  ],
+  "sessions": {
+    "total": 58,
+    "revoked": 39,
+    "reasons": {
+      "mfa_reset_by_administrator": 17,
+      "user_requested_logout": 2,
+      "r30_acceptance_cleanup": 1,
+      "credential_version_changed": 13,
+      "active": 19,
+      "recovery_code_used": 6
+    }
+  },
+  "stepUpChallenges": {
+    "revoked": 11,
+    "pending": 8,
+    "used": 29,
+    "expired": 3
+  },
+  "mfaEnrollments": {
+    "confirmed": 6,
+    "pending_confirmation": 6,
+    "revoked": 30
+  },
+  "auditEventsLast3h": {
+    "identity.admin.create": 9,
+    "identity.admin.revoke_grant": 1,
+    "identity.mfa.recovery_code_used": 6,
+    "identity.mfa.enrollment_started": 46,
+    "identity.mfa.enrollment_confirmed": 21,
+    "identity.native_password.changed": 11,
+    "identity.native_login.succeeded": 78,
+    "identity.native_session.revoked": 4,
+    "identity.admin.grant": 1,
+    "identity.mfa.reset_by_administrator": 9
+  },
+  "naturallyExpiredChallenges": [
+    {
+      "challengeId": "01a17b7e-d354-7946-9220-4bbcc495b849",
+      "login": "r30.accept.1793073230556",
+      "operation": "mfa_enrollment",
+      "state": "expired",
+      "createdAt": "2026-10-27T03:54:31.637599+00:00",
+      "idleExpiresAt": "2026-10-27T04:04:32.562563+00:00",
+      "absoluteExpiresAt": "2026-10-27T04:09:31.636607+00:00",
+      "usedAt": null
+    },
+    {
+      "challengeId": "01a17b8c-8b4a-7884-96f2-8eb22c217d54",
+      "login": "r30.accept.1793073230556",
+      "operation": "mfa_enrollment",
+      "state": "expired",
+      "createdAt": "2026-10-27T04:09:30.699785+00:00",
+      "idleExpiresAt": "2026-10-27T04:19:31.646149+00:00",
+      "absoluteExpiresAt": "2026-10-27T04:24:30.698558+00:00",
+      "usedAt": null
+    },
+    {
+      "challengeId": "01a17ba3-1d31-7e95-861b-e600fa9503f3",
+      "login": "r30.accept.1793075578401",
+      "operation": "mfa_enrollment",
+      "state": "expired",
+      "createdAt": "2026-10-27T04:34:09.843028+00:00",
+      "idleExpiresAt": "2026-10-27T04:44:10.735935+00:00",
+      "absoluteExpiresAt": "2026-10-27T04:49:09.841955+00:00",
+      "usedAt": null
+    }
+  ],
+  "loginLocks": [
+    {
+      "login": "r30.accept.1793073230556",
+      "failedCount": 1,
+      "lockedUntil": null
+    }
+  ],
+  "notes": [
+    "the expired rows show created_at -> idle_expires_at of exactly 600s, and the failing verify is the 409 recorded in runs/mfa-expiry.json",
+    "session revocation reasons are the server's own values (mfa_reset_by_administrator, recovery_code_used, credential_version_changed, user_requested_logout)"
+  ]
+}

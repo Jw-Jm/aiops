@@ -1,0 +1,34 @@
+
+> test
+> node --experimental-strip-types --test ./test/*.test.mjs && vitest run
+
+✔ typed SSE reader yields a decoded envelope before the stream closes (38.029041ms)
+✔ typed SSE fetch client requests and parses text/event-stream (11.054125ms)
+✔ typed SSE envelope decoder rejects incomplete event data (0.2995ms)
+✔ investigation fetch SSE resumes with Bearer and durable cursor, suppresses duplicate event sequences (0.853584ms)
+✔ investigation SSE streams a native cookie session and fails closed on sequence gaps and 410 (0.80475ms)
+✔ SSE discards already-buffered events when its request scope is revoked (0.287ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 95.132334
+
+ RUN  v5.0.3 /Users/mssc/Documents/Code/ops/platform/web
+
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+ Test Files  42 passed (42)
+      Tests  184 passed (184)
+   Start at  11:11:50
+   Duration  28.69s (tests 37%, import 34%, environment 22%, setup 5%, transform 2%)
+
+     Import  134 modules were evaluated 524 times · 18.35s total, 34% of tracked time
+             ~5.71s faster with isolate: false — shared modules are evaluated once per worker instead of once per file
+             learn more: https://vitest.dev/guide/improving-performance#test-isolation
+

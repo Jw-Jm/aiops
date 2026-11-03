@@ -1,0 +1,58 @@
+{
+  "at": "2026-10-28T04:12:02.317Z",
+  "origin": "https://192.168.0.63:30471",
+  "viewport": {
+    "width": 1440,
+    "height": 960
+  },
+  "checks": [],
+  "captures": [
+    {
+      "name": "logs-idle",
+      "captured": false,
+      "probes": [
+        "recovery-code"
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "method": "GET",
+      "requestId": "01a180b5-38f4-7391-b5a5-2d02cabcb4d8"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "method": "POST",
+      "requestId": "01a180b5-3989-7e8d-ad0b-37a5d23b8686"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b5-3bf5-7722-b5c2-5cbe1bc539da"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b5-3c68-7179-9de1-ad3c745ca016"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b5-3fd8-75cc-9373-108a151150ec"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "status": 503,
+      "method": "POST",
+      "requestId": "01a180b5-453c-7a99-865d-1a43a2ecf233"
+    }
+  ],
+  "status": "failed",
+  "failure": "locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n  - waiting for getByText('来源总体 186 条 · 本次脱敏样例 20 条', { exact: true }) to be visible\n"
+}

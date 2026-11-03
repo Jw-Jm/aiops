@@ -1,0 +1,86 @@
+{
+  "mode": "cancel",
+  "at": "2026-10-28T04:17:47.688Z",
+  "origin": "https://192.168.0.63:30471",
+  "viewport": {
+    "width": 1440,
+    "height": 960
+  },
+  "checks": [
+    "real pending state visible"
+  ],
+  "captures": [
+    {
+      "name": "logs-idle",
+      "captured": false,
+      "probes": [
+        "recovery-code"
+      ]
+    },
+    {
+      "name": "logs-cancel-loading",
+      "captured": false,
+      "probes": [
+        "recovery-code"
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "method": "GET",
+      "requestId": "01a180ba-7df1-7544-988f-6430719d8412"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "method": "POST",
+      "requestId": "01a180ba-7e83-7c99-ba55-5afb5ac32646"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180ba-826d-7763-a4dd-6b86e4d9c2e0"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180ba-82ce-7b02-9d9d-3ca7816c5cd2"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180ba-862e-7bf9-b723-6708b3402003"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "status": 202,
+      "method": "POST",
+      "requestId": "01a180ba-8b81-7ad0-bd0e-d53869f5ea5c"
+    },
+    {
+      "path": "/api/v1/observability/queries/cbeaa031-9e51-4d3b-8d3a-7892edf3778f",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180ba-95be-70c9-8771-a620de5b255f"
+    },
+    {
+      "path": "/api/v1/observability/queries/cbeaa031-9e51-4d3b-8d3a-7892edf3778f:cancel",
+      "status": 409,
+      "method": "POST",
+      "requestId": "01a180ba-949c-761c-a47c-ccba18f84e78"
+    },
+    {
+      "path": "/api/v1/observability/queries/cbeaa031-9e51-4d3b-8d3a-7892edf3778f",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180ba-9f54-73f8-8917-79b021767567"
+    }
+  ],
+  "status": "failed",
+  "failure": "locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n  - waiting for getByRole('heading', { name: '本次查询已终止', exact: true }) to be visible\n"
+}

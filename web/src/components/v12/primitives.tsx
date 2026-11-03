@@ -1,6 +1,24 @@
 import type { ReactNode } from "react";
 import { Table, type TableProps } from "antd";
 
+export function Note({ children }: { children: ReactNode }) {
+  return (
+    <div className="v12-note">
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      >
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 11v6M12 7h.01" />
+      </svg>
+      <span>{children}</span>
+    </div>
+  );
+}
+
 export function PageHeader({
   kicker,
   title,
@@ -118,7 +136,10 @@ export function StatusPill({
   );
 }
 
-export function DataTable<T extends object>({ className, ...props }: TableProps<T>) {
+export function DataTable<T extends object>({
+  className,
+  ...props
+}: TableProps<T>) {
   return (
     <Table<T>
       size="middle"

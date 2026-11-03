@@ -1,0 +1,38 @@
+// Remote-only browser interactions with real persisted query results.
+import {chromium} from '/data/ops-ui-v12-http-20261022-r1/preview-r1/playwright-core/index.mjs';
+import {readFileSync,writeFileSync} from 'node:fs';
+import {inspectPage} from '../r36/safe-capture.mjs';
+import {safeErrorMessage} from '../r37/safe-error.mjs';
+const root='/data/ops-v12-native-visual-r24-20261026',origin='https://192.168.0.63:30471',work=root+'/r38';
+const account=JSON.parse(readFileSync(root+'/private/r31-operator-account.json','utf8'));
+const binding=JSON.parse(readFileSync(root+'/r37/source-snapshot.json','utf8'));
+const receipt={at:new Date().toISOString(),origin,viewport:{width:1440,height:960},checks:[],requests:[]};
+const assert=(condition,message)=>{if(!condition)throw Error(message)};
+const browser=await chromium.launch({executablePath:'/opt/ops-assistant-browser-20261014/chrome-linux64/chrome',headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
+try{
+ const context=await browser.newContext({ignoreHTTPSErrors:true,viewport:receipt.viewport,locale:'zh-CN',timezoneId:'Asia/Shanghai'});
+ await context.grantPermissions(['clipboard-read','clipboard-write'],{origin});
+ const page=await context.newPage();
+ page.on('response',r=>{const path=new URL(r.url()).pathname;if(path.startsWith('/api/'))receipt.requests.push({path,method:r.request().method(),status:r.status(),requestId:r.headers()['x-request-id']})});
+ async function select(label,text){await page.getByRole('combobox',{name:label,exact:true}).click();await page.locator('.ant-select-item-option-content').filter({hasText:text}).click()}
+ const createCount=()=>receipt.requests.filter(r=>r.path==='/api/v1/observability/queries'&&r.method==='POST').length;
+ await page.goto(origin+'/login');await page.getByLabel('用户名',{exact:true}).fill(account.loginName);await page.getByLabel('密码',{exact:true}).fill(account.password);await page.getByRole('button',{name:/^登\s*录/}).click();await page.waitForURL(u=>u.pathname!='/login');
+ await page.goto(origin+'/observe/logs');await page.getByRole('heading',{name:'日志查询',exact:true}).waitFor();await select('资源对象','ops-seaweedfs-0');await select('数据来源','r37-native-pod-log-snapshot');await page.getByRole('button',{name:'查询',exact:true}).click();await page.getByText(/来源总体 186 条 · 本次脱敏样例 20 条/).waitFor({timeout:20000});
+ const count=createCount();assert(count===1,'unexpected query creation count');
+ const timestamps=()=>page.locator('.v12-log-table tbody tr td:first-child').allTextContents();
+ let times=await timestamps();assert(times.length===20&&times.every((t,i)=>i===0||new Date(times[i-1])>=new Date(t)),'descending order invalid');
+ await page.getByRole('button',{name:'时间：倒序',exact:true}).click();times=await timestamps();assert(times.every((t,i)=>i===0||new Date(times[i-1])<=new Date(t)),'ascending order invalid');
+ await page.getByRole('button',{name:'自动换行',exact:true}).click();assert(await page.getByRole('button',{name:'关闭换行',exact:true}).getAttribute('aria-pressed')==='true','wrap state missing');assert(await page.locator('.v12-log-message').first().evaluate(e=>getComputedStyle(e).whiteSpace)==='pre-wrap','wrap style missing');receipt.checks.push('20 returned samples sort and wrap locally, population stays 186');
+ await page.getByRole('button',{name:'详情',exact:true}).first().click();let detail=page.getByRole('dialog',{name:'日志详情',exact:true});await detail.waitFor();assert(await detail.getByRole('button',{name:'上一条',exact:true}).isDisabled(),'first sample has a previous item');
+ await detail.getByRole('tab',{name:'原始内容',exact:true}).click();const raw=JSON.parse(await detail.locator('[role=tabpanel][aria-hidden=false] pre').innerText());assert(raw.resourceUid===binding.podUID&&raw.namespaceUid&&raw.source&&raw.queryId&&raw.timestamp===times[0],'detail lost fixed identity');
+ await detail.getByRole('button',{name:'下一条',exact:true}).click();const next=JSON.parse(await detail.locator('[role=tabpanel][aria-hidden=false] pre').innerText());assert(next.timestamp===times[1]&&next.queryId===raw.queryId,'next item changed snapshot or order');await detail.locator('.ant-typography-copy').click();const copied=await page.evaluate(()=>navigator.clipboard.readText());assert(JSON.parse(copied).timestamp===next.timestamp,'detail copy not current sanitized snapshot');receipt.checks.push('detail fields/raw and adjacent navigation preserve resource, namespace, source, window and query; clipboard matches current sample');
+ await detail.locator('.ant-drawer-close').click();await page.getByRole('button',{name:'查询检查',exact:true}).click();const inspector=page.getByRole('dialog',{name:'查询检查',exact:true});await inspector.waitFor();await inspector.getByRole('tab',{name:'查询条件',exact:true}).click();const saved=JSON.parse(await inspector.locator('[role=tabpanel][aria-hidden=false] pre').innerText());assert(saved.resource.uid===binding.podUID&&saved.source.registrationRevision===1&&saved.window.bounds==='[from,to)','saved conditions lost binding');await inspector.locator('.ant-typography-copy').click();assert((await page.evaluate(()=>navigator.clipboard.readText()))===JSON.stringify(saved,null,2),'copied conditions differ from persisted view');
+ await inspector.getByRole('tab',{name:'结果快照',exact:true}).click();const result=JSON.parse(await inspector.locator('[role=tabpanel][aria-hidden=false] pre').innerText());assert(result.queryId===raw.queryId&&result.population.count===186&&result.samples.returned===20&&result.coverage.complete===false,'inspector substituted current form or local filter for saved snapshot');receipt.queryId=result.queryId;receipt.resultDigest=result.resultDigest;receipt.window=result.window;receipt.checks.push('inspector summary/request/result and clipboard use persisted response, not current form or fabricated budget');
+ assert(createCount()===count,'local inspection dispatched another source query');
+ receipt.screenshot={captured:false,probes:await inspectPage(page),note:'strict screenshot probe retained; JSON interactions are not visual acceptance'};
+ await inspector.locator('.ant-drawer-close').click();await page.getByRole('button',{name:'详情',exact:true}).first().click();detail=page.getByRole('dialog',{name:'日志详情',exact:true});await detail.getByRole('tab',{name:'字段',exact:true}).click();
+ const filter=detail.getByRole('button',{name:/ · 按此筛选/});const filterLabel=await filter.innerText();const responsePromise=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/v1/observability/queries'&&r.request().method()==='POST');await filter.click();const response=await responsePromise;assert(response.status()===202,'level-specific real query rejected');const request=response.request().postDataJSON();assert(request.resource.uid===binding.podUID&&request.source.registrationId===saved.source.registrationId&&new Date(request.window.from).getTime()===new Date(saved.window.from).getTime()&&new Date(request.window.to).getTime()===new Date(saved.window.to).getTime()&&request.filters[0].value===filterLabel.split(' · ')[0].toLowerCase(),'level filter lost fixed query range');
+ await page.getByText(/来源总体 \d+ 条 · 本次脱敏样例 \d+ 条|所选范围没有日志/).waitFor({timeout:20000});receipt.checks.push('field level filter creates a real new query with the same UID/source/window and exact level');
+ receipt.status='passed';
+}catch(error){receipt.status='failed';receipt.failure=safeErrorMessage(error,[account.password]);process.exitCode=1}
+finally{await browser.close();writeFileSync(work+'/browser-details.json',JSON.stringify(receipt,null,2));console.log(JSON.stringify({status:receipt.status,checks:receipt.checks,queryId:receipt.queryId,screenshot:receipt.screenshot,failure:receipt.failure}))}

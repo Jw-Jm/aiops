@@ -1,0 +1,15 @@
+
+> build
+> tsc --noEmit && vite build
+
+src/pages/ResourceDetailPage.tsx(504,5): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Type '({ signal }: { client: QueryClient; queryKey: (string | boolean | { clusterUid: string; resourceCanonicalId: string; limit: number; cursor: string | undefined; })[]; signal: AbortSignal; meta: Record<...> | undefined; pageParam?: unknown; direction?: unknown; }) => Promise<...> | Promise<...>' is not assignable to type 'unique symbol | QueryFunction<FindingPageV2, (string | boolean | { clusterUid: string; resourceCanonicalId: string; limit: number; cursor: string | undefined; })[], never> | undefined'.
+      Type '({ signal }: { client: QueryClient; queryKey: (string | boolean | { clusterUid: string; resourceCanonicalId: string; limit: number; cursor: string | undefined; })[]; signal: AbortSignal; meta: Record<...> | undefined; pageParam?: unknown; direction?: unknown; }) => Promise<...> | Promise<...>' is not assignable to type 'QueryFunction<FindingPageV2, (string | boolean | { clusterUid: string; resourceCanonicalId: string; limit: number; cursor: string | undefined; })[], never>'.
+        Type 'Promise<FindingPageV2> | Promise<IncidentPageV2>' is not assignable to type 'FindingPageV2 | Promise<FindingPageV2>'.
+          Type 'Promise<IncidentPageV2>' is not assignable to type 'FindingPageV2 | Promise<FindingPageV2>'.
+            Type 'Promise<IncidentPageV2>' is not assignable to type 'Promise<FindingPageV2>'.
+              Type 'IncidentPageV2' is not assignable to type 'FindingPageV2'.
+                Types of property 'data' are incompatible.
+                  Type 'IncidentSummaryV2[]' is not assignable to type 'FindingV2[]'.
+                    Type 'IncidentSummaryV2' is missing the following properties from type 'FindingV2': eventId, idempotencyKey, sourceRegistrationId, ruleId, and 17 more.

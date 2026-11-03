@@ -1,0 +1,89 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "database": "ui_v12_r24_native",
+  "scope": "real native MFA UI with isolated native tenant and projected Kubernetes API identity",
+  "checks": [
+    "admin-reset target re-enrolls through real Transit and clears forced enrollment",
+    "owner pending/confirmed GET200 never rediscloses URI/seed/recovery; cross-user admin GET404",
+    "refresh retains MFA and zero role grants"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a17ad3-e4c3-7df5-99f1-191182c41824"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a17ad3-e556-702d-a0bc-02fa5bbc96d5"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ad3-e625-7339-98e6-4388d003802e"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a17ad3-e664-7b5f-a275-30a4f097ef63"
+    },
+    {
+      "path": "/api/v1/auth/mfa/enrollments",
+      "status": 201,
+      "requestId": "01a17ad3-e68d-7082-8196-7574e319e62f"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17ad3-e6aa-7520-ae0f-6e0f56607ca5"
+    },
+    {
+      "path": "/api/v1/auth/mfa/enrollments/01a17ad3-e69b-7758-8ce4-a6a5c629c1dd",
+      "status": 200,
+      "requestId": "01a17ad3-e6d7-7a4d-8d36-56ebfdfc4910"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a17ad3-e6bd-7091-93b4-beaf845383df:verify",
+      "status": 200,
+      "requestId": "01a17ad3-ea22-7881-a126-9d6118f019f3"
+    },
+    {
+      "path": "/api/v1/auth/step-up-challenges/01a17ad3-e6bd-7091-93b4-beaf845383df:verify",
+      "status": 200,
+      "requestId": "01a17ad3-ebc2-7d03-ae07-a4e966c20408"
+    },
+    {
+      "path": "/api/v1/auth/mfa/enrollments/01a17ad3-e69b-7758-8ce4-a6a5c629c1dd:verify",
+      "status": 200,
+      "requestId": "01a17ad3-ec49-71e2-a762-0de86ea3b1d6"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a17ad3-ec6d-76ee-95ab-1c985503ecb2"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ad3-ecb2-77c0-9035-a587f5f628bb"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "status": 200,
+      "requestId": "01a17ad3-ecdd-7b16-b670-10ab79153893"
+    },
+    {
+      "path": "/api/v1/auth/mfa/enrollments/01a17ad3-e69b-7758-8ce4-a6a5c629c1dd",
+      "status": 200,
+      "requestId": "01a17ad3-ecfb-7361-a3b5-0333e63210b8"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a17ad3-ef24-7b43-9ef4-fe01f1b03ea5"
+    }
+  ],
+  "enrollmentId": "01a17ad3-e69b-7758-8ce4-a6a5c629c1dd",
+  "status": "passed"
+}

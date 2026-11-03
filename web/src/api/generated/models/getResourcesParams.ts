@@ -9,6 +9,10 @@ import type { GetResourcesDomain } from './getResourcesDomain.ts';
 import type { GetResourcesOrder } from './getResourcesOrder.ts';
 
 export type GetResourcesParams = {
+/**
+ * Return sorted kind and namespace candidates from the whole current authorized snapshot before list filters and pagination. No extra access is granted.
+ */
+includeFilterOptions?: boolean;
 includeDomains?: boolean;
 domain?: GetResourcesDomain;
 /**
@@ -18,8 +22,16 @@ domain?: GetResourcesDomain;
 canonicalIds?: CanonicalID[];
 kind?: string;
 clusterUid?: string;
+/**
+ * Exact namespace; __cluster__ selects authorized cluster-scoped resources only.
+ */
 namespace?: string;
 name?: string;
+/**
+ * Case-insensitive substring of authorized resource name, kind or stable UID; intersects all other filters.
+ * @maxLength 256
+ */
+q?: string;
 health?: string;
 label?: string;
 /**

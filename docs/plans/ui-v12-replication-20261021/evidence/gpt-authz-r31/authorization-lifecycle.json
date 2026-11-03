@@ -1,0 +1,353 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "checks": [
+    "narrowing the grant to namespace default took effect on the next live read: 0 rows returned and none of them belong to the previously granted task namespace",
+    "after revocation the operator session was refused (401) and a fresh sign-in received 403 FORBIDDEN for resources, so the removed grant is not cached client-side",
+    "the re-grant restored a real read of 39 task-namespace resources without any client-side re-authorization"
+  ],
+  "steps": [
+    {
+      "step": "narrow",
+      "status": 201,
+      "authorizationVersion": 6,
+      "scope": {
+        "clusterUids": [
+          "79014400-9453-4cb4-9678-0fae47981d79"
+        ],
+        "namespaces": [
+          "default"
+        ]
+      }
+    },
+    {
+      "step": "read-after-narrow",
+      "beforeRelogin": {
+        "status": 401,
+        "code": "UNAUTHENTICATED",
+        "count": 0,
+        "taskNamespaceRows": 0
+      },
+      "reloginSession": 200,
+      "afterRelogin": {
+        "status": 200,
+        "code": null,
+        "count": 0,
+        "taskNamespaceRows": 0,
+        "attempts": [
+          {
+            "status": 503,
+            "code": "GRAPH_NOT_READY",
+            "count": 0,
+            "taskNamespaceRows": 0
+          },
+          {
+            "status": 200,
+            "code": null,
+            "count": 0,
+            "taskNamespaceRows": 0
+          }
+        ]
+      }
+    },
+    {
+      "step": "read-after-revoke",
+      "beforeRelogin": {
+        "status": 401,
+        "code": "UNAUTHENTICATED",
+        "count": 0,
+        "taskNamespaceRows": 0
+      },
+      "reloginSession": 200,
+      "afterRelogin": {
+        "status": 403,
+        "code": "FORBIDDEN",
+        "count": 0,
+        "taskNamespaceRows": 0
+      }
+    },
+    {
+      "step": "regrant",
+      "status": 201,
+      "authorizationVersion": 8,
+      "read": {
+        "status": 200,
+        "code": null,
+        "count": 39,
+        "taskNamespaceRows": 39
+      }
+    },
+    {
+      "step": "last-admin",
+      "response": {
+        "status": 400,
+        "code": "INVALID_ARGUMENT",
+        "message": "native user request is invalid",
+        "bindingId": "01a177f1-3733-7d05-8030-52c880213ef8"
+      }
+    }
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 401
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/clusters",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 401
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/capabilities",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/overview",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c45-8de9-7aed-9f21-d7f1cbc279df:verify",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c45-8de9-7aed-9f21-d7f1cbc279df:verify",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/role-bindings",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/resources",
+      "status": 401
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 401
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/capabilities",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/overview",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/resources",
+      "status": 503
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/resources",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/clusters",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c45-ef28-720f-95cc-c07cce9723de:verify",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c45-ef28-720f-95cc-c07cce9723de:verify",
+      "status": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/admin/role-bindings/a178e952-1c0c-4a02-acb0-cefa416738d2/status",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/resources",
+      "status": 401
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 401
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/resources",
+      "status": 403
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/clusters",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c46-6437-79a2-ac39-9bf29273ab29:verify",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17c46-6437-79a2-ac39-9bf29273ab29:verify",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/role-bindings",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 401
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/capabilities",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/overview",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/resources",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/session",
+      "status": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/admin/role-bindings/01a177f1-3733-7d05-8030-52c880213ef8/status",
+      "status": 400
+    }
+  ],
+  "failure": "last administrator removal was not refused with 409: {\"status\":400,\"code\":\"INVALID_ARGUMENT\",\"message\":\"native user request is invalid\",\"bindingId\":\"01a177f1-3733-7d05-8030-52c880213ef8\"}",
+  "status": "failed"
+}

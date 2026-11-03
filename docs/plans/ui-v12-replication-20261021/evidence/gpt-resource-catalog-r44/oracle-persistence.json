@@ -1,0 +1,56 @@
+{
+  "at": "2026-10-29T02:26:59.764297+00:00",
+  "status": "passed",
+  "transaction": "READ ONLY",
+  "database": "ui_v12_r24_native",
+  "rows": [
+    {
+      "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+      "namespace": "ops-native-v12-r24-20261026",
+      "kind": "Pod",
+      "name": "ops-seaweedfs-0",
+      "status": "matched",
+      "observedAt": "2026-10-29T02:17:56.506752+00:00",
+      "deletedAt": null
+    },
+    {
+      "queryId": "e630a865-c1c8-49f4-b3f5-5685ed117df4",
+      "resultDigest": "sha256:14f0d1e40f283dc68fcaebb0b71d82014d97aa1b6325b77a65af4f3387dd21dd",
+      "state": "completed"
+    },
+    {
+      "schema": 71
+    }
+  ],
+  "kubernetesOracle": {
+    "uid": "0e648683-1088-4032-9b39-0a122ff475be",
+    "resourceVersion": "1773922",
+    "kind": "Pod",
+    "namespace": "ops-native-v12-r24-20261026",
+    "name": "ops-seaweedfs-0",
+    "phase": "Running",
+    "ready": true
+  },
+  "components": [
+    {
+      "component": "ops-worker",
+      "artifact": "/data/ops-v12-native-visual-r24-20261026/r44/ops-v12-r44-worker",
+      "sha256": "9773cd1bd28013fff7b63e2ab57afc435054e721b8395c0759c7f3e77c83c29f",
+      "podUID": "0d6f8af8-73da-4672-a3f7-b12cdffaef58"
+    },
+    {
+      "component": "ops-api",
+      "artifact": "/data/ops-v12-native-visual-r24-20261026/r44/ops-v12-r44-api",
+      "sha256": "398bea8254fef9720d18195dc1f2f36b59ee4b14612fd3edc1ece13af12e44a0",
+      "podUID": "9199208f-9117-4453-8395-828697c42972"
+    }
+  ],
+  "modelProfileReference": "deepseek-trusted-r28/v2@sha256:d8b72dde6c40aca9230797abe702cef1b89bb009324ed1d616a109da4a60d9b5",
+  "modelTaskKindsUnchanged": true,
+  "independent30472Running": true,
+  "limitations": [
+    "Actual UID query/normal Pod health; not every resource Kind health classification acceptance",
+    "No model call, business mutation, natural TTL wait, screenshot, long load, migration or full stack restart this round",
+    "Read success after process replacement does not prove graph source continuity or eliminate startup503"
+  ]
+}

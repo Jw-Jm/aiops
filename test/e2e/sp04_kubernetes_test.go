@@ -74,7 +74,7 @@ func TestSP04OrbStackNonVirtualListWatch(t *testing.T) {
 		group.Add(1)
 		go func() {
 			defer group.Done()
-			err := client.Run(ctx, gvr, func(s kubernetes.Snapshot) error { return g.Replace(ctx, 1, s) })
+			err := client.Run(ctx, gvr, []string{ns}, func(s kubernetes.Snapshot) error { return g.Replace(ctx, 1, s) })
 			if err != nil && ctx.Err() == nil {
 				errorsMu.Lock()
 				firstErr = err

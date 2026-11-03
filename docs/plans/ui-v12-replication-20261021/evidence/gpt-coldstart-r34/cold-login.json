@@ -1,0 +1,79 @@
+{
+  "origin": "https://192.168.0.63:30472",
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a17d0c-0f3d-7130-902f-563bb7338e7d"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a17d0c-0fc3-78ac-b197-8d458e56f4a3"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d0c-10bb-7938-a685-9c343cf5fd67"
+    },
+    {
+      "path": "/api/v1/auth/mfa/status",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d0c-1120-7874-8a8c-a6bb98f9819f"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d0c-1120-70c0-80a7-302a5dfc73fd"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d0c-1122-758c-8f40-51ed3a04d79d"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d0c-1194-76f9-95d5-22c3f4ee2816"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d0c-11e1-76f8-9bc9-d43c5b36706d"
+    },
+    {
+      "path": "/api/v1/admin/users",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d0c-1229-79b9-b6b7-1e4619b92bc8"
+    },
+    {
+      "path": "/api/v1/admin/clusters",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a17d0c-122a-76e1-b655-0e1f3f4a4e21"
+    }
+  ],
+  "checks": [
+    "existing first-password result retained; no password reset",
+    "new namespace projected identity uses its own Transit; real MFA setup persists without redisclosing factor",
+    "native administrator permissions page renders on new origin"
+  ],
+  "session": {
+    "status": 200,
+    "roles": [
+      "platform_admin"
+    ],
+    "subject": "user:01a17d06-243d-7290-9687-8795b0c3fb1a",
+    "mode": "full"
+  },
+  "status": "passed"
+}

@@ -1,0 +1,99 @@
+{
+  "at": "2026-10-28T11:42:42.311341+00:00",
+  "status": "passed",
+  "database": "ui_v12_r24_native",
+  "checks": [
+    "persisted original request has budget7 and exact microsecond window",
+    "level rerun changes only level, preserving complete source/resource/window/template/budget",
+    "copied result digest matches immutable storage",
+    "controlled expiry row retains no result and no cancellation transition"
+  ],
+  "queries": [
+    {
+      "queryId": "7bc32caf-31b3-43d1-a901-fffc1af9df27",
+      "state": "expired",
+      "revision": 3,
+      "resourceUid": "0e648683-1088-4032-9b39-0a122ff475be",
+      "sourceId": "01a1805f-2214-7373-82a4-c20276c68d43",
+      "window": {
+        "to": "2026-10-28T10:36:13.150326+08:00",
+        "from": "2026-10-28T10:06:13.150326+08:00",
+        "bounds": "[from,to)",
+        "timezone": "Asia/Shanghai"
+      },
+      "budget": {
+        "maxRows": 7,
+        "maxBytes": 131072,
+        "maxSourceCalls": 2,
+        "maxDurationSeconds": 8
+      },
+      "filters": [],
+      "hasResult": false,
+      "resultDigest": null,
+      "population": null,
+      "returned": null
+    },
+    {
+      "queryId": "0ef23c87-c2af-4a6c-b2e0-496058fff652",
+      "state": "completed",
+      "revision": 3,
+      "resourceUid": "0e648683-1088-4032-9b39-0a122ff475be",
+      "sourceId": "01a1805f-2214-7373-82a4-c20276c68d43",
+      "window": {
+        "to": "2026-10-28T10:36:13.150326+08:00",
+        "from": "2026-10-28T10:06:13.150326+08:00",
+        "bounds": "[from,to)",
+        "timezone": "Asia/Shanghai"
+      },
+      "budget": {
+        "maxRows": 7,
+        "maxBytes": 131072,
+        "maxSourceCalls": 2,
+        "maxDurationSeconds": 8
+      },
+      "filters": [],
+      "hasResult": true,
+      "resultDigest": "sha256:95f5579e1b426448ea1446ab771477b10ed3e2e27001ec95d761efc526ffcf8c",
+      "population": {
+        "basis": "exact",
+        "count": 186,
+        "method": "source_total"
+      },
+      "returned": "7"
+    },
+    {
+      "queryId": "6b71222a-3e54-45a2-a233-998fcdb7cd1f",
+      "state": "completed",
+      "revision": 3,
+      "resourceUid": "0e648683-1088-4032-9b39-0a122ff475be",
+      "sourceId": "01a1805f-2214-7373-82a4-c20276c68d43",
+      "window": {
+        "to": "2026-10-28T10:36:13.150326+08:00",
+        "from": "2026-10-28T10:06:13.150326+08:00",
+        "bounds": "[from,to)",
+        "timezone": "Asia/Shanghai"
+      },
+      "budget": {
+        "maxRows": 7,
+        "maxBytes": 131072,
+        "maxSourceCalls": 2,
+        "maxDurationSeconds": 8
+      },
+      "filters": [
+        {
+          "field": "level",
+          "value": "error",
+          "operator": "eq"
+        }
+      ],
+      "hasResult": true,
+      "resultDigest": "sha256:cc70c416fb5340e0834d579395a9d9a058852ba3e2a03b20ce09b2ec87824081",
+      "population": {
+        "basis": "exact",
+        "count": 180,
+        "method": "source_total"
+      },
+      "returned": "7"
+    }
+  ]
+}

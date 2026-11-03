@@ -1,0 +1,84 @@
+{
+  "origin": "https://192.168.0.63:30471",
+  "checks": [
+    "real pending login disables duplicate submit; API401 remains inline",
+    "first-password Escape revokes session; relogin; wrong current401 remains; real201 rotates credentials",
+    "server-owned own account / independent grants; self cancel/error/201; rotated session survives reload"
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a1781a-a265-76b4-9206-f497a026f524"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 401,
+      "requestId": "01a1781a-a386-7c19-9322-bb8de693225e"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "requestId": "01a1781a-a46e-7eac-9330-af5321e5fbc4"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a1781a-a4c0-7c71-80ad-a3312da4614b"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a1781a-a7de-7f37-8d76-eccd65dcdc26"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "requestId": "01a1781a-a8b8-7532-a629-2790d588e87b"
+    },
+    {
+      "path": "/api/v1/auth/password:change",
+      "status": 401,
+      "requestId": "01a1781a-ab65-7975-a128-c2dfee087c3c"
+    },
+    {
+      "path": "/api/v1/auth/password:change",
+      "status": 201,
+      "requestId": "01a1781a-ad79-758e-9676-a866f6187058"
+    },
+    {
+      "path": "/api/v1/auth/password:change",
+      "status": 401,
+      "requestId": "01a1781a-b24a-765f-a790-e1162a15609d"
+    },
+    {
+      "path": "/api/v1/auth/password:change",
+      "status": 201,
+      "requestId": "01a1781a-b3be-7476-8509-3044b7c99761"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "requestId": "01a1781a-b4cf-77f5-856a-a15d97262d7c"
+    }
+  ],
+  "screenshots": [
+    "login-current",
+    "login-pending",
+    "login-error",
+    "first-password",
+    "first-password-error",
+    "my-account",
+    "self-password",
+    "self-password-error"
+  ],
+  "geometry": {
+    "account": {
+      "x": 390,
+      "y": 268.09375,
+      "width": 660,
+      "height": 423.8125
+    }
+  },
+  "status": "passed"
+}

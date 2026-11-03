@@ -278,6 +278,34 @@
               }
             }
           }
+        },
+        "filterOptions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kinds",
+            "namespaces",
+            "clusterScoped"
+          ],
+          "properties": {
+            "kinds": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string"
+              }
+            },
+            "namespaces": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string"
+              }
+            },
+            "clusterScoped": {
+              "type": "boolean"
+            }
+          }
         }
       }
     },

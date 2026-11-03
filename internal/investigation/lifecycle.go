@@ -136,10 +136,7 @@ func (r Repository) Events(ctx context.Context, tenant, id uuid.UUID, subject st
 		if err != nil {
 			return err
 		}
-		if j.Subject != subject {
-			return ErrDenied
-		}
-		if err = current(ctx, tx, j); err != nil {
+		if err = currentRead(ctx, tx, j, subject); err != nil {
 			return err
 		}
 		if j.Assistant != nil && len(j.Result) > 0 {

@@ -1,0 +1,71 @@
+{
+  "capturedAt": "2026-10-27T00:58:06.410763+00:00",
+  "hostname": "mssc",
+  "namespace": "ops-native-v12-r24-20261026",
+  "origin": "https://192.168.0.63:30471",
+  "pods": {
+    "ops-api": {
+      "uid": "2e457b9a-b40b-4701-860a-1b4e04444154",
+      "startTime": "2026-10-27T00:28:40Z",
+      "containers": [
+        {
+          "name": "api",
+          "ready": true,
+          "restartCount": 0,
+          "imageID": "ops.local/verification-20261019/platform-api@sha256:494817ba463482a5959c1c3e10968b3e28db1affc458dbdbe2cec0be5d4878a7"
+        }
+      ]
+    },
+    "ops-openbao-0": {
+      "uid": "28de8b72-11d0-4b6a-8128-82c00868b43f",
+      "startTime": "2026-10-26T07:15:33Z",
+      "containers": [
+        {
+          "name": "openbao",
+          "ready": true,
+          "restartCount": 1,
+          "imageID": "ghcr.io/openbao/openbao@sha256:71156a1c6623a5fa3f5e61b0c6a8ead0faf0df29a778339188443551995d1315"
+        }
+      ]
+    },
+    "ops-seaweedfs-0": {
+      "uid": "0e648683-1088-4032-9b39-0a122ff475be",
+      "startTime": "2026-10-26T11:22:37Z",
+      "containers": [
+        {
+          "name": "seaweedfs",
+          "ready": true,
+          "restartCount": 0,
+          "imageID": "docker.io/chrislusf/seaweedfs@sha256:ce9e796f1fe6f06968f4c04bdaf8f678dad9c8acdfef3d244133d71bfa6bf882"
+        }
+      ]
+    },
+    "ops-worker": {
+      "uid": "b14fcd33-98ac-4711-93e2-70f0c1065e8e",
+      "startTime": "2026-10-27T00:28:41Z",
+      "containers": [
+        {
+          "name": "worker",
+          "ready": true,
+          "restartCount": 0,
+          "imageID": "ops.local/verification-20261019/platform-worker@sha256:48d3700cd7595781e5384821b07e8fa38aaf172ada0fe2b55832fedd661a92ad"
+        }
+      ]
+    }
+  },
+  "database": {
+    "serverVersion": "17.11 (Debian 17.11-1.pgdg12+2)",
+    "schema": 70,
+    "tenants": 1,
+    "accounts": 2
+  },
+  "binaries": {
+    "ops-r24-api-final": "14d1b34782bc485ffefc4f013e9cadb6c0164efd0e7b52c7b973de715dab4bc3",
+    "ops-r24-worker-final": "943703dbbca6d4389baf9da9c93ea75f243177be6d434c77992449351ba47dbd"
+  },
+  "web": {
+    "container": "ops-v12-native-r24-web-r4",
+    "indexSHA256": "884048cca2238c1c0104a7139616fa94b50b5b791b6e3025935a4da1e45779b0"
+  },
+  "profileScope": "native; Keycloak disabled; independent audit Worker enabled, SP06 business dispatcher not configured; source canary, not signed Bundle acceptance"
+}

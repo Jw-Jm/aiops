@@ -15,7 +15,14 @@ import {
   useClusterDraft,
   useClusterScope,
 } from "../../src/app/ClusterContext";
-import { NAV, NAV_ITEMS, navGroup, navItem, scopedHref } from "../../src/app/navigation";
+import {
+  NAV,
+  NAV_ITEMS,
+  navGroup,
+  navItem,
+  navModule,
+  scopedHref,
+} from "../../src/app/navigation";
 import { legacyRedirectTarget } from "../../src/app/router";
 import type { AuthorizedClusterV1 } from "../../src/api/generated/models";
 
@@ -64,6 +71,24 @@ it("matches the frozen source NAV hierarchy without flattening modules", () => {
   expect(scopedHref("/events/alerts", "uid-b")).toBe(
     "/events/alerts?clusterUid=uid-b",
   );
+});
+
+it("names post-prototype account pages and never repeats a top-level module", () => {
+  // The prototype breadcrumb is "group / item" for a top-level page and
+  // "group / module / item" for a child page (reference-r3 SL-006 and SL-008).
+  expect(navGroup("/overview")?.label).toBe("工作空间");
+  expect(navItem("/overview")?.name).toBe("运行总览");
+  expect(navModule("/overview")).toBeUndefined();
+  expect(navModule("/resources")).toBe("资源管理");
+  expect(navItem("/resources/detail")?.path).toBe("/resources");
+  // /account/security is reached from the account menu and has no frozen NAV
+  // entry; it must still be named instead of rendering "未匹配页面".
+  expect(navItem("/account/security")?.name).toBe("账号安全");
+  expect(navGroup("/account/security")?.label).toBe("账号");
+  expect(navModule("/account/security")).toBeUndefined();
+  expect(navItem("/account/security/step-up")?.path).toBe("/account/security");
+  expect(navItem("/not-a-route")).toBeUndefined();
+  expect(NAV_ITEMS.some((item) => item.path === "/account/security")).toBe(false);
 });
 
 it("preserves old object parameters when redirecting to canonical routes", () => {

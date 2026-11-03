@@ -1,0 +1,122 @@
+{
+  "scope": "actual native audit business Jobs, DeepSeek, independent production Worker/investigator, real process crashes and revocation; no fixture signer/model/tools or lease SQL mutation",
+  "checks": [
+    "real temporary independent admin grant; actual model in-flight -> HTTP revoke -> owner denied; Worker marks AUTHORIZATION_REVOKED without result; original admin remains valid"
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users?limit=50",
+      "status": 200,
+      "requestId": "01a17b35-33c7-78bb-8ca6-c81a7b29f63b"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17b35-33fb-7c2a-9db1-23cf91e28ea3"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17b35-3417-7aa5-8b6e-66cea997643a:verify",
+      "status": 200,
+      "requestId": "01a17b35-3429-74f5-8e35-313988622f1c"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17b35-3417-7aa5-8b6e-66cea997643a:verify",
+      "status": 200,
+      "requestId": "01a17b35-34af-7659-90d9-4fd19ba933e3"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/role-bindings",
+      "status": 201,
+      "requestId": "01a17b35-35c1-7d4a-b42f-72949bcdc639"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users?limit=50",
+      "status": 200,
+      "requestId": "01a17b35-35f3-7dc4-9060-290d12e6bce0"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges",
+      "status": 201,
+      "requestId": "01a17b35-3615-755f-a54a-8fc519d4bb56"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17b35-3623-7889-8910-63c3b04be11b:verify",
+      "status": 200,
+      "requestId": "01a17b35-363e-7b01-b5e1-b33d0ad918a2"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/step-up-challenges/01a17b35-3623-7889-8910-63c3b04be11b:verify",
+      "status": 200,
+      "requestId": "01a17b35-8fc0-7eca-b2c4-3fe72a19be1c"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/assistant/conversations",
+      "status": 201,
+      "requestId": "01a17b35-925f-721c-9817-530c621a29fd"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/assistant/conversations/01a17b35-926c-7969-aee3-5b1c04e347e0/messages",
+      "status": 202,
+      "requestId": "01a17b35-9288-73dd-8006-7d4b96fccdf1"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/admin/role-bindings/a0494cf8-3956-4622-83a8-78cd987dd28f/status",
+      "status": 200,
+      "requestId": "01a17b35-998c-7d8d-b23e-4a094d95bbd9"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/assistant/turns/01a17b35-92b8-7c7f-a04e-11f221e8f7bf",
+      "status": 401,
+      "requestId": "01a17b35-99c1-74bc-9e1d-971f8734ab3b"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users?limit=50",
+      "status": 200,
+      "requestId": "01a17b36-49e7-72c3-88af-1f26599fddd3"
+    }
+  ],
+  "revocation": {
+    "conversationId": "01a17b35-926c-7969-aee3-5b1c04e347e0",
+    "turnId": "01a17b35-92b8-7c7f-a04e-11f221e8f7bf",
+    "jobId": "01a17b35-92b8-7c80-9907-cc01d6c6da90",
+    "bindingId": "a0494cf8-3956-4622-83a8-78cd987dd28f",
+    "userId": "01a177fe-c4ed-7b86-9e45-5ec3d167a26c",
+    "before": {
+      "state": "running",
+      "errorCode": "",
+      "epoch": 1,
+      "modelsRunning": true,
+      "contexts": 2,
+      "contextGenerations": [
+        1
+      ],
+      "resultPresent": false
+    },
+    "after": {
+      "state": "failed",
+      "errorCode": "AUTHORIZATION_REVOKED",
+      "epoch": 2,
+      "modelsRunning": false,
+      "contexts": 2,
+      "contextGenerations": [
+        1
+      ],
+      "resultPresent": false
+    }
+  },
+  "status": "passed"
+}

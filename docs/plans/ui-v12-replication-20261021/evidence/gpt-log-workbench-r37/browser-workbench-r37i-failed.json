@@ -1,0 +1,76 @@
+{
+  "at": "2026-10-28T04:13:19.464Z",
+  "origin": "https://192.168.0.63:30471",
+  "viewport": {
+    "width": 1440,
+    "height": 960
+  },
+  "checks": [],
+  "captures": [
+    {
+      "name": "logs-idle",
+      "captured": false,
+      "probes": [
+        "recovery-code"
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401,
+      "method": "GET",
+      "requestId": "01a180b6-6670-763a-807f-0ae0c78c5a55"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 201,
+      "method": "POST",
+      "requestId": "01a180b6-670a-7ee4-a751-6aa3e9639f25"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b6-6b65-744e-82a0-d522f522b5c9"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b6-6be6-7301-a456-89e4c63e5f4e"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b6-7333-7a20-bdab-f4ef21d2794b"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "status": 202,
+      "method": "POST",
+      "requestId": "01a180b6-76b1-7291-bc13-b75be24f6523"
+    },
+    {
+      "path": "/api/v1/observability/queries/c338db46-44cd-4cca-b805-35e904d0708c",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b6-7c64-7c41-a015-7a178385858f"
+    },
+    {
+      "path": "/api/v1/observability/queries/c338db46-44cd-4cca-b805-35e904d0708c",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b6-8486-759a-98cd-995fc7c7e932"
+    },
+    {
+      "path": "/api/v1/observability/queries/c338db46-44cd-4cca-b805-35e904d0708c/results",
+      "status": 200,
+      "method": "GET",
+      "requestId": "01a180b6-8731-73cc-ba8e-e3319fd32454"
+    }
+  ],
+  "status": "failed",
+  "failure": "locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n  - waiting for getByText('来源总体 186 条 · 本次脱敏样例 20 条', { exact: true }) to be visible\n"
+}

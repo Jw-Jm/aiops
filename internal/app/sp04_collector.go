@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -15,6 +16,10 @@ import (
 	"strconv"
 	"time"
 )
+
+// errProjectionArchiveConflict marks an immutable archive fact that no longer
+// matches the current content of the same UID/resourceVersion.
+var errProjectionArchiveConflict = errors.New("projection archive identity conflict")
 
 func collectorSink(ctx context.Context, cluster SP04Cluster, g *graph.Graph, store resourcestore.Repository, queue *projectionArchiveQueue) func(kubernetes.Snapshot) error {
 	previous := map[string]string{}
@@ -89,6 +94,14 @@ func collectorSink(ctx context.Context, cluster SP04Cluster, g *graph.Graph, sto
 				continue
 			}
 			if err := queue.enqueue(o); err != nil {
+				// An immutable archive fact for the same UID/resourceVersion
+				// cannot be rewritten. Keeping the whole resource unavailable
+				// because one historical entry disagrees would hide every later
+				// fact, so the conflict is surfaced as a degraded source and the
+				// current graph is still published.
+				if errors.Is(err, errProjectionArchiveConflict) {
+					continue
+				}
 				// Do not advance the resourceVersion acknowledgement. The full
 				// snapshot is retried while previously queued facts remain owned.
 				return err
@@ -139,17 +152,26 @@ func prepareProjection(ctx context.Context, cluster SP04Cluster, o unstructured.
 	if observed.IsZero() {
 		return uuid.Nil, resource.ErrIdentity
 	}
-	identity, _ := json.Marshal(struct{ ID, RV, ProjectionVersion string }{id, o.GetResourceVersion(), "kubernetes-projection/v2"})
+	// A source revision changes the frozen scope even when Kubernetes UID/RV did not change.
+	identity, _ := json.Marshal(struct {
+		ID, RV, ProjectionVersion string
+		SourceRevision            int64
+	}{id, o.GetResourceVersion(), "kubernetes-projection/v3", cluster.SourceRevision})
 	objectID := uuid.NewSHA1(uuid.NameSpaceOID, append([]byte(cluster.SourceID), identity...))
 	scope := graph.Scope{Tenant: cluster.Tenant, Cluster: cluster.ClusterUID, Namespaces: []string{o.GetNamespace()}, ClusterScoped: true, AuthorizationRevision: "collector/" + cluster.SourceID + "/" + strconv.FormatInt(cluster.SourceRevision, 10)}
-	metadata := evidence.Evidence{SourceScopeDigest: cluster.SourceScopeDigest, SchemaVersion: "evidence/v2", EvidenceID: objectID.String(), TenantID: cluster.Tenant, ResourceCanonicalID: id, Type: "resource_state", DataClass: "D0", SourceRegistrationID: cluster.SourceID, SourceRevision: cluster.SourceRevision, SourceSystem: "kubernetes", BackendLogicalID: cluster.BackendLogicalID, QueryTemplateVersion: "kubernetes-projection/v2", QueryHash: evidence.Digest(identity), EffectiveScope: scope, EvaluatedAt: observed, ObservedFrom: observed, ObservedTo: observed, SourceRetentionUntil: observed, TimeReliable: true, ReplayState: "archive_pending", ContentDigest: evidence.Digest(data), DerivationEvidenceRefs: []string{}, IndependenceGroup: cluster.SourceID, Data: data}
+	metadata := evidence.Evidence{SourceScopeDigest: cluster.SourceScopeDigest, SchemaVersion: "evidence/v2", EvidenceID: objectID.String(), TenantID: cluster.Tenant, ResourceCanonicalID: id, Type: "resource_state", DataClass: "D0", SourceRegistrationID: cluster.SourceID, SourceRevision: cluster.SourceRevision, SourceSystem: "kubernetes", BackendLogicalID: cluster.BackendLogicalID, QueryTemplateVersion: "kubernetes-projection/v3", QueryHash: evidence.Digest(identity), EffectiveScope: scope, EvaluatedAt: observed, ObservedFrom: observed, ObservedTo: observed, SourceRetentionUntil: observed, TimeReliable: true, ReplayState: "archive_pending", ContentDigest: evidence.Digest(data), DerivationEvidenceRefs: []string{}, IndependenceGroup: cluster.SourceID, Data: data}
 	// Re-listing or a second Worker may observe the same immutable UID/RV at a
 	// later wall clock. Reuse the first durable observation; the new observation
 	// cannot rebind its archive identity or renew history retention.
 	previous, previousErr := (evidence.Repository{Pool: archive.Pool}).Get(ctx, uuid.MustParse(cluster.Tenant), objectID, scope)
 	if previousErr == nil {
 		if previous.ContentDigest != metadata.ContentDigest || previous.SourceRevision != metadata.SourceRevision || previous.SourceRegistrationID != metadata.SourceRegistrationID || previous.ResourceCanonicalID != metadata.ResourceCanonicalID {
-			return uuid.Nil, errors.New("projection archive identity conflict")
+			return uuid.Nil, fmt.Errorf("%w: content=%t revision=%t registration=%t canonical=%t object=%s/%s/%s rv=%s sourceRevision=%d previousRevision=%d digest=%s previousDigest=%s",
+				errProjectionArchiveConflict,
+				previous.ContentDigest == metadata.ContentDigest, previous.SourceRevision == metadata.SourceRevision,
+				previous.SourceRegistrationID == metadata.SourceRegistrationID, previous.ResourceCanonicalID == metadata.ResourceCanonicalID,
+				o.GetKind(), o.GetNamespace(), o.GetName(), o.GetResourceVersion(), metadata.SourceRevision, previous.SourceRevision,
+				metadata.ContentDigest, previous.ContentDigest)
 		}
 		metadata = previous
 		metadata.Data = data

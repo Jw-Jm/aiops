@@ -493,14 +493,13 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 				return out, err
 			}
 			executor := analytics.ControlPlaneExecutor{Pool: h.Pool, AuthorizeTx: func(ctx context.Context, tx pgx.Tx, subject, domain string, scope graph.Scope, digest string) error {
-				var current graph.Scope
-				var err error
-				if domain == "audit" {
-					current, err = investigation.AuditScopeTx(ctx, tx, j.TenantID, subject)
-				} else {
-					current, err = graph.EffectiveTx(ctx, tx, j.TenantID.String(), subject, scope.Cluster, true)
+				// The tool is called by a workload, not a browser session. Re-prove
+				// the persisted Job authority under the query transaction's locks.
+				if subject != j.Subject || domain != j.Assistant.AuthorizationDomain || investigation.CheckAssistantJobTx(ctx, tx, j) != nil {
+					return investigation.ErrDenied
 				}
-				if err != nil || graph.ScopeDigest(current) != digest || !graph.ContainsScope(current, scope) {
+				current := j.Assistant.GrantSnapshot
+				if graph.ScopeDigest(current) != digest || !graph.ContainsScope(current, scope) {
 					return investigation.ErrDenied
 				}
 				return nil

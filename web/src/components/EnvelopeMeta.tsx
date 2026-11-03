@@ -1,6 +1,7 @@
 import { Alert, Space } from "antd";
 import { record, list, text, displayTime } from "./data";
 import { Status } from "./Status";
+import { stateLabel } from "./presentation";
 export function EnvelopeMeta({ value }: { value: unknown }) {
   const m = record(value);
   return (
@@ -11,7 +12,7 @@ export function EnvelopeMeta({ value }: { value: unknown }) {
           type="warning"
           title="此查询返回部分或来源降级结果"
           description={[...list(m.warnings), ...list(m.degradedSources)]
-            .map(text)
+            .map((value) => stateLabel(text(value)))
             .join(" · ")}
         />
       )}

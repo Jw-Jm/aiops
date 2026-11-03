@@ -160,7 +160,8 @@ export function OverviewPage() {
                 render: (_, row) => (
                   <Link
                     to={
-                      "/events/incidents/" + encodeURIComponent(String(row.incidentId))
+                      "/events/incidents/" +
+                      encodeURIComponent(String(row.incidentId))
                     }
                   >
                     {text(row.title)}
@@ -173,8 +174,11 @@ export function OverviewPage() {
                 render: (id: unknown) => (
                   <Link
                     to={
-                      "/resources/detail?canonicalId=" +
-                      encodeURIComponent(String(id))
+                      "/resources/detail?" +
+                      new URLSearchParams({
+                        clusterUid: cluster,
+                        canonicalId: String(id),
+                      })
                     }
                   >
                     {text(id)}
@@ -228,7 +232,9 @@ export function OverviewPage() {
       <section className="section">
         <h2 className="section-title">故障处理入口</h2>
         <div className="filters">
-          <Link to={"/events/incidents?clusterUid=" + encodeURIComponent(cluster)}>
+          <Link
+            to={"/events/incidents?clusterUid=" + encodeURIComponent(cluster)}
+          >
             <Button type="primary">开始处理故障</Button>
           </Link>
           <Link to={"/events/alerts?clusterUid=" + encodeURIComponent(cluster)}>

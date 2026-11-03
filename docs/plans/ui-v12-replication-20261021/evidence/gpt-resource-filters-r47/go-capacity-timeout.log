@@ -1,0 +1,45 @@
+panic: test timed out after 1m30s
+	running tests:
+		TestUpstreamConformanceAnd20KPlatformGeneration (1m28s)
+
+goroutine 195 [running]:
+testing.(*M).startAlarm.func1()
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2959 +0x2c4
+created by time.goFunc
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/time/sleep.go:182 +0x38
+
+goroutine 1 [chan receive, 1 minutes]:
+testing.(*T).Run(0x266db52f2008, {0x1031436e6?, 0x266db525fa88?}, 0x103e03590)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2266 +0x3cc
+testing.runTests.func1(0x266db52f2008)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2742 +0x38
+testing.tRunner(0x266db52f2008, 0x266db525fbb8)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2193 +0xc4
+testing.runTests({0x103117b53, 0xc}, {0x103128a61, 0x1b}, 0x266db52ee000, {0x1042dad10, 0x2e, 0x2e}, {0x266db525fc58?, 0x266db4ce80c0?, ...})
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2740 +0x400
+testing.(*M).Run(0x266db4a4c1e0)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2600 +0x578
+main.main()
+	_testmain.go:136 +0x80
+
+goroutine 236 [runnable]:
+k8s.io/apimachinery/pkg/apis/meta/v1/unstructured.(*Unstructured).GetOwnerReferences(0x266db710fa20?)
+	/Users/mssc/go/pkg/mod/k8s.io/apimachinery@v0.35.2/pkg/apis/meta/v1/unstructured/unstructured.go:183 +0x234
+github.com/aalpar/ariadne.resolveOwnerRefs(0x266db71666c8, {0x103dfc3c8, 0x266dba2e4760})
+	/Users/mssc/go/pkg/mod/github.com/aalpar/ariadne@v0.1.3-0.20260310221605-fa2232ce45c4/structural.go:307 +0x300
+github.com/aalpar/ariadne.(*structuralResolver).Resolve(0x104313220?, 0x266db71666c8, {0x103dfc3c8, 0x266dba2e4760})
+	/Users/mssc/go/pkg/mod/github.com/aalpar/ariadne@v0.1.3-0.20260310221605-fa2232ce45c4/structural.go:270 +0x4c
+github.com/aalpar/ariadne.(*Graph).Load(0x266db4c9dab0, {0x266dc4080000, 0x4e17, 0x5c00})
+	/Users/mssc/go/pkg/mod/github.com/aalpar/ariadne@v0.1.3-0.20260310221605-fa2232ce45c4/graph.go:385 +0x75c
+ops-platform/internal/graph.(*Graph).Replace(0x266db52e25b0, {0x103dfb6c8, _}, _, {0x0, {{0x103250d28, 0x0}, {0x10310e955, 0x2}, {0x1031139e8, ...}, ...}, ...})
+	/Users/mssc/Documents/Code/ops/platform/internal/graph/ariadne_adapter.go:315 +0x168c
+ops-platform/internal/graph.TestUpstreamConformanceAnd20KPlatformGeneration(0x266db56e7b08)
+	/Users/mssc/Documents/Code/ops/platform/internal/graph/upstream_conformance_test.go:119 +0x10d4
+testing.tRunner(0x266db56e7b08, 0x103e03590)
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2193 +0xc4
+created by testing.(*T).Run in goroutine 1
+	/Users/mssc/.local/share/mise/installs/go/1.27.1/src/testing/testing.go:2258 +0x3b8
+FAIL	ops-platform/internal/graph	90.748s
+ok  	ops-platform/internal/httpapi	3.314s
+ok  	ops-platform/test/contract	36.702s
+FAIL
