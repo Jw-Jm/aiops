@@ -52,6 +52,12 @@ func TestPreSP07DatabaseBootstrapCLIProvidesThreeRestrictedLOGINs(t *testing.T) 
 			t.Fatal("CLI leaked a password")
 		}
 	}
+	for _, role := range []string{"schema_owner", "api_runtime_role", "worker_runtime_role"} {
+		var canCreateSchema bool
+		if err := db.QueryRowContext(ctx, "SELECT has_database_privilege($1,current_database(),'CREATE')", role).Scan(&canCreateSchema); err != nil || canCreateSchema != (role == "schema_owner") {
+			t.Fatalf("schema creation privilege for %s: allowed=%v err=%v", role, canCreateSchema, err)
+		}
+	}
 	if _, err := invoke(); err == nil {
 		t.Fatal("repeated role bootstrap accepted")
 	}

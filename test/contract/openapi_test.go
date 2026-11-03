@@ -72,6 +72,8 @@ func TestOpenAPIConventions(t *testing.T) {
 	}
 
 	requiredRoutes := map[string]bool{
+		"GET /api/v1/metrics/capabilities":                            false,
+		"POST /api/v1/metrics/query":                                  false,
 		"GET /api/v1/overview":                                        false,
 		"GET /api/v1/capabilities":                                    false,
 		"GET /api/v1/resources":                                       false,

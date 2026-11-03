@@ -1,0 +1,224 @@
+{
+  "mode": "success",
+  "at": "2026-11-03T03:33:22.226Z",
+  "origin": "https://192.168.0.63:30471",
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a19f77-f9f3-75d0-a40e-3818fbf8c2b4"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a19f77-fa8b-7038-b54a-c8e01e15a553"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a19f77-fb37-7c2b-af65-8d6568cb8372"
+    },
+    {
+      "path": "/api/v1/capabilities",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a19f77-fb5f-7a28-b1bf-5a2626ed7c83"
+    },
+    {
+      "path": "/api/v1/overview",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a19f77-fb5f-72c0-8be2-48c214d06f3e"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a19f77-fb68-7555-8889-0f7c86e84919"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a19f78-0501-7e1a-94a4-48c8b26f5ffb"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "method": "POST",
+      "status": 202,
+      "requestId": "01a19f78-09ed-736e-b346-04c0bb09b1e8"
+    },
+    {
+      "path": "/api/v1/observability/queries/1768d3ea-e8db-4baa-944e-980d48a5d82b",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a19f78-1234-7811-b251-0e0ec6388a46"
+    },
+    {
+      "path": "/api/v1/observability/queries/1768d3ea-e8db-4baa-944e-980d48a5d82b",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a19f78-1b4c-7845-9bea-fea697621c7f"
+    },
+    {
+      "path": "/api/v1/observability/queries/1768d3ea-e8db-4baa-944e-980d48a5d82b/results",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a19f78-31c1-7c83-bb49-36c7655bdd85"
+    }
+  ],
+  "outcome": {
+    "queryId": "1768d3ea-e8db-4baa-944e-980d48a5d82b",
+    "source": {
+      "collectorVersion": "v1.52.0-ops1",
+      "credentialRevision": 1,
+      "qualificationDigest": "sha256:409a97327972674ed76dd1a6179c58c01d3e38c37f6da3fcc888e1fc78b4dfaf",
+      "registrationId": "01a19f70-d86a-70d7-a29d-dc148a60be6a",
+      "registrationRevision": 1
+    },
+    "resource": {
+      "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/6a706eae-6473-4f7f-8760-34664bf3ab8c",
+      "uid": "6a706eae-6473-4f7f-8760-34664bf3ab8c",
+      "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+      "namespaceScope": {
+        "kind": "namespaced",
+        "namespace": "ops-native-v12-r24-20261026",
+        "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+      }
+    },
+    "window": {
+      "from": "2026-11-03T03:31:18.507Z",
+      "to": "2026-11-03T03:33:18.507687598Z",
+      "timezone": "Asia/Shanghai",
+      "bounds": "[from,to)"
+    },
+    "events": [
+      {
+        "state": "accepted",
+        "revision": 1,
+        "requestId": "01a19f78-09ed-736e-b346-04c0bb09b1e8"
+      },
+      {
+        "state": "running",
+        "revision": 2,
+        "requestId": "01a19f78-1234-7811-b251-0e0ec6388a46"
+      },
+      {
+        "state": "completed",
+        "revision": 3,
+        "requestId": "01a19f78-1b4c-7845-9bea-fea697621c7f"
+      }
+    ],
+    "finalState": "completed",
+    "resultStatus": 200,
+    "termination": null,
+    "failure": null,
+    "result": {
+      "resultId": "0f90f183-a69b-421f-8d53-eaa4e2ee9236",
+      "resultDigest": "sha256:c5015d917338648c64f28f985219c504c4c4b4d5a7172e51075e58810ef21461",
+      "status": "partial",
+      "population": {
+        "basis": "exact",
+        "count": 12,
+        "method": "source_total"
+      },
+      "sampleCount": 12,
+      "truncation": {
+        "reasons": [],
+        "truncated": false
+      },
+      "coverage": {
+        "basis": "unknown",
+        "complete": false,
+        "coveredFrom": "2026-11-03T03:31:18.507Z",
+        "coveredTo": "2026-11-03T03:33:18.507687598Z",
+        "gaps": []
+      },
+      "reauthorization": {
+        "authorizationVersion": 12,
+        "checkedAt": "2026-11-03T03:33:45.235229389Z",
+        "denialCode": null,
+        "result": "allowed",
+        "sourceRegistrationRevision": 1
+      },
+      "origins": [
+        {
+          "container": "version-a",
+          "containerId": "containerd://dda32e3718b117fe2611de13ea611a1e14e600bcde0c40f375c9ee2bc8e6f2b6",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-r49-log-identity"
+        },
+        {
+          "container": "version-a",
+          "containerId": "containerd://dda32e3718b117fe2611de13ea611a1e14e600bcde0c40f375c9ee2bc8e6f2b6",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-r49-log-identity"
+        },
+        {
+          "container": "version-a",
+          "containerId": "containerd://dda32e3718b117fe2611de13ea611a1e14e600bcde0c40f375c9ee2bc8e6f2b6",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-r49-log-identity"
+        },
+        {
+          "container": "version-b",
+          "containerId": "containerd://8cd98532e64712f47680a9e338d3d7b2d95de6b5a9f886893fd3286964bcb9fc",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-r49-log-identity"
+        },
+        {
+          "container": "version-b",
+          "containerId": "containerd://8cd98532e64712f47680a9e338d3d7b2d95de6b5a9f886893fd3286964bcb9fc",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-r49-log-identity"
+        },
+        {
+          "container": "version-b",
+          "containerId": "containerd://8cd98532e64712f47680a9e338d3d7b2d95de6b5a9f886893fd3286964bcb9fc",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-r49-log-identity"
+        },
+        {
+          "container": "version-b",
+          "containerId": "containerd://4d48e97d2a372cb77d9d7ce48c0a53324659c03c666d03994b0c671f2e96bff2",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-r49-log-identity"
+        },
+        {
+          "container": "version-b",
+          "containerId": "containerd://4d48e97d2a372cb77d9d7ce48c0a53324659c03c666d03994b0c671f2e96bff2",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-r49-log-identity"
+        },
+        {
+          "container": "version-b",
+          "containerId": "containerd://4d48e97d2a372cb77d9d7ce48c0a53324659c03c666d03994b0c671f2e96bff2",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-r49-log-identity"
+        },
+        {
+          "container": "version-a",
+          "containerId": "containerd://b3802af938064fab337e42c26a42133f6b96e0c7bf04fa93b14835f0ef8c2bd1",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-r49-log-identity"
+        },
+        {
+          "container": "version-a",
+          "containerId": "containerd://b3802af938064fab337e42c26a42133f6b96e0c7bf04fa93b14835f0ef8c2bd1",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-r49-log-identity"
+        },
+        {
+          "container": "version-a",
+          "containerId": "containerd://b3802af938064fab337e42c26a42133f6b96e0c7bf04fa93b14835f0ef8c2bd1",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-r49-log-identity"
+        }
+      ]
+    }
+  },
+  "status": "passed"
+}

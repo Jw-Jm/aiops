@@ -1,3 +1,29 @@
+## 2026-11-03 r51 真实 Pod 指标链路（GPT直接执行）
+
+30471 已实际接通 kubelet/cAdvisor + 精确官方 KSM v2.17.0 → VictoriaMetrics v1.116.0 持续采集 → 真实密码/TOTP登记来源 → 原生运维会话/当前授权/签名owner → 四类Pod固定指标模板和趋势页面。CPU、内存、重启增量、phase四种趋势12点与原生查询逐点一致；无导入/模型生成指标，无新SQL或AI Job。覆盖始终unknown/partial，无数据不推断零，缺点不连线。
+
+真实Chrome正例及跨集群/PromQL注入/CSRF/不存在UID守卫通过；停止KSM但指标库HTTP仍200时资格撤销、查询503，恢复后原证明恢复；TSDB保留持久目录重建后故障前窗口可读。同名Pod新旧UID在重建前后窗口互斥，600s实际投射令牌自动轮换后四类采样仍新鲜，8项原生RBAC正反例通过。原r49日志固定结果回放及摘要保持。
+
+修复真实owner初始化阻碍：严格匹配且已验证的归档事实不再重复封装；保留物理Recover/Read，将prepare/recover期限12s对齐有界8s保留保护维护，不解除加密/来源/保留/授权守卫。首次r51与r51b未就绪失败保留，r51c恢复。代码生成、交付来源门禁、Go三包/race、16项定向UI、构建及OpenAPI/UIV12/来源合同通过；计划静态校验179合同且六维不提升。
+
+证据 evidence/gpt-live-metrics-r51/README.md。仅单节点任务namespace四类Pod指标；P4-01为in_progress，完整视觉/多节点/双集群/Node/长时缺口/持久指标历史与正式Bundle未验；新TLS证书30d需正式续期。子秒窗口首轮503保留，只验整秒趋势；截图探针拒绝公开UUID误命中，未留截图、不声称视觉通过。无Git提交/推送，前次同步基线0d6caa2不变；30472/模型/SP05未变，虚拟化继续延期。
+
+## 2026-11-03 r50 迁移闭包续期与全新库引导修复（GPT直接执行）
+
+补齐71/72到arm64/amd64迁移对应源码及镜像内置锁，两个架构均在远程断网/空缓存容器离线重建，与原准入二进制逐字节一致。精确离线amd64 CLI实际完成全新1→72、带保留tenant的70→71→72、重复执行/低目标不回滚和负目标拒绝。
+
+首轮全新库实测44创建identity schema因schema_owner缺少数据库CREATE权限失败；正式opsctl账号引导在原version1/空租户/超级用户及同一事务守卫内补授予仅schema_owner，API/Worker无新增DDL权限，冻结SQL/迁移CLI不改。基线计数72、安装参数Namespaces schema/共享fixture与既有Helm严格范围守卫对齐。失败与最终实证见 ../../evidence/migration-renew-20261103/README.md；完整交付来源门禁复检，正式Bundle整体验收仍未完成。
+
+无提交/推送、无新增SQL迁移、无现有任务库/运行组件升级；隔离测试PG及构建容器已清理。ARM64原生SQL、完整Bundle安装和产品视觉未验；r49持续日志保持，P3/V1.2/六维不提升，虚拟化继续延期。
+
+## 2026-11-03 r49 任务环境持续日志归档（GPT直接执行）
+
+30471 已接入固定源码构建的 vlagent 原生 Kubernetes collector 与独立 VictoriaLogs，持续读取真实 CRI 文件，持久检查点和 1GB 队列，保留30d。新来源通过真实管理员密码+TOTP 登记；原当前单容器按需来源仍显式可选。Pod/Namespace UID、容器身份与原始纳秒时间已核对，消息不能覆盖身份字段，样例脱敏。每10s用真正存储事件刷新水位和30s资格，错误/断连撤销，动态水位不改变固定来源证明或历史结果。
+
+真实页面两次各20条样例，刷新后4条自然新增；历史回放和外集群403通过。存储暂停约32s、期间采集器优雅重启后找回3条自然日志，固定窗口仍14条、历史摘要不变；中断时归档来源退出、原生按需仍可用。双容器及4个重启容器身份、同名Pod新UID隔离、删除后旧结果403通过，探针已清理。API/Worker/collector健康，schema72不变、30472/模型/SP05未动。
+
+证据与构建补丁见 evidence/gpt-log-archive-r49/README.md。采集限本节点任务namespace（上游API需要跨namespace Pod元数据只读权限）；覆盖仍unknown/partial，不声称严格一次。kubelet真实按大小轮转、磁盘满/长断连/缺口时间线和正式Bundle仍未验；TLS证书30d需后续正式续期。P3-02与V1.2保持in_progress、六维不提升、虚拟化继续延期。本轮无提交/推送；前一次0d6caa2代码同步仍是GitHub/远程仓库基线。
+
 ## 2026-10-29 r48 实际 Kubernetes 原生日志来源（GPT直接执行）
 
 用户明确要求“接通实际日志/来源改成实际的”。30471现为r48b API/Worker+r48 Web（index b05931cb…）、schema72；已登记Kubernetes源revision3、原CA/自动投射身份、原用户授权不变。PodLogs显式启用，通过当前Pod/Namespace UID和单运行容器指纹、实际pods/log零行权限探针，再按固定窗口直接读真实日志。当前runtime不再路由r37导入快照，旧容器/存储/登记/结果保留；不续期或导入日志。页面显示“Kubernetes 原生日志（当前容器）”和刷新来源，轮转与总体未知保留partial/not_measured，不以空样例冒充零。

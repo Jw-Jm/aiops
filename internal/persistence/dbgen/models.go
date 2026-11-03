@@ -765,6 +765,26 @@ type InvestigationJob struct {
 	AuthorizationVersion pgtype.Int4 `json:"authorization_version"`
 }
 
+type InvestigationObservationQuery struct {
+	TenantID     pgtype.UUID        `json:"tenant_id"`
+	QueryID      pgtype.UUID        `json:"query_id"`
+	OwnerSubject string             `json:"owner_subject"`
+	RequestKey   pgtype.UUID        `json:"request_key"`
+	ClusterUid   string             `json:"cluster_uid"`
+	SessionID    pgtype.UUID        `json:"session_id"`
+	Request      []byte             `json:"request"`
+	Scope        []byte             `json:"scope"`
+	View         []byte             `json:"view"`
+	Result       []byte             `json:"result"`
+	State        string             `json:"state"`
+	Revision     int64              `json:"revision"`
+	LeaseToken   pgtype.UUID        `json:"lease_token"`
+	LeaseUntil   pgtype.Timestamptz `json:"lease_until"`
+	CreatedAt    pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt    pgtype.Timestamptz `json:"updated_at"`
+	ExpiresAt    pgtype.Timestamptz `json:"expires_at"`
+}
+
 type InvestigationReplayLedger struct {
 	TenantID   pgtype.UUID        `json:"tenant_id"`
 	ContextID  pgtype.UUID        `json:"context_id"`

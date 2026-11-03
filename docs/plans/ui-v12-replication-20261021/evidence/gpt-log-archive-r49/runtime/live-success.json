@@ -1,0 +1,236 @@
+{
+  "mode": "success",
+  "at": "2026-11-03T03:27:14.945Z",
+  "origin": "https://192.168.0.63:30471",
+  "requests": [
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 401,
+      "requestId": "01a19f72-5f66-73b6-857f-245d000a2b1e"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "status": 201,
+      "requestId": "01a19f72-5fe6-722b-9efd-79a45f76bc37"
+    },
+    {
+      "path": "/api/v1/auth/session",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a19f72-61d0-7306-9d8a-67659d3a3f10"
+    },
+    {
+      "path": "/api/v1/capabilities",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a19f72-6206-7dc1-a6f1-9058aecb1661"
+    },
+    {
+      "path": "/api/v1/overview",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a19f72-6206-75fd-9fd4-284f3f9cf5b2"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a19f72-620e-7a49-b060-7fbab5de6d21"
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a19f72-6cda-71b2-a3a5-0426aba9178d"
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "method": "POST",
+      "status": 202,
+      "requestId": "01a19f72-7339-7e9e-ba00-a38cadfc954e"
+    },
+    {
+      "path": "/api/v1/observability/queries/4a0e4d6b-111a-4bcc-a512-96fe24ea9344",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a19f72-784a-7237-b01b-8498bfd80689"
+    },
+    {
+      "path": "/api/v1/observability/queries/4a0e4d6b-111a-4bcc-a512-96fe24ea9344",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a19f72-8384-7e70-87e3-0977e4f041fc"
+    },
+    {
+      "path": "/api/v1/observability/queries/4a0e4d6b-111a-4bcc-a512-96fe24ea9344/results",
+      "method": "GET",
+      "status": 200,
+      "requestId": "01a19f72-8e95-7283-ab2f-960e2bea7929"
+    }
+  ],
+  "outcome": {
+    "queryId": "4a0e4d6b-111a-4bcc-a512-96fe24ea9344",
+    "source": {
+      "collectorVersion": "v1.52.0-ops1",
+      "credentialRevision": 1,
+      "qualificationDigest": "sha256:409a97327972674ed76dd1a6179c58c01d3e38c37f6da3fcc888e1fc78b4dfaf",
+      "registrationId": "01a19f70-d86a-70d7-a29d-dc148a60be6a",
+      "registrationRevision": 1
+    },
+    "resource": {
+      "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+      "uid": "0e648683-1088-4032-9b39-0a122ff475be",
+      "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+      "namespaceScope": {
+        "kind": "namespaced",
+        "namespace": "ops-native-v12-r24-20261026",
+        "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+      }
+    },
+    "window": {
+      "from": "2026-11-03T03:25:02.150Z",
+      "to": "2026-11-03T03:27:02.150345437Z",
+      "timezone": "Asia/Shanghai",
+      "bounds": "[from,to)"
+    },
+    "events": [
+      {
+        "state": "accepted",
+        "revision": 1,
+        "requestId": "01a19f72-7339-7e9e-ba00-a38cadfc954e"
+      },
+      {
+        "state": "running",
+        "revision": 2,
+        "requestId": "01a19f72-784a-7237-b01b-8498bfd80689"
+      },
+      {
+        "state": "completed",
+        "revision": 3,
+        "requestId": "01a19f72-8384-7e70-87e3-0977e4f041fc"
+      }
+    ],
+    "finalState": "completed",
+    "resultStatus": 200,
+    "termination": null,
+    "failure": null,
+    "result": {
+      "resultId": "5880b876-c6f0-430b-bdd7-5b9a04da2bd2",
+      "resultDigest": "sha256:c0e8162438957cb3822a646699e10654bccd87f70536253c57932db022d44f00",
+      "status": "partial",
+      "population": {
+        "basis": "exact",
+        "count": 14,
+        "method": "source_total"
+      },
+      "sampleCount": 14,
+      "truncation": {
+        "reasons": [],
+        "truncated": false
+      },
+      "coverage": {
+        "basis": "unknown",
+        "complete": false,
+        "coveredFrom": "2026-11-03T03:25:02.15Z",
+        "coveredTo": "2026-11-03T03:27:02.150345437Z",
+        "gaps": []
+      },
+      "reauthorization": {
+        "authorizationVersion": 12,
+        "checkedAt": "2026-11-03T03:27:30.499945783Z",
+        "denialCode": null,
+        "result": "allowed",
+        "sourceRegistrationRevision": 1
+      },
+      "origins": [
+        {
+          "container": "seaweedfs",
+          "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-seaweedfs-0"
+        },
+        {
+          "container": "seaweedfs",
+          "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-seaweedfs-0"
+        },
+        {
+          "container": "seaweedfs",
+          "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-seaweedfs-0"
+        },
+        {
+          "container": "seaweedfs",
+          "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-seaweedfs-0"
+        },
+        {
+          "container": "seaweedfs",
+          "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-seaweedfs-0"
+        },
+        {
+          "container": "seaweedfs",
+          "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-seaweedfs-0"
+        },
+        {
+          "container": "seaweedfs",
+          "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-seaweedfs-0"
+        },
+        {
+          "container": "seaweedfs",
+          "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-seaweedfs-0"
+        },
+        {
+          "container": "seaweedfs",
+          "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-seaweedfs-0"
+        },
+        {
+          "container": "seaweedfs",
+          "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-seaweedfs-0"
+        },
+        {
+          "container": "seaweedfs",
+          "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-seaweedfs-0"
+        },
+        {
+          "container": "seaweedfs",
+          "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-seaweedfs-0"
+        },
+        {
+          "container": "seaweedfs",
+          "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-seaweedfs-0"
+        },
+        {
+          "container": "seaweedfs",
+          "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+          "pod": "ops-seaweedfs-0"
+        }
+      ]
+    }
+  },
+  "status": "passed"
+}

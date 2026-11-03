@@ -100,6 +100,10 @@ func ProvisionDatabaseLogins(ctx context.Context, conn *pgx.Conn, c DatabaseLogi
 			return errors.New("database connection grant failed")
 		}
 	}
+	// Later forward migrations create schemas under the non-login DDL owner.
+	if _, err = tx.Exec(ctx, "GRANT CREATE ON DATABASE "+pgx.Identifier{database}.Sanitize()+" TO schema_owner"); err != nil {
+		return errors.New("database schema creation grant failed")
+	}
 	if err = tx.Commit(ctx); err != nil {
 		return errors.New("database LOGIN bootstrap transaction failed")
 	}

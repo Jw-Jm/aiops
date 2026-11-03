@@ -1,0 +1,351 @@
+{
+  "at": "2026-11-03T07:02:02.833Z",
+  "queries": [
+    {
+      "intent": {
+        "schemaVersion": "query-intent/v1",
+        "datasetId": "metrics.pod-cpu",
+        "operation": "trend",
+        "metrics": [
+          "cpu_cores"
+        ],
+        "dimensions": [
+          "time"
+        ],
+        "filters": [],
+        "sort": [],
+        "limit": 20,
+        "stepSeconds": 60,
+        "timeRange": {
+          "from": "2026-11-03T06:59:50.000Z",
+          "to": "2026-11-03T07:01:50.000Z",
+          "timezone": "Asia/Shanghai"
+        }
+      },
+      "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+      "result": {
+        "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+        "datasetId": "metrics.pod-cpu",
+        "degradedSources": [],
+        "dimension": "time",
+        "exact": false,
+        "freshness": "fresh",
+        "planDigest": "sha256:326482e5411b33974bdf1d8887f72f326313148b88823762c9c15b74c2a4ea3b",
+        "rows": [
+          {
+            "dimension": "2026-11-03T06:59:50Z",
+            "value": 0.0033421799999996437
+          },
+          {
+            "dimension": "2026-11-03T07:00:50Z",
+            "value": 0.003218470000000101
+          },
+          {
+            "dimension": "2026-11-03T07:01:50Z",
+            "value": 0.00338407666666626
+          }
+        ],
+        "schemaVersion": "query-result/v1",
+        "scopeDigest": "sha256:1aeb9139b05c320f2486a38166b3653ab5e505bf6ee0809188be551a1ad3287b",
+        "snapshotReadAt": "2026-11-03T07:02:05.486943992Z",
+        "sourceManifest": {
+          "sourceId": "01a1a003-476d-7e02-9752-bf89d2dd0349",
+          "revision": 1,
+          "bindingDigest": "sha256:8b1f8f58eafb62bd5f7f82eff0018d0cce92708fc9d6bd310bce8bac0503d8eb",
+          "qualificationDigest": "sha256:c2dc34420ccf740840490206784f1cb93239be75871c0ccb1daa8a6dbf925ced",
+          "queryHash": "sha256:55b47a4657c20349889a0bf6536728fa8b0f7a5d22588ff082d210bcdcb85ff4",
+          "templateVersion": "metrics.pod-cpu-trend/v1",
+          "coverageFrom": "2026-11-03T06:59:50Z",
+          "coverageTo": "2026-11-03T07:01:50Z"
+        },
+        "status": "partial",
+        "stepSeconds": 60,
+        "timeRange": {
+          "from": "2026-11-03T06:59:50Z",
+          "to": "2026-11-03T07:01:50Z",
+          "timezone": "Asia/Shanghai"
+        },
+        "truncated": false,
+        "unit": "cores",
+        "warnings": [
+          "collection_coverage_unknown"
+        ]
+      }
+    },
+    {
+      "intent": {
+        "schemaVersion": "query-intent/v1",
+        "datasetId": "metrics.pod-memory",
+        "operation": "trend",
+        "metrics": [
+          "memory_bytes"
+        ],
+        "dimensions": [
+          "time"
+        ],
+        "filters": [],
+        "sort": [],
+        "limit": 20,
+        "stepSeconds": 60,
+        "timeRange": {
+          "from": "2026-11-03T06:59:50.000Z",
+          "to": "2026-11-03T07:01:50.000Z",
+          "timezone": "Asia/Shanghai"
+        }
+      },
+      "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+      "result": {
+        "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+        "datasetId": "metrics.pod-memory",
+        "degradedSources": [],
+        "dimension": "time",
+        "exact": false,
+        "freshness": "fresh",
+        "planDigest": "sha256:e6b14fe680efb5ca05db047bf3578ed619603ae37842322117fba27254382b98",
+        "rows": [
+          {
+            "dimension": "2026-11-03T06:59:50Z",
+            "value": 373886976
+          },
+          {
+            "dimension": "2026-11-03T07:00:50Z",
+            "value": 373936128
+          },
+          {
+            "dimension": "2026-11-03T07:01:50Z",
+            "value": 374509568
+          }
+        ],
+        "schemaVersion": "query-result/v1",
+        "scopeDigest": "sha256:1aeb9139b05c320f2486a38166b3653ab5e505bf6ee0809188be551a1ad3287b",
+        "snapshotReadAt": "2026-11-03T07:02:06.990971888Z",
+        "sourceManifest": {
+          "sourceId": "01a1a003-476d-7e02-9752-bf89d2dd0349",
+          "revision": 1,
+          "bindingDigest": "sha256:8b1f8f58eafb62bd5f7f82eff0018d0cce92708fc9d6bd310bce8bac0503d8eb",
+          "qualificationDigest": "sha256:589c13dc3370743238784b31cf9ec07dee17953dce924cd1509703ac929382dd",
+          "queryHash": "sha256:1b8ac137c548295bcaee6030481540ea9e7246d06137c6843196456be100b4db",
+          "templateVersion": "metrics.pod-memory-trend/v1",
+          "coverageFrom": "2026-11-03T06:59:50Z",
+          "coverageTo": "2026-11-03T07:01:50Z"
+        },
+        "status": "partial",
+        "stepSeconds": 60,
+        "timeRange": {
+          "from": "2026-11-03T06:59:50Z",
+          "to": "2026-11-03T07:01:50Z",
+          "timezone": "Asia/Shanghai"
+        },
+        "truncated": false,
+        "unit": "bytes",
+        "warnings": [
+          "collection_coverage_unknown"
+        ]
+      }
+    },
+    {
+      "intent": {
+        "schemaVersion": "query-intent/v1",
+        "datasetId": "metrics.pod-restarts",
+        "operation": "trend",
+        "metrics": [
+          "restart_increase"
+        ],
+        "dimensions": [
+          "time"
+        ],
+        "filters": [],
+        "sort": [],
+        "limit": 20,
+        "stepSeconds": 60,
+        "timeRange": {
+          "from": "2026-11-03T06:59:50.000Z",
+          "to": "2026-11-03T07:01:50.000Z",
+          "timezone": "Asia/Shanghai"
+        }
+      },
+      "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+      "result": {
+        "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+        "datasetId": "metrics.pod-restarts",
+        "degradedSources": [],
+        "dimension": "time",
+        "exact": false,
+        "freshness": "fresh",
+        "planDigest": "sha256:052dc08fadf053aeb70781da2118d3c7d94312f607dcb8f82cffd548488e7271",
+        "rows": [
+          {
+            "dimension": "2026-11-03T06:59:50Z",
+            "value": 0
+          },
+          {
+            "dimension": "2026-11-03T07:00:50Z",
+            "value": 0
+          },
+          {
+            "dimension": "2026-11-03T07:01:50Z",
+            "value": 0
+          }
+        ],
+        "schemaVersion": "query-result/v1",
+        "scopeDigest": "sha256:1aeb9139b05c320f2486a38166b3653ab5e505bf6ee0809188be551a1ad3287b",
+        "snapshotReadAt": "2026-11-03T07:02:09.251846652Z",
+        "sourceManifest": {
+          "sourceId": "01a1a003-476d-7e02-9752-bf89d2dd0349",
+          "revision": 1,
+          "bindingDigest": "sha256:8b1f8f58eafb62bd5f7f82eff0018d0cce92708fc9d6bd310bce8bac0503d8eb",
+          "qualificationDigest": "sha256:93d2113cd026329327a3c1f65a5ba55a6cd004c7246d9d4ab73ee45a41468615",
+          "queryHash": "sha256:a21715806f6a1bc41269ffb39ee379bae494852771794d7ebc378cd8145ef131",
+          "templateVersion": "metrics.pod-restarts-trend/v1",
+          "coverageFrom": "2026-11-03T06:59:50Z",
+          "coverageTo": "2026-11-03T07:01:50Z"
+        },
+        "status": "partial",
+        "stepSeconds": 60,
+        "timeRange": {
+          "from": "2026-11-03T06:59:50Z",
+          "to": "2026-11-03T07:01:50Z",
+          "timezone": "Asia/Shanghai"
+        },
+        "truncated": false,
+        "unit": "restarts",
+        "warnings": [
+          "collection_coverage_unknown"
+        ]
+      }
+    },
+    {
+      "intent": {
+        "schemaVersion": "query-intent/v1",
+        "datasetId": "metrics.pod-phase",
+        "operation": "trend",
+        "metrics": [
+          "phase_count"
+        ],
+        "dimensions": [
+          "time"
+        ],
+        "filters": [],
+        "sort": [],
+        "limit": 20,
+        "stepSeconds": 60,
+        "timeRange": {
+          "from": "2026-11-03T06:59:50.000Z",
+          "to": "2026-11-03T07:01:50.000Z",
+          "timezone": "Asia/Shanghai"
+        }
+      },
+      "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+      "result": {
+        "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+        "datasetId": "metrics.pod-phase",
+        "degradedSources": [],
+        "dimension": "time",
+        "exact": false,
+        "freshness": "fresh",
+        "planDigest": "sha256:64162bdb54df4caba096892cdc39e381f6e2d407462701ac75d1e92c2f6d6a57",
+        "rows": [
+          {
+            "dimension": "2026-11-03T06:59:50Z",
+            "value": 1
+          },
+          {
+            "dimension": "2026-11-03T07:00:50Z",
+            "value": 1
+          },
+          {
+            "dimension": "2026-11-03T07:01:50Z",
+            "value": 1
+          }
+        ],
+        "schemaVersion": "query-result/v1",
+        "scopeDigest": "sha256:1aeb9139b05c320f2486a38166b3653ab5e505bf6ee0809188be551a1ad3287b",
+        "snapshotReadAt": "2026-11-03T07:02:10.253398468Z",
+        "sourceManifest": {
+          "sourceId": "01a1a003-476d-7e02-9752-bf89d2dd0349",
+          "revision": 1,
+          "bindingDigest": "sha256:8b1f8f58eafb62bd5f7f82eff0018d0cce92708fc9d6bd310bce8bac0503d8eb",
+          "qualificationDigest": "sha256:b4d367825c420f52fce9899ed3ab3add5ea77a6c7bcb6800591f7358651a581f",
+          "queryHash": "sha256:be6bb156386b8334ccf8dffcd6515b5d63bd7f62bb72bcf4dcd4137decc544ed",
+          "templateVersion": "metrics.pod-phase-trend/v1",
+          "coverageFrom": "2026-11-03T06:59:50Z",
+          "coverageTo": "2026-11-03T07:01:50Z"
+        },
+        "status": "partial",
+        "stepSeconds": 60,
+        "timeRange": {
+          "from": "2026-11-03T06:59:50Z",
+          "to": "2026-11-03T07:01:50Z",
+          "timezone": "Asia/Shanghai"
+        },
+        "truncated": false,
+        "unit": "resources",
+        "warnings": [
+          "collection_coverage_unknown"
+        ]
+      }
+    }
+  ],
+  "errors": [],
+  "requests": [
+    {
+      "path": "/api/v1/metrics/capabilities",
+      "status": 200,
+      "requestId": "01a1a037-08c8-70b7-878e-9a899b01cadc"
+    },
+    {
+      "path": "/api/v1/metrics/query",
+      "status": 200,
+      "requestId": "01a1a037-0db1-79b2-a323-083c65eea14b"
+    },
+    {
+      "path": "/api/v1/metrics/query",
+      "status": 200,
+      "requestId": "01a1a037-138b-75da-adac-b18191c29e78"
+    },
+    {
+      "path": "/api/v1/metrics/query",
+      "status": 200,
+      "requestId": "01a1a037-1956-7899-8d04-1b6d38c5390f"
+    },
+    {
+      "path": "/api/v1/metrics/query",
+      "status": 200,
+      "requestId": "01a1a037-2125-7c42-865a-6d7e9ca58ed7"
+    },
+    {
+      "path": "/api/v1/metrics/query",
+      "status": 403,
+      "requestId": "01a1a037-2313-7ad4-a97f-4ef75f8accd7"
+    },
+    {
+      "path": "/api/v1/metrics/query",
+      "status": 400,
+      "requestId": "01a1a037-2398-7c3f-aedc-2f7481ec9639"
+    },
+    {
+      "path": "/api/v1/metrics/query",
+      "status": 200,
+      "requestId": "01a1a037-2421-7973-8c65-2ed5647d8940"
+    },
+    {
+      "path": "/api/v1/metrics/query",
+      "status": 403,
+      "requestId": "01a1a037-2565-7b93-b06f-6b99d9961d16"
+    }
+  ],
+  "businessWrites": 0,
+  "guards": {
+    "foreignStatus": 403,
+    "rawQueryStatus": 400,
+    "missing": {
+      "status": 200,
+      "resultStatus": "no_data",
+      "rows": [],
+      "exact": false
+    },
+    "csrfStatus": 403
+  },
+  "status": "failed",
+  "failure": "refusing to capture /data/ops-v12-native-visual-r24-20261026/r51/metrics-phase.png: secret UI present (recovery-code)"
+}

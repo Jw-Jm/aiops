@@ -48,7 +48,7 @@ func (v *Victoria) executeLogSamples(ctx context.Context, p VictoriaPlan) (Query
 	if err != nil || len(body) > 64<<10 {
 		return QueryResult{}, ErrSource
 	}
-	out := QueryResult{SchemaVersion: "query-result/v1", DatasetID: p.intent.DatasetID, PlanDigest: p.digest, CatalogDigest: p.catalogDigest, ScopeDigest: graph.ScopeDigest(p.scope), Status: "partial", Exact: false, Unit: p.unit, Rows: []Row{}, Samples: []LogSample{}, SnapshotReadAt: time.Now().UTC(), Freshness: "fresh", TimeRange: copyQueryTimeRange(p.intent.TimeRange), Warnings: []string{"bounded_sanitized_samples_not_total_count"}, DegradedSources: []string{}, SourceManifest: &SourceManifest{v.binding.SourceID, v.binding.Revision, evidence.BindingScopeDigest(v.binding), graph.ScopeDigest(p.qualification), graph.ScopeDigest(p.query), p.intent.DatasetID + "-samples/v1", p.intent.TimeRange.From, p.intent.TimeRange.To}}
+	out := QueryResult{SchemaVersion: "query-result/v1", DatasetID: p.intent.DatasetID, PlanDigest: p.digest, CatalogDigest: p.catalogDigest, ScopeDigest: graph.ScopeDigest(p.scope), Status: "partial", Exact: false, Unit: p.unit, Rows: []Row{}, Samples: []LogSample{}, SnapshotReadAt: time.Now().UTC(), Freshness: "fresh", TimeRange: copyQueryTimeRange(p.intent.TimeRange), Warnings: []string{"bounded_sanitized_samples_not_total_count"}, DegradedSources: []string{}, SourceManifest: &SourceManifest{v.binding.SourceID, v.binding.Revision, evidence.BindingScopeDigest(v.binding), p.qualification.Digest(), graph.ScopeDigest(p.query), p.intent.DatasetID + "-samples/v1", p.intent.TimeRange.From, p.intent.TimeRange.To}}
 	scanner := bufio.NewScanner(bytes.NewReader(body))
 	scanner.Buffer(make([]byte, 4096), 64<<10)
 	count := 0
@@ -61,7 +61,12 @@ func (v *Victoria) executeLogSamples(ctx context.Context, p VictoriaPlan) (Query
 			return QueryResult{}, ErrSource
 		}
 		var entry map[string]string
-		if json.Unmarshal(scanner.Bytes(), &entry) != nil || entry["tenant"] != p.scope.Tenant || entry["cluster"] != p.scope.Cluster || !slices.Contains(p.scope.Namespaces, entry["namespace"]) || entry["uid"] == "" {
+		if json.Unmarshal(scanner.Bytes(), &entry) != nil {
+			return QueryResult{}, ErrSource
+		}
+		entry["namespace"] = entry[v.binding.LogField("namespace")]
+		entry["uid"] = entry[v.binding.LogField("uid")]
+		if entry["tenant"] != p.scope.Tenant || entry["cluster"] != p.scope.Cluster || !slices.Contains(p.scope.Namespaces, entry["namespace"]) || entry["uid"] == "" {
 			return QueryResult{}, ErrSource
 		}
 		if level := p.intent.Filters; len(level) > 0 {
@@ -109,7 +114,16 @@ func (v *Victoria) executeLogSamples(ctx context.Context, p VictoriaPlan) (Query
 		if !slices.Contains([]string{"error", "warn", "info", "debug"}, level) {
 			level = "unknown"
 		}
-		out.Samples = append(out.Samples, LogSample{at.UTC(), text, level})
+		sample := LogSample{Timestamp: at.UTC(), Message: text, Level: level}
+		if v.binding.KubernetesLogArchive() {
+			sample.Fields = map[string]string{}
+			for key, field := range map[string]string{"container": "kubernetes.container_name", "pod": "kubernetes.pod_name", "stream": "output_stream", "containerId": "kubernetes.container_id", "namespaceUid": "kubernetes.namespace_uid"} {
+				if value := entry[field]; value != "" {
+					sample.Fields[key] = value
+				}
+			}
+		}
+		out.Samples = append(out.Samples, sample)
 	}
 	if scanner.Err() != nil {
 		return QueryResult{}, ErrSource

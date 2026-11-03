@@ -1,0 +1,184 @@
+{
+    "apiVersion": "apps/v1",
+    "kind": "DaemonSet",
+    "metadata": {
+        "annotations": {
+            "deprecated.daemonset.template.generation": "4",
+            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"DaemonSet\",\"metadata\":{\"annotations\":{},\"name\":\"ops-r49-log-collector\",\"namespace\":\"ops-native-v12-r24-20261026\"},\"spec\":{\"selector\":{\"matchLabels\":{\"app\":\"ops-r49-log-collector\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"ops-r49-log-collector\"}},\"spec\":{\"containers\":[{\"args\":[\"-kubernetesCollector\",\"-httpListenAddr=127.0.0.1:19429\",\"-tmpDataPath=/data\",\"-remoteWrite.url=https://127.0.0.1:19438/insert/native\",\"-remoteWrite.basicAuth.username=r49-archive\",\"-remoteWrite.basicAuth.passwordFile=/private/http-password\",\"-remoteWrite.tlsCAFile=/private/tls.crt\",\"-remoteWrite.maxDiskUsagePerURL=1GB\",\"-remoteWrite.queues=1\",\"-kubernetesCollector.includePodLabels=false\",\"-kubernetesCollector.excludeFilter=NOT kubernetes.pod_namespace:\\\"ops-native-v12-r24-20261026\\\" OR kubernetes.pod_name:~\\\"ops-r49-log-collector-.*\\\"\",\"-kubernetesCollector.extraFields={\\\"tenant\\\": \\\"01a177f1-372f-75b7-be90-e8121d1445f5\\\", \\\"cluster\\\": \\\"79014400-9453-4cb4-9678-0fae47981d79\\\", \\\"collector\\\": \\\"vlagent-kubernetes/v1\\\"}\",\"-kubernetesCollector.streamFields=tenant,cluster,collector,kubernetes.pod_namespace,kubernetes.pod_uid,kubernetes.container_name\"],\"command\":[\"/ops/vlagent\"],\"image\":\"ops.local/amd64-poc/victoria-logs:v1.52.0\",\"imagePullPolicy\":\"Never\",\"name\":\"collector\",\"resources\":{\"limits\":{\"cpu\":\"1\",\"memory\":\"512Mi\"},\"requests\":{\"cpu\":\"50m\",\"memory\":\"128Mi\"}},\"securityContext\":{\"allowPrivilegeEscalation\":false,\"capabilities\":{\"drop\":[\"ALL\"]},\"readOnlyRootFilesystem\":true,\"runAsUser\":0},\"volumeMounts\":[{\"mountPath\":\"/ops\",\"name\":\"bin\",\"readOnly\":true},{\"mountPath\":\"/data\",\"name\":\"state\",\"readOnly\":false},{\"mountPath\":\"/private\",\"name\":\"private\",\"readOnly\":true},{\"mountPath\":\"/var/log/containers\",\"name\":\"containers\",\"readOnly\":true},{\"mountPath\":\"/var/log/pods\",\"name\":\"pods\",\"readOnly\":true}]}],\"dnsPolicy\":\"ClusterFirstWithHostNet\",\"hostNetwork\":true,\"nodeSelector\":{\"kubernetes.io/hostname\":\"mssc\"},\"serviceAccountName\":\"ops-r49-log-collector\",\"terminationGracePeriodSeconds\":30,\"volumes\":[{\"hostPath\":{\"path\":\"/data/ops-v12-native-visual-r24-20261026/r49/bin\",\"type\":\"Directory\"},\"name\":\"bin\"},{\"hostPath\":{\"path\":\"/data/ops-v12-native-visual-r24-20261026/r49/collector-data\",\"type\":\"Directory\"},\"name\":\"state\"},{\"name\":\"private\",\"secret\":{\"secretName\":\"ops-r49-log-collector\"}},{\"hostPath\":{\"path\":\"/var/log/containers\",\"type\":\"Directory\"},\"name\":\"containers\"},{\"hostPath\":{\"path\":\"/var/log/pods\",\"type\":\"Directory\"},\"name\":\"pods\"}]}}}}\n"
+        },
+        "creationTimestamp": "2026-11-03T03:20:31Z",
+        "generation": 4,
+        "name": "ops-r49-log-collector",
+        "namespace": "ops-native-v12-r24-20261026",
+        "resourceVersion": "2253378",
+        "uid": "1544e571-94a7-4275-ba9c-d2a8d34e84b4"
+    },
+    "spec": {
+        "revisionHistoryLimit": 10,
+        "selector": {
+            "matchLabels": {
+                "app": "ops-r49-log-collector"
+            }
+        },
+        "template": {
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/restartedAt": "2026-11-03T11:29:02+08:00"
+                },
+                "labels": {
+                    "app": "ops-r49-log-collector"
+                }
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "args": [
+                            "-kubernetesCollector",
+                            "-httpListenAddr=127.0.0.1:19429",
+                            "-tmpDataPath=/data",
+                            "-remoteWrite.url=https://127.0.0.1:19438/insert/native",
+                            "-remoteWrite.basicAuth.username=r49-archive",
+                            "-remoteWrite.basicAuth.passwordFile=/private/http-password",
+                            "-remoteWrite.tlsCAFile=/private/tls.crt",
+                            "-remoteWrite.maxDiskUsagePerURL=1GB",
+                            "-remoteWrite.queues=1",
+                            "-kubernetesCollector.includePodLabels=false",
+                            "-kubernetesCollector.excludeFilter=NOT kubernetes.pod_namespace:\"ops-native-v12-r24-20261026\" OR kubernetes.pod_name:~\"ops-r49-log-collector-.*\"",
+                            "-kubernetesCollector.extraFields={\"tenant\": \"01a177f1-372f-75b7-be90-e8121d1445f5\", \"cluster\": \"79014400-9453-4cb4-9678-0fae47981d79\", \"collector\": \"vlagent-kubernetes/v1\"}",
+                            "-kubernetesCollector.streamFields=tenant,cluster,collector,kubernetes.pod_namespace,kubernetes.pod_uid,kubernetes.container_name"
+                        ],
+                        "command": [
+                            "/ops/vlagent"
+                        ],
+                        "env": [
+                            {
+                                "name": "POD_NAME",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.name"
+                                    }
+                                }
+                            }
+                        ],
+                        "image": "ops.local/verification-20261019/platform-worker@sha256:48d3700cd7595781e5384821b07e8fa38aaf172ada0fe2b55832fedd661a92ad",
+                        "imagePullPolicy": "Never",
+                        "name": "collector",
+                        "resources": {
+                            "limits": {
+                                "cpu": "1",
+                                "memory": "512Mi"
+                            },
+                            "requests": {
+                                "cpu": "50m",
+                                "memory": "128Mi"
+                            }
+                        },
+                        "securityContext": {
+                            "allowPrivilegeEscalation": false,
+                            "capabilities": {
+                                "drop": [
+                                    "ALL"
+                                ]
+                            },
+                            "readOnlyRootFilesystem": true,
+                            "runAsUser": 0
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/ops",
+                                "name": "bin",
+                                "readOnly": true
+                            },
+                            {
+                                "mountPath": "/data",
+                                "name": "state"
+                            },
+                            {
+                                "mountPath": "/private",
+                                "name": "private",
+                                "readOnly": true
+                            },
+                            {
+                                "mountPath": "/var/log/containers",
+                                "name": "containers",
+                                "readOnly": true
+                            },
+                            {
+                                "mountPath": "/var/log/pods",
+                                "name": "pods",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirstWithHostNet",
+                "hostNetwork": true,
+                "nodeSelector": {
+                    "kubernetes.io/hostname": "mssc"
+                },
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "serviceAccount": "ops-r49-log-collector",
+                "serviceAccountName": "ops-r49-log-collector",
+                "terminationGracePeriodSeconds": 30,
+                "volumes": [
+                    {
+                        "hostPath": {
+                            "path": "/data/ops-v12-native-visual-r24-20261026/r49/bin",
+                            "type": "Directory"
+                        },
+                        "name": "bin"
+                    },
+                    {
+                        "hostPath": {
+                            "path": "/data/ops-v12-native-visual-r24-20261026/r49/collector-data",
+                            "type": "Directory"
+                        },
+                        "name": "state"
+                    },
+                    {
+                        "name": "private",
+                        "secret": {
+                            "defaultMode": 420,
+                            "secretName": "ops-r49-log-collector"
+                        }
+                    },
+                    {
+                        "hostPath": {
+                            "path": "/var/log/containers",
+                            "type": "Directory"
+                        },
+                        "name": "containers"
+                    },
+                    {
+                        "hostPath": {
+                            "path": "/var/log/pods",
+                            "type": "Directory"
+                        },
+                        "name": "pods"
+                    }
+                ]
+            }
+        },
+        "updateStrategy": {
+            "rollingUpdate": {
+                "maxSurge": 0,
+                "maxUnavailable": 1
+            },
+            "type": "RollingUpdate"
+        }
+    },
+    "status": {
+        "currentNumberScheduled": 1,
+        "desiredNumberScheduled": 1,
+        "numberAvailable": 1,
+        "numberMisscheduled": 0,
+        "numberReady": 1,
+        "observedGeneration": 4,
+        "updatedNumberScheduled": 1
+    }
+}

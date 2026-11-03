@@ -141,9 +141,10 @@ type Statistic struct {
 }
 
 type LogSample struct {
-	Timestamp time.Time `json:"timestamp"`
-	Message   string    `json:"message"`
-	Level     string    `json:"level"`
+	Fields    map[string]string `json:"fields,omitempty"`
+	Timestamp time.Time         `json:"timestamp"`
+	Message   string            `json:"message"`
+	Level     string            `json:"level"`
 }
 
 type SourceManifest struct {

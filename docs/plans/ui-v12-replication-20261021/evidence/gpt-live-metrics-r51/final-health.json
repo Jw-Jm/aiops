@@ -1,0 +1,103 @@
+{
+  "checkedAt": "2026-11-03T07:03:55.546458+00:00",
+  "status": "passed",
+  "pods": [
+    {
+      "name": "ops-r51-ksm",
+      "uid": "b4d98dc8-cbb0-4716-9614-738fb5ce36ce",
+      "phase": "Running",
+      "containerRestarts": 0,
+      "createdAt": "2026-11-03T06:48:47Z",
+      "tokenIssuedAt": 1793689010,
+      "tokenExpiresAt": 1793689610,
+      "rotationAfterPodCreationVerified": true,
+      "boundPodUIDMatched": true
+    },
+    {
+      "name": "ops-r51-metrics",
+      "uid": "07912e9e-8b4e-4727-a7de-fdc8169ec520",
+      "phase": "Running",
+      "containerRestarts": 0,
+      "createdAt": "2026-11-03T06:49:20Z",
+      "tokenIssuedAt": 1793689067,
+      "tokenExpiresAt": 1793689667,
+      "rotationAfterPodCreationVerified": true,
+      "boundPodUIDMatched": true
+    }
+  ],
+  "rbac": [
+    {
+      "sa": "ops-r51-metrics",
+      "verb": "get",
+      "resource": "nodes/mssc",
+      "extra": [
+        "--subresource=metrics"
+      ],
+      "allowed": true
+    },
+    {
+      "sa": "ops-r51-metrics",
+      "verb": "get",
+      "resource": "nodes/mssc",
+      "extra": [
+        "--subresource=proxy"
+      ],
+      "allowed": false
+    },
+    {
+      "sa": "ops-r51-metrics",
+      "verb": "list",
+      "resource": "secrets",
+      "extra": [],
+      "allowed": false
+    },
+    {
+      "sa": "ops-r51-ksm",
+      "verb": "list",
+      "resource": "pods",
+      "extra": [],
+      "allowed": true
+    },
+    {
+      "sa": "ops-r51-ksm",
+      "verb": "watch",
+      "resource": "pods",
+      "extra": [],
+      "allowed": true
+    },
+    {
+      "sa": "ops-r51-ksm",
+      "verb": "get",
+      "resource": "pods",
+      "extra": [
+        "--subresource=log"
+      ],
+      "allowed": false
+    },
+    {
+      "sa": "ops-r51-ksm",
+      "verb": "list",
+      "resource": "secrets",
+      "extra": [],
+      "allowed": false
+    },
+    {
+      "sa": "ops-r51-ksm",
+      "verb": "delete",
+      "resource": "pods",
+      "extra": [],
+      "allowed": false
+    }
+  ],
+  "allFourFamiliesFreshAfterTokenRotation": true,
+  "runningContainers": [
+    "ops-v12-native-r51b-web-30471",
+    "ops-v12-r49-victorialogs",
+    "ops-v12-r37-victorialogs",
+    "ops-v12-native-r36b-web-30472",
+    "ops-v12-native-r24-pg",
+    "ops-ui-v12-mfa-pg-20261022",
+    "ops-ui-v12-preview-r2-web",
+    "ops-ui-v12-preview-r1-web"
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "checkedAt": "2026-11-03T07:04:11.553749+00:00",
+  "status": "passed",
+  "checks": [
+    {
+      "datasetId": "metrics.pod-cpu",
+      "nativeExpression": "sum(rate(container_cpu_usage_seconds_total{cluster=\"79014400-9453-4cb4-9678-0fae47981d79\",collector=\"victoriametrics-kubernetes/v1\",namespace=\"ops-native-v12-r24-20261026\",tenant=\"01a177f1-372f-75b7-be90-e8121d1445f5\",uid=\"0e648683-1088-4032-9b39-0a122ff475be\",container!=\"\",container!=\"POD\"}[5m]))",
+      "timeRange": {
+        "from": "2026-11-03T07:01:50.000Z",
+        "to": "2026-11-03T07:03:50.000Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "matchedPoints": 3
+    },
+    {
+      "datasetId": "metrics.pod-memory",
+      "nativeExpression": "sum(last_over_time(container_memory_working_set_bytes{cluster=\"79014400-9453-4cb4-9678-0fae47981d79\",collector=\"victoriametrics-kubernetes/v1\",namespace=\"ops-native-v12-r24-20261026\",tenant=\"01a177f1-372f-75b7-be90-e8121d1445f5\",uid=\"0e648683-1088-4032-9b39-0a122ff475be\",container!=\"\",container!=\"POD\"}[5m]))",
+      "timeRange": {
+        "from": "2026-11-03T07:01:50.000Z",
+        "to": "2026-11-03T07:03:50.000Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "matchedPoints": 3
+    },
+    {
+      "datasetId": "metrics.pod-restarts",
+      "nativeExpression": "sum(increase(kube_pod_container_status_restarts_total{cluster=\"79014400-9453-4cb4-9678-0fae47981d79\",collector=\"victoriametrics-kubernetes/v1\",namespace=\"ops-native-v12-r24-20261026\",tenant=\"01a177f1-372f-75b7-be90-e8121d1445f5\",uid=\"0e648683-1088-4032-9b39-0a122ff475be\"}[60s]))",
+      "timeRange": {
+        "from": "2026-11-03T07:01:50.000Z",
+        "to": "2026-11-03T07:03:50.000Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "matchedPoints": 3
+    },
+    {
+      "datasetId": "metrics.pod-phase",
+      "nativeExpression": "sum(last_over_time(kube_pod_status_phase{cluster=\"79014400-9453-4cb4-9678-0fae47981d79\",collector=\"victoriametrics-kubernetes/v1\",namespace=\"ops-native-v12-r24-20261026\",tenant=\"01a177f1-372f-75b7-be90-e8121d1445f5\",uid=\"0e648683-1088-4032-9b39-0a122ff475be\"}[5m]) == bool 1)",
+      "timeRange": {
+        "from": "2026-11-03T07:01:50.000Z",
+        "to": "2026-11-03T07:03:50.000Z",
+        "timezone": "Asia/Shanghai"
+      },
+      "matchedPoints": 3
+    }
+  ],
+  "nativeDataWrites": 0
+}

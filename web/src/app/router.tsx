@@ -153,8 +153,13 @@ export const router = createBrowserRouter([
                   Component: (await import("../pages/LogsPage")).LogsPage,
                 }),
               },
+              {
+                path: "/observe/metrics",
+                lazy: async () => ({
+                  Component: (await import("../pages/MetricsPage")).MetricsPage,
+                }),
+              },
               ...[
-                ["metrics", "指标查询"],
                 ["network", "网络观测"],
                 ["hardware", "硬件健康"],
               ].map(([key, title]) => ({

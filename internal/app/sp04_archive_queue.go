@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"log/slog"
 	"ops-platform/internal/evidence"
 	"ops-platform/internal/graph"
 	"sync"
@@ -99,8 +100,9 @@ func (q *projectionArchiveQueue) run() {
 			return
 		case job = <-q.jobs:
 		}
+		reported := false
 		for q.ctx.Err() == nil {
-			bounded, cancel := context.WithTimeout(q.ctx, 3*time.Second)
+			bounded, cancel := context.WithTimeout(q.ctx, projectionArchiveTimeout)
 			err := q.archive.Recover(bounded, uuid.MustParse(q.cluster.Tenant), job.id)
 			cancel()
 			q.mu.Lock()
@@ -110,6 +112,10 @@ func (q *projectionArchiveQueue) run() {
 			}
 			if err != nil {
 				q.failed[job.key] = true
+				if !reported {
+					slog.Warn("Projection archive recovery unavailable", "evidenceId", job.id, "error", evidence.Redact(err.Error()))
+					reported = true
+				}
 			}
 			q.healthLocked()
 			q.mu.Unlock()

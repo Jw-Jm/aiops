@@ -90,6 +90,9 @@ func (s Service) capabilities(ctx context.Context, claims graph.Claims, resource
 			return nil, ErrUnavailable
 		}
 		entry := Capability{Source: Source{RegistrationID: sid, RegistrationRevision: samples.Revision, QualificationDigest: graph.ScopeDigest([]analytics.SourceCapability{*samples, *aggregate}), CollectorVersion: samples.CollectorVersion}, CoverageFrom: samples.CoverageFrom, CoverageTo: samples.CoverageTo, VerifiedUntil: samples.VerifiedUntil, MaxWindowSeconds: min(samples.MaxWindowSeconds, aggregate.MaxWindowSeconds)}
+		if samples.Status == "continuous_verified" && aggregate.Status == "continuous_verified" {
+			entry.Source.QualificationDigest = graph.ScopeDigest([]string{samples.ProofDigest, aggregate.ProofDigest})
+		}
 		if aggregate.CoverageFrom.After(entry.CoverageFrom) {
 			entry.CoverageFrom = aggregate.CoverageFrom
 		}

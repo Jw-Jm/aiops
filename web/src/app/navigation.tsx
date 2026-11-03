@@ -71,7 +71,7 @@ export const NAV: NavGroup[] = [
         name: "监控与观测",
         icon: <LineChartOutlined />,
         children: [
-          { path: "/observe/metrics", name: "指标查询", available: false },
+          { path: "/observe/metrics", name: "指标查询", available: true },
           { path: "/observe/logs", name: "日志查询", available: true },
           { path: "/observe/network", name: "网络观测", available: false },
           { path: "/observe/hardware", name: "硬件健康", available: false },

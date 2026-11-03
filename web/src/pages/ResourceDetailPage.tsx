@@ -290,7 +290,8 @@ function ResourceDetail({ cluster, id }: { cluster: string; id: string }) {
                   ].map(([path, title]) => {
                     const available =
                       navItem("/observe/" + path)?.available &&
-                      (path !== "logs" || current.kind === "Pod");
+                      (!["logs", "metrics"].includes(path) ||
+                        current.kind === "Pod");
                     return (
                       <Surface key={path} title={title}>
                         <div className="v12-resource-pad">
@@ -306,8 +307,8 @@ function ResourceDetail({ cluster, id }: { cluster: string; id: string }) {
                             <>
                               <Button disabled>进入{title}</Button>
                               <p className="muted">
-                                {path === "logs"
-                                  ? "当前日志模板仅支持已授权 Pod。"
+                                {["logs", "metrics"].includes(path)
+                                  ? "当前观测模板仅支持已授权 Pod。"
                                   : "当前版本尚未开放此工作台。"}
                               </p>
                             </>

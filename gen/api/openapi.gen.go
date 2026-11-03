@@ -2811,9 +2811,10 @@ type AssistantQueryResultV1 struct {
 		Value     float32 `json:"value"`
 	} `json:"rows"`
 	Samples *[]struct {
-		Level     interface{} `json:"level"`
-		Message   string      `json:"message"`
-		Timestamp time.Time   `json:"timestamp"`
+		Fields    *map[string]string `json:"fields,omitempty"`
+		Level     interface{}        `json:"level"`
+		Message   string             `json:"message"`
+		Timestamp time.Time          `json:"timestamp"`
 	} `json:"samples,omitempty"`
 	SchemaVersion  interface{} `json:"schemaVersion"`
 	ScopeDigest    string      `json:"scopeDigest"`
@@ -6135,6 +6136,55 @@ type CancelInvestigationdefaultJSONResponseBody struct {
 	union json.RawMessage
 }
 
+// GetMetricCapabilitiesParams defines parameters for GetMetricCapabilities.
+type GetMetricCapabilitiesParams struct {
+	ClusterUid  string `form:"clusterUid" json:"clusterUid"`
+	CanonicalId string `form:"canonicalId" json:"canonicalId"`
+}
+
+// QueryPodMetricsJSONBody defines parameters for QueryPodMetrics.
+type QueryPodMetricsJSONBody struct {
+	CanonicalId string `json:"canonicalId"`
+	Intent      struct {
+		ComparisonTimeRange *struct {
+			From     time.Time `json:"from"`
+			Timezone string    `json:"timezone"`
+			To       time.Time `json:"to"`
+		} `json:"comparisonTimeRange,omitempty"`
+		DatasetId  interface{} `json:"datasetId"`
+		Dimensions []string    `json:"dimensions"`
+		Filters    []struct {
+			Field    string `json:"field"`
+			Operator string `json:"operator"`
+			Value    string `json:"value"`
+		} `json:"filters"`
+		Limit            int      `json:"limit"`
+		Metrics          []string `json:"metrics"`
+		NetworkSelection *struct {
+			Direction         interface{} `json:"direction"`
+			PeerCanonicalId   string      `json:"peerCanonicalId"`
+			TargetCanonicalId string      `json:"targetCanonicalId"`
+		} `json:"networkSelection,omitempty"`
+		Operation     string      `json:"operation"`
+		SchemaVersion interface{} `json:"schemaVersion"`
+		Sort          []struct {
+			Direction interface{} `json:"direction"`
+			Field     string      `json:"field"`
+		} `json:"sort"`
+		StepSeconds *int `json:"stepSeconds,omitempty"`
+		TimeRange   *struct {
+			From     time.Time `json:"from"`
+			Timezone string    `json:"timezone"`
+			To       time.Time `json:"to"`
+		} `json:"timeRange,omitempty"`
+	} `json:"intent"`
+}
+
+// QueryPodMetricsParams defines parameters for QueryPodMetrics.
+type QueryPodMetricsParams struct {
+	ClusterUid string `form:"clusterUid" json:"clusterUid"`
+}
+
 // GetObservationCapabilitiesParams defines parameters for GetObservationCapabilities.
 type GetObservationCapabilitiesParams struct {
 	ClusterUid  string  `form:"clusterUid" json:"clusterUid"`
@@ -6431,6 +6481,9 @@ type MergeIncidentsJSONRequestBody = IncidentMergeV2
 
 // CancelInvestigationJSONRequestBody defines body for CancelInvestigation for application/json ContentType.
 type CancelInvestigationJSONRequestBody = CancelInvestigationJSONBody
+
+// QueryPodMetricsJSONRequestBody defines body for QueryPodMetrics for application/json ContentType.
+type QueryPodMetricsJSONRequestBody QueryPodMetricsJSONBody
 
 // CreateObservationQueryJSONRequestBody defines body for CreateObservationQuery for application/json ContentType.
 type CreateObservationQueryJSONRequestBody = ObservationCreateRequestV1
@@ -9919,6 +9972,12 @@ type ServerInterface interface {
 	// (POST /api/v1/investigations/{jobId}:cancel)
 	CancelInvestigation(w http.ResponseWriter, r *http.Request, jobId string, params CancelInvestigationParams)
 
+	// (GET /api/v1/metrics/capabilities)
+	GetMetricCapabilities(w http.ResponseWriter, r *http.Request, params GetMetricCapabilitiesParams)
+
+	// (POST /api/v1/metrics/query)
+	QueryPodMetrics(w http.ResponseWriter, r *http.Request, params QueryPodMetricsParams)
+
 	// (GET /api/v1/observability/capabilities)
 	GetObservationCapabilities(w http.ResponseWriter, r *http.Request, params GetObservationCapabilitiesParams)
 
@@ -10570,6 +10629,16 @@ func (_ Unimplemented) GetInvestigationSteps(w http.ResponseWriter, r *http.Requ
 // CancelInvestigation cancelInvestigation
 // (POST /api/v1/investigations/{jobId}:cancel)
 func (_ Unimplemented) CancelInvestigation(w http.ResponseWriter, r *http.Request, jobId string, params CancelInvestigationParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (GET /api/v1/metrics/capabilities)
+func (_ Unimplemented) GetMetricCapabilities(w http.ResponseWriter, r *http.Request, params GetMetricCapabilitiesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (POST /api/v1/metrics/query)
+func (_ Unimplemented) QueryPodMetrics(w http.ResponseWriter, r *http.Request, params QueryPodMetricsParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -15360,6 +15429,85 @@ func (siw *ServerInterfaceWrapper) CancelInvestigation(w http.ResponseWriter, r 
 	handler.ServeHTTP(w, r)
 }
 
+// GetMetricCapabilities operation middleware
+func (siw *ServerInterfaceWrapper) GetMetricCapabilities(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetMetricCapabilitiesParams
+
+	// ------------- Required query parameter "clusterUid" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "clusterUid", r.URL.Query(), &params.ClusterUid, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "clusterUid"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "clusterUid", Err: err})
+		}
+		return
+	}
+
+	// ------------- Required query parameter "canonicalId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "canonicalId", r.URL.Query(), &params.CanonicalId, runtime.BindQueryParameterOptions{Type: "string", Format: "canonical-id"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "canonicalId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "canonicalId", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetMetricCapabilities(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// QueryPodMetrics operation middleware
+func (siw *ServerInterfaceWrapper) QueryPodMetrics(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params QueryPodMetricsParams
+
+	// ------------- Required query parameter "clusterUid" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "clusterUid", r.URL.Query(), &params.ClusterUid, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "clusterUid"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "clusterUid", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.QueryPodMetrics(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetObservationCapabilities operation middleware
 func (siw *ServerInterfaceWrapper) GetObservationCapabilities(w http.ResponseWriter, r *http.Request) {
 
@@ -16293,6 +16441,12 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/v1/assistant/conversations/{conversationId}/events", wrapper.GetAssistantConversationEvents)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/metrics/capabilities", wrapper.GetMetricCapabilities)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/metrics/query", wrapper.QueryPodMetrics)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/auth/login", wrapper.NativeLogin)
@@ -20903,6 +21057,106 @@ func (response CancelInvestigationdefaultJSONResponse) VisitCancelInvestigationR
 	return err
 }
 
+type GetMetricCapabilitiesRequestObject struct {
+	Params GetMetricCapabilitiesParams
+}
+
+type GetMetricCapabilitiesResponseObject interface {
+	VisitGetMetricCapabilitiesResponse(w http.ResponseWriter) error
+}
+
+type GetMetricCapabilities200JSONResponse struct {
+	Data struct {
+		SourceCapabilities []struct {
+			CollectorVersion string    `json:"collectorVersion"`
+			CoverageFrom     time.Time `json:"coverageFrom"`
+			CoverageTo       time.Time `json:"coverageTo"`
+			DatasetId        string    `json:"datasetId"`
+			MaxWindowSeconds int       `json:"maxWindowSeconds"`
+			Operation        string    `json:"operation"`
+			ProofDigest      string    `json:"proofDigest"`
+			Revision         int       `json:"revision"`
+			SourceId         string    `json:"sourceId"`
+			SourceType       string    `json:"sourceType"`
+			Status           string    `json:"status"`
+			VerifiedUntil    time.Time `json:"verifiedUntil"`
+		} `json:"sourceCapabilities"`
+	} `json:"data"`
+	RequestId string `json:"requestId"`
+}
+
+func (response GetMetricCapabilities200JSONResponse) VisitGetMetricCapabilitiesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetMetricCapabilitiesdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response GetMetricCapabilitiesdefaultJSONResponse) VisitGetMetricCapabilitiesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type QueryPodMetricsRequestObject struct {
+	Params QueryPodMetricsParams
+	Body   *QueryPodMetricsJSONRequestBody
+}
+
+type QueryPodMetricsResponseObject interface {
+	VisitQueryPodMetricsResponse(w http.ResponseWriter) error
+}
+
+type QueryPodMetrics200JSONResponse struct {
+	Data      AssistantQueryResultV1 `json:"data"`
+	RequestId string                 `json:"requestId"`
+}
+
+func (response QueryPodMetrics200JSONResponse) VisitQueryPodMetricsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type QueryPodMetricsdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response QueryPodMetricsdefaultJSONResponse) VisitQueryPodMetricsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type GetObservationCapabilitiesRequestObject struct {
 	Params GetObservationCapabilitiesParams
 }
@@ -21690,6 +21944,12 @@ type StrictServerInterface interface {
 	// CancelInvestigation cancelInvestigation
 	// (POST /api/v1/investigations/{jobId}:cancel)
 	CancelInvestigation(ctx context.Context, request CancelInvestigationRequestObject) (CancelInvestigationResponseObject, error)
+
+	// (GET /api/v1/metrics/capabilities)
+	GetMetricCapabilities(ctx context.Context, request GetMetricCapabilitiesRequestObject) (GetMetricCapabilitiesResponseObject, error)
+
+	// (POST /api/v1/metrics/query)
+	QueryPodMetrics(ctx context.Context, request QueryPodMetricsRequestObject) (QueryPodMetricsResponseObject, error)
 
 	// (GET /api/v1/observability/capabilities)
 	GetObservationCapabilities(ctx context.Context, request GetObservationCapabilitiesRequestObject) (GetObservationCapabilitiesResponseObject, error)
@@ -24836,6 +25096,65 @@ func (sh *strictHandler) CancelInvestigation(w http.ResponseWriter, r *http.Requ
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(CancelInvestigationResponseObject); ok {
 		if err := validResponse.VisitCancelInvestigationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetMetricCapabilities operation middleware
+func (sh *strictHandler) GetMetricCapabilities(w http.ResponseWriter, r *http.Request, params GetMetricCapabilitiesParams) {
+	var request GetMetricCapabilitiesRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetMetricCapabilities(ctx, request.(GetMetricCapabilitiesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetMetricCapabilities")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetMetricCapabilitiesResponseObject); ok {
+		if err := validResponse.VisitGetMetricCapabilitiesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// QueryPodMetrics operation middleware
+func (sh *strictHandler) QueryPodMetrics(w http.ResponseWriter, r *http.Request, params QueryPodMetricsParams) {
+	var request QueryPodMetricsRequestObject
+
+	request.Params = params
+
+	var body QueryPodMetricsJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.QueryPodMetrics(ctx, request.(QueryPodMetricsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "QueryPodMetrics")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(QueryPodMetricsResponseObject); ok {
+		if err := validResponse.VisitQueryPodMetricsResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

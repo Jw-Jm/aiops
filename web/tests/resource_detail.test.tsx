@@ -216,7 +216,14 @@ it("binds the logs entry to exact cluster and resource and disables unavailable 
         canonicalId: node.canonicalId,
       }),
   );
-  expect(screen.getByRole("button", { name: "进入指标查询" })).toBeDisabled();
+  expect(screen.getByRole("link", { name: "进入指标查询" })).toHaveAttribute(
+    "href",
+    "/observe/metrics?" +
+      new URLSearchParams({
+        clusterUid: "cluster-a",
+        canonicalId: node.canonicalId,
+      }),
+  );
   expect(screen.getByRole("button", { name: "进入网络统计" })).toBeDisabled();
 });
 it("queries direct findings/incidents separately with exact resource and independently paged cursors", async () => {

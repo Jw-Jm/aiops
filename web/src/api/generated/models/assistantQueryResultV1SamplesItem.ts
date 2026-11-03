@@ -4,6 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
+import type { AssistantQueryResultV1SamplesItemFields } from './assistantQueryResultV1SamplesItemFields.ts';
 import type { AssistantQueryResultV1SamplesItemLevel } from './assistantQueryResultV1SamplesItemLevel.ts';
 
 export type AssistantQueryResultV1SamplesItem = {
@@ -11,4 +12,5 @@ export type AssistantQueryResultV1SamplesItem = {
   /** @maxLength 2048 */
   message: string;
   level: AssistantQueryResultV1SamplesItemLevel;
+  fields?: AssistantQueryResultV1SamplesItemFields;
 };

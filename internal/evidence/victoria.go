@@ -134,7 +134,7 @@ func (a *Victoria) Query(ctx context.Context, q Query) (Result, error) {
 	sort.Strings(keys)
 	predicates := []string{}
 	for _, key := range keys {
-		predicates = append(predicates, key+"="+strconv.Quote(labels[key]))
+		predicates = append(predicates, a.binding.LogField(key)+"="+strconv.Quote(labels[key]))
 	}
 	selector := "{" + strings.Join(predicates, ",") + "}"
 	path := ""
@@ -292,7 +292,7 @@ func (a *Victoria) Query(ctx context.Context, q Query) (Result, error) {
 				return degrade("source_contract_invalid")
 			}
 			for k, v := range labels {
-				if row[k] != v {
+				if row[a.binding.LogField(k)] != v {
 					return degrade("source_scope_violation")
 				}
 			}

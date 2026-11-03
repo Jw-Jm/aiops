@@ -59,6 +59,8 @@ import type {
   GetIncidentTimelineParams,
   GetIncidentsParams,
   GetLegalHoldsParams,
+  GetMetricCapabilities200,
+  GetMetricCapabilitiesParams,
   GetNativeSubjectMappingsParams,
   GetNativeUsersParams,
   GetObservationCapabilitiesParams,
@@ -139,6 +141,9 @@ import type {
   PageEnvelope,
   PolicyBundlePublishRequest,
   PublishExecutionProfileRequest,
+  QueryPodMetrics200,
+  QueryPodMetricsBody,
+  QueryPodMetricsParams,
   RCARevisionPageV2,
   RCARevisionSuccessV2,
   RegistryActivationRequest,
@@ -1637,6 +1642,129 @@ export const getAssistantConversationEvents = async (conversationId: string, opt
 
   const data: getAssistantConversationEventsResponse['data'] = body ? (contentType.includes('json') ? JSON.parse(body) : body) : {}
   return { data, status: res.status, headers: res.headers } as getAssistantConversationEventsResponse
+}
+
+
+
+export type getMetricCapabilitiesResponse200 = {
+  data: GetMetricCapabilities200
+  status: 200
+}
+
+export type getMetricCapabilitiesResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type getMetricCapabilitiesResponseSuccess = (getMetricCapabilitiesResponse200) & {
+  headers: Headers;
+};
+export type getMetricCapabilitiesResponseError = (getMetricCapabilitiesResponseDefault) & {
+  headers: Headers;
+};
+
+export type getMetricCapabilitiesResponse = (getMetricCapabilitiesResponseSuccess | getMetricCapabilitiesResponseError)
+
+export const getGetMetricCapabilitiesUrl = (params: GetMetricCapabilitiesParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/metrics/capabilities?${stringifiedParams}` : `/api/v1/metrics/capabilities`
+}
+
+export const getMetricCapabilities = async (params: GetMetricCapabilitiesParams, options?: RequestInit): Promise<getMetricCapabilitiesResponse> => {
+
+  const res = await fetch(getGetMetricCapabilitiesUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getMetricCapabilitiesResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getMetricCapabilitiesResponse
+}
+
+
+
+export type queryPodMetricsResponse200 = {
+  data: QueryPodMetrics200
+  status: 200
+}
+
+export type queryPodMetricsResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type queryPodMetricsResponseSuccess = (queryPodMetricsResponse200) & {
+  headers: Headers;
+};
+export type queryPodMetricsResponseError = (queryPodMetricsResponseDefault) & {
+  headers: Headers;
+};
+
+export type queryPodMetricsResponse = (queryPodMetricsResponseSuccess | queryPodMetricsResponseError)
+
+export const getQueryPodMetricsUrl = (params: QueryPodMetricsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/metrics/query?${stringifiedParams}` : `/api/v1/metrics/query`
+}
+
+export const queryPodMetrics = async (queryPodMetricsBody: QueryPodMetricsBody,
+    params: QueryPodMetricsParams, options?: RequestInit): Promise<queryPodMetricsResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getQueryPodMetricsUrl(params),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(queryPodMetricsBody)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: queryPodMetricsResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as queryPodMetricsResponse
 }
 
 

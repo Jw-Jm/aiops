@@ -678,12 +678,37 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 				return nil, err
 			}
 			analysisAdapters[source.Binding.SourceID] = analysisAdapter
+			if analysisAdapter.ContinuousLogs() || analysisAdapter.ContinuousMetrics() {
+				group.Add(1)
+				go func() {
+					defer group.Done()
+					ticker := time.NewTicker(10 * time.Second)
+					defer ticker.Stop()
+					for {
+						if analysisAdapter.ContinuousMetrics() {
+							_ = analysisAdapter.RefreshContinuousMetrics(runContext)
+						} else {
+							_ = analysisAdapter.RefreshContinuousLogs(runContext)
+						}
+						select {
+						case <-runContext.Done():
+							return
+						case <-ticker.C:
+						}
+					}
+				}()
+			}
 		}
 		if source.ScopeProbe != nil && len(source.Binding.ScopeMapping.Scopes["cluster"]) > 0 {
 			probe := *source.ScopeProbe
 			probe.Scope = graph.Scope{Tenant: source.Binding.Tenant, Cluster: source.Binding.ScopeMapping.Scopes["cluster"][0], Namespaces: source.Binding.ScopeMapping.Scopes["namespace"], ClusterScoped: false, AuthorizationRevision: "source-isolation-probe"}
 			renewSourceProof(runContext, &group, source.Binding.SourceID, func(proofContext context.Context) error {
-				return (evidence.Repository{Pool: pool}).VerifyVictoria(proofContext, adapter, probe)
+				currentProbe := probe
+				if source.Binding.KubernetesLogArchive() || source.Binding.KubernetesMetrics() {
+					currentProbe.To = time.Now().UTC()
+					currentProbe.From = currentProbe.To.Add(-time.Minute)
+				}
+				return (evidence.Repository{Pool: pool}).VerifyVictoria(proofContext, adapter, currentProbe)
 			}, handlers, source.Binding, runtime)
 		}
 		adapters[source.Binding.SourceID] = adapter
@@ -994,7 +1019,7 @@ func renewSourceProof(ctx context.Context, group *sync.WaitGroup, source string,
 			err := verify(bounded)
 			cancel()
 			delay := 15 * time.Minute
-			if binding.SourceType == "deepflow" {
+			if binding.SourceType == "deepflow" || (binding.KubernetesLogArchive() || binding.KubernetesMetrics()) {
 				delay = time.Minute
 			}
 			reason := ""

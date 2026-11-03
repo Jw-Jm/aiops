@@ -13,6 +13,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"ops-platform/internal/contract"
@@ -25,6 +26,7 @@ import (
 // supplied by trusted deployment configuration, never by a QueryIntent. Legacy
 // evidence scope proofs do not qualify a new aggregate template by themselves.
 type Qualification struct {
+	Continuous               bool     `json:"continuous,omitempty"`
 	ResourceUIDs             []string `json:"resourceUids,omitempty"`
 	ObservationPoint         string   `json:"observationPoint,omitempty"`
 	CoverageComplete         bool     `json:"coverageComplete,omitempty"`
@@ -40,11 +42,13 @@ type Qualification struct {
 }
 
 type Victoria struct {
-	binding        evidence.Binding
-	client         *http.Client
-	authorize      evidence.Authorizer
-	qualifications []Qualification
-	slots          chan struct{}
+	liveMu            sync.RWMutex
+	liveUntil, liveTo time.Time
+	binding           evidence.Binding
+	client            *http.Client
+	authorize         evidence.Authorizer
+	qualifications    []Qualification
+	slots             chan struct{}
 }
 
 func NewVictoria(b evidence.Binding, client *http.Client, authorize evidence.Authorizer, qualifications []Qualification) (*Victoria, error) {
@@ -63,7 +67,15 @@ func NewVictoria(b evidence.Binding, client *http.Client, authorize evidence.Aut
 	for i := range proofs {
 		proofs[i].ResourceUIDs = slices.Clone(proofs[i].ResourceUIDs)
 	}
-	return &Victoria{frozen, &copyClient, authorize, proofs, make(chan struct{}, 4)}, nil
+	v := &Victoria{binding: frozen, client: &copyClient, authorize: authorize, qualifications: proofs, slots: make(chan struct{}, 4)}
+	for _, q := range proofs {
+		logs := frozen.KubernetesLogArchive() && q.DatasetID == "logs.records" && (q.Operation == "samples" || q.Operation == "aggregate")
+		metrics := frozen.KubernetesMetrics() && podMetricNames[q.DatasetID] != "" && (q.Operation == "trend" || q.Operation == "aggregate" || q.Operation == "average")
+		if q.Continuous && ((!logs && !metrics) || q.CoverageFrom.IsZero() || q.CoverageComplete) {
+			return nil, ErrInvalid
+		}
+	}
+	return v, nil
 }
 func rawIntentBinding(b evidence.Binding) []byte { v, _ := json.Marshal(b); return v }
 
@@ -141,8 +153,9 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 		return p, ErrDenied
 	}
 	var qualification *Qualification
-	for i := range v.qualifications {
-		q := &v.qualifications[i]
+	qualifications := v.currentQualifications()
+	for i := range qualifications {
+		q := &qualifications[i]
 		operationMatches := q.Operation == intent.Operation || (q.Operation == "" && intent.Operation == "aggregate")
 		if operationMatches && q.DatasetID == intent.DatasetID && q.SourceRevision == v.binding.Revision && q.BindingDigest == evidence.BindingScopeDigest(v.binding) && regexp.MustCompile(`^sha256:[a-f0-9]{64}$`).MatchString(q.EvidenceDigest) && q.CollectorVersion != "" && q.VerifiedUntil.After(time.Now()) {
 			qualification = q
@@ -230,7 +243,7 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 		if logs {
 			op = ":"
 		}
-		selectors = append(selectors, k+op+strconv.Quote(labels[k]))
+		selectors = append(selectors, v.binding.LogField(k)+op+strconv.Quote(labels[k]))
 	}
 	if !node {
 		if !logs {
@@ -241,7 +254,7 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 		if logs {
 			parts := []string{}
 			for _, n := range ns {
-				parts = append(parts, "namespace:"+strconv.Quote(n))
+				parts = append(parts, v.binding.LogField("namespace")+":"+strconv.Quote(n))
 			}
 			selectors = append(selectors, "("+strings.Join(parts, " OR ")+")")
 		} else {
@@ -275,7 +288,7 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 		if logs {
 			parts := []string{}
 			for _, uid := range uids {
-				parts = append(parts, "uid:"+strconv.Quote(uid))
+				parts = append(parts, v.binding.LogField("uid")+":"+strconv.Quote(uid))
 			}
 			selectors = append(selectors, "("+strings.Join(parts, " OR ")+")")
 		} else {
@@ -294,7 +307,7 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 		selectors = append(selectors, "_time:["+intent.TimeRange.From.UTC().Format(time.RFC3339Nano)+","+intent.TimeRange.To.UTC().Format(time.RFC3339Nano)+")")
 		query = strings.Join(selectors, " AND ") + " | stats "
 		if dimension != "" && !trend && !compare {
-			query += "by (" + dimension + ") "
+			query += "by (" + v.binding.LogField(dimension) + ") "
 		}
 		query += "count() as value"
 		path = "/select/logsql/stats_query"
@@ -313,7 +326,7 @@ func (v *Victoria) Compile(intent QueryIntent, binding Binding) (VictoriaPlan, e
 		}
 		group := ""
 		if dimension != "" && !trend && !compare {
-			group = " by (" + dimension + ")"
+			group = " by (" + v.binding.LogField(dimension) + ")"
 		}
 		switch dataset.ID {
 		case "metrics.pod-restarts":
@@ -449,7 +462,7 @@ func (v *Victoria) Execute(ctx context.Context, p VictoriaPlan) (QueryResult, er
 	if json.Unmarshal(body, &envelope) != nil || envelope.Status != "success" || envelope.Data.ResultType != resultType || len(envelope.Data.Result) > 10000 {
 		return QueryResult{}, ErrSource
 	}
-	out := QueryResult{TimeRange: copyQueryTimeRange(p.intent.TimeRange), SchemaVersion: "query-result/v1", DatasetID: p.intent.DatasetID, PlanDigest: p.digest, CatalogDigest: p.catalogDigest, ScopeDigest: graph.ScopeDigest(p.scope), Status: "complete", Exact: true, Dimension: p.dimension, Unit: p.unit, Rows: []Row{}, SnapshotReadAt: time.Now().UTC(), Freshness: "fresh", Warnings: []string{}, DegradedSources: []string{}, SourceManifest: &SourceManifest{v.binding.SourceID, v.binding.Revision, evidence.BindingScopeDigest(v.binding), graph.ScopeDigest(p.qualification), graph.ScopeDigest(p.query), p.qualification.DatasetID + "/v1", p.intent.TimeRange.From, p.intent.TimeRange.To}}
+	out := QueryResult{TimeRange: copyQueryTimeRange(p.intent.TimeRange), SchemaVersion: "query-result/v1", DatasetID: p.intent.DatasetID, PlanDigest: p.digest, CatalogDigest: p.catalogDigest, ScopeDigest: graph.ScopeDigest(p.scope), Status: "complete", Exact: true, Dimension: p.dimension, Unit: p.unit, Rows: []Row{}, SnapshotReadAt: time.Now().UTC(), Freshness: "fresh", Warnings: []string{}, DegradedSources: []string{}, SourceManifest: &SourceManifest{v.binding.SourceID, v.binding.Revision, evidence.BindingScopeDigest(v.binding), p.qualification.Digest(), graph.ScopeDigest(p.query), p.qualification.DatasetID + "/v1", p.intent.TimeRange.From, p.intent.TimeRange.To}}
 	if p.intent.Operation == "average" {
 		out.SourceManifest.TemplateVersion = p.intent.DatasetID + "-average/v1"
 	}
@@ -492,7 +505,7 @@ func (v *Victoria) Execute(ctx context.Context, p VictoriaPlan) (QueryResult, er
 			if key == "__name__" && v.binding.SourceType == "victorialogs" && value == "value" {
 				continue
 			}
-			if key != p.dimension || !ValidText(value, 253) {
+			if key != v.binding.LogField(p.dimension) || !ValidText(value, 253) {
 				return QueryResult{}, ErrSource
 			}
 			dimension = value
@@ -526,6 +539,11 @@ func (v *Victoria) Execute(ctx context.Context, p VictoriaPlan) (QueryResult, er
 		out.Status = "partial"
 		out.Warnings = append(out.Warnings, "upstream_partial")
 		out.DegradedSources = append(out.DegradedSources, v.binding.SourceType)
+	}
+	if v.ContinuousMetrics() && !p.qualification.CoverageComplete {
+		out.Exact = false
+		out.Status = "partial"
+		out.Warnings = append(out.Warnings, "collection_coverage_unknown")
 	}
 	if len(out.Rows) == 0 {
 		out.Exact = false

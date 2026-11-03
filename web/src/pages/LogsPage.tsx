@@ -413,6 +413,7 @@ function LogWorkspace({
   const fields =
     sample && snapshot
       ? {
+          ...sample.fields,
           timestamp: sample.timestamp,
           level: sample.level,
           message: sample.message,

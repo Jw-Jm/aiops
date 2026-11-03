@@ -8,7 +8,7 @@ import (
 
 func migrationMaterials() []Material {
 	return []Material{{Name: "db-migrate", Kind: "binary", Version: "1.1.0", Architecture: "linux/arm64", Digest: "sha256:5e9a23d88442a8076a2a1e5fef9b63ee24eb6f7192e393501ee820e6bd78c79a"},
-		{Name: "db-migrate-source", Kind: "source", Version: "1.1.0", Architecture: "linux/arm64", Digest: "sha256:1593549bab206e0406655774c401846f904ec21f2d97c34037a50a009b0d4a85"}}
+		{Name: "db-migrate-source", Kind: "source", Version: "1.1.0", Architecture: "linux/arm64", Digest: "sha256:cdf705b0558534ea81395da0336e9983b1726034dd71f764dacda746c13c0d29"}}
 }
 
 func TestOfflineMigrationToolRequiresSeparateExactSourceAdmission(t *testing.T) {
@@ -33,11 +33,14 @@ func TestOfflineMigrationToolRequiresSeparateExactSourceAdmission(t *testing.T) 
 }
 
 func TestAMD64MigrationRequiresIndependentlyRebuiltAndTestedPair(t *testing.T) {
-	materials := []Material{{Name: "db-migrate", Kind: "binary", Version: "1.1.0", Architecture: "linux/amd64", Digest: "sha256:d8360db3cc19d682523b7d1ad1440b2e398d881d08fc35ec9ec62394bced35c8"}, {Name: "db-migrate-source", Kind: "source", Version: "1.1.0", Architecture: "linux/amd64", Digest: "sha256:37c9a2cfe7eb63c878ae9e7a38b3058334c62c7f2802bf847ad74ef29aa5c9ab"}}
+	materials := []Material{{Name: "db-migrate", Kind: "binary", Version: "1.1.0", Architecture: "linux/amd64", Digest: "sha256:d8360db3cc19d682523b7d1ad1440b2e398d881d08fc35ec9ec62394bced35c8"}, {Name: "db-migrate-source", Kind: "source", Version: "1.1.0", Architecture: "linux/amd64", Digest: "sha256:bec5f664f5d80a392b0369b02bfed45ea0bf122211a38918504b245a6a3719e3"}}
 	if err := validateMigrationMaterialAdmission(materials); err != nil {
 		t.Fatal(err)
 	}
 	for _, alter := range []func([]Material){
+		func(m []Material) {
+			m[1].Digest = "sha256:cc32f9b0306acaa09c58a96c24b734194247a8ce2f6c1ac65ff059c65e9fb438"
+		},
 		func(m []Material) { m[0].Digest = migrationMaterials()[0].Digest },
 		func(m []Material) { m[1].Digest = migrationMaterials()[1].Digest },
 		func(m []Material) { m[1].Architecture = "linux/arm64" },

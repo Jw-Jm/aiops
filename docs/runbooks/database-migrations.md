@@ -10,13 +10,21 @@ The first migration creates database roles, so apply version 1 from the deployme
 SP03_MIGRATION_DATABASE_URL="$SP03_BOOTSTRAP_DSN" go run ./cmd/db-migrate -dir migrations -to 1
 ```
 
+After version 1 and before advancing, run the formal account bootstrap with three distinct private LOGIN credentials:
+
+```sh
+OPS_BOOTSTRAP_DATABASE_URL="$SP03_BOOTSTRAP_DSN" go run ./cmd/opsctl bootstrap database-logins --secrets-file "$SP03_DATABASE_LOGINS_FILE"
+```
+
+This guarded version-1 transaction creates the three restricted LOGINs and grants `CREATE` on the current database only to the non-login `schema_owner`. This is schema creation within that database, not the PostgreSQL `CREATEDB` role attribute. Later migrations create additional schemas (including `identity` in version 44). API and Worker duties receive no database CREATE privilege and cannot assume `schema_owner`.
+
 For version 2 and later, use a login explicitly granted membership in the `NOLOGIN` `migration_role`, with the connection startup option `-c role=migration_role`. The migration role can set `schema_owner` for DDL and can update Goose's version table; API and Worker roles cannot. The migration utility does not echo the DSN.
 
 ```sh
 SP03_MIGRATION_DATABASE_URL="$SP03_MIGRATOR_DSN" go run ./cmd/db-migrate -dir migrations
 ```
 
-For an existing database already at version 1, run only the second command. The migration process is independent of the API and Worker runtime credentials.
+For an existing version-1 database whose three LOGINs are not yet provisioned, perform the account bootstrap above before advancing. Do not repeat account initialization for an existing installation. When upgrading an older installation that predates this schema-creation grant, the controlled database administrator must first grant `CREATE` on the exact deployment database to `schema_owner`; do not grant it to runtime LOGINs, edit an applied migration, or reset version history. A database already at version 70 can then advance through 71/72 using only its migration LOGIN. The migration process is independent of the API and Worker runtime credentials.
 
 ## Failure recovery
 

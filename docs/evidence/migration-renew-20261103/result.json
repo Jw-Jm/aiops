@@ -1,0 +1,54 @@
+{
+  "status": "passed_scoped_migration_closure_and_bootstrap_fix",
+  "checks": [
+    {
+      "command": "make check-delivery",
+      "status": "passed",
+      "log": "ops-r50-delivery-final.log"
+    },
+    {
+      "command": "prepare-migration-source.py --check --architecture amd64",
+      "status": "passed",
+      "log": "ops-r50-amd64-check.log"
+    },
+    {
+      "command": "go test ./internal/bundle",
+      "status": "passed",
+      "log": "ops-r50-bundle-final2.log"
+    },
+    {
+      "command": "go test ./internal/bootstrap ./cmd/opsctl ./cmd/db-migrate",
+      "status": "passed",
+      "log": "ops-r50-local.log"
+    },
+    {
+      "command": "Go static migration/forward-only tests",
+      "status": "passed",
+      "log": "ops-r50-sql-contract-final.log"
+    },
+    {
+      "command": "Delivery/Migration/Business contract tests",
+      "status": "passed",
+      "log": "ops-r50-contract-final.log"
+    },
+    {
+      "command": "remote offline two-architecture rebuild",
+      "status": "passed",
+      "evidence": [
+        "offline-rebuild-amd64.json",
+        "offline-rebuild-arm64.json"
+      ]
+    },
+    {
+      "command": "remote formal bootstrap and offline CLI migrations",
+      "status": "passed",
+      "evidence": "forward-migration-amd64.json"
+    }
+  ],
+  "historicalFailuresRetained": true,
+  "nativeArm64SQLExecuted": false,
+  "fullBundleInstallAccepted": false,
+  "runtimeRedeployed": false,
+  "githubPushed": false,
+  "virtualizationDeferred": true
+}

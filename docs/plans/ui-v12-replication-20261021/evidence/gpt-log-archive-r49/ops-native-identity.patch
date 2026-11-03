@@ -1,0 +1,72 @@
+--- a/app/vlagent/kubernetescollector/client.go
++++ b/app/vlagent/kubernetescollector/client.go
+@@ -140,6 +140,7 @@
+ // objectMeta represents a Kubernetes ObjectMeta object.
+ // See https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.26/#objectmeta-v1-meta
+ type objectMeta struct {
++	UID             string            `json:"uid"`
+ 	Name            string            `json:"name"`
+ 	Labels          map[string]string `json:"labels"`
+ 	Annotations     map[string]string `json:"annotations"`
+--- a/app/vlagent/kubernetescollector/collector.go
++++ b/app/vlagent/kubernetescollector/collector.go
+@@ -243,6 +243,8 @@
+ 	var fs logstorage.Fields
+ 
+ 	// Fields should match vector.dev kubernetes_source for easy migration.
++	fs.Add("kubernetes.pod_uid", p.Metadata.UID)
++	fs.Add("kubernetes.namespace_uid", ns.Metadata.UID)
+ 	fs.Add("kubernetes.container_name", cs.Name)
+ 	fs.Add("kubernetes.pod_name", p.Metadata.Name)
+ 	fs.Add("kubernetes.pod_namespace", p.Metadata.Namespace)
+--- a/app/vlagent/kubernetescollector/processor.go
++++ b/app/vlagent/kubernetescollector/processor.go
+@@ -246,7 +246,7 @@
+ 		return
+ 	}
+ 
+-	lfp.addRow(timestamp, parser.Fields)
++	lfp.addRow(criTimestamp, opsFields(parser.Fields, bytesutil.ToUnsafeString(line)))
+ 
+ 	lfp.rowsIngestedLocal++
+ 	lfp.bytesIngestedLocal += lfp.commonFieldsJSONLen + len(line)
+@@ -697,3 +697,25 @@
+ var tooLongLinesSkipped = metrics.GetOrCreateCounter("vl_too_long_lines_skipped_total")
+ var rowsDroppedTotalTooManyFields = metrics.GetOrCreateCounter(`vl_rows_dropped_total{reason="too_many_fields"}`)
+ var rowsDroppedTotalInvalidCRI = metrics.GetOrCreateCounter(`vl_rows_dropped_total{reason="invalid_cri_line"}`)
++
++// Keep native identity and CRI event time authoritative, and preserve the original message.
++func opsFields(fields []logstorage.Field, raw string) []logstorage.Field {
++	level := "unknown"
++	out := fields[:0]
++	for _, field := range fields {
++		if field.Name == "level" {
++			switch strings.ToLower(field.Value) {
++			case "error", "warn", "info", "debug":
++				level = strings.ToLower(field.Value)
++			case "warning":
++				level = "warn"
++			}
++			continue
++		}
++		if strings.HasPrefix(field.Name, "kubernetes.") || field.Name == "tenant" || field.Name == "cluster" || field.Name == "collector" || field.Name == "_msg" || field.Name == "_time" || field.Name == "_stream" || field.Name == "_stream_id" {
++			continue
++		}
++		out = append(out, field)
++	}
++	return append(out, logstorage.Field{Name: "_msg", Value: raw}, logstorage.Field{Name: "level", Value: level})
++}
+--- a/app/vlagent/kubernetescollector/kubernetes.go
++++ b/app/vlagent/kubernetescollector/kubernetes.go
+@@ -109,7 +109,10 @@
+ 		return "", fmt.Errorf("cannot get current namespace: %w", err)
+ 	}
+ 
+-	podName, err := os.Hostname()
++	podName := os.Getenv("POD_NAME")
++	if podName == "" {
++		podName, err = os.Hostname()
++	}
+ 	if err != nil {
+ 		return "", fmt.Errorf("cannot get hostname: %w", err)
+ 	}

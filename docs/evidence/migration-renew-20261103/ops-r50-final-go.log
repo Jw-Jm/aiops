@@ -1,0 +1,24 @@
+--- FAIL: TestBusinessCapabilitiesRenderOnlyInBusinessPhase (0.47s)
+    --- FAIL: TestBusinessCapabilitiesRenderOnlyInBusinessPhase/bootstrap-api (0.07s)
+        business_capabilities_test.go:248: render: exit status 1 Error: execution error at (ops-platform/templates/sp04.yaml:21:28): SP04 cluster collection requires an explicit namespace scope; the collector only lists and watches the declared namespaces
+            
+            Use --debug flag to render out invalid YAML
+    --- FAIL: TestBusinessCapabilitiesRenderOnlyInBusinessPhase/business (0.11s)
+        business_capabilities_test.go:248: render: exit status 1 Error: execution error at (ops-platform/templates/sp04.yaml:21:28): SP04 cluster collection requires an explicit namespace scope; the collector only lists and watches the declared namespaces
+            
+            Use --debug flag to render out invalid YAML
+--- FAIL: TestPendingModelChartKeepsSP07WithoutInvestigatorOrModelEgress (0.11s)
+    --- FAIL: TestPendingModelChartKeepsSP07WithoutInvestigatorOrModelEgress/bootstrap-api (0.03s)
+        pending_model_chart_test.go:44: chart rendering: exit status 1 Error: execution error at (ops-platform/templates/sp04.yaml:21:28): SP04 cluster collection requires an explicit namespace scope; the collector only lists and watches the declared namespaces
+            
+            Use --debug flag to render out invalid YAML
+    --- FAIL: TestPendingModelChartKeepsSP07WithoutInvestigatorOrModelEgress/business (0.04s)
+        pending_model_chart_test.go:44: chart rendering: exit status 1 Error: execution error at (ops-platform/templates/sp04.yaml:21:28): SP04 cluster collection requires an explicit namespace scope; the collector only lists and watches the declared namespaces
+            
+            Use --debug flag to render out invalid YAML
+FAIL
+FAIL	ops-platform/internal/bundle	29.549s
+ok  	ops-platform/internal/bootstrap	(cached)
+ok  	ops-platform/cmd/opsctl	22.260s
+ok  	ops-platform/cmd/db-migrate	(cached)
+FAIL

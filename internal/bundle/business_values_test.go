@@ -29,7 +29,7 @@ func validBusinessDocument() map[string]any {
 		"schemaVersion":    1,
 		"namespace":        "ops-system",
 		"workloadIdentity": map[string]any{"enabled": true, "mode": "openbao-kubernetes"},
-		"sp04":             map[string]any{"enabled": true, "graphPort": 8082, "workerReplicas": 2, "apiIdentitySecret": "ops-sp04-api-identity", "workerIdentitySecret": "ops-sp04-worker-identity", "sourceCredentialsSecret": "ops-sp04-source-credentials", "allowedWorkerCIDRs": []string{"10.42.0.0/24"}, "archiveBackendLogicalID": "archive-current", "clusters": []any{map[string]any{"Tenant": "11111111-1111-4111-8111-111111111111", "ClusterUID": "current-cluster", "SourceID": "22222222-2222-4222-8222-222222222222", "BackendLogicalID": "current-kubernetes", "Endpoint": "https://10.0.0.1:6443", "CAFile": "/var/run/secrets/ops-platform/kubernetes/ca.pem", "TokenFile": "/var/run/secrets/ops-platform/kubernetes/token", "LeaseNamespace": "ops-system", "LeaseName": "ops-graph-current", "SourceRevision": 1, "QPS": 10, "Burst": 25}}, "sources": sources, "kubernetesAPI": map[string]any{"cidrs": []string{"10.0.0.1/32"}, "port": 6443, "localCollector": true}, "leaseNames": []string{"ops-graph-current"}},
+		"sp04":             map[string]any{"enabled": true, "graphPort": 8082, "workerReplicas": 2, "apiIdentitySecret": "ops-sp04-api-identity", "workerIdentitySecret": "ops-sp04-worker-identity", "sourceCredentialsSecret": "ops-sp04-source-credentials", "allowedWorkerCIDRs": []string{"10.42.0.0/24"}, "archiveBackendLogicalID": "archive-current", "clusters": []any{map[string]any{"Tenant": "11111111-1111-4111-8111-111111111111", "ClusterUID": "current-cluster", "SourceID": "22222222-2222-4222-8222-222222222222", "BackendLogicalID": "current-kubernetes", "Endpoint": "https://10.0.0.1:6443", "CAFile": "/var/run/secrets/ops-platform/kubernetes/ca.pem", "TokenFile": "/var/run/secrets/ops-platform/kubernetes/token", "LeaseNamespace": "ops-system", "LeaseName": "ops-graph-current", "Namespaces": []string{"apps"}, "SourceRevision": 1, "QPS": 10, "Burst": 25}}, "sources": sources, "kubernetesAPI": map[string]any{"cidrs": []string{"10.0.0.1/32"}, "port": 6443, "localCollector": true}, "leaseNames": []string{"ops-graph-current"}},
 		"sp05":             map[string]any{"enabled": true, "ingestionBindings": []any{}, "analyzer": map[string]any{"enabled": true, "sha256": "6f9152ff31d2692a14e880ae73c2fe35dbc2938560d2c55227f4b0c67409af53"}},
 		"sp06":             map[string]any{"enabled": true, "gatewayPort": 8083, "policyName": "read-only-current", "identitySecret": "ops-sp06-investigator-identity", "modelKeySecret": "ops-sp06-model-key", "tenants": []string{"11111111-1111-4111-8111-111111111111"}, "modelCIDRs": []string{"192.168.139.1/32"}, "modelPort": 11434, "model": map[string]any{"base_url": "http://192.168.139.1:11434/v1", "api_key_ref": "secret://model/api-key", "model": "llama3.1:8b-16k", "timeout": 45, "token_budget": 1024}, "budget": map[string]any{"durationSeconds": 600, "toolCalls": 40, "rawQueries": 10, "resultBytes": 41943040, "graphNodes": 8000, "evidenceItems": 4000, "modelRequests": 8, "inputTokens": 32768, "outputTokens": 8192, "modelCostMicros": 0, "allowedDataClasses": []string{"D0", "D1"}}},
 	}
@@ -62,6 +62,12 @@ func TestBusinessValuesRejectUnsafeAndIncompleteConfiguration(t *testing.T) {
 		},
 		"budget expansion": func(d map[string]any) { d["sp06"].(map[string]any)["budget"].(map[string]any)["toolCalls"] = 41 },
 		"missing source":   func(d map[string]any) { d["sp04"].(map[string]any)["clusters"] = []any{} },
+		"missing cluster namespaces": func(d map[string]any) {
+			delete(object(d, "sp04")["clusters"].([]any)[0].(map[string]any), "Namespaces")
+		},
+		"empty cluster namespaces": func(d map[string]any) {
+			object(d, "sp04")["clusters"].([]any)[0].(map[string]any)["Namespaces"] = []string{}
+		},
 		"cross tenant cluster": func(d map[string]any) {
 			d["sp04"].(map[string]any)["clusters"].([]any)[0].(map[string]any)["Tenant"] = "33333333-3333-4333-8333-333333333333"
 		},

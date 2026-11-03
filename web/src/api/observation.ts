@@ -74,7 +74,7 @@ export type ObservationResult = {
   population: { basis: "exact" | "not_measured"; count?: number };
   samples: {
     returned: number;
-    items: { timestamp: string; level: string; message: string }[];
+    items: { timestamp: string; level: string; message: string; fields?: Record<string, string> }[];
   };
   warnings: string[];
   truncation: { truncated: boolean; reasons: string[] };

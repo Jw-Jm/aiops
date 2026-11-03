@@ -50,7 +50,7 @@ func (v *Victoria) Capabilities(ctx context.Context, scope graph.Scope) ([]Sourc
 	if err != nil {
 		return out, err
 	}
-	for _, q := range v.qualifications {
+	for _, q := range v.currentQualifications() {
 		if !qualifiedUIDsAllow(q.ResourceUIDs, uids) {
 			continue
 		}
@@ -86,7 +86,11 @@ func (v *Victoria) Capabilities(ctx context.Context, scope graph.Scope) ([]Sourc
 			} else if len(scope.Namespaces) == 0 {
 				continue
 			}
-			out = append(out, SourceCapability{v.binding.SourceID, v.binding.SourceType, v.binding.Revision, q.DatasetID, operation, q.CollectorVersion, graph.ScopeDigest(q), q.CoverageFrom, q.CoverageTo, q.VerifiedUntil, q.MaxWindowSeconds, "qualification_configured"})
+			status := "qualification_configured"
+			if q.Continuous {
+				status = "continuous_verified"
+			}
+			out = append(out, SourceCapability{v.binding.SourceID, v.binding.SourceType, v.binding.Revision, q.DatasetID, operation, q.CollectorVersion, q.Digest(), q.CoverageFrom, q.CoverageTo, q.VerifiedUntil, q.MaxWindowSeconds, status})
 		}
 	}
 	sort.Slice(out, func(i, j int) bool {

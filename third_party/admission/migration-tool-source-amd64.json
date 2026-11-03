@@ -5,15 +5,16 @@
   "architecture": "linux/amd64",
   "kind": "binary",
   "state": "qualified",
-  "scope": "First-party forward-only migration CLI; corresponding-source closure includes 00001-00070. Both architecture archives rebuilt offline from empty module/build caches, byte-identical to admitted binaries. SQL 00001-00070 was exercised on isolated amd64 PostgreSQL by the integration harness; a separately built amd64 CLI advanced an isolated preview copy 69-to70. The earlier native binary forward-run record remains linked separately. No native arm64 SQL run or full Bundle installation claimed.",
+  "scope": "First-party forward-only migration CLI; corresponding-source closure includes 00001-00072. Both architecture archives rebuilt in network-none containers from empty module/build caches, byte-identical to admitted binaries. Exact offline amd64 CLI exercised fresh 1-to72 and existing-data 70-to71-to72, retry/lower-target no rollback and negative-target refusal, on isolated PostgreSQL. Uses current formal opsctl database-login bootstrap, which grants schema creation only to schema_owner. Native arm64 SQL execution and full Bundle installation are not claimed; historical native arm64 evidence remains separate.",
   "binarySHA256": "sha256:d8360db3cc19d682523b7d1ad1440b2e398d881d08fc35ec9ec62394bced35c8",
   "firstPartySourceSHA256": "sha256:87571abba5c5dc5fdcf001803a73d82e832d3e60b0cb304ede6c05347e7d1dba",
-  "sourceBundleSHA256": "sha256:cc32f9b0306acaa09c58a96c24b734194247a8ce2f6c1ac65ff059c65e9fb438",
+  "sourceBundleSHA256": "sha256:bec5f664f5d80a392b0369b02bfed45ea0bf122211a38918504b245a6a3719e3",
   "licenseReviewSHA256": "sha256:f5888d587f4d83aa9291f7995106064efae4836f4a7cc1d15ba3d3f356ff7b8c",
-  "offlineRebuildEvidence": "docs/plans/ui-v12-replication-20261021/evidence/gpt-completion-r23/offline-rebuild-amd64.json",
-  "actualForwardMigrationEvidence": "docs/evidence/pwr004-migration-renew-20261016/forward-migration-amd64.json",
+  "offlineRebuildEvidence": "docs/evidence/migration-renew-20261103/offline-rebuild-amd64.json",
+  "actualForwardMigrationEvidence": "docs/evidence/migration-renew-20261103/forward-migration-amd64.json",
   "runtimeModelsIncluded": false,
   "fullFreshBundleAcceptance": false,
   "firstPartyAndMigrationsIncluded": true,
-  "firstPartySourceInventory": "migration-tool-go-amd64.lock.json#firstPartyFiles"
+  "firstPartySourceInventory": "migration-tool-go-amd64.lock.json#firstPartyFiles",
+  "sharedSQLForwardMigrationEvidence": "docs/evidence/migration-renew-20261103/forward-migration-amd64.json"
 }

@@ -21,6 +21,9 @@ import (
 // matches the current content of the same UID/resourceVersion.
 var errProjectionArchiveConflict = errors.New("projection archive identity conflict")
 
+// Durable writes may wait behind an eight-second protection pass, below the 35-second watch deadline.
+const projectionArchiveTimeout = 12 * time.Second
+
 func collectorSink(ctx context.Context, cluster SP04Cluster, g *graph.Graph, store resourcestore.Repository, queue *projectionArchiveQueue) func(kubernetes.Snapshot) error {
 	previous := map[string]string{}
 	kind, group := "", ""
@@ -173,6 +176,10 @@ func prepareProjection(ctx context.Context, cluster SP04Cluster, o unstructured.
 				o.GetKind(), o.GetNamespace(), o.GetName(), o.GetResourceVersion(), metadata.SourceRevision, previous.SourceRevision,
 				metadata.ContentDigest, previous.ContentDigest)
 		}
+		// A verified immutable fact already has durable ciphertext; a relist must not reseal it.
+		if previous.ReplayState == "archived_verified" && previous.ArchiveRef != nil && previous.ArchiveRef.BackendLogicalID == archive.BackendLogicalID && previous.SourceScopeDigest == metadata.SourceScopeDigest && previous.QueryHash == metadata.QueryHash && previous.QueryTemplateVersion == metadata.QueryTemplateVersion && previous.BackendLogicalID == metadata.BackendLogicalID {
+			return objectID, nil
+		}
 		metadata = previous
 		metadata.Data = data
 		observed = previous.EvaluatedAt
@@ -180,7 +187,7 @@ func prepareProjection(ctx context.Context, cluster SP04Cluster, o unstructured.
 		return uuid.Nil, previousErr
 	}
 
-	bounded, cancel := context.WithTimeout(ctx, 3*time.Second)
+	bounded, cancel := context.WithTimeout(ctx, projectionArchiveTimeout)
 	defer cancel()
 	return objectID, archive.Prepare(bounded, metadata, o.GetNamespace(), observed.Add(181*24*time.Hour))
 }
