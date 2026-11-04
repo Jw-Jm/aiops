@@ -1,0 +1,106 @@
+{
+  "at": "2026-11-03T08:00:13.168Z",
+  "cases": [
+    {
+      "name": "resource_search",
+      "details": {
+        "http": 200,
+        "matchedNativeUID": true,
+        "rows": 5
+      },
+      "status": "passed"
+    },
+    {
+      "name": "resource_detail_and_links",
+      "details": {
+        "http": 200,
+        "metricAndLogLinks": true
+      },
+      "status": "passed"
+    },
+    {
+      "name": "topology_real_root_and_list",
+      "details": {
+        "http": 200,
+        "nodes": 5,
+        "edges": 4
+      },
+      "status": "passed"
+    },
+    {
+      "name": "user_create_form_and_role_view",
+      "details": {
+        "formOpened": true,
+        "roleViewOpened": true,
+        "accountWrites": 0
+      },
+      "status": "passed"
+    },
+    {
+      "name": "runtime_capability_and_blocker_receipts",
+      "details": {
+        "/api/v1/assistant/capabilities": {
+          "http": 200,
+          "data": {
+            "enabled": true,
+            "taskKinds": [
+              "data_query"
+            ],
+            "faultChainEnabled": false,
+            "sourceCapabilityStatus": "available",
+            "networkCapabilities": []
+          }
+        },
+        "/api/v1/capabilities": {
+          "http": 200,
+          "data": {
+            "apiReady": true,
+            "cdi": {
+              "reason": "ADR0008-development-deferred",
+              "status": "disabled",
+              "verification": "unverified"
+            },
+            "commandExecution": {
+              "reason": "SP07-runtime-not-configured",
+              "status": "disabled",
+              "verification": "unverified"
+            },
+            "graphReady": false,
+            "investigation": {
+              "enabled": true,
+              "readOnly": true,
+              "reason": "configured-awaiting-successful-job",
+              "status": "unverified"
+            },
+            "kubevirt": {
+              "reason": "ADR0008-development-deferred",
+              "status": "disabled",
+              "verification": "unverified"
+            },
+            "pyrca": {
+              "reason": "ADR0020-not-admitted",
+              "status": "disabled"
+            },
+            "schemaVersion": "platform-capabilities/v1",
+            "sourceDegraded": true
+          }
+        },
+        "/api/v1/findings": {
+          "http": 409,
+          "code": "CAPABILITY_DISABLED"
+        },
+        "/api/v1/incidents": {
+          "http": 409,
+          "code": "CAPABILITY_DISABLED"
+        },
+        "/api/v1/admin/execution-profiles": {
+          "http": 404,
+          "nonJSON": true
+        }
+      },
+      "status": "passed"
+    }
+  ],
+  "errors": [],
+  "status": "completed_function_checks"
+}

@@ -20,6 +20,7 @@ import (
 	"ops-platform/internal/rca"
 	"ops-platform/internal/resource"
 	"os"
+	"slices"
 	"sync"
 	"time"
 )
@@ -200,6 +201,14 @@ func sp05RCAIncident(ctx context.Context, pool persistence.TxBeginner, archive *
 	graphScope, err := sp05WorkerGraphScope(ctx, pool, cluster)
 	if err != nil {
 		return err
+	}
+	// Namespace incidents must not freeze neighboring cluster or namespace data their operators cannot read.
+	if i.Namespace != "" {
+		if !slices.Contains(graphScope.Namespaces, i.Namespace) {
+			return finding.ErrUnauthorized
+		}
+		graphScope.Namespaces = []string{i.Namespace}
+		graphScope.ClusterScoped = false
 	}
 	input := rca.Input{ResourceCanonicalID: i.ResourceCanonicalID, From: now.Add(-5 * time.Minute), To: now, EvaluatedAt: now, Evidence: []evidence.Evidence{}, Graph: graph.Result{SchemaVersion: "rca-graph-unavailable/v2", Freshness: "unavailable", Partial: true, DegradedSources: []string{"graph"}, Nodes: []resource.Entity{}, Edges: []resource.Relation{}}}
 	input.SchemaVersion = "rca-input/v2"

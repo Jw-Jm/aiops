@@ -1,0 +1,119 @@
+{
+  "at": "2026-11-04T00:33:48.736Z",
+  "phase": "close",
+  "checks": [
+    {
+      "action": "关闭故障",
+      "http": 200,
+      "state": "closed",
+      "revision": 7,
+      "requestId": "01a1a3fa-3782-76ab-966f-5c5dbb77e5de"
+    },
+    {
+      "tab": "处理时间线",
+      "http": 200,
+      "count": 6
+    },
+    {
+      "tab": "故障告警",
+      "http": 200,
+      "count": 1
+    },
+    {
+      "tab": "影响资源",
+      "http": 200
+    },
+    {
+      "tab": "诊断关系图",
+      "http": 200
+    }
+  ],
+  "errors": [],
+  "incidentId": "01a1a3e8-9c05-74ad-a1e7-0acaf32b5225",
+  "namespaceBoundedRCA": {
+    "revision": 13,
+    "nodes": 1,
+    "allInIncidentNamespace": true
+  },
+  "closedAfterReload": true,
+  "alerts": [
+    {
+      "digest": "sha256:a475358be902e3a219fa2050c708db0dc10ff3e848ca0c3134ed7457e99a6f3d",
+      "ruleId": "kubernetes/PVCUnbound/v1",
+      "eventId": "sha256:7eabceef3faac00672eecbab6f8b92c782b569926f0b4b563b644e9b9ad19f7c",
+      "payload": {
+        "phase": "Bound",
+        "reason": "PVCUnbound",
+        "nativeUID": "70163829-b137-41a0-9547-c889aa149ff6",
+        "nativeKind": "PersistentVolumeClaim",
+        "resourceVersion": "2322707"
+      },
+      "severity": "warning",
+      "startsAt": "2026-11-04T00:14:09.049627Z",
+      "tenantId": "01a177f1-372f-75b7-be90-e8121d1445f5",
+      "findingId": "01a1a3e8-0a62-78db-a8a9-c50e9f5ad748",
+      "namespace": "ops-native-v12-r24-20261026",
+      "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+      "observedAt": "2026-11-04T00:24:46.530240655Z",
+      "receivedAt": "2026-11-04T00:24:47.070815Z",
+      "ruleFamily": "storage",
+      "evidenceRefs": [
+        "3204a29d-a692-5a72-b49d-d7e063b6e438"
+      ],
+      "occurrenceId": "01a1a3e8-092f-78f9-b7f9-9b00c4ccf8d2",
+      "timeReliable": true,
+      "schemaVersion": "finding-envelope/v2",
+      "idempotencyKey": "3204a29d-a692-5a72-b49d-d7e063b6e438",
+      "lifecycleState": "resolved",
+      "sourceRevision": 4,
+      "sourceSequence": 0,
+      "firstReceivedAt": "2026-11-04T00:14:15.650546Z",
+      "aggregateRevision": 3,
+      "normalizedSymptom": "PVCUnbound",
+      "sourceFingerprint": "sha256:5fba6c36bd3ba866d2d145e5305f3ef2ee29c75039fe27871cb78df074e75993",
+      "resourceCanonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/PersistentVolumeClaim/70163829-b137-41a0-9547-c889aa149ff6",
+      "sourceRegistrationId": "01a17c3c-ef66-70cf-9ff1-cad25a8bee34"
+    },
+    {
+      "digest": "sha256:06a2208893475c4b8bb24c9d209bfaea0580396a903104e0df374b6ad43a8acd",
+      "ruleId": "kubernetes/ProvisioningFailed/v1",
+      "eventId": "sha256:93de55ae9ef2fcc27979c39dd03252ef3b12155bba8b84950f6465313baba87f",
+      "payload": {
+        "reason": "ProvisioningFailed",
+        "nativeUID": "704a2afa-8cff-437e-a9b2-9fe7ab91b717",
+        "nativeKind": "Event",
+        "resourceVersion": "2321984"
+      },
+      "severity": "warning",
+      "startsAt": "2026-11-04T00:19:56.991653Z",
+      "tenantId": "01a177f1-372f-75b7-be90-e8121d1445f5",
+      "findingId": "01a1a3ed-6124-7658-bd70-bf31e55233d4",
+      "namespace": "ops-native-v12-r24-20261026",
+      "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+      "observedAt": "2026-11-04T00:31:49.76682632Z",
+      "receivedAt": "2026-11-04T00:32:01.862894Z",
+      "ruleFamily": "storage",
+      "evidenceRefs": [
+        "57ccb5b9-eb69-56f3-bc91-ccbc03ff2956"
+      ],
+      "occurrenceId": "01a1a3ed-5e78-7bb5-8309-1d558fb30eea",
+      "timeReliable": true,
+      "schemaVersion": "finding-envelope/v2",
+      "idempotencyKey": "57ccb5b9-eb69-56f3-bc91-ccbc03ff2956",
+      "lifecycleState": "firing",
+      "sourceRevision": 4,
+      "sourceSequence": 0,
+      "firstReceivedAt": "2026-11-04T00:20:05.540379Z",
+      "aggregateRevision": 3,
+      "normalizedSymptom": "ProvisioningFailed",
+      "sourceFingerprint": "sha256:4d08e996b7f1100a481b3c4ae0de6bddacdface37fefa0715717ea27581a427e",
+      "resourceCanonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/PersistentVolumeClaim/70163829-b137-41a0-9547-c889aa149ff6",
+      "sourceRegistrationId": "01a17c3c-ef66-70cf-9ff1-cad25a8bee34"
+    }
+  ],
+  "guards": {
+    "staleRevision": 409,
+    "foreignCluster": 403
+  },
+  "status": "passed"
+}

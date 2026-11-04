@@ -1,0 +1,182 @@
+{
+  "at": "2026-11-04T00:40:15.748Z",
+  "stages": [
+    {
+      "stage": "draft",
+      "http": 201,
+      "requestId": "01a1a400-15cc-78bc-8250-00542737ae64"
+    },
+    {
+      "stage": "published",
+      "http": 201,
+      "requestId": "01a1a400-88b7-7be6-9e26-dcd3cd31c9ef"
+    },
+    {
+      "stage": "activated",
+      "http": 200,
+      "requestId": "01a1a400-fd26-7797-a46d-6be5838bc745"
+    }
+  ],
+  "draft": {
+    "tenantId": "01a177f1-372f-75b7-be90-e8121d1445f5",
+    "draftId": "01a1a400-15ff-78f1-b4bc-66c27e82a79c",
+    "kind": "recipe",
+    "logicalName": "node-failure",
+    "revision": 1,
+    "content": {
+      "name": "node-failure",
+      "entry": [
+        "Node",
+        "Pod"
+      ],
+      "budget": {
+        "maxEdges": 400,
+        "maxNodes": 200,
+        "timeoutMs": 3000,
+        "maxEvidence": 64
+      },
+      "confirm": [
+        "node-not-ready",
+        "node-causal-evidence",
+        "node-path"
+      ],
+      "exclude": [
+        "healthy-primary",
+        "conflicting-required-facts",
+        "invalid-path",
+        "unreliable-clock"
+      ],
+      "version": "v2",
+      "graphPlan": "single-query/v1",
+      "postCheck": "fresh-required-evidence/v1",
+      "graphDepth": 2,
+      "candidateType": "node_runtime_failure",
+      "schemaVersion": "recipe-registry/v2",
+      "toolAllowlist": [
+        "read_evidence",
+        "diagnostic_graph",
+        "impact_scope"
+      ],
+      "optionalEvidence": [
+        "metric-context",
+        "recent-change"
+      ],
+      "requiredEvidence": [
+        {
+          "key": "node-not-ready",
+          "required": true,
+          "predicate": "node-not-ready/v1",
+          "maxAgeSeconds": 300
+        },
+        {
+          "key": "node-causal-evidence",
+          "required": true,
+          "predicate": "node-runtime-or-located-fatal-dimm/v2",
+          "maxAgeSeconds": 300
+        },
+        {
+          "key": "node-path",
+          "required": true,
+          "predicate": "node-path/v1",
+          "maxAgeSeconds": 300
+        }
+      ]
+    },
+    "status": "draft",
+    "updatedBy": "user:01a177f1-372c-7f0f-a9de-85df928fbe31",
+    "createdAt": "2026-11-04T00:40:31.487841Z",
+    "updatedAt": "2026-11-04T00:40:31.487841Z"
+  },
+  "published": {
+    "referenceCount": 0,
+    "referenceCountScope": "",
+    "signatureVerified": false,
+    "digestVerified": false,
+    "tenantId": "01a177f1-372f-75b7-be90-e8121d1445f5",
+    "versionId": "01a1a400-891d-75cd-b73b-04391652268c",
+    "draftId": "01a1a400-15ff-78f1-b4bc-66c27e82a79c",
+    "kind": "recipe",
+    "logicalName": "node-failure",
+    "versionNumber": 1,
+    "content": {
+      "name": "node-failure",
+      "entry": [
+        "Node",
+        "Pod"
+      ],
+      "budget": {
+        "maxEdges": 400,
+        "maxNodes": 200,
+        "timeoutMs": 3000,
+        "maxEvidence": 64
+      },
+      "confirm": [
+        "node-not-ready",
+        "node-causal-evidence",
+        "node-path"
+      ],
+      "exclude": [
+        "healthy-primary",
+        "conflicting-required-facts",
+        "invalid-path",
+        "unreliable-clock"
+      ],
+      "version": "v2",
+      "graphPlan": "single-query/v1",
+      "postCheck": "fresh-required-evidence/v1",
+      "graphDepth": 2,
+      "candidateType": "node_runtime_failure",
+      "schemaVersion": "recipe-registry/v2",
+      "toolAllowlist": [
+        "read_evidence",
+        "diagnostic_graph",
+        "impact_scope"
+      ],
+      "optionalEvidence": [
+        "metric-context",
+        "recent-change"
+      ],
+      "requiredEvidence": [
+        {
+          "key": "node-not-ready",
+          "required": true,
+          "predicate": "node-not-ready/v1",
+          "maxAgeSeconds": 300
+        },
+        {
+          "key": "node-causal-evidence",
+          "required": true,
+          "predicate": "node-runtime-or-located-fatal-dimm/v2",
+          "maxAgeSeconds": 300
+        },
+        {
+          "key": "node-path",
+          "required": true,
+          "predicate": "node-path/v1",
+          "maxAgeSeconds": 300
+        }
+      ]
+    },
+    "digest": "sha256:8673849b34ea0ca6894666db6cc3eae7cc5c29b742334e87b2216d1c14ab58be",
+    "signature": "wVBHPDdhpEH5eBcR6Ie/VWzicyir0YcWpqCSBx6USMlIy/uwBAZ1e64Q3Y66SCk5gr3NOYkqVP1dHiotslqgCQ==",
+    "signerKeyId": "r28-task-policy",
+    "publishedBy": "user:01a177f1-372c-7f0f-a9de-85df928fbe31",
+    "publishedAt": "2026-11-04T00:41:00.957576Z"
+  },
+  "activated": {
+    "tenantId": "01a177f1-372f-75b7-be90-e8121d1445f5",
+    "activationId": "01a1a400-fd47-73da-adc7-002b9058a965",
+    "kind": "recipe",
+    "logicalName": "node-failure",
+    "scope": {
+      "type": "namespace",
+      "clusterId": "01a17c3c-80db-783b-9388-c6eee037f89b",
+      "namespace": "ops-native-v12-r24-20261026"
+    },
+    "versionId": "01a1a400-891d-75cd-b73b-04391652268c",
+    "revision": 1,
+    "activatedBy": "user:01a177f1-372c-7f0f-a9de-85df928fbe31",
+    "activatedAt": "2026-11-04T00:41:30.695408Z"
+  },
+  "status": "passed_signed_recipe_namespace_activation"
+}

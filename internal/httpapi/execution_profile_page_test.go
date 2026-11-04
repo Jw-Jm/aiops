@@ -59,3 +59,21 @@ func TestExecutionProfileInvalidLimitRejectedBeforeDatabase(t *testing.T) {
 		}
 	}
 }
+
+func TestConfigurationOnlyRejectsExecutionBeforeUsingService(t *testing.T) {
+	ctx := auth.WithRequestContext(context.Background(), auth.RequestContext{TenantID: uuid.New(), Subject: "operator", Roles: []auth.Role{auth.Operator}, TokenExpiresAt: time.Now().Add(time.Minute)})
+	h := ActionHandlers{ConfigurationOnly: true}
+	for _, path := range []string{"/api/v1/commands:risk-assess", "/api/v1/commands:risk-acknowledge", "/api/v1/command-executions", "/api/v1/action-plans", "/api/v1/admin/host-onboardings"} {
+		w := httptest.NewRecorder()
+		r := httptest.NewRequest("POST", path, strings.NewReader(`{}`)).WithContext(ctx)
+		h.ServeHTTP(w, r)
+		if w.Code != 409 || !strings.Contains(w.Body.String(), "CAPABILITY_DISABLED") {
+			t.Fatalf("execution reached unconfigured service: %s %d", path, w.Code)
+		}
+	}
+	w := httptest.NewRecorder()
+	h.ServeHTTP(w, httptest.NewRequest("GET", "/api/v1/admin/execution-profiles?limit=0", nil).WithContext(ctx))
+	if w.Code != 400 {
+		t.Fatalf("configuration route was also disabled: %d", w.Code)
+	}
+}

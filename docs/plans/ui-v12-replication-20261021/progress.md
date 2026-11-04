@@ -1,3 +1,13 @@
+## 2026-11-04 r54 告警、故障处理、命令配置实际接通
+
+用户明确要求打通三项功能，并排除长期稳定性工作。30471 已部署API r54、Worker r54c、Web r54b。启用SP05，经真实管理员密码/TOTP把Kubernetes来源从revision3升级4（保留v1并添加finding-envelope/v2），采集声明同步，范围和凭据不扩张。专属PVC真实Pending产生非空告警/Incident；页面完成受理、处置，真实PV绑定后按既有五分钟规则恢复，页面关闭和刷新回读通过。时间线/关联告警/影响资源/诊断图200，旧版本409、外集群403。
+
+命令配置与实际执行拆分：configurationOnly复用原签名、准入及MFA管理，发布201并刷新回读；执行Worker/runner不启动，执行接口409且能力仍disabled。Namespace故障快照仅在既有来源范围内冻结本namespace内容，旧跨范围快照继续拒绝；真实最新快照200。配置的两套内置签名Recipe只在任务namespace激活；不把unresolved视作根因确认。
+
+修复真实证据归档阻碍：仅增加任务SeaweedFS已耗尽的12卷配额至32，保留原目录、卷文件、image、身份和加密；真实16项IAM范围检查通过，归档恢复。未清除历史失败或改变业务资源。存储Pod重建后使用原生新UID，四类指标、20条真实日志及个人历史回放均通过。
+
+证据 evidence/gpt-events-and-command-config-r54/README.md。Go相关五包、全量253项前端及最终6项定向回归、构建/合同/交付来源门禁通过。P4-03/P4-04/P7-06为in_progress，整套六维不提升。没有新SQL迁移、未运行真实命令、未做长期稳定性/视觉/正式Bundle验收；没有提交推送本轮代码，虚拟化继续延期。
+
 ## 2026-11-03 r51 真实 Pod 指标链路（GPT直接执行）
 
 30471 已实际接通 kubelet/cAdvisor + 精确官方 KSM v2.17.0 → VictoriaMetrics v1.116.0 持续采集 → 真实密码/TOTP登记来源 → 原生运维会话/当前授权/签名owner → 四类Pod固定指标模板和趋势页面。CPU、内存、重启增量、phase四种趋势12点与原生查询逐点一致；无导入/模型生成指标，无新SQL或AI Job。覆盖始终unknown/partial，无数据不推断零，缺点不连线。

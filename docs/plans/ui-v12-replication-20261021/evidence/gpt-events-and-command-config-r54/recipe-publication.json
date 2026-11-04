@@ -1,0 +1,182 @@
+{
+  "at": "2026-11-04T00:21:52.450Z",
+  "stages": [
+    {
+      "stage": "draft",
+      "http": 201,
+      "requestId": "01a1a3ef-23e1-7b1a-816b-e618f2ae8cf0"
+    },
+    {
+      "stage": "published",
+      "http": 201,
+      "requestId": "01a1a3ef-9885-79a4-976c-77a1be2ae014"
+    },
+    {
+      "stage": "activated",
+      "http": 200,
+      "requestId": "01a1a3f0-0d27-7c1d-8a35-c6ad0886f2c6"
+    }
+  ],
+  "draft": {
+    "tenantId": "01a177f1-372f-75b7-be90-e8121d1445f5",
+    "draftId": "01a1a3ef-2413-741f-9da0-baf31ba6c75b",
+    "kind": "recipe",
+    "logicalName": "pvc-csi-failure",
+    "revision": 1,
+    "content": {
+      "name": "pvc-csi-failure",
+      "entry": [
+        "PersistentVolumeClaim",
+        "Pod"
+      ],
+      "budget": {
+        "maxEdges": 400,
+        "maxNodes": 200,
+        "timeoutMs": 3000,
+        "maxEvidence": 64
+      },
+      "confirm": [
+        "pvc-pending",
+        "csi-error",
+        "storage-path"
+      ],
+      "exclude": [
+        "healthy-primary",
+        "conflicting-required-facts",
+        "invalid-path",
+        "unreliable-clock"
+      ],
+      "version": "v2",
+      "graphPlan": "single-query/v1",
+      "postCheck": "native-related-health/v1",
+      "graphDepth": 2,
+      "candidateType": "csi_provisioner_failure",
+      "schemaVersion": "recipe-registry/v2",
+      "toolAllowlist": [
+        "read_evidence",
+        "diagnostic_graph",
+        "impact_scope"
+      ],
+      "optionalEvidence": [
+        "metric-context",
+        "recent-change"
+      ],
+      "requiredEvidence": [
+        {
+          "key": "pvc-pending",
+          "required": true,
+          "predicate": "pvc-pending/v1",
+          "maxAgeSeconds": 300
+        },
+        {
+          "key": "csi-error",
+          "required": true,
+          "predicate": "csi-error/v1",
+          "maxAgeSeconds": 300
+        },
+        {
+          "key": "storage-path",
+          "required": true,
+          "predicate": "storage-path/v1",
+          "maxAgeSeconds": 300
+        }
+      ]
+    },
+    "status": "draft",
+    "updatedBy": "user:01a177f1-372c-7f0f-a9de-85df928fbe31",
+    "createdAt": "2026-11-04T00:22:00.979516Z",
+    "updatedAt": "2026-11-04T00:22:00.979516Z"
+  },
+  "published": {
+    "referenceCount": 0,
+    "referenceCountScope": "",
+    "signatureVerified": false,
+    "digestVerified": false,
+    "tenantId": "01a177f1-372f-75b7-be90-e8121d1445f5",
+    "versionId": "01a1a3ef-98b6-74a6-a73e-f9a25aa4f2b5",
+    "draftId": "01a1a3ef-2413-741f-9da0-baf31ba6c75b",
+    "kind": "recipe",
+    "logicalName": "pvc-csi-failure",
+    "versionNumber": 1,
+    "content": {
+      "name": "pvc-csi-failure",
+      "entry": [
+        "PersistentVolumeClaim",
+        "Pod"
+      ],
+      "budget": {
+        "maxEdges": 400,
+        "maxNodes": 200,
+        "timeoutMs": 3000,
+        "maxEvidence": 64
+      },
+      "confirm": [
+        "pvc-pending",
+        "csi-error",
+        "storage-path"
+      ],
+      "exclude": [
+        "healthy-primary",
+        "conflicting-required-facts",
+        "invalid-path",
+        "unreliable-clock"
+      ],
+      "version": "v2",
+      "graphPlan": "single-query/v1",
+      "postCheck": "native-related-health/v1",
+      "graphDepth": 2,
+      "candidateType": "csi_provisioner_failure",
+      "schemaVersion": "recipe-registry/v2",
+      "toolAllowlist": [
+        "read_evidence",
+        "diagnostic_graph",
+        "impact_scope"
+      ],
+      "optionalEvidence": [
+        "metric-context",
+        "recent-change"
+      ],
+      "requiredEvidence": [
+        {
+          "key": "pvc-pending",
+          "required": true,
+          "predicate": "pvc-pending/v1",
+          "maxAgeSeconds": 300
+        },
+        {
+          "key": "csi-error",
+          "required": true,
+          "predicate": "csi-error/v1",
+          "maxAgeSeconds": 300
+        },
+        {
+          "key": "storage-path",
+          "required": true,
+          "predicate": "storage-path/v1",
+          "maxAgeSeconds": 300
+        }
+      ]
+    },
+    "digest": "sha256:782b65be55369e9104df3c42b0b50361f8f9aea9413302d04411baeee45751d6",
+    "signature": "kCcraOuOKkbIcvT1X6ftevqx7NlJ8wsAmUsvZJhEGBiLrdjMHhjnp6tNhJXtvP0k9EfKU2j7lL+qwR/KWe4xAA==",
+    "signerKeyId": "r28-task-policy",
+    "publishedBy": "user:01a177f1-372c-7f0f-a9de-85df928fbe31",
+    "publishedAt": "2026-11-04T00:22:30.838579Z"
+  },
+  "activated": {
+    "tenantId": "01a177f1-372f-75b7-be90-e8121d1445f5",
+    "activationId": "01a1a3f0-0dea-7216-973f-edd39a35ae49",
+    "kind": "recipe",
+    "logicalName": "pvc-csi-failure",
+    "scope": {
+      "type": "namespace",
+      "clusterId": "01a17c3c-80db-783b-9388-c6eee037f89b",
+      "namespace": "ops-native-v12-r24-20261026"
+    },
+    "versionId": "01a1a3ef-98b6-74a6-a73e-f9a25aa4f2b5",
+    "revision": 1,
+    "activatedBy": "user:01a177f1-372c-7f0f-a9de-85df928fbe31",
+    "activatedAt": "2026-11-04T00:23:00.842434Z"
+  },
+  "status": "passed_signed_recipe_namespace_activation"
+}

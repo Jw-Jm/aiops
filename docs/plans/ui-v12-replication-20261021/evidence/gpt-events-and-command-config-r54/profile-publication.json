@@ -1,0 +1,27 @@
+{
+  "profile": {
+    "schemaVersion": "execution-profile/v2",
+    "executionProfileId": "4eaa7168-5526-4535-bfc6-6f9dced1c13a",
+    "version": 1,
+    "name": "r54-read-pvc",
+    "type": "k8s_namespace",
+    "allowedTargets": [
+      "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/PersistentVolumeClaim/70163829-b137-41a0-9547-c889aa149ff6"
+    ],
+    "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+    "namespace": "ops-native-v12-r24-20261026",
+    "toolImageDigest": "ops.local/verification-20261019/command-runner@sha256:90c61be5eca27f8c8a9aed37a91bb4f74f9f5c6b7b7af2a24eea1772bce99d9e",
+    "tools": [
+      "kubectl"
+    ],
+    "networkPolicyRef": "ops-r54-profile-read",
+    "credentialRef": "serviceaccount:/ops-native-v12-r24-20261026/ops-r54-profile-read",
+    "timeoutSeconds": 30,
+    "maxOutputBytes": 65536,
+    "principal": "",
+    "hostOnboardingRef": "",
+    "developmentFallback": false
+  },
+  "signerKeyId": "r28-task-policy",
+  "signature": "34smHUwPi6/X6zncBFxDLi8ge/ZM38XXwyxeZ56zP/mwEfa5CRVIV6Zw0k9BeEpmF434zpYbgsWo0P1cI6GhCw=="
+}

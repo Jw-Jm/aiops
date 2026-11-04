@@ -1,0 +1,666 @@
+{
+  "at": "2026-11-03T08:00:24.280Z",
+  "requests": [
+    {
+      "path": "/api/v1/observability/capabilities",
+      "query": "clusterUid=79014400-9453-4cb4-9678-0fae47981d79&canonicalId=k8s%2Bv1%3A%2F%2F01a177f1-372f-75b7-be90-e8121d1445f5%2F79014400-9453-4cb4-9678-0fae47981d79%2Fcore%2FPod%2F0e648683-1088-4032-9b39-0a122ff475be",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "query": "clusterUid=79014400-9453-4cb4-9678-0fae47981d79",
+      "method": "POST",
+      "status": 202
+    },
+    {
+      "path": "/api/v1/observability/queries/d9398a50-5aaf-426b-812a-2a5148113e81",
+      "query": "clusterUid=79014400-9453-4cb4-9678-0fae47981d79",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/observability/queries/d9398a50-5aaf-426b-812a-2a5148113e81/results",
+      "query": "clusterUid=79014400-9453-4cb4-9678-0fae47981d79",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "query": "clusterUid=79014400-9453-4cb4-9678-0fae47981d79&canonicalId=k8s%2Bv1%3A%2F%2F01a177f1-372f-75b7-be90-e8121d1445f5%2F79014400-9453-4cb4-9678-0fae47981d79%2Fcore%2FPod%2F0e648683-1088-4032-9b39-0a122ff475be",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "query": "clusterUid=79014400-9453-4cb4-9678-0fae47981d79",
+      "method": "GET",
+      "status": 200
+    }
+  ],
+  "errors": [],
+  "queries": [
+    {
+      "createStatus": 202,
+      "request": {
+        "schemaVersion": "ui-v12-observability-query/v1",
+        "queryKind": "logs",
+        "templateId": "logs.records",
+        "templateVersion": "logs.records/v1",
+        "resource": {
+          "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+          "uid": "0e648683-1088-4032-9b39-0a122ff475be",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "namespaceScope": {
+            "kind": "namespaced",
+            "namespace": "ops-native-v12-r24-20261026",
+            "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+          }
+        },
+        "source": {
+          "collectorVersion": "v1.52.0-ops1",
+          "credentialRevision": 1,
+          "qualificationDigest": "sha256:409a97327972674ed76dd1a6179c58c01d3e38c37f6da3fcc888e1fc78b4dfaf",
+          "registrationId": "01a19f70-d86a-70d7-a29d-dc148a60be6a",
+          "registrationRevision": 1
+        },
+        "window": {
+          "from": "2026-11-03T07:30:20.000Z",
+          "to": "2026-11-03T08:00:19.976971018Z",
+          "timezone": "Asia/Shanghai",
+          "bounds": "[from,to)"
+        },
+        "budget": {
+          "maxBytes": 131072,
+          "maxDurationSeconds": 8,
+          "maxRows": 20,
+          "maxSourceCalls": 2
+        },
+        "filters": []
+      },
+      "view": {
+        "cancelRequestedAt": null,
+        "coverage": {
+          "basis": "unknown",
+          "complete": false,
+          "coveredFrom": "2026-11-03T07:30:20Z",
+          "coveredTo": "2026-11-03T08:00:19.976971018Z",
+          "gaps": []
+        },
+        "createdAt": "2026-11-03T08:00:30.20298471Z",
+        "expiresAt": "2026-12-03T08:00:30.20298471Z",
+        "failure": null,
+        "ownerSubject": "user:01a177f1-372c-7f0f-a9de-85df928fbe31",
+        "queryId": "d9398a50-5aaf-426b-812a-2a5148113e81",
+        "reauthorization": {
+          "authorizationVersion": 2,
+          "checkedAt": "2026-11-03T08:00:30.201474447Z",
+          "denialCode": null,
+          "result": "allowed",
+          "sourceRegistrationRevision": 1
+        },
+        "request": {
+          "budget": {
+            "maxBytes": 131072,
+            "maxDurationSeconds": 8,
+            "maxRows": 20,
+            "maxSourceCalls": 2
+          },
+          "queryKind": "logs",
+          "resource": {
+            "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaceScope": {
+              "kind": "namespaced",
+              "namespace": "ops-native-v12-r24-20261026",
+              "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+            },
+            "uid": "0e648683-1088-4032-9b39-0a122ff475be"
+          },
+          "schemaVersion": "ui-v12-observability-query/v1",
+          "source": {
+            "collectorVersion": "v1.52.0-ops1",
+            "credentialRevision": 1,
+            "qualificationDigest": "sha256:409a97327972674ed76dd1a6179c58c01d3e38c37f6da3fcc888e1fc78b4dfaf",
+            "registrationId": "01a19f70-d86a-70d7-a29d-dc148a60be6a",
+            "registrationRevision": 1
+          },
+          "templateId": "logs.records",
+          "templateVersion": "logs.records/v1",
+          "window": {
+            "bounds": "[from,to)",
+            "from": "2026-11-03T07:30:20Z",
+            "timezone": "Asia/Shanghai",
+            "to": "2026-11-03T08:00:19.976971018Z"
+          }
+        },
+        "resource": {
+          "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "namespaceScope": {
+            "kind": "namespaced",
+            "namespace": "ops-native-v12-r24-20261026",
+            "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+          },
+          "uid": "0e648683-1088-4032-9b39-0a122ff475be"
+        },
+        "resultRef": null,
+        "revision": 1,
+        "schemaVersion": "ui-v12-observability-query/v1",
+        "source": {
+          "collectorVersion": "v1.52.0-ops1",
+          "credentialRevision": 1,
+          "qualificationDigest": "sha256:409a97327972674ed76dd1a6179c58c01d3e38c37f6da3fcc888e1fc78b4dfaf",
+          "registrationId": "01a19f70-d86a-70d7-a29d-dc148a60be6a",
+          "registrationRevision": 1
+        },
+        "state": "accepted",
+        "tenantId": "01a177f1-372f-75b7-be90-e8121d1445f5",
+        "termination": null,
+        "updatedAt": "2026-11-03T08:00:30.20298471Z",
+        "window": {
+          "bounds": "[from,to)",
+          "from": "2026-11-03T07:30:20Z",
+          "timezone": "Asia/Shanghai",
+          "to": "2026-11-03T08:00:19.976971018Z"
+        }
+      },
+      "result": {
+        "computedAt": "2026-11-03T08:00:32.965377604Z",
+        "coverage": {
+          "basis": "unknown",
+          "complete": false,
+          "coveredFrom": "2026-11-03T07:30:20Z",
+          "coveredTo": "2026-11-03T08:00:19.976971018Z",
+          "gaps": []
+        },
+        "exact": false,
+        "expiresAt": "2026-12-03T08:00:30.20298471Z",
+        "population": {
+          "basis": "exact",
+          "count": 12322,
+          "method": "source_total"
+        },
+        "queryId": "d9398a50-5aaf-426b-812a-2a5148113e81",
+        "reauthorization": {
+          "authorizationVersion": 2,
+          "checkedAt": "2026-11-03T08:00:35.95340544Z",
+          "denialCode": null,
+          "result": "allowed",
+          "sourceRegistrationRevision": 1
+        },
+        "resource": {
+          "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "namespaceScope": {
+            "kind": "namespaced",
+            "namespace": "ops-native-v12-r24-20261026",
+            "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+          },
+          "uid": "0e648683-1088-4032-9b39-0a122ff475be"
+        },
+        "resultDigest": "sha256:89b6f1355d6857736c154476e2c5155c3af0f3f2261ca74f9957b78e16abf1f1",
+        "resultId": "18879333-7fc6-4d7a-b11f-b552c0476de8",
+        "resultKind": "log_samples",
+        "samples": {
+          "inferredPopulation": null,
+          "items": [
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "I1103 08:00:19.323623 filer_notify.go:285 metadata log write failed /topics/.system/log/2026-11-03/04-02.68d728c2: AssignVolume: rpc error: code = Unknown desc = failed to find writable volumes for collection: replication:000 ttl: error: No writable volumes and no free volumes left for {\"replication\":{},\"ttl\":{\"Count\":0,\"Unit\":0},\"version\":3}",
+              "timestamp": "2026-11-03T08:00:19.323671872Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "I1103 08:00:19.323585 volume_growth.go:142 create 1 volume, created 0: Not enough data nodes found!",
+              "timestamp": "2026-11-03T08:00:19.323666438Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "I1103 08:00:19.323581 node.go:221 topo failed to pick 1 from  0 node candidates",
+              "timestamp": "2026-11-03T08:00:19.323665022Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "I1103 08:00:19.323562 master_grpc_server_volume.go:143 volume grow &{Option:{\"replication\":{},\"ttl\":{\"Count\":0,\"Unit\":0},\"version\":3} Count:0 Force:false Reason:grpc assign}",
+              "timestamp": "2026-11-03T08:00:19.32366363Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "I1103 08:00:19.323516 master_grpc_server_assign.go:227 assign count:1 expected_data_size:1296257 {\"replication\":{},\"ttl\":{\"Count\":0,\"Unit\":0},\"version\":3}: failed to find writable volumes for collection: replication:000 ttl: error: No writable volumes and no free volumes left for {\"replication\":{},\"ttl\":{\"Count\":0,\"Unit\":0},\"version\":3}",
+              "timestamp": "2026-11-03T08:00:19.323633753Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "I1103 08:00:18.586286 filer_notify.go:285 metadata log write failed /topics/.system/log/2026-11-03/04-02.68d728c2: AssignVolume: rpc error: code = Unknown desc = failed to find writable volumes for collection: replication:000 ttl: error: No writable volumes and no free volumes left for {\"replication\":{},\"ttl\":{\"Count\":0,\"Unit\":0},\"version\":3}",
+              "timestamp": "2026-11-03T08:00:18.58630129Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "I1103 08:00:18.586253 volume_growth.go:142 create 1 volume, created 0: Not enough data nodes found!",
+              "timestamp": "2026-11-03T08:00:18.586262Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "I1103 08:00:18.586246 node.go:221 topo failed to pick 1 from  0 node candidates",
+              "timestamp": "2026-11-03T08:00:18.586257129Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "I1103 08:00:18.586227 master_grpc_server_volume.go:143 volume grow &{Option:{\"replication\":{},\"ttl\":{\"Count\":0,\"Unit\":0},\"version\":3} Count:0 Force:false Reason:grpc assign}",
+              "timestamp": "2026-11-03T08:00:18.586250284Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "I1103 08:00:18.586186 master_grpc_server_assign.go:227 assign count:1 expected_data_size:1296257 {\"replication\":{},\"ttl\":{\"Count\":0,\"Unit\":0},\"version\":3}: failed to find writable volumes for collection: replication:000 ttl: error: No writable volumes and no free volumes left for {\"replication\":{},\"ttl\":{\"Count\":0,\"Unit\":0},\"version\":3}",
+              "timestamp": "2026-11-03T08:00:18.586227349Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "I1103 08:00:17.848686 filer_notify.go:285 metadata log write failed /topics/.system/log/2026-11-03/04-02.68d728c2: AssignVolume: rpc error: code = Unknown desc = failed to find writable volumes for collection: replication:000 ttl: error: No writable volumes and no free volumes left for {\"replication\":{},\"ttl\":{\"Count\":0,\"Unit\":0},\"version\":3}",
+              "timestamp": "2026-11-03T08:00:17.848726343Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "I1103 08:00:17.848631 volume_growth.go:142 create 1 volume, created 0: Not enough data nodes found!",
+              "timestamp": "2026-11-03T08:00:17.848722173Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "I1103 08:00:17.848627 node.go:221 topo failed to pick 1 from  0 node candidates",
+              "timestamp": "2026-11-03T08:00:17.848721119Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "I1103 08:00:17.848614 master_grpc_server_volume.go:143 volume grow &{Option:{\"replication\":{},\"ttl\":{\"Count\":0,\"Unit\":0},\"version\":3} Count:0 Force:false Reason:grpc assign}",
+              "timestamp": "2026-11-03T08:00:17.848719915Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "I1103 08:00:17.848582 master_grpc_server_assign.go:227 assign count:1 expected_data_size:1296257 {\"replication\":{},\"ttl\":{\"Count\":0,\"Unit\":0},\"version\":3}: failed to find writable volumes for collection: replication:000 ttl: error: No writable volumes and no free volumes left for {\"replication\":{},\"ttl\":{\"Count\":0,\"Unit\":0},\"version\":3}",
+              "timestamp": "2026-11-03T08:00:17.848708651Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "I1103 08:00:17.111130 filer_notify.go:285 metadata log write failed /topics/.system/log/2026-11-03/04-02.68d728c2: AssignVolume: rpc error: code = Unknown desc = failed to find writable volumes for collection: replication:000 ttl: error: No writable volumes and no free volumes left for {\"replication\":{},\"ttl\":{\"Count\":0,\"Unit\":0},\"version\":3}",
+              "timestamp": "2026-11-03T08:00:17.111183245Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "I1103 08:00:17.111062 volume_growth.go:142 create 1 volume, created 0: Not enough data nodes found!",
+              "timestamp": "2026-11-03T08:00:17.111108151Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "I1103 08:00:17.111057 node.go:221 topo failed to pick 1 from  0 node candidates",
+              "timestamp": "2026-11-03T08:00:17.111106666Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "I1103 08:00:17.111044 master_grpc_server_volume.go:143 volume grow &{Option:{\"replication\":{},\"ttl\":{\"Count\":0,\"Unit\":0},\"version\":3} Count:0 Force:false Reason:grpc assign}",
+              "timestamp": "2026-11-03T08:00:17.111105256Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://a011d379a11995e9b611a4a670b996b4ba307d4fe6da09bb4aa92ede979a07cd",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "I1103 08:00:17.111010 master_grpc_server_assign.go:227 assign count:1 expected_data_size:1296257 {\"replication\":{},\"ttl\":{\"Count\":0,\"Unit\":0},\"version\":3}: failed to find writable volumes for collection: replication:000 ttl: error: No writable volumes and no free volumes left for {\"replication\":{},\"ttl\":{\"Count\":0,\"Unit\":0},\"version\":3}",
+              "timestamp": "2026-11-03T08:00:17.11109458Z"
+            }
+          ],
+          "returned": 20
+        },
+        "schemaVersion": "ui-v12-observability-result/v1",
+        "source": {
+          "collectorVersion": "v1.52.0-ops1",
+          "credentialRevision": 1,
+          "qualificationDigest": "sha256:409a97327972674ed76dd1a6179c58c01d3e38c37f6da3fcc888e1fc78b4dfaf",
+          "registrationId": "01a19f70-d86a-70d7-a29d-dc148a60be6a",
+          "registrationRevision": 1
+        },
+        "statistics": [],
+        "status": "partial",
+        "truncation": {
+          "reasons": [
+            "sample_limit"
+          ],
+          "truncated": true
+        },
+        "warnings": [
+          "bounded_sanitized_samples_not_total_count",
+          "bounded_sanitized_samples_not_total_count"
+        ],
+        "window": {
+          "bounds": "[from,to)",
+          "from": "2026-11-03T07:30:20Z",
+          "timezone": "Asia/Shanghai",
+          "to": "2026-11-03T08:00:19.976971018Z"
+        }
+      }
+    }
+  ],
+  "screenshots": false,
+  "otherBusinessWrites": 0,
+  "indexSHA256": "c248d9379c914e76eb66b1f22d1d5fc1c1d6adbf94558a286fc415e307cd1b02",
+  "capabilities": {
+    "budget": {
+      "maxBytes": 131072,
+      "maxDurationSeconds": 8,
+      "maxRows": 20,
+      "maxSourceCalls": 2
+    },
+    "resources": [
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/15a43539-90d1-42ae-88b0-649e5a0a3c33",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "ops-api",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "15a43539-90d1-42ae-88b0-649e5a0a3c33"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/bf5652b7-84b2-48bc-81f2-bd9e66eb38b3",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "ops-investigator",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "bf5652b7-84b2-48bc-81f2-bd9e66eb38b3"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/28de8b72-11d0-4b6a-8128-82c00868b43f",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "ops-openbao-0",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "28de8b72-11d0-4b6a-8128-82c00868b43f"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9abe6fa8-8c56-43a0-a009-dc6311ab7287",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "ops-r49-log-collector-lqgkn",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "9abe6fa8-8c56-43a0-a009-dc6311ab7287"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/b4d98dc8-cbb0-4716-9614-738fb5ce36ce",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "ops-r51-ksm",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "b4d98dc8-cbb0-4716-9614-738fb5ce36ce"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/07912e9e-8b4e-4727-a7de-fdc8169ec520",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "ops-r51-metrics",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "07912e9e-8b4e-4727-a7de-fdc8169ec520"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0e648683-1088-4032-9b39-0a122ff475be",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "ops-seaweedfs-0",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "0e648683-1088-4032-9b39-0a122ff475be"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/ebfd0283-4ba3-4cc0-873b-7c9f5ecacf88",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "ops-worker",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "ebfd0283-4ba3-4cc0-873b-7c9f5ecacf88"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/98236856-ff81-4580-ae72-5c466e8ec40b",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "r28-python-tests",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "98236856-ff81-4580-ae72-5c466e8ec40b"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/50072cee-5153-476a-890b-14eb840f504f",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "r28-python-tests-2",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "50072cee-5153-476a-890b-14eb840f504f"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/85aa6a5b-224e-41db-9826-bfd6437a7f5a",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "r28-python-tests-3",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "85aa6a5b-224e-41db-9826-bfd6437a7f5a"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/f5d920d2-02fc-4efe-9670-6251be64385b",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "r28-python-tests-4",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "f5d920d2-02fc-4efe-9670-6251be64385b"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/6759c463-9c16-4cc4-9cef-f5c3119964ec",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "r28-python-tests-5",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "6759c463-9c16-4cc4-9cef-f5c3119964ec"
+      }
+    ],
+    "schemaVersion": "ui-v12-observability-capabilities/v1",
+    "sources": [
+      {
+        "coverageFrom": "2026-10-26T11:24:51Z",
+        "coverageTo": "2026-11-03T08:00:26Z",
+        "maxWindowSeconds": 1800,
+        "name": "Kubernetes 原生日志（当前容器）",
+        "source": {
+          "collectorVersion": "kubernetes-pod-logs/v1",
+          "credentialRevision": 1,
+          "qualificationDigest": "sha256:962a1f6568c2991dbf702c2c715b95bed0cebd499fa03b9ce0a89e435f4ae905",
+          "registrationId": "01a17c3c-ef66-70cf-9ff1-cad25a8bee34",
+          "registrationRevision": 3
+        },
+        "verifiedUntil": "2026-11-03T08:00:56Z"
+      },
+      {
+        "coverageFrom": "2026-11-03T03:20:32.058611Z",
+        "coverageTo": "2026-11-03T08:00:19.976971018Z",
+        "maxWindowSeconds": 1800,
+        "name": "r49-continuous-pod-logs",
+        "source": {
+          "collectorVersion": "v1.52.0-ops1",
+          "credentialRevision": 1,
+          "qualificationDigest": "sha256:409a97327972674ed76dd1a6179c58c01d3e38c37f6da3fcc888e1fc78b4dfaf",
+          "registrationId": "01a19f70-d86a-70d7-a29d-dc148a60be6a",
+          "registrationRevision": 1
+        },
+        "verifiedUntil": "2026-11-03T08:00:51.942106772Z"
+      }
+    ],
+    "templates": [
+      "logs.records/v1"
+    ]
+  },
+  "source": {
+    "coverageFrom": "2026-11-03T03:20:32.058611Z",
+    "coverageTo": "2026-11-03T08:00:19.976971018Z",
+    "maxWindowSeconds": 1800,
+    "name": "r49-continuous-pod-logs",
+    "source": {
+      "collectorVersion": "v1.52.0-ops1",
+      "credentialRevision": 1,
+      "qualificationDigest": "sha256:409a97327972674ed76dd1a6179c58c01d3e38c37f6da3fcc888e1fc78b4dfaf",
+      "registrationId": "01a19f70-d86a-70d7-a29d-dc148a60be6a",
+      "registrationRevision": 1
+    },
+    "verifiedUntil": "2026-11-03T08:00:51.942106772Z"
+  },
+  "historyRecovered": true,
+  "status": "passed_one_real_log_query_and_history"
+}

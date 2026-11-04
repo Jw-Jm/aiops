@@ -16,7 +16,10 @@ import (
 	"time"
 )
 
-type ActionHandlers struct{ Service action.Service }
+type ActionHandlers struct {
+	Service           action.Service
+	ConfigurationOnly bool
+}
 
 func decodeAction(r *http.Request, v any) error {
 	d := json.NewDecoder(io.LimitReader(r.Body, 128<<10))
@@ -67,6 +70,11 @@ func (h *ActionHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fail := func(err error) { actionError(w, err, a.RequestID) }
+	if h.ConfigurationOnly && r.URL.Path != "/api/v1/admin/execution-profiles" && !strings.HasPrefix(r.URL.Path, "/api/v1/admin/execution-profiles/") {
+		writeSP04Error(w, 409, "CAPABILITY_DISABLED", "command execution runtime is disabled; configuration management only", false, a.RequestID)
+		return
+	}
+
 	key := r.Header.Get("Idempotency-Key")
 	if r.Method != "GET" && (len(r.Header.Values("Idempotency-Key")) != 1 || !validIdempotencyKey(key)) {
 		fail(action.ErrInvalid)

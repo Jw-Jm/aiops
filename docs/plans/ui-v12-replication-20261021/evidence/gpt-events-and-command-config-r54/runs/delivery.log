@@ -1,0 +1,15 @@
+python3 scripts/check-generated.py "go" gen web/src/api/generated internal/persistence/dbgen services/investigator/src/investigator/output.schema.json services/investigator/src/investigator/assistant-output.schema.json
+✓ Lockfile passes supply-chain policies (verified 22d ago)
+Lockfile is up to date, resolution step is skipped
+Already up to date
+Done in 215ms using pnpm v12.7.0
+$ orval --config ./orval.config.ts
+🍻 orval v8.37.0 - A swagger client generator for typescript
+platform - Cleaning output folder
+platform - 🎉 Smart Operations Platform API - Your OpenAPI spec has been converted into ready to use orval!
+python3 scripts/prepare-runtime-source.py --check
+{"modules": 99, "selectedModuleFiles": 3052, "standardLibraryFiles": 1386, "sourceBundleSHA256": "sha256:8da17018408c49bab6d878417cafa70aabedc22926cac15a40e0f077b3f1b345"}
+python3 scripts/prepare-migration-source.py --check
+{"modules": 10, "selectedModuleFiles": 296, "standardLibraryFiles": 1129, "sourceBundleSHA256": "sha256:cdf705b0558534ea81395da0336e9983b1726034dd71f764dacda746c13c0d29"}
+go test ./test/contract -run '^TestDeliveryPreparation' -count=1
+ok  	ops-platform/test/contract	0.605s

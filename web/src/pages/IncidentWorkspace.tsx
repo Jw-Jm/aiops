@@ -2,7 +2,8 @@ import { IncidentRecord } from "../components/IncidentRecord";
 import { FaultSummary } from "../components/FaultSummary";
 import { RegionBoundary } from "../components/RegionBoundary";
 import { lazy, Suspense } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { IncidentStateActions } from "../components/IncidentStateActions";
 import { Tabs, Button, Space, Table, Select } from "antd";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import {
@@ -54,6 +55,7 @@ const AuditPage = lazy(() =>
 import { useAuth } from "../auth/AuthProvider";
 export function IncidentWorkspace() {
   const { incidentId = "" } = useParams();
+  const client = useQueryClient();
   const [url, setUrl] = useSearchParams();
   const tab = url.get("tab") || "overview";
   const auth = useAuth();
@@ -179,9 +181,16 @@ export function IncidentWorkspace() {
         title="故障处理工作台"
         description="先了解故障现象与影响，再核对证据、调查原因和执行本人确认的命令。"
         extra={
-          <Space><Link to={`/assistant?incidentId=${encodeURIComponent(incidentId)}&clusterUid=${encodeURIComponent(incident?.clusterUid || "")}`}><Button disabled={!incident}>自然语言追问</Button></Link><Link to="/events/incidents">
-            <Button>返回故障列表</Button>
-          </Link></Space>
+          <Space>
+            <Link
+              to={`/assistant?incidentId=${encodeURIComponent(incidentId)}&clusterUid=${encodeURIComponent(incident?.clusterUid || "")}`}
+            >
+              <Button disabled={!incident}>自然语言追问</Button>
+            </Link>
+            <Link to="/events/incidents">
+              <Button>返回故障列表</Button>
+            </Link>
+          </Space>
         }
       />
       <QueryState
@@ -191,6 +200,23 @@ export function IncidentWorkspace() {
       >
         {incident && (
           <>
+            <IncidentStateActions
+              key={incidentId}
+              incidentId={incidentId}
+              state={text(incident.state)}
+              revision={Number(incident.revision)}
+              onChanged={async () => {
+                await Promise.all([
+                  client.invalidateQueries({
+                    queryKey: ["incident", incidentId],
+                  }),
+                  client.invalidateQueries({
+                    queryKey: ["incident-region", incidentId],
+                  }),
+                  client.invalidateQueries({ queryKey: ["incidents"] }),
+                ]);
+              }}
+            />
             <section className="section">
               <Space wrap>
                 <Status value={incident.state} />

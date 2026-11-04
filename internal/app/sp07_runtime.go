@@ -24,6 +24,7 @@ import (
 )
 
 type SP07Config struct {
+	ConfigurationOnly   bool        `json:"configurationOnly,omitempty"`
 	SchemaVersion       string      `json:"schemaVersion"`
 	Namespace           string      `json:"namespace"`
 	ListenAddress       string      `json:"listenAddress"`
@@ -56,7 +57,7 @@ func loadSP07() (*SP07Config, error) {
 	d := json.NewDecoder(bytes.NewReader(b))
 	d.DisallowUnknownFields()
 	var extra any
-	if d.Decode(&c) != nil || d.Decode(&extra) != io.EOF || c.SchemaVersion != "sp07-runtime/v1" || c.Namespace == "" || len(c.Tenants) == 0 || c.PolicyName == "" || c.ListenAddress == "" || c.WorkloadCAFile == "" || c.TrustConfigMap == "" || c.IdentitySecret == "" || len(c.AdmittedProfiles) == 0 {
+	if d.Decode(&c) != nil || d.Decode(&extra) != io.EOF || c.SchemaVersion != "sp07-runtime/v1" || c.Namespace == "" || len(c.Tenants) == 0 || len(c.AdmittedProfiles) == 0 || (!c.ConfigurationOnly && (c.PolicyName == "" || c.ListenAddress == "" || c.WorkloadCAFile == "" || c.TrustConfigMap == "" || c.IdentitySecret == "")) {
 		return nil, errors.New("SP07 configuration invalid")
 	}
 	for _, p := range c.AdmittedProfiles {
@@ -66,6 +67,15 @@ func loadSP07() (*SP07Config, error) {
 	}
 	return &c, nil
 }
+func (c *SP07Config) admitProfile(_ context.Context, p action.Profile) error {
+	for _, allowed := range c.AdmittedProfiles {
+		if bytes.Equal(action.Canonical(allowed), action.Canonical(p)) {
+			return nil
+		}
+	}
+	return action.ErrDenied
+}
+
 func sp07Service(ctx context.Context, pool persistence.TxBeginner, c *SP07Config, trust configregistry.Ed25519TrustStore, sa string) (action.Service, error) {
 	var out action.Service
 	ca, err := os.ReadFile(os.Getenv("OPENBAO_CA_FILE"))
@@ -111,14 +121,7 @@ func sp07Service(ctx context.Context, pool persistence.TxBeginner, c *SP07Config
 			}
 		}
 		return action.ErrDenied
-	}, Pool: pool, Trust: trust, Policy: evaluator, Protector: protector, Credentials: action.ExecutionCredentials{Kubernetes: kube, KubernetesCA: kubeCA, Hosts: c.Hosts, SSHCA: transit}, AdmitProfile: func(ctx context.Context, p action.Profile) error {
-		for _, allowed := range c.AdmittedProfiles {
-			if bytes.Equal(action.Canonical(allowed), action.Canonical(p)) {
-				return nil
-			}
-		}
-		return action.ErrDenied
-	}}
+	}, Pool: pool, Trust: trust, Policy: evaluator, Protector: protector, Credentials: action.ExecutionCredentials{Kubernetes: kube, KubernetesCA: kubeCA, Hosts: c.Hosts, SSHCA: transit}, AdmitProfile: c.admitProfile}
 	return out, nil
 }
 func StartSP07API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Handlers, trust configregistry.Ed25519TrustStore, runtimes ...*observability.Runtime) (func(), error) {
@@ -127,6 +130,10 @@ func StartSP07API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Han
 		return nil, err
 	}
 	if c == nil {
+		return func() {}, nil
+	}
+	if c.ConfigurationOnly {
+		sp04.Action = &httpapi.ActionHandlers{ConfigurationOnly: true, Service: action.Service{Pool: pool, Trust: trust, AdmitProfile: c.admitProfile}}
 		return func() {}, nil
 	}
 	s, err := sp07Service(ctx, pool, c, trust, "ops-api")

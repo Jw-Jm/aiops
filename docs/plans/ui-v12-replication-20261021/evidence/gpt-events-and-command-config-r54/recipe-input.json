@@ -1,0 +1,79 @@
+{
+  "draft": {
+    "kind": "recipe",
+    "logicalName": "pvc-csi-failure",
+    "content": {
+      "schemaVersion": "recipe-registry/v2",
+      "name": "pvc-csi-failure",
+      "version": "v2",
+      "candidateType": "csi_provisioner_failure",
+      "entry": [
+        "PersistentVolumeClaim",
+        "Pod"
+      ],
+      "graphDepth": 2,
+      "graphPlan": "single-query/v1",
+      "requiredEvidence": [
+        {
+          "key": "pvc-pending",
+          "predicate": "pvc-pending/v1",
+          "maxAgeSeconds": 300,
+          "required": true
+        },
+        {
+          "key": "csi-error",
+          "predicate": "csi-error/v1",
+          "maxAgeSeconds": 300,
+          "required": true
+        },
+        {
+          "key": "storage-path",
+          "predicate": "storage-path/v1",
+          "maxAgeSeconds": 300,
+          "required": true
+        }
+      ],
+      "optionalEvidence": [
+        "metric-context",
+        "recent-change"
+      ],
+      "confirm": [
+        "pvc-pending",
+        "csi-error",
+        "storage-path"
+      ],
+      "exclude": [
+        "healthy-primary",
+        "conflicting-required-facts",
+        "invalid-path",
+        "unreliable-clock"
+      ],
+      "toolAllowlist": [
+        "read_evidence",
+        "diagnostic_graph",
+        "impact_scope"
+      ],
+      "budget": {
+        "maxEvidence": 64,
+        "maxNodes": 200,
+        "maxEdges": 400,
+        "timeoutMs": 3000
+      },
+      "postCheck": "native-related-health/v1"
+    }
+  },
+  "publish": {
+    "expectedRevision": 1,
+    "signerKeyId": "r28-task-policy",
+    "signature": "kCcraOuOKkbIcvT1X6ftevqx7NlJ8wsAmUsvZJhEGBiLrdjMHhjnp6tNhJXtvP0k9EfKU2j7lL+qwR/KWe4xAA=="
+  },
+  "activation": {
+    "kind": "recipe",
+    "logicalName": "pvc-csi-failure",
+    "scopeType": "namespace",
+    "clusterId": "01a17c3c-80db-783b-9388-c6eee037f89b",
+    "namespace": "ops-native-v12-r24-20261026",
+    "expectedRevision": 0
+  },
+  "digest": "sha256:782b65be55369e9104df3c42b0b50361f8f9aea9413302d04411baeee45751d6"
+}

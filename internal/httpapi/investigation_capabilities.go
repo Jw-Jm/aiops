@@ -71,7 +71,7 @@ func (h *SP04Handlers) ServeCapabilities(w http.ResponseWriter, r *http.Request)
 	ready := persistence.WithTenantTx(r.Context(), h.Pool, actor.TenantID, func(tx pgx.Tx) error { var one int; return tx.QueryRow(r.Context(), "SELECT 1").Scan(&one) }) == nil
 	data["apiReady"] = ready
 	commandStatus, commandReason := "disabled", "SP07-runtime-not-configured"
-	if h.Action != nil {
+	if h.Action != nil && !h.Action.ConfigurationOnly {
 		commandStatus, commandReason = "unverified", "SP07-configured; execution-authorization-required"
 	}
 	data["commandExecution"] = map[string]string{"status": commandStatus, "reason": commandReason, "verification": "unverified"}

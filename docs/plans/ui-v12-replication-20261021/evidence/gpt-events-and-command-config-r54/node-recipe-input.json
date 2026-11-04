@@ -1,0 +1,79 @@
+{
+  "draft": {
+    "kind": "recipe",
+    "logicalName": "node-failure",
+    "content": {
+      "schemaVersion": "recipe-registry/v2",
+      "name": "node-failure",
+      "version": "v2",
+      "candidateType": "node_runtime_failure",
+      "entry": [
+        "Node",
+        "Pod"
+      ],
+      "graphDepth": 2,
+      "requiredEvidence": [
+        {
+          "key": "node-not-ready",
+          "predicate": "node-not-ready/v1",
+          "maxAgeSeconds": 300,
+          "required": true
+        },
+        {
+          "key": "node-causal-evidence",
+          "predicate": "node-runtime-or-located-fatal-dimm/v2",
+          "maxAgeSeconds": 300,
+          "required": true
+        },
+        {
+          "key": "node-path",
+          "predicate": "node-path/v1",
+          "maxAgeSeconds": 300,
+          "required": true
+        }
+      ],
+      "optionalEvidence": [
+        "metric-context",
+        "recent-change"
+      ],
+      "confirm": [
+        "node-not-ready",
+        "node-causal-evidence",
+        "node-path"
+      ],
+      "exclude": [
+        "healthy-primary",
+        "conflicting-required-facts",
+        "invalid-path",
+        "unreliable-clock"
+      ],
+      "toolAllowlist": [
+        "read_evidence",
+        "diagnostic_graph",
+        "impact_scope"
+      ],
+      "budget": {
+        "maxEvidence": 64,
+        "maxNodes": 200,
+        "maxEdges": 400,
+        "timeoutMs": 3000
+      },
+      "postCheck": "fresh-required-evidence/v1",
+      "graphPlan": "single-query/v1"
+    }
+  },
+  "publish": {
+    "expectedRevision": 1,
+    "signerKeyId": "r28-task-policy",
+    "signature": "wVBHPDdhpEH5eBcR6Ie/VWzicyir0YcWpqCSBx6USMlIy/uwBAZ1e64Q3Y66SCk5gr3NOYkqVP1dHiotslqgCQ=="
+  },
+  "activation": {
+    "kind": "recipe",
+    "logicalName": "node-failure",
+    "scopeType": "namespace",
+    "clusterId": "01a17c3c-80db-783b-9388-c6eee037f89b",
+    "namespace": "ops-native-v12-r24-20261026",
+    "expectedRevision": 0
+  },
+  "digest": "sha256:8673849b34ea0ca6894666db6cc3eae7cc5c29b742334e87b2216d1c14ab58be"
+}

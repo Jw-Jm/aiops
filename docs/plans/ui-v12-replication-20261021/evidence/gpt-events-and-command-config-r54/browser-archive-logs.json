@@ -1,0 +1,666 @@
+{
+  "at": "2026-11-04T00:33:18.779Z",
+  "requests": [
+    {
+      "path": "/api/v1/observability/capabilities",
+      "query": "clusterUid=79014400-9453-4cb4-9678-0fae47981d79&canonicalId=k8s%2Bv1%3A%2F%2F01a177f1-372f-75b7-be90-e8121d1445f5%2F79014400-9453-4cb4-9678-0fae47981d79%2Fcore%2FPod%2Fa47521e5-237e-4e3f-a2eb-82494575ea7e",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "query": "clusterUid=79014400-9453-4cb4-9678-0fae47981d79",
+      "method": "POST",
+      "status": 202
+    },
+    {
+      "path": "/api/v1/observability/queries/518f5bd9-34f1-4da9-9601-d2ec1ed94e76",
+      "query": "clusterUid=79014400-9453-4cb4-9678-0fae47981d79",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/observability/queries/518f5bd9-34f1-4da9-9601-d2ec1ed94e76/results",
+      "query": "clusterUid=79014400-9453-4cb4-9678-0fae47981d79",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/observability/capabilities",
+      "query": "clusterUid=79014400-9453-4cb4-9678-0fae47981d79&canonicalId=k8s%2Bv1%3A%2F%2F01a177f1-372f-75b7-be90-e8121d1445f5%2F79014400-9453-4cb4-9678-0fae47981d79%2Fcore%2FPod%2Fa47521e5-237e-4e3f-a2eb-82494575ea7e",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/observability/queries",
+      "query": "clusterUid=79014400-9453-4cb4-9678-0fae47981d79",
+      "method": "GET",
+      "status": 200
+    }
+  ],
+  "errors": [],
+  "queries": [
+    {
+      "createStatus": 202,
+      "request": {
+        "schemaVersion": "ui-v12-observability-query/v1",
+        "queryKind": "logs",
+        "templateId": "logs.records",
+        "templateVersion": "logs.records/v1",
+        "resource": {
+          "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/a47521e5-237e-4e3f-a2eb-82494575ea7e",
+          "uid": "a47521e5-237e-4e3f-a2eb-82494575ea7e",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "namespaceScope": {
+            "kind": "namespaced",
+            "namespace": "ops-native-v12-r24-20261026",
+            "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+          }
+        },
+        "source": {
+          "collectorVersion": "v1.52.0-ops1",
+          "credentialRevision": 1,
+          "qualificationDigest": "sha256:409a97327972674ed76dd1a6179c58c01d3e38c37f6da3fcc888e1fc78b4dfaf",
+          "registrationId": "01a19f70-d86a-70d7-a29d-dc148a60be6a",
+          "registrationRevision": 1
+        },
+        "window": {
+          "from": "2026-11-04T00:03:12.000Z",
+          "to": "2026-11-04T00:33:11.121670649Z",
+          "timezone": "Asia/Shanghai",
+          "bounds": "[from,to)"
+        },
+        "budget": {
+          "maxBytes": 131072,
+          "maxDurationSeconds": 8,
+          "maxRows": 20,
+          "maxSourceCalls": 2
+        },
+        "filters": []
+      },
+      "view": {
+        "cancelRequestedAt": null,
+        "coverage": {
+          "basis": "unknown",
+          "complete": false,
+          "coveredFrom": "2026-11-04T00:03:12Z",
+          "coveredTo": "2026-11-04T00:33:11.121670649Z",
+          "gaps": []
+        },
+        "createdAt": "2026-11-04T00:33:25.250472963Z",
+        "expiresAt": "2026-12-04T00:33:25.250472963Z",
+        "failure": null,
+        "ownerSubject": "user:01a177f1-372c-7f0f-a9de-85df928fbe31",
+        "queryId": "518f5bd9-34f1-4da9-9601-d2ec1ed94e76",
+        "reauthorization": {
+          "authorizationVersion": 2,
+          "checkedAt": "2026-11-04T00:33:25.246517505Z",
+          "denialCode": null,
+          "result": "allowed",
+          "sourceRegistrationRevision": 1
+        },
+        "request": {
+          "budget": {
+            "maxBytes": 131072,
+            "maxDurationSeconds": 8,
+            "maxRows": 20,
+            "maxSourceCalls": 2
+          },
+          "queryKind": "logs",
+          "resource": {
+            "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/a47521e5-237e-4e3f-a2eb-82494575ea7e",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaceScope": {
+              "kind": "namespaced",
+              "namespace": "ops-native-v12-r24-20261026",
+              "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+            },
+            "uid": "a47521e5-237e-4e3f-a2eb-82494575ea7e"
+          },
+          "schemaVersion": "ui-v12-observability-query/v1",
+          "source": {
+            "collectorVersion": "v1.52.0-ops1",
+            "credentialRevision": 1,
+            "qualificationDigest": "sha256:409a97327972674ed76dd1a6179c58c01d3e38c37f6da3fcc888e1fc78b4dfaf",
+            "registrationId": "01a19f70-d86a-70d7-a29d-dc148a60be6a",
+            "registrationRevision": 1
+          },
+          "templateId": "logs.records",
+          "templateVersion": "logs.records/v1",
+          "window": {
+            "bounds": "[from,to)",
+            "from": "2026-11-04T00:03:12Z",
+            "timezone": "Asia/Shanghai",
+            "to": "2026-11-04T00:33:11.121670649Z"
+          }
+        },
+        "resource": {
+          "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/a47521e5-237e-4e3f-a2eb-82494575ea7e",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "namespaceScope": {
+            "kind": "namespaced",
+            "namespace": "ops-native-v12-r24-20261026",
+            "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+          },
+          "uid": "a47521e5-237e-4e3f-a2eb-82494575ea7e"
+        },
+        "resultRef": null,
+        "revision": 1,
+        "schemaVersion": "ui-v12-observability-query/v1",
+        "source": {
+          "collectorVersion": "v1.52.0-ops1",
+          "credentialRevision": 1,
+          "qualificationDigest": "sha256:409a97327972674ed76dd1a6179c58c01d3e38c37f6da3fcc888e1fc78b4dfaf",
+          "registrationId": "01a19f70-d86a-70d7-a29d-dc148a60be6a",
+          "registrationRevision": 1
+        },
+        "state": "accepted",
+        "tenantId": "01a177f1-372f-75b7-be90-e8121d1445f5",
+        "termination": null,
+        "updatedAt": "2026-11-04T00:33:25.250472963Z",
+        "window": {
+          "bounds": "[from,to)",
+          "from": "2026-11-04T00:03:12Z",
+          "timezone": "Asia/Shanghai",
+          "to": "2026-11-04T00:33:11.121670649Z"
+        }
+      },
+      "result": {
+        "computedAt": "2026-11-04T00:33:26.887485025Z",
+        "coverage": {
+          "basis": "unknown",
+          "complete": false,
+          "coveredFrom": "2026-11-04T00:03:12Z",
+          "coveredTo": "2026-11-04T00:33:11.121670649Z",
+          "gaps": []
+        },
+        "exact": false,
+        "expiresAt": "2026-12-04T00:33:25.250472963Z",
+        "population": {
+          "basis": "exact",
+          "count": 265,
+          "method": "source_total"
+        },
+        "queryId": "518f5bd9-34f1-4da9-9601-d2ec1ed94e76",
+        "reauthorization": {
+          "authorizationVersion": 2,
+          "checkedAt": "2026-11-04T00:33:32.111298326Z",
+          "denialCode": null,
+          "result": "allowed",
+          "sourceRegistrationRevision": 1
+        },
+        "resource": {
+          "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/a47521e5-237e-4e3f-a2eb-82494575ea7e",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "namespaceScope": {
+            "kind": "namespaced",
+            "namespace": "ops-native-v12-r24-20261026",
+            "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+          },
+          "uid": "a47521e5-237e-4e3f-a2eb-82494575ea7e"
+        },
+        "resultDigest": "sha256:6c1e17107abef95187aa2314c86a7b5b6025a64a862351fa29993511d593297d",
+        "resultId": "026ef364-0b8e-4b4c-a59f-04c61eb832bb",
+        "resultKind": "log_samples",
+        "samples": {
+          "inferredPopulation": null,
+          "items": [
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://387e7adb21685147a2ea741c9f239a1094cf3b138a226d05198788add061708d",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "2026/11/04 00:33:01 http: TLS handshake error from 10.244.0.1:57962: EOF",
+              "timestamp": "2026-11-04T00:33:01.578299131Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://387e7adb21685147a2ea741c9f239a1094cf3b138a226d05198788add061708d",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "2026/11/04 00:32:51 http: TLS handshake error from 10.244.0.1:48204: EOF",
+              "timestamp": "2026-11-04T00:32:51.577883191Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://387e7adb21685147a2ea741c9f239a1094cf3b138a226d05198788add061708d",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "2026/11/04 00:32:41 http: TLS handshake error from 10.244.0.1:54540: EOF",
+              "timestamp": "2026-11-04T00:32:41.578063565Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://387e7adb21685147a2ea741c9f239a1094cf3b138a226d05198788add061708d",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "2026/11/04 00:32:31 http: TLS handshake error from 10.244.0.1:56968: EOF",
+              "timestamp": "2026-11-04T00:32:31.578137277Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://387e7adb21685147a2ea741c9f239a1094cf3b138a226d05198788add061708d",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "2026/11/04 00:32:21 http: TLS handshake error from 10.244.0.1:38996: EOF",
+              "timestamp": "2026-11-04T00:32:21.577519368Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://387e7adb21685147a2ea741c9f239a1094cf3b138a226d05198788add061708d",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "2026/11/04 00:32:11 http: TLS handshake error from 10.244.0.1:46818: EOF",
+              "timestamp": "2026-11-04T00:32:11.577520016Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://387e7adb21685147a2ea741c9f239a1094cf3b138a226d05198788add061708d",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "2026/11/04 00:32:01 http: TLS handshake error from 10.244.0.1:45434: EOF",
+              "timestamp": "2026-11-04T00:32:01.578167284Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://387e7adb21685147a2ea741c9f239a1094cf3b138a226d05198788add061708d",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "2026/11/04 00:31:51 http: TLS handshake error from 10.244.0.1:35478: EOF",
+              "timestamp": "2026-11-04T00:31:51.577689742Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://387e7adb21685147a2ea741c9f239a1094cf3b138a226d05198788add061708d",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "2026/11/04 00:31:41 http: TLS handshake error from 10.244.0.1:43664: EOF",
+              "timestamp": "2026-11-04T00:31:41.577591984Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://387e7adb21685147a2ea741c9f239a1094cf3b138a226d05198788add061708d",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "2026/11/04 00:31:31 http: TLS handshake error from 10.244.0.1:35204: EOF",
+              "timestamp": "2026-11-04T00:31:31.577845482Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://387e7adb21685147a2ea741c9f239a1094cf3b138a226d05198788add061708d",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "2026/11/04 00:31:21 http: TLS handshake error from 10.244.0.1:46252: EOF",
+              "timestamp": "2026-11-04T00:31:21.578279286Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://387e7adb21685147a2ea741c9f239a1094cf3b138a226d05198788add061708d",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "2026/11/04 00:31:11 http: TLS handshake error from 10.244.0.1:45896: EOF",
+              "timestamp": "2026-11-04T00:31:11.578479445Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://387e7adb21685147a2ea741c9f239a1094cf3b138a226d05198788add061708d",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "2026/11/04 00:31:01 http: TLS handshake error from 10.244.0.1:52726: EOF",
+              "timestamp": "2026-11-04T00:31:01.577989377Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://387e7adb21685147a2ea741c9f239a1094cf3b138a226d05198788add061708d",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "2026/11/04 00:30:51 http: TLS handshake error from 10.244.0.1:37152: EOF",
+              "timestamp": "2026-11-04T00:30:51.578145527Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://387e7adb21685147a2ea741c9f239a1094cf3b138a226d05198788add061708d",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "2026/11/04 00:30:41 http: TLS handshake error from 10.244.0.1:36830: EOF",
+              "timestamp": "2026-11-04T00:30:41.577600923Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://387e7adb21685147a2ea741c9f239a1094cf3b138a226d05198788add061708d",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "2026/11/04 00:30:31 http: TLS handshake error from 10.244.0.1:50104: EOF",
+              "timestamp": "2026-11-04T00:30:31.577449642Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://387e7adb21685147a2ea741c9f239a1094cf3b138a226d05198788add061708d",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "2026/11/04 00:30:21 http: TLS handshake error from 10.244.0.1:55126: EOF",
+              "timestamp": "2026-11-04T00:30:21.577950708Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://387e7adb21685147a2ea741c9f239a1094cf3b138a226d05198788add061708d",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "2026/11/04 00:30:11 http: TLS handshake error from 10.244.0.1:59054: EOF",
+              "timestamp": "2026-11-04T00:30:11.578145272Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://387e7adb21685147a2ea741c9f239a1094cf3b138a226d05198788add061708d",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "2026/11/04 00:30:01 http: TLS handshake error from 10.244.0.1:41386: EOF",
+              "timestamp": "2026-11-04T00:30:01.578202483Z"
+            },
+            {
+              "fields": {
+                "container": "seaweedfs",
+                "containerId": "containerd://387e7adb21685147a2ea741c9f239a1094cf3b138a226d05198788add061708d",
+                "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11",
+                "pod": "ops-seaweedfs-0"
+              },
+              "level": "unknown",
+              "message": "I1104 00:29:52.673136 master_client.go:24 the cluster has 1 filer",
+              "timestamp": "2026-11-04T00:29:52.67316769Z"
+            }
+          ],
+          "returned": 20
+        },
+        "schemaVersion": "ui-v12-observability-result/v1",
+        "source": {
+          "collectorVersion": "v1.52.0-ops1",
+          "credentialRevision": 1,
+          "qualificationDigest": "sha256:409a97327972674ed76dd1a6179c58c01d3e38c37f6da3fcc888e1fc78b4dfaf",
+          "registrationId": "01a19f70-d86a-70d7-a29d-dc148a60be6a",
+          "registrationRevision": 1
+        },
+        "statistics": [],
+        "status": "partial",
+        "truncation": {
+          "reasons": [
+            "sample_limit"
+          ],
+          "truncated": true
+        },
+        "warnings": [
+          "bounded_sanitized_samples_not_total_count",
+          "bounded_sanitized_samples_not_total_count"
+        ],
+        "window": {
+          "bounds": "[from,to)",
+          "from": "2026-11-04T00:03:12Z",
+          "timezone": "Asia/Shanghai",
+          "to": "2026-11-04T00:33:11.121670649Z"
+        }
+      }
+    }
+  ],
+  "screenshots": false,
+  "otherBusinessWrites": 0,
+  "indexSHA256": "3893e6c0f883508e9d6e23f8e9f0ee5e96688628236158bc109a334922615e8a",
+  "capabilities": {
+    "budget": {
+      "maxBytes": 131072,
+      "maxDurationSeconds": 8,
+      "maxRows": 20,
+      "maxSourceCalls": 2
+    },
+    "resources": [
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/e7d45101-fc70-4d9a-b5fe-1f03f6f8ce63",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "ops-api",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "e7d45101-fc70-4d9a-b5fe-1f03f6f8ce63"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/bf5652b7-84b2-48bc-81f2-bd9e66eb38b3",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "ops-investigator",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "bf5652b7-84b2-48bc-81f2-bd9e66eb38b3"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/28de8b72-11d0-4b6a-8128-82c00868b43f",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "ops-openbao-0",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "28de8b72-11d0-4b6a-8128-82c00868b43f"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9abe6fa8-8c56-43a0-a009-dc6311ab7287",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "ops-r49-log-collector-lqgkn",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "9abe6fa8-8c56-43a0-a009-dc6311ab7287"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/b4d98dc8-cbb0-4716-9614-738fb5ce36ce",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "ops-r51-ksm",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "b4d98dc8-cbb0-4716-9614-738fb5ce36ce"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/07912e9e-8b4e-4727-a7de-fdc8169ec520",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "ops-r51-metrics",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "07912e9e-8b4e-4727-a7de-fdc8169ec520"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/a47521e5-237e-4e3f-a2eb-82494575ea7e",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "ops-seaweedfs-0",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "a47521e5-237e-4e3f-a2eb-82494575ea7e"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/16865aa6-67bd-43c7-977d-90aa8d5fbd9b",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "ops-worker",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "16865aa6-67bd-43c7-977d-90aa8d5fbd9b"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/98236856-ff81-4580-ae72-5c466e8ec40b",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "r28-python-tests",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "98236856-ff81-4580-ae72-5c466e8ec40b"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/50072cee-5153-476a-890b-14eb840f504f",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "r28-python-tests-2",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "50072cee-5153-476a-890b-14eb840f504f"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/85aa6a5b-224e-41db-9826-bfd6437a7f5a",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "r28-python-tests-3",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "85aa6a5b-224e-41db-9826-bfd6437a7f5a"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/f5d920d2-02fc-4efe-9670-6251be64385b",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "r28-python-tests-4",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "f5d920d2-02fc-4efe-9670-6251be64385b"
+      },
+      {
+        "canonicalId": "k8s+v1://01a177f1-372f-75b7-be90-e8121d1445f5/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/6759c463-9c16-4cc4-9cef-f5c3119964ec",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "displayName": "r28-python-tests-5",
+        "namespaceScope": {
+          "kind": "namespaced",
+          "namespace": "ops-native-v12-r24-20261026",
+          "namespaceUid": "731f0e88-1893-4836-844b-a29374c1ca11"
+        },
+        "uid": "6759c463-9c16-4cc4-9cef-f5c3119964ec"
+      }
+    ],
+    "schemaVersion": "ui-v12-observability-capabilities/v1",
+    "sources": [
+      {
+        "coverageFrom": "2026-11-04T00:19:30Z",
+        "coverageTo": "2026-11-04T00:33:22Z",
+        "maxWindowSeconds": 1800,
+        "name": "Kubernetes 原生日志（当前容器）",
+        "source": {
+          "collectorVersion": "kubernetes-pod-logs/v1",
+          "credentialRevision": 1,
+          "qualificationDigest": "sha256:98030f078b37f2ba831e069fee6c24532f46a39bb458bfa69e068883a8b0b90b",
+          "registrationId": "01a17c3c-ef66-70cf-9ff1-cad25a8bee34",
+          "registrationRevision": 4
+        },
+        "verifiedUntil": "2026-11-04T00:33:52Z"
+      },
+      {
+        "coverageFrom": "2026-11-03T03:20:32.058611Z",
+        "coverageTo": "2026-11-04T00:33:11.121670649Z",
+        "maxWindowSeconds": 1800,
+        "name": "r49-continuous-pod-logs",
+        "source": {
+          "collectorVersion": "v1.52.0-ops1",
+          "credentialRevision": 1,
+          "qualificationDigest": "sha256:409a97327972674ed76dd1a6179c58c01d3e38c37f6da3fcc888e1fc78b4dfaf",
+          "registrationId": "01a19f70-d86a-70d7-a29d-dc148a60be6a",
+          "registrationRevision": 1
+        },
+        "verifiedUntil": "2026-11-04T00:33:44.616734041Z"
+      }
+    ],
+    "templates": [
+      "logs.records/v1"
+    ]
+  },
+  "source": {
+    "coverageFrom": "2026-11-03T03:20:32.058611Z",
+    "coverageTo": "2026-11-04T00:33:11.121670649Z",
+    "maxWindowSeconds": 1800,
+    "name": "r49-continuous-pod-logs",
+    "source": {
+      "collectorVersion": "v1.52.0-ops1",
+      "credentialRevision": 1,
+      "qualificationDigest": "sha256:409a97327972674ed76dd1a6179c58c01d3e38c37f6da3fcc888e1fc78b4dfaf",
+      "registrationId": "01a19f70-d86a-70d7-a29d-dc148a60be6a",
+      "registrationRevision": 1
+    },
+    "verifiedUntil": "2026-11-04T00:33:44.616734041Z"
+  },
+  "historyRecovered": true,
+  "status": "passed_one_real_log_query_and_history"
+}

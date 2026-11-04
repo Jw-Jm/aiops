@@ -1,0 +1,66 @@
+{
+  "at": "2026-11-04T00:44:37.368Z",
+  "routes": [
+    {
+      "path": "/events/alerts",
+      "loaded": true
+    },
+    {
+      "path": "/events/incidents",
+      "loaded": true
+    },
+    {
+      "path": "/settings/execution",
+      "loaded": true
+    }
+  ],
+  "errors": [],
+  "reads": [
+    {
+      "path": "/api/v1/findings?clusterUid=79014400-9453-4cb4-9678-0fae47981d79",
+      "http": 200,
+      "count": 7
+    },
+    {
+      "path": "/api/v1/incidents?clusterUid=79014400-9453-4cb4-9678-0fae47981d79",
+      "http": 200,
+      "count": 7
+    },
+    {
+      "path": "/api/v1/admin/execution-profiles",
+      "http": 200,
+      "count": 1
+    },
+    {
+      "path": "/api/v1/incidents/01a1a3e8-9c05-74ad-a1e7-0acaf32b5225",
+      "http": 200,
+      "state": "closed"
+    },
+    {
+      "path": "/api/v1/incidents/01a1a3e8-9c05-74ad-a1e7-0acaf32b5225/rca",
+      "http": 200,
+      "rcaNodes": [
+        {
+          "kind": "PersistentVolumeClaim",
+          "namespace": "ops-native-v12-r24-20261026"
+        }
+      ]
+    },
+    {
+      "path": "/api/v1/incidents/01a1a3e8-9c05-74ad-a1e7-0acaf32b5225/evidence",
+      "http": 200,
+      "count": 3
+    },
+    {
+      "path": "/api/v1/capabilities?clusterUid=79014400-9453-4cb4-9678-0fae47981d79",
+      "http": 200,
+      "graphReady": false,
+      "commandExecution": {
+        "reason": "SP07-runtime-not-configured",
+        "status": "disabled",
+        "verification": "unverified"
+      }
+    }
+  ],
+  "status": "passed_three_live_pages_and_guards"
+}

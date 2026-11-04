@@ -21,7 +21,7 @@ func StartSP07Worker(ctx context.Context, pool *pgxpool.Pool, store *archive.Sto
 	if err != nil {
 		return nil, err
 	}
-	if c == nil {
+	if c == nil || c.ConfigurationOnly {
 		return func() {}, nil
 	}
 	if evidenceArchive == nil || evidenceArchive.BackendLogicalID == "" {
