@@ -381,13 +381,24 @@ role_bindings = int(psql("SELECT count(*) FROM platform.role_bindings"))
 
 status_a, body_a = admin.request("POST", f"/api/v1/incidents/{INCIDENT_B}/investigations",
                                  {"triggerRevision": rev_now, "triggerKind": "manual"})
+job_a = (body_a.get("data") or {}).get("jobId")
+jobs_mid = int(psql(f"SELECT count(*) FROM investigation.jobs WHERE incident_id='{INCIDENT_B}'"))
 status_o, body_o = op.request("POST", f"/api/v1/incidents/{INCIDENT_B}/investigations",
                               {"triggerRevision": rev_now, "triggerKind": "manual"})
-record(area, "admission policy gate active: uniform 403 for admin+op, no job rows created",
-       status_a == 403 and status_o == 403
-       and error_code(body_a) == "FORBIDDEN" and error_code(body_o) == "FORBIDDEN"
-       and int(psql(f"SELECT count(*) FROM investigation.jobs WHERE incident_id='{INCIDENT_B}'")) == jobs_before,
-       {"admin": [status_a, error_code(body_a)], "op": [status_o, error_code(body_o)]})
+jobs_after = int(psql(f"SELECT count(*) FROM investigation.jobs WHERE incident_id='{INCIDENT_B}'"))
+record(area, "cluster-scoped admin admitted (202), namespace-scoped op denied, op creates nothing",
+       status_a == 202 and bool(job_a)
+       and status_o == 403 and error_code(body_o) == "FORBIDDEN"
+       and jobs_before <= jobs_mid <= jobs_before + 1 and jobs_after == jobs_mid,
+       {"admin": [status_a, job_a], "op": [status_o, error_code(body_o)],
+        "jobs": [jobs_before, jobs_mid, jobs_after]})
+
+if job_a:
+    status_x, body_x = admin.request("POST", f"/api/v1/investigations/{job_a}:cancel", {})
+    state = psql(f"SELECT state FROM investigation.jobs WHERE job_id='{job_a}'")
+    record(area, "admitted job reaches a terminal state (cancelled by us or worker-settled)",
+           state in ("cancelled", "failed", "succeeded", "partial"),
+           {"cancelStatus": status_x, "state": state})
 
 status, body = admin.request("POST", f"/api/v1/incidents/{INCIDENT_B}/investigations",
                              {"triggerRevision": rev_now + 99, "triggerKind": "manual"})
@@ -398,10 +409,6 @@ probe_missing = (status, error_code(body))
 record(area, "denial is post-validation (revision/incident checks still reachable)",
        probe_rev == (400, "INVALID_ARGUMENT") and probe_missing == (404, "NOT_FOUND"),
        {"wrongRevision": probe_rev, "missingIncident": probe_missing})
-limitation(area, "live admission is denied for every subject: legacy re-proof reads "
-                 f"platform.role_bindings (0 rows in this deployment); r55 changed only the "
-                 "focus/admission-digest input on this path. The 00074 dedup semantics stay "
-                 "covered by integration tests and docs/evidence/migration-renew-20261105.")
 
 # ---------- Area 6: execution list (SP07 configurationOnly in live) ----------
 area = "execution-filter"
