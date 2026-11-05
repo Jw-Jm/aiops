@@ -146,7 +146,11 @@ func newTenantS3FixtureMode(t *testing.T, tenants []uuid.UUID, bucket string, se
 		port = allocate()
 		serverArgs = append(serverArgs, "-s3.port.iceberg=0", "-s3.port.lance=0", "-ip=127.0.0.1", "-ip.bind=127.0.0.1", "-master.port="+allocate(), "-volume.port="+allocate(), "-filer.port="+allocate(), "-s3.port="+port)
 	} else {
-		args = append(args, "-p", "127.0.0.1::8333")
+		// Same runtime posture as the host-network branch: the image
+		// entrypoint chowns /data then drops privileges, which leaves the
+		// read-only fixture mount (0600 materials) unreadable; run the
+		// server directly as root instead.
+		args = append(args, "-p", "127.0.0.1::8333", "--user", "0:0", "--entrypoint", "/usr/bin/weed")
 	}
 	args = append(args, "-v", dir+":/fixture:ro", "-v", dataDirectory+":/data", image)
 	args = append(args, serverArgs...)

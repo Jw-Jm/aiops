@@ -74,7 +74,9 @@ func TestIntegrationArchiveFixtureSurvivesCleanupAndActualRestart(t *testing.T) 
 	if fixture.ContainerID == "" {
 		t.Fatal("actual retained Archive identity missing")
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 40*time.Second)
+	// Teardown of the force-killed fixture took ~1min on this host, and the
+	// restarted server still needs its own readiness window below.
+	ctx, cancel := context.WithTimeout(context.Background(), 180*time.Second)
 	defer cancel()
 	inspect := func() map[string]any {
 		raw, err := exec.CommandContext(ctx, "docker", "inspect", fixture.ContainerID).Output()
@@ -97,8 +99,17 @@ func TestIntegrationArchiveFixtureSurvivesCleanupAndActualRestart(t *testing.T) 
 			t.Fatal("private identity or storage removed by cleanup")
 		}
 	}
-	if exec.CommandContext(ctx, "docker", "start", fixture.ContainerID).Run() != nil {
-		t.Fatal("exact owned retained Archive restart failed")
+	// docker stop returns before the daemon finishes tearing down the task
+	// (this host needed ~1min to reap the force-killed fixture), and a start
+	// racing that teardown blocks until the context dies; retry instead.
+	for {
+		if exec.CommandContext(ctx, "docker", "start", fixture.ContainerID).Run() == nil {
+			break
+		}
+		if ctx.Err() != nil {
+			t.Fatal("exact owned retained Archive restart failed")
+		}
+		time.Sleep(time.Second)
 	}
 	defer func() {
 		inspect()
