@@ -1,0 +1,139 @@
+{
+  "observedAt": "2026-11-05T04:30:25Z",
+  "base": "https://192.168.0.63:30471",
+  "incident": "01a1a904-a6cc-7117-abd7-9a623279d988",
+  "checks": [
+    {
+      "area": "grant",
+      "check": "admin session readable",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "area": "grant",
+      "check": "step-up challenge created",
+      "ok": true,
+      "detail": {
+        "status": 201,
+        "code": null
+      }
+    },
+    {
+      "area": "grant",
+      "check": "password factor verified",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "code": null
+      }
+    },
+    {
+      "area": "grant",
+      "check": "TOTP factor verified",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "code": null
+      }
+    },
+    {
+      "area": "grant",
+      "check": "cluster-scoped operator grant created (201)",
+      "ok": true,
+      "detail": {
+        "status": 201,
+        "code": null,
+        "bindingId": "1ba65c07-137f-48d7-8e98-877dbb3e0877"
+      }
+    },
+    {
+      "area": "grant",
+      "check": "DB: new operator grant is cluster-scoped, prior one revoked",
+      "ok": true,
+      "detail": {
+        "rows": [
+          "{\"scope\": {\"namespaces\": [], \"clusterUids\": [\"79014400-9453-4cb4-9678-0fae47981d79\"]}, \"status\": \"active\"}",
+          "{\"scope\": {\"namespaces\": [], \"clusterUids\": [\"79014400-9453-4cb4-9678-0fae47981d79\"]}, \"status\": \"revoked\"}"
+        ]
+      }
+    },
+    {
+      "area": "setup",
+      "check": "re-login admin/op/member after grant",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "area": "admission",
+      "check": "admin creates investigation (202)",
+      "ok": true,
+      "detail": {
+        "status": 202,
+        "code": null,
+        "jobId": "01a1a9f8-c24c-713e-8923-b49c2e3cbea4"
+      }
+    },
+    {
+      "area": "admission",
+      "check": "idempotent replay returns the same job",
+      "ok": true,
+      "detail": {
+        "status": 202,
+        "jobId": "01a1a9f8-c24c-713e-8923-b49c2e3cbea4"
+      }
+    },
+    {
+      "area": "admission",
+      "check": "natural dedup: new key, same admission digest, same job",
+      "ok": true,
+      "detail": {
+        "status": 202,
+        "jobId": "01a1a9f8-c24c-713e-8923-b49c2e3cbea4",
+        "jobsBefore": 1,
+        "jobsAfter": 2
+      }
+    },
+    {
+      "area": "admission",
+      "check": "namespace-scoped operator and member remain denied",
+      "ok": true,
+      "detail": {
+        "op": [
+          403,
+          "FORBIDDEN"
+        ],
+        "member": [
+          403,
+          "FORBIDDEN"
+        ]
+      }
+    },
+    {
+      "area": "db",
+      "check": "job row carries admin subject, active policy, trigger revision",
+      "ok": true,
+      "detail": {
+        "row": "user:01a177f1-372c-7f0f-a9de-85df928fbe31|01a17b22-56d7-757c-8cfe-99339a3a6e30|5|failed"
+      }
+    },
+    {
+      "area": "db",
+      "check": "both idempotency keys map to the single job",
+      "ok": true,
+      "detail": {
+        "requestKeys": 2
+      }
+    },
+    {
+      "area": "cleanup",
+      "check": "verification job cancelled",
+      "ok": true,
+      "detail": {
+        "cancelStatus": 200,
+        "state": "failed"
+      }
+    }
+  ],
+  "passed": 14,
+  "failed": 0
+}

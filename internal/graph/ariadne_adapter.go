@@ -52,10 +52,9 @@ func (s Scope) Allows(id, ns string) bool {
 	if len(s.Resources) > 0 && !slices.Contains(s.Resources, id) {
 		return false
 	}
-	if ns == "" {
-		return s.ClusterScoped
-	}
-	return slices.Contains(s.Namespaces, ns)
+	// A cluster-scoped grant covers the whole cluster, namespaced resources
+	// included; the namespace list only narrows a namespace-scoped grant.
+	return s.ClusterScoped || slices.Contains(s.Namespaces, ns)
 }
 
 type Query struct {
