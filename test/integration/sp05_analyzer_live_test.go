@@ -4,12 +4,14 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/base64"
-	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"github.com/google/uuid"
+	"ops-platform/internal/integrations/k8sgpt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -23,28 +25,19 @@ func TestSP05LockedAnalyzerRealOrbStackSandboxAndNativeFaults(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	pointer, err := os.ReadFile("/tmp/ops-sp05-k8sgpt-current-dir")
-	if err != nil {
-		t.Fatal("prepare locked offline K8sGPT binary before this required live gate")
-	}
-	binary := filepath.Join(strings.TrimSpace(string(pointer)), "output/k8sgpt")
-	raw, err := os.ReadFile(binary)
-	if err != nil {
-		t.Fatal("locked Analyzer binary missing")
-	}
-	hash := sha256.Sum256(raw)
-	digest := hex.EncodeToString(hash[:])
+	binary := sp05NativeAnalyzer(t)
+	digest := k8sgpt.NativeLockedBinarySHA256()
 	dir := t.TempDir()
 	command := exec.CommandContext(ctx, "go", "build", "-mod=readonly", "-trimpath", "-buildvcs=false", "-o", filepath.Join(dir, "analyzer-check"), "./test/tools/sp05-analyzer-check")
 	command.Dir = root
-	command.Env = append(os.Environ(), "GOOS=linux", "GOARCH=arm64", "CGO_ENABLED=0")
+	command.Env = append(os.Environ(), "GOOS=linux", "GOARCH="+runtime.GOARCH, "CGO_ENABLED=0")
 	if _, err := command.CombinedOutput(); err != nil {
 		t.Fatal("compile actual adapter verification entry point")
 	}
 	if err := copyOwnedFixtureFile(binary, filepath.Join(dir, "k8sgpt")); err != nil {
 		t.Fatal(err)
 	}
-	dockerfile := "FROM scratch\nCOPY --chmod=0555 analyzer-check /analyzer-check\nCOPY --chmod=0555 k8sgpt /opt/ops/bin/k8sgpt\nUSER 65532:65532\nENTRYPOINT [\"/analyzer-check\"]\n"
+	dockerfile := "FROM scratch\nCOPY analyzer-check /analyzer-check\nCOPY k8sgpt /opt/ops/bin/k8sgpt\nUSER 65532:65532\nENTRYPOINT [\"/analyzer-check\"]\n"
 	if err := os.WriteFile(filepath.Join(dir, "Dockerfile"), []byte(dockerfile), 0600); err != nil {
 		t.Fatal(err)
 	}
@@ -52,6 +45,7 @@ func TestSP05LockedAnalyzerRealOrbStackSandboxAndNativeFaults(t *testing.T) {
 	if _, err := exec.CommandContext(ctx, "docker", "build", "--network=none", "--pull=false", "-t", image, dir).CombinedOutput(); err != nil {
 		t.Fatal("build owned Analyzer verification image without pulls")
 	}
+	sp05ImportLocalImage(t, ctx, image)
 	imageID, err := exec.CommandContext(ctx, "docker", "image", "inspect", image, "--format", "{{.Id}}").Output()
 	if err != nil {
 		t.Fatal(err)
@@ -170,4 +164,64 @@ func copyOwnedFixtureFile(source, target string) error {
 		return err
 	}
 	return os.WriteFile(target, body, 0555)
+}
+
+// Native live gates require the CLI admitted for the machine running the gate.
+func sp05NativeAnalyzer(t *testing.T) string {
+	t.Helper()
+	binary := os.Getenv("OPS_TEST_K8SGPT_BINARY")
+	if binary == "" {
+		pointer, err := os.ReadFile("/tmp/ops-sp05-k8sgpt-current-dir")
+		if err != nil {
+			t.Fatal("set OPS_TEST_K8SGPT_BINARY to the locked native CLI")
+		}
+		binary = filepath.Join(strings.TrimSpace(string(pointer)), "output/k8sgpt")
+	}
+	raw, err := os.ReadFile(binary)
+	if err != nil {
+		t.Fatal("locked native Analyzer binary missing")
+	}
+	if err := sp05CheckAnalyzerHash(raw, runtime.GOARCH); err != nil {
+		t.Fatal(err)
+	}
+	return binary
+}
+
+func sp05CheckAnalyzerHash(raw []byte, arch string) error {
+	expected := k8sgpt.LockedBinaryForArchitecture(arch)
+	if expected == "" || fmt.Sprintf("%x", sha256.Sum256(raw)) != expected {
+		return fmt.Errorf("Analyzer binary does not match admitted linux/%s hash", arch)
+	}
+	return nil
+}
+
+func TestSP05AnalyzerRejectsUnadmittedBinary(t *testing.T) {
+	for _, arch := range []string{"amd64", "arm64", "unknown"} {
+		if sp05CheckAnalyzerHash([]byte("unadmitted"), arch) == nil {
+			t.Fatalf("accepted unadmitted %s binary", arch)
+		}
+	}
+}
+
+// Opt in when the local Kubernetes node uses a separate containerd image store.
+func sp05ImportLocalImage(t *testing.T, ctx context.Context, image string) {
+	t.Helper()
+	address := os.Getenv("OPS_TEST_CONTAINERD_ADDRESS")
+	if address == "" {
+		return
+	}
+	archive := filepath.Join(t.TempDir(), "image.tar")
+	if out, err := exec.CommandContext(ctx, "docker", "save", "-o", archive, image).CombinedOutput(); err != nil {
+		t.Fatalf("save owned image: %v: %s", err, out)
+	}
+	if out, err := exec.CommandContext(ctx, "ctr", "--address", address, "--namespace", "k8s.io", "images", "import", archive).CombinedOutput(); err != nil {
+		t.Fatalf("import owned image: %v: %s", err, out)
+	}
+	t.Cleanup(func() {
+		cleanup, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		if out, err := exec.CommandContext(cleanup, "ctr", "--address", address, "--namespace", "k8s.io", "images", "rm", "docker.io/library/"+image).CombinedOutput(); err != nil {
+			t.Errorf("remove owned image: %v: %s", err, out)
+		}
+	})
 }

@@ -1,0 +1,24 @@
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  183.1MB
+
+Step 1/6 : FROM scratch
+ ---> 
+Step 2/6 : COPY --chown=65532:65532 ops-worker /ops-worker
+ ---> 12a6b9a796fc
+Step 3/6 : COPY --chown=65532:65532 k8sgpt /opt/ops/bin/k8sgpt
+ ---> a2b310d40b8f
+Step 4/6 : COPY legal /usr/share/ops/legal
+ ---> 86c8c2147229
+Step 5/6 : USER 65532:65532
+ ---> Running in 3415a715347a
+ ---> Removed intermediate container 3415a715347a
+ ---> b8bf2a9c1620
+Step 6/6 : ENTRYPOINT ["/ops-worker"]
+ ---> Running in f100cf6a32ff
+ ---> Removed intermediate container f100cf6a32ff
+ ---> 08e902b27b34
+Successfully built 08e902b27b34
+Successfully tagged ops.local/worker-build-check:20261105-amd64

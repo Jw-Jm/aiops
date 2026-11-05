@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -21,6 +22,7 @@ func TestSP05ActualLinuxWorkerAuthorizedAnalyzerDurableChain(t *testing.T) {
 	defer cancel()
 	tenant, source := uuid.New(), uuid.New()
 	collector, ns := sp04OwnedKubernetes(t, ctx, tenant.String(), source.String())
+	collector.Namespaces = []string{ns}
 	pass, db, pool, _ := sp05Database(t, sp05Seed{Tenant: tenant, Source: source, ClusterUID: collector.ClusterUID, Namespace: ns, Backend: collector.BackendLogicalID})
 	_, trust := sp05GoldenRegistry(t, pass, db, pool, tenant)
 	archives := sp05GoldenArchive(t, pass, pool, tenant)
@@ -69,7 +71,7 @@ func TestSP05ActualLinuxWorkerAuthorizedAnalyzerDurableChain(t *testing.T) {
 	collector.Endpoint = "https://" + service.Spec.ClusterIP + ":443"
 	worker.Clusters = []app.SP04Cluster{collector}
 	worker.ArchiveBackendLogicalID = "archive-native-worker"
-	worker.SP05 = &app.SP05Config{Enabled: true, Analyzer: app.SP05AnalyzerConfig{Enabled: true, SHA256: k8sgpt.LockedBinarySHA256}}
+	worker.SP05 = &app.SP05Config{Enabled: true, Analyzer: app.SP05AnalyzerConfig{Enabled: true, SHA256: k8sgpt.NativeLockedBinarySHA256()}}
 	files["runtime.json"], _ = json.Marshal(worker)
 	keys := map[string]string{}
 	for name, pub := range trust.Keys {
@@ -102,18 +104,14 @@ func TestSP05ActualLinuxWorkerAuthorizedAnalyzerDurableChain(t *testing.T) {
 	task := t.TempDir()
 	command := exec.CommandContext(ctx, "go", "build", "-mod=readonly", "-trimpath", "-buildvcs=false", "-o", filepath.Join(task, "worker-check"), "./test/tools/sp05-worker-check")
 	command.Dir = root
-	command.Env = append(os.Environ(), "GOOS=linux", "GOARCH=arm64", "CGO_ENABLED=0")
+	command.Env = append(os.Environ(), "GOOS=linux", "GOARCH="+runtime.GOARCH, "CGO_ENABLED=0")
 	if _, err := command.CombinedOutput(); err != nil {
 		t.Fatal("compile production Worker entry verifier")
 	}
-	pointer, err := os.ReadFile("/tmp/ops-sp05-k8sgpt-current-dir")
-	if err != nil {
-		t.Fatal("qualified CLI source required")
-	}
-	if err := copyOwnedFixtureFile(filepath.Join(strings.TrimSpace(string(pointer)), "output/k8sgpt"), filepath.Join(task, "k8sgpt")); err != nil {
+	if err := copyOwnedFixtureFile(sp05NativeAnalyzer(t), filepath.Join(task, "k8sgpt")); err != nil {
 		t.Fatal(err)
 	}
-	dockerfile := "FROM scratch\nCOPY --chmod=0555 worker-check /worker-check\nCOPY --chmod=0555 k8sgpt /opt/ops/bin/k8sgpt\nUSER 65532:65532\nENTRYPOINT [\"/worker-check\"]\n"
+	dockerfile := "FROM scratch\nCOPY worker-check /worker-check\nCOPY k8sgpt /opt/ops/bin/k8sgpt\nUSER 65532:65532\nENTRYPOINT [\"/worker-check\"]\n"
 	if err := os.WriteFile(filepath.Join(task, "Dockerfile"), []byte(dockerfile), 0600); err != nil {
 		t.Fatal(err)
 	}
@@ -121,6 +119,7 @@ func TestSP05ActualLinuxWorkerAuthorizedAnalyzerDurableChain(t *testing.T) {
 	if _, err := exec.CommandContext(ctx, "docker", "build", "--network=none", "--pull=false", "-t", image, task).CombinedOutput(); err != nil {
 		t.Fatal("owned no-pull native verification image build")
 	}
+	sp05ImportLocalImage(t, ctx, image)
 	imageID, err := exec.CommandContext(ctx, "docker", "image", "inspect", image, "--format", "{{.Id}}").Output()
 	if err != nil {
 		t.Fatal(err)
