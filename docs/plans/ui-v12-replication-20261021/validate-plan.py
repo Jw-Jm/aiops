@@ -81,15 +81,15 @@ for line in (repo / "api/openapi/platform-v1.yaml").read_text().splitlines():
         if match:
             apis[current].add(match.group(1).upper())
 
-require(len(contracts) == len(contract_map) == base["contract_operations"] == 138, "138 unique contract rows")
+require(len(contracts) == len(contract_map) == base["contract_operations"] == 179, "179 unique contract rows")
 require(len({(c["method"], c["path"]) for c in contracts}) == len(contracts), "unique method/path operations")
 for row in contracts:
     cid = row["contract_id"]
     exists = row["method"] in apis.get(row["path"], set())
     require(row["primary_task"] in task_map, cid + " primary task exists")
     require(exists if row["status"].startswith("已有") else not exists, cid + " existing/proposed classification")
-require(sum(c["status"].startswith("已有") for c in contracts) == base["existing_contract_operations"] == 62, "62 existing operations")
-require(sum(c["status"] == "拟新增" for c in contracts) == base["proposed_contract_operations"] == 76, "76 proposed operations")
+require(sum(c["status"].startswith("已有") for c in contracts) == base["existing_contract_operations"] == 119, "119 existing operations")
+require(sum(c["status"] == "拟新增" for c in contracts) == base["proposed_contract_operations"] == 60, "60 proposed operations")
 
 status_fields = ["visual_status", "interaction_status", "api_status", "persistence_status", "authorization_status", "live_status"]
 for row in slices:

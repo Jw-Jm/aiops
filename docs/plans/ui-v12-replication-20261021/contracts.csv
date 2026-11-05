@@ -35,9 +35,9 @@ C-033,EVENT,GET,/api/v1/incidents/{incidentId}/timeline,已有-适配,P4-04,运�
 C-034,EVENT,GET,/api/v1/incidents/{incidentId}/evidence,已有-适配,P4-04,运维+故障/资源范围,incidentId;cursor;limit,事实/故障/时间线,Finding是否等价原型告警，P0核对生命周期与投影
 C-035,EVENT,POST,/api/v1/incidents/{incidentId}:transition,已有-适配,P4-04,运维+故障/资源范围,expectedRevision;state;reason;evidenceRefs;suppressedUntil;Idempotency-Key,事实/故障/时间线,Finding是否等价原型告警，P0核对生命周期与投影
 C-036,EVENT,POST,/api/v1/incidents/{incidentId}/assignments,拟新增,P4-04,运维+对象/目标成员范围,expectedRevision/目标/正文或关联ID,新版本与协作事件,认领使用赋值接口；写入时间线/审计，不修改原始来源
-C-037,EVENT,POST,/api/v1/incidents/{incidentId}/comments,拟新增,P4-04,运维+对象/目标成员范围,expectedRevision/目标/正文或关联ID,新版本与协作事件,认领使用赋值接口；写入时间线/审计，不修改原始来源
+C-037,EVENT,POST,/api/v1/incidents/{incidentId}/comments,已有-新增,P4-04,运维+对象/目标成员范围,expectedRevision/目标/正文或关联ID,新版本与协作事件,认领使用赋值接口；写入时间线/审计，不修改原始来源
 C-038,EVENT,POST,/api/v1/incidents/{incidentId}/follow-up-tasks,拟新增,P4-04,运维+对象/目标成员范围,expectedRevision/目标/正文或关联ID,新版本与协作事件,认领使用赋值接口；写入时间线/审计，不修改原始来源
-C-039,EVENT,POST,/api/v1/incidents/{incidentId}/alert-links,拟新增,P4-04,运维+对象/目标成员范围,expectedRevision/目标/正文或关联ID,新版本与协作事件,认领使用赋值接口；写入时间线/审计，不修改原始来源
+C-039,EVENT,POST,/api/v1/incidents/{incidentId}/alert-links,已有-新增,P4-04,运维+对象/目标成员范围,expectedRevision/目标/正文或关联ID,新版本与协作事件,认领使用赋值接口；写入时间线/审计，不修改原始来源
 C-040,SOURCE,GET,/api/v1/admin/clusters,已有-适配,P7-01,管理员；写需再次验证,cursor;limit,登记记录及版本,顶部运维范围独立；登记不等于真实资格
 C-041,SOURCE,POST,/api/v1/admin/clusters,已有-适配,P7-01,管理员；写需再次验证,clusterUid;displayName;apiEndpointRef;distribution;actualVersions;capabilities;expectedRevision;Idempotency-Key,登记记录及版本,顶部运维范围独立；登记不等于真实资格
 C-042,SOURCE,GET,/api/v1/admin/source-registrations,已有-适配,P7-01,管理员；写需再次验证,cursor;limit,登记记录及版本,顶部运维范围独立；登记不等于真实资格
@@ -56,7 +56,7 @@ C-054,MODEL,GET,/api/v1/admin/model-connection-tests/{testId},拟新增,P5-03,�
 C-055,ACTION,POST,/api/v1/commands:risk-assess,已有-复用,P6-01,运维+目标/固定配置；按风险真实再次验证,actualCommand;target;shell;executionProfileId;executionProfileVersion;incidentId;actionPlanId;executionOptions;verification;relatedExecutionId;executionRelation;Idempotency-Key,评估/确认/任务/流/取消/独立验证,参数名称依既有合同；不自动执行建议或篡改源状态
 C-056,ACTION,POST,/api/v1/commands:risk-acknowledge,已有-复用,P6-01,运维+目标/固定配置；按风险真实再次验证,assessmentId;executionRequestDigest;Idempotency-Key,评估/确认/任务/流/取消/独立验证,参数名称依既有合同；不自动执行建议或篡改源状态
 C-057,ACTION,POST,/api/v1/command-executions,已有-复用,P6-01,运维+目标/固定配置；按风险真实再次验证,actualCommand;target;shell;executionProfileId;executionProfileVersion;incidentId;actionPlanId;executionOptions;verification;riskAcknowledgementId;Idempotency-Key,评估/确认/任务/流/取消/独立验证,参数名称依既有合同；不自动执行建议或篡改源状态
-C-058,ACTION,GET,/api/v1/command-executions,拟新增,P6-01,运维+目标/固定配置；按风险真实再次验证,实际命令/目标/固定版本/风险确认/幂等,评估/确认/任务/流/取消/独立验证,参数名称依既有合同；不自动执行建议或篡改源状态
+C-058,ACTION,GET,/api/v1/command-executions,已有-新增,P6-01,运维+目标/固定配置；按风险真实再次验证,实际命令/目标/固定版本/风险确认/幂等,评估/确认/任务/流/取消/独立验证,参数名称依既有合同；不自动执行建议或篡改源状态
 C-059,ACTION,GET,/api/v1/command-executions/{executionId},已有-复用,P6-01,运维+目标/固定配置；按风险真实再次验证,executionId,评估/确认/任务/流/取消/独立验证,参数名称依既有合同；不自动执行建议或篡改源状态
 C-060,ACTION,GET,/api/v1/command-executions/{executionId}/events,已有-复用,P6-01,运维+目标/固定配置；按风险真实再次验证,executionId;Last-Event-ID,评估/确认/任务/流/取消/独立验证,参数名称依既有合同；不自动执行建议或篡改源状态
 C-061,ACTION,POST,/api/v1/command-executions/{executionId}:cancel,已有-复用,P6-01,运维+目标/固定配置；按风险真实再次验证,executionId;Idempotency-Key,评估/确认/任务/流/取消/独立验证,参数名称依既有合同；不自动执行建议或篡改源状态

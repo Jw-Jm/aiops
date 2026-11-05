@@ -228,3 +228,5 @@ C002通过可选includeFilterOptions复用当前授权图快照，返回meta.sum
 迁移准入证据按 r50 流程续期：两架构归档仅新增 00073/00074（go.mod 仅 direct/indirect 注释移动），`--network none` 空缓存重建二进制与原准入逐字节一致（amd64 `d8360db3…`、arm64 `5e9a23d8…`）；断网 PG 实测全新库 1→74、72→73→74 带 tenant 行摘要不变，73 的 RLS/函数权限与 74 的索引/列逐项核对，重试/低目标/负目标行为保持。证据 `docs/evidence/migration-renew-20261105/`。
 
 验证：`make check-delivery`、`make test-contract` 通过；完整集成回归（一次性隔离 PG17.11）212 pass / 46 skip / 15 fail——15 个失败全部为活环境门禁（OpenBao/Keycloak/K8sGPT/SeaweedFS 固定镜像/SP06 真实链），无代码回归；新增协作/准入/执行列表三测试真实执行通过（`artifacts/test-reports/integration-r55d.jsonl`）。未做 ARM64 原生 SQL、签名 Bundle 安装、全栈重启与产品视觉；六维不提升，不恢复 KubeVirt/CDI/Trace。
+
+遗留关闭（同日）：本机恢复 V1.2 设计包——`ui-handoff/ops-platform-v1.2-20261020` 符号链接至 r1 工作目录留存件，manifest 458 切片/22 路由/sourceSHA256 与 baseline 钉值逐字节一致。合同清单同步交付现实：C-037（事件评论）、C-039（事件告警关联）、C-058（执行列表）翻为已有-新增；baseline 与 validate-plan.py 钉值 138/62/76 更新为 179/119/60；两处文档链接从不存在的包 README 改指 manifest.json。validate-plan.py（5070 项）与 validate-progress.py 双双通过，Web 套件 264/264（p1_shell 恢复），`make test-contract`、`make check-delivery` 保持通过。

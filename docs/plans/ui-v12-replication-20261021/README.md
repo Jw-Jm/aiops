@@ -12,7 +12,7 @@
 6. [基准记录](baseline.json)：正式仓库 HEAD、既有设计源、模块切片数和原型证据。
 7. [开发提示词](development-prompt.md)：可直接交给开发 Agent，要求按任务依赖实施、真实接入并逐切片验收；本次提供提示词不启动开发。
 
-设计参考沿用[现有切片包](../../../../ui-handoff/ops-platform-v1.2-20261020/README.md)，不复制一套新 HTML，不改写原型及根目录正式文档。
+设计参考沿用[现有切片包](../../../../ui-handoff/ops-platform-v1.2-20261020/manifest.json)，不复制一套新 HTML，不改写原型及根目录正式文档。
 
 ## 当前数量
 
