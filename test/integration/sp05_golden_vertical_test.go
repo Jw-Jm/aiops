@@ -100,10 +100,15 @@ func TestSP05FrozenNodeHardwareUpstreamVerticalAndReplay(t *testing.T) {
 
 func sp05GoldenVertical(t *testing.T, scenario, mode string, reviewFence ...bool) {
 	input, expected := loadSP05Golden(t, scenario)
+	timeout := 3 * time.Minute
 	if len(reviewFence) > 1 && reviewFence[1] {
 		input = sp06CurrentGoldenInput(t, input)
+		// The current-Graph validator keeps renewing a native Lease while the
+		// whole tool/validator suite runs; the default 3-minute fixture budget
+		// is consumed by container startup on slower hosts.
+		timeout = 15 * time.Minute
 	}
-	ctx, db, pool, b := sp05Database(t, sp05Seed{Tenant: uuid.MustParse(input.Tenant), Source: uuid.MustParse(input.Sources["kubernetes"]), ClusterUID: input.Cluster, Namespace: input.Namespace, Backend: "sp05-golden-kubernetes"})
+	ctx, db, pool, b := sp05DatabaseTimed(t, timeout, sp05Seed{Tenant: uuid.MustParse(input.Tenant), Source: uuid.MustParse(input.Sources["kubernetes"]), ClusterUID: input.Cluster, Namespace: input.Namespace, Backend: "sp05-golden-kubernetes"})
 	clock := input.Clock
 	archives := sp05GoldenArchive(t, ctx, pool, b.TenantID)
 	var registryKey ed25519.PrivateKey
@@ -336,6 +341,16 @@ func sp05GoldenVertical(t *testing.T, scenario, mode string, reviewFence ...bool
 		sp05GoldenReviewFences(t, ctx, db, pool, archives, registry, trust, g, cluster, b, scopeForGolden(input), expected.Primary)
 	}
 	if len(reviewFence) > 1 && reviewFence[1] {
+		// lease.Tick qualifies the Graph against the real clock (45s probe
+		// freshness); the shifted golden timeline is already minutes old by
+		// now, so re-stamp the source probes or ownership reads GRAPH_NOT_READY
+		// on slower hosts. The frozen replay assertions above are unaffected.
+		now := time.Now()
+		for _, gvr := range required {
+			if err := g.UpdateSourceState(1, gvr, kube.GVRState{LastListCompletedAt: now, LastConnectivityProbeAt: now, WatchConnected: true, WatchContinuous: true}); err != nil {
+				t.Fatal(err)
+			}
+		}
 		sp06GoldenInvestigationValidator(t, ctx, db, pool, archives, trust, g, b, expected.Primary, registryKey)
 	}
 	t.Logf("%s/%s: fixed clock, admitted native adapters -> actual identity/Graph and unified ingestion -> PostgreSQL reducer -> signed published Recipe -> real immutable OpenBao/SeaweedFS Evidence -> append-only RCA and bounded Impact, twice replay; protocol Fixture, no physical BMC/Node failure claim", scenario, mode)

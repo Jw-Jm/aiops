@@ -99,6 +99,20 @@
     "lastObservedAt": {
       "type": "string",
       "format": "date-time"
+    },
+    "assigneeSubject": {
+      "type": "string"
+    },
+    "assignedAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "required": [
@@ -119,6 +133,8 @@
     "recoveryKnownAt",
     "suppressedUntil",
     "startedAt",
-    "lastObservedAt"
+    "lastObservedAt",
+    "assigneeSubject",
+    "assignedAt"
   ]
 }

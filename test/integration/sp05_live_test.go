@@ -128,6 +128,9 @@ func TestSP05ActualOrbStackInspectionAPIWorkerArchiveAndRestart(t *testing.T) {
 		t.Fatal("PVC creation response")
 	}
 	sp04Kubectl(t, ctx, []byte(pod), "create", "-f", "-")
+	// validateCollectorScope refuses an implicit broadcast: the worker's
+	// namespace scope must be explicit and equal the registered source scope.
+	collector.Namespaces = []string{ns}
 	workerConfig, apiConfig := sp04RuntimeTLS(t, ns)
 	workerConfig.Clusters = []app.SP04Cluster{collector}
 	sp05 := &app.SP05Config{Enabled: true, IngestionBindings: []httpapi.IngestionBinding{{Tenant: b.TenantID.String(), Subject: token.Subject, SourceID: b.SourceID.String(), RegistrationRevision: 1, CredentialRevision: 1}}}

@@ -67,6 +67,20 @@
         "info",
         "unknown"
       ]
+    },
+    "assigneeSubject": {
+      "type": "string"
+    },
+    "assignedAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "required": [
@@ -83,6 +97,8 @@
     "currentRcaRevision",
     "createdAt",
     "updatedAt",
-    "severity"
+    "severity",
+    "assigneeSubject",
+    "assignedAt"
   ]
 }

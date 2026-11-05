@@ -174,10 +174,14 @@ func sp06Policy(t *testing.T, ctx context.Context, db *sql.DB, pool *pgxpool.Poo
 }
 
 func sp06JobFixture(t *testing.T) (context.Context, *sql.DB, investigation.Repository, investigation.CreateInvestigationRequest) {
+	return sp06JobFixtureTimed(t, 3*time.Minute)
+}
+
+func sp06JobFixtureTimed(t *testing.T, timeout time.Duration) (context.Context, *sql.DB, investigation.Repository, investigation.CreateInvestigationRequest) {
 	if os.Getenv("SP03_TEST_DATABASE_URL") == "" {
 		t.Fatal("SP06 requires an actual isolated PostgreSQL instance")
 	}
-	ctx, db, pool, b := sp05Database(t)
+	ctx, db, pool, b := sp05DatabaseTimed(t, timeout)
 	fs := finding.Service{Pool: pool}
 	f, _, err := fs.Ingest(ctx, b, sp05Envelope(b, "sp06-event", "sp06-occurrence"))
 	if err != nil {

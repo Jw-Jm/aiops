@@ -10,6 +10,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"encoding/pem"
+	"errors"
 	"github.com/google/uuid"
 	"math/big"
 	"net"
@@ -30,7 +31,11 @@ func sp04Kubectl(t *testing.T, ctx context.Context, input []byte, args ...string
 	cmd.Stdin = bytes.NewReader(input)
 	raw, err := cmd.Output()
 	if err != nil {
-		t.Fatalf("owned Kubernetes fixture command failed (%v)", args)
+		var exit *exec.ExitError
+		if errors.As(err, &exit) && len(exit.Stderr) > 0 {
+			t.Fatalf("owned Kubernetes fixture command failed (%v): %s", args, exit.Stderr)
+		}
+		t.Fatalf("owned Kubernetes fixture command failed (%v): %v", args, err)
 	}
 	return raw
 }

@@ -40,7 +40,11 @@ func (f sp06D1Fixture) Invoke(_ context.Context, _ investigation.Job, name strin
 }
 
 func TestSP06NarrowedContextCannotReadOrCommitD1(t *testing.T) {
-	ctx, db, repo, req := sp06JobFixture(t)
+	// The golden Archive fixture behind this boundary suite starts a real
+	// SeaweedFS container; on slow-docker hosts the default 3-minute fixture
+	// budget expires before the first query (observed ~65s daemon reaping
+	// per retained fixture plus container startup).
+	ctx, db, repo, req := sp06JobFixtureTimed(t, 15*time.Minute)
 	pool := repo.Pool.(*pgxpool.Pool)
 	archives := sp05GoldenArchive(t, ctx, pool, req.TenantID)
 	var canonical, sourceID, backend string

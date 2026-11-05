@@ -87,7 +87,13 @@ func TestSP05OfficialObservationsActualOrbStackAndControlledProbeFailure(t *test
 		o := unstructured.Unstructured{Object: object}
 		o.SetKind("Node")
 		o.SetAPIVersion("v1")
-		nodes.Items = append(nodes.Items, o)
+		// SyncSnapshot requires the projection provenance annotation the
+		// informer stamps via Project; raw API list items never carry it.
+		projected, perr := kube.Project(o, time.Now())
+		if perr != nil {
+			t.Fatalf("native Node projection: %v", perr)
+		}
+		nodes.Items = append(nodes.Items, projected)
 	}
 	response.Body.Close()
 	if err != nil || response.StatusCode != 200 || len(nodes.Items) == 0 {
