@@ -1,0 +1,362 @@
+{
+  "round": "r55",
+  "date": "2026-11-05 11:19:08 +0800",
+  "base": "https://192.168.0.63:30471",
+  "incidents": {
+    "claimTransfer": "01a1a904-a737-7364-b110-c42f24e384f1",
+    "collab": "01a1a904-a6cc-7117-abd7-9a623279d988",
+    "finding": "01a1a904-a55b-7cbc-8872-156bb6e3bf27"
+  },
+  "subjects": {
+    "admin": "user:01a177f1-372c-7f0f-a9de-85df928fbe31",
+    "op": "native:01a17c41-37c8-7d27-a35c-5c9f540e55dc",
+    "fullview": "native:01a1808b-ad44-7bfe-a7bd-7dd74cb4eef5",
+    "member": "native:01a177fe-c4ed-7b86-9e45-5ec3d167a26c"
+  },
+  "checks": 32,
+  "failures": 0,
+  "results": [
+    {
+      "area": "setup",
+      "check": "login admin/op/member",
+      "ok": true,
+      "detail": {
+        "admin": "user:01a177f1-372c-7f0f-a9de-85df928fbe31",
+        "op": "native:01a17c41-37c8-7d27-a35c-5c9f540e55dc",
+        "member": "native:01a177fe-c4ed-7b86-9e45-5ec3d167a26c"
+      }
+    },
+    {
+      "area": "claim-transfer",
+      "check": "baseline open with assignee from run 1",
+      "ok": true,
+      "detail": {
+        "assignee": "user:01a177f1-372c-7f0f-a9de-85df928fbe31",
+        "state": "open",
+        "revision": 2,
+        "resolvedAt": null,
+        "recoveryKnownAt": null,
+        "suppressedUntil": null
+      }
+    },
+    {
+      "area": "claim-transfer",
+      "check": "self-claim idempotent (no new timeline/audit)",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "timelineDelta": 0
+      }
+    },
+    {
+      "area": "claim-transfer",
+      "check": "op claim refused 409 ASSIGNMENT_CONFLICT",
+      "ok": true,
+      "detail": {
+        "status": 409,
+        "code": "ASSIGNMENT_CONFLICT"
+      }
+    },
+    {
+      "area": "claim-transfer",
+      "check": "stale claim refused 409 STALE_CONTEXT",
+      "ok": true,
+      "detail": {
+        "status": 409,
+        "code": "STALE_CONTEXT"
+      }
+    },
+    {
+      "area": "claim-transfer",
+      "check": "transfer to ineligible refused 400 INVALID_ARGUMENT",
+      "ok": true,
+      "detail": {
+        "status": 400,
+        "code": "INVALID_ARGUMENT"
+      }
+    },
+    {
+      "area": "claim-transfer",
+      "check": "stale transfer refused 409 STALE_CONTEXT",
+      "ok": true,
+      "detail": {
+        "status": 409,
+        "code": "STALE_CONTEXT"
+      }
+    },
+    {
+      "area": "claim-transfer",
+      "check": "transfer to self refused 400 INVALID_ARGUMENT",
+      "ok": true,
+      "detail": {
+        "status": 400,
+        "code": "INVALID_ARGUMENT"
+      }
+    },
+    {
+      "area": "claim-transfer",
+      "check": "transfer admin->op ok, facts+revision untouched",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "assignee": "native:01a17c41-37c8-7d27-a35c-5c9f540e55dc",
+        "facts": {
+          "state": "open",
+          "revision": 2,
+          "resolvedAt": null,
+          "recoveryKnownAt": null,
+          "suppressedUntil": null
+        }
+      }
+    },
+    {
+      "area": "claim-transfer",
+      "check": "transfer recorded (timeline +1, audit +1)",
+      "ok": true,
+      "detail": {
+        "timeline": 4,
+        "audit": 4
+      }
+    },
+    {
+      "area": "claim-transfer",
+      "check": "op handback ok",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "assignee": "user:01a177f1-372c-7f0f-a9de-85df928fbe31"
+      }
+    },
+    {
+      "area": "claim-transfer",
+      "check": "ex-assignee (non-admin) transfer refused 403 FORBIDDEN",
+      "ok": true,
+      "detail": {
+        "status": 403,
+        "code": "FORBIDDEN"
+      }
+    },
+    {
+      "area": "claim-transfer",
+      "check": "platform_admin override transfer allowed (200)",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "assignee": "native:01a17c41-37c8-7d27-a35c-5c9f540e55dc"
+      }
+    },
+    {
+      "area": "claim-transfer",
+      "check": "restore assignee=admin, revision never moved",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "assignee": "user:01a177f1-372c-7f0f-a9de-85df928fbe31",
+        "revision": 2
+      }
+    },
+    {
+      "area": "comment",
+      "check": "comment persisted on timeline, impact stored, revision unchanged",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "revision": 4,
+        "dbImpact": "r55 验收影响面记录"
+      }
+    },
+    {
+      "area": "follow-up",
+      "check": "create default owner=creator",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "owner": "native:01a17c41-37c8-7d27-a35c-5c9f540e55dc",
+        "id": "01a1a9b7-9f9e-7cef-8941-7b58199ed855"
+      }
+    },
+    {
+      "area": "follow-up",
+      "check": "create ineligible owner refused 400 INVALID_ARGUMENT",
+      "ok": true,
+      "detail": {
+        "status": 400,
+        "code": "INVALID_ARGUMENT"
+      }
+    },
+    {
+      "area": "follow-up",
+      "check": "complete by unauthorized member refused 403 FORBIDDEN",
+      "ok": true,
+      "detail": {
+        "status": 403,
+        "code": "FORBIDDEN"
+      }
+    },
+    {
+      "area": "follow-up",
+      "check": "complete by owner ok",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "state": "done",
+        "completer": "native:01a17c41-37c8-7d27-a35c-5c9f540e55dc"
+      }
+    },
+    {
+      "area": "follow-up",
+      "check": "double complete refused 400 INVALID_ARGUMENT",
+      "ok": true,
+      "detail": {
+        "status": 400,
+        "code": "INVALID_ARGUMENT"
+      }
+    },
+    {
+      "area": "follow-up",
+      "check": "reopen clears completion facts",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "state": "open",
+        "dbCleared": "t"
+      }
+    },
+    {
+      "area": "follow-up",
+      "check": "platform_admin override complete allowed (200)",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "state": "done",
+        "completer": "user:01a177f1-372c-7f0f-a9de-85df928fbe31"
+      }
+    },
+    {
+      "area": "follow-up",
+      "check": "restore follow-up open",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "dbState": "open"
+      }
+    },
+    {
+      "area": "follow-up",
+      "check": "followup timeline recorded",
+      "ok": true,
+      "detail": {
+        "timeline": 9
+      }
+    },
+    {
+      "area": "alert-link",
+      "check": "unlink sole finding refused 400 (incident keeps >=1 finding)",
+      "ok": true,
+      "detail": {
+        "status": 400,
+        "code": "INVALID_ARGUMENT"
+      }
+    },
+    {
+      "area": "alert-link",
+      "check": "link missing finding refused 404 NOT_FOUND",
+      "ok": true,
+      "detail": {
+        "status": 404,
+        "code": "NOT_FOUND"
+      }
+    },
+    {
+      "area": "alert-link",
+      "check": "stale link refused 409 STALE_CONTEXT",
+      "ok": true,
+      "detail": {
+        "status": 409,
+        "code": "STALE_CONTEXT"
+      }
+    },
+    {
+      "area": "alert-link",
+      "check": "relink advances revision +1 via CAS, link row intact",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "revision": 5,
+        "linkRow": "1"
+      }
+    },
+    {
+      "area": "alert-link",
+      "check": "alert_link timeline +1, audit +1",
+      "ok": true,
+      "detail": {
+        "timeline": 3,
+        "audit": 3
+      }
+    },
+    {
+      "area": "investigation-admission",
+      "check": "admission policy gate active: uniform 403 for admin+op, no job rows created",
+      "ok": true,
+      "detail": {
+        "admin": [
+          403,
+          "FORBIDDEN"
+        ],
+        "op": [
+          403,
+          "FORBIDDEN"
+        ]
+      }
+    },
+    {
+      "area": "investigation-admission",
+      "check": "denial is post-validation (revision/incident checks still reachable)",
+      "ok": true,
+      "detail": {
+        "wrongRevision": [
+          400,
+          "INVALID_ARGUMENT"
+        ],
+        "missingIncident": [
+          404,
+          "NOT_FOUND"
+        ]
+      }
+    },
+    {
+      "area": "execution-filter",
+      "check": "uniform 409 CAPABILITY_DISABLED while SP07 runtime is configurationOnly",
+      "ok": true,
+      "detail": {
+        "admin": [
+          409,
+          "CAPABILITY_DISABLED"
+        ],
+        "op": [
+          409,
+          "CAPABILITY_DISABLED"
+        ],
+        "member": [
+          409,
+          "CAPABILITY_DISABLED"
+        ]
+      }
+    }
+  ],
+  "limitations": [
+    {
+      "area": "alert-link",
+      "note": "every live finding is the sole finding of its incident, so the unlink delete path cannot be exercised without corrupting live incidents; delete-path coverage stays with test/integration/sp05_collab_test.go"
+    },
+    {
+      "area": "investigation-admission",
+      "note": "live admission is denied for every subject: legacy re-proof reads platform.role_bindings (0 rows in this deployment); r55 changed only the focus/admission-digest input on this path. The 00074 dedup semantics stay covered by integration tests and docs/evidence/migration-renew-20261105."
+    },
+    {
+      "area": "execution-filter",
+      "note": "SP07 is configurationOnly in this deployment (and action.executions has 0 rows), so the per-subject authorization filter cannot be exercised over live data; coverage stays with TestSP07ExecutionListFiltersByAuthorization."
+    }
+  ]
+}
