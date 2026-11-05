@@ -29,4 +29,7 @@ export interface IncidentV2 {
   suppressedUntil: string | null;
   startedAt: string;
   lastObservedAt: string;
+  /** Current assignee subject; empty when unassigned. Collaboration metadata outside the revision CAS. */
+  assigneeSubject?: string;
+  assignedAt?: string | null;
 }

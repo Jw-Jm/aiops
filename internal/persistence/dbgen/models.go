@@ -489,6 +489,21 @@ type IncidentFindingLink struct {
 	LinkedAt   pgtype.Timestamptz `json:"linked_at"`
 }
 
+type IncidentFollowup struct {
+	TenantID         pgtype.UUID        `json:"tenant_id"`
+	IncidentID       pgtype.UUID        `json:"incident_id"`
+	FollowupID       pgtype.UUID        `json:"followup_id"`
+	Title            string             `json:"title"`
+	Detail           string             `json:"detail"`
+	State            string             `json:"state"`
+	CreatorSubject   string             `json:"creator_subject"`
+	OwnerSubject     pgtype.Text        `json:"owner_subject"`
+	CreatedAt        pgtype.Timestamptz `json:"created_at"`
+	CompletedAt      pgtype.Timestamptz `json:"completed_at"`
+	CompleterSubject pgtype.Text        `json:"completer_subject"`
+	ResolutionNote   string             `json:"resolution_note"`
+}
+
 type IncidentInbox struct {
 	TenantID          pgtype.UUID `json:"tenant_id"`
 	ConsumerName      string      `json:"consumer_name"`
@@ -555,6 +570,8 @@ type IncidentRecord struct {
 	StartedAt           pgtype.Timestamptz `json:"started_at"`
 	LastObservedAt      pgtype.Timestamptz `json:"last_observed_at"`
 	LastRcaCheckedAt    pgtype.Timestamptz `json:"last_rca_checked_at"`
+	AssigneeSubject     pgtype.Text        `json:"assignee_subject"`
+	AssignedAt          pgtype.Timestamptz `json:"assigned_at"`
 }
 
 type IncidentTimeline struct {
@@ -763,6 +780,8 @@ type InvestigationJob struct {
 	AuthorizationUserID pgtype.UUID `json:"authorization_user_id"`
 	// Frozen native authorization version of the admitting account; a later version never revives the Job.
 	AuthorizationVersion pgtype.Int4 `json:"authorization_version"`
+	Focus                string      `json:"focus"`
+	AdmissionDigest      string      `json:"admission_digest"`
 }
 
 type InvestigationObservationQuery struct {

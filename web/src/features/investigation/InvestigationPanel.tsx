@@ -36,6 +36,10 @@ export function InvestigationPanel({
   const [url, setUrl] = useSearchParams();
   const client = useQueryClient();
   const [input, setInput] = useState("");
+  const [focus, setFocus] = useState("");
+  const [tightenDuration, setTightenDuration] = useState("");
+  const [tightenCalls, setTightenCalls] = useState("");
+  const [inputError, setInputError] = useState("");
   const [existingNotice, setExistingNotice] = useState(false);
   const lastRefresh = useRef(0);
   const historyCursor = url.get("historyCursor") || undefined;
@@ -79,16 +83,44 @@ export function InvestigationPanel({
     n.set("jobId", id);
     setUrl(n);
   };
+  const tighteningInputError = (): string | undefined => {
+    const duration = tightenDuration.trim();
+    const calls = tightenCalls.trim();
+    if (duration) {
+      const v = Number(duration);
+      if (!Number.isInteger(v) || v < 1 || v > 600)
+        return "时长收紧必须是 1–600 的整数秒";
+    }
+    if (calls) {
+      const v = Number(calls);
+      if (!Number.isInteger(v) || v < 1 || v > 40)
+        return "工具调用收紧必须是 1–40 的整数";
+    }
+    return undefined;
+  };
   const create = useMutation({
-    mutationFn: () =>
-      checked(
+    mutationFn: () => {
+      // 只收紧：输入值只能低于服务端额度，高于额度的值由服务端按额度截回。
+      const duration = tightenDuration.trim();
+      const calls = tightenCalls.trim();
+      const tightening: { durationSeconds?: number; toolCalls?: number } = {};
+      if (duration) tightening.durationSeconds = Number(duration);
+      if (calls) tightening.toolCalls = Number(calls);
+      return checked(
         createInvestigation(
           incident.incidentId,
-          { triggerRevision: incident.revision, triggerKind: "manual" },
+          {
+            triggerRevision: incident.revision,
+            triggerKind: "manual",
+            ...(focus.trim() ? { focus: focus.trim() } : {}),
+            ...(duration || calls ? { tightening } : {}),
+          },
           requestOptions(undefined, true),
         ),
-      ),
+      );
+    },
     onSuccess: (res) => {
+      setInputError("");
       const d = record(record(res).data);
       setExistingNotice(
         !["queued", "running", "cancel_requested"].includes(text(d.state)),
@@ -126,11 +158,59 @@ export function InvestigationPanel({
         title="智能调查会读取证据，不会执行命令"
         description="调查用于整理证据和提出可能原因。处置命令需要你在人工处置中单独输入并确认。页面关闭后，可从历史记录继续查看进度。"
       />
+      <details className="inline-details status-note">
+        <summary>本次调查重点与收紧（可选）</summary>
+        <Space direction="vertical" style={{ maxWidth: 480 }}>
+          <Input.TextArea
+            aria-label="调查重点"
+            value={focus}
+            onChange={(e) => setFocus(e.target.value)}
+            maxLength={500}
+            showCount
+            placeholder="例如：优先核对内存通道与节点运行环境的关系"
+            autoSize={{ minRows: 2, maxRows: 4 }}
+          />
+          <Space wrap>
+            <Input
+              aria-label="收紧时长秒"
+              value={tightenDuration}
+              onChange={(e) => setTightenDuration(e.target.value)}
+              placeholder="收紧时长（秒，1–600）"
+              style={{ width: 180 }}
+              inputMode="numeric"
+            />
+            <Input
+              aria-label="收紧工具调用次数"
+              value={tightenCalls}
+              onChange={(e) => setTightenCalls(e.target.value)}
+              placeholder="收紧工具调用（1–40）"
+              style={{ width: 180 }}
+              inputMode="numeric"
+            />
+          </Space>
+          <span className="muted">
+            只能收紧不能放宽：填写的值高于服务端额度时按服务端额度执行。同一故障版本下不同收紧或重点会生成新的调查任务。
+          </span>
+        </Space>
+      </details>
+      {inputError && (
+        <Alert
+          showIcon
+          type="error"
+          title="调查请求未提交"
+          description={inputError}
+          className="status-note"
+        />
+      )}
       <Space wrap className="status-note">
         <Button
           type="primary"
           loading={create.isPending}
-          onClick={() => create.mutate()}
+          onClick={() => {
+            const e = tighteningInputError();
+            setInputError(e ?? "");
+            if (!e) create.mutate();
+          }}
         >
           开始智能调查
         </Button>
@@ -220,7 +300,7 @@ export function InvestigationPanel({
           showIcon
           type="info"
           title="已打开此故障版本的已有调查"
-          description="后端复用了同一主体、故障版本和策略的持久结果，未重新调用模型。请核对调查版本；故障有新证据后可调查新版本。"
+          description="后端复用了同一主体、故障版本、策略且收紧与重点相同的持久结果，未重新调用模型。请核对调查版本；故障有新证据后可调查新版本，更换收紧或重点也会生成新任务。"
         />
       )}
       {create.error && <QueryState loading={false} error={create.error} />}{" "}
@@ -305,6 +385,9 @@ export function InvestigationPanel({
                   ...(data.errorCode ? { errorCode: data.errorCode } : {}),
                 }}
               />
+              {data.focus ? (
+                <p className="status-note">本次调查重点：{data.focus}</p>
+              ) : null}
               <BudgetSummary job={data} />
               <h3>调查过程</h3>
               <QueryState

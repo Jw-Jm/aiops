@@ -50,7 +50,7 @@ func sp05ListSQL(kind string, tenant uuid.UUID, cluster, after string, scope gra
 	if kind == "incidents" {
 		table, id, state, clock = "incident.records", "incident_id", "state", "t.created_at"
 		severity := incidentSeveritySQL
-		payload = `jsonb_build_object('schemaVersion','incident/v2','tenantId',t.tenant_id,'incidentId',t.incident_id,'state',t.state,'revision',t.revision,'severity',` + severity + `,'currentRcaRevision',t.current_rca_revision,'resourceCanonicalId',t.resource_canonical_id,'namespace',t.namespace,'clusterUid',t.cluster_uid,'fingerprint',t.fingerprint,'policyVersion',t.policy_version,'createdAt',t.created_at,'updatedAt',t.updated_at)`
+		payload = `jsonb_build_object('schemaVersion','incident/v2','tenantId',t.tenant_id,'incidentId',t.incident_id,'state',t.state,'revision',t.revision,'severity',` + severity + `,'currentRcaRevision',t.current_rca_revision,'resourceCanonicalId',t.resource_canonical_id,'namespace',t.namespace,'clusterUid',t.cluster_uid,'fingerprint',t.fingerprint,'policyVersion',t.policy_version,'assigneeSubject',COALESCE(t.assignee_subject,''),'assignedAt',t.assigned_at,'createdAt',t.created_at,'updatedAt',t.updated_at)`
 		extra = ` AND ($9='' OR ` + severity + `=$9) AND ($12='' OR COALESCE((SELECT v.result->'result'->>'status' FROM incident.rca_revisions v WHERE v.tenant_id=t.tenant_id AND v.incident_id=t.incident_id AND v.revision=t.current_rca_revision),'unresolved')=$12) AND NOT EXISTS(SELECT 1 FROM incident.finding_links l JOIN finding.records f USING(tenant_id,finding_id) WHERE l.tenant_id=t.tenant_id AND l.incident_id=t.incident_id AND NOT (($4 AND f.namespace='') OR f.namespace=ANY($5::text[])))`
 		args = append(args, q.Get("rcaStatus"))
 	} else {

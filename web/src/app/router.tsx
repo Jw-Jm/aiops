@@ -159,21 +159,30 @@ export const router = createBrowserRouter([
                   Component: (await import("../pages/MetricsPage")).MetricsPage,
                 }),
               },
-              ...[
-                ["network", "网络观测"],
-                ["hardware", "硬件健康"],
-              ].map(([key, title]) => ({
-                path: `/observe/${key}`,
-                element: unavailable(
-                  title,
-                  "按授权资源与时间窗读取观测结果。",
-                  "当前版本暂不提供该观测入口。可使用智能助手或稍后再试。",
-                ),
-              })),
-              ...["commands", "inspections"].map((key) => ({
+              {
+                path: "/observe/network",
+                lazy: async () => ({
+                  Component: (await import("../pages/NetworkPage")).NetworkPage,
+                }),
+              },
+              {
+                path: "/observe/hardware",
+                lazy: async () => ({
+                  Component: (await import("../pages/HardwarePage"))
+                    .HardwarePage,
+                }),
+              },
+              {
+                path: "/jobs/commands",
+                lazy: async () => ({
+                  Component: (await import("../pages/CommandExecutionsPage"))
+                    .CommandExecutionsPage,
+                }),
+              },
+              ...["inspections"].map((key) => ({
                 path: `/jobs/${key}`,
                 element: unavailable(
-                  key === "commands" ? "命令执行" : "巡检任务",
+                  "巡检任务",
                   "查看执行或巡检任务与回执。",
                   "当前版本暂不提供该任务入口。",
                 ),
@@ -212,11 +221,10 @@ export const router = createBrowserRouter([
             children: [
               {
                 path: "/access/clusters",
-                element: unavailable(
-                  "集群接入",
-                  "登记与核对运行集群。",
-                  "当前版本暂不提供集群接入编辑。请从部署信息查看现有环境。",
-                ),
+                lazy: async () => ({
+                  Component: (await import("../pages/admin/ClustersPage"))
+                    .ClustersPage,
+                }),
               },
               {
                 path: "/access/sources",

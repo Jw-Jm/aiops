@@ -92,6 +92,11 @@ func (h *InvestigationHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request
 		var body struct {
 			TriggerRevision int64  `json:"triggerRevision"`
 			TriggerKind     string `json:"triggerKind"`
+			Focus           string `json:"focus"`
+			Tightening      *struct {
+				DurationSeconds int64 `json:"durationSeconds"`
+				ToolCalls       int64 `json:"toolCalls"`
+			} `json:"tightening"`
 		}
 		if decodeInvestigation(r, &body) != nil || len(r.Header.Values("Idempotency-Key")) != 1 || !validIdempotencyKey(r.Header.Get("Idempotency-Key")) {
 			investigationError(w, investigation.ErrInvalid, actor.RequestID)
@@ -143,10 +148,35 @@ func (h *InvestigationHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request
 				return
 			}
 		}
+		focus := strings.TrimSpace(body.Focus)
+		if len(focus) > 500 {
+			investigationError(w, investigation.ErrInvalid, actor.RequestID)
+			return
+		}
+		// The workbench may only tighten the server budget, never widen it:
+		// LowerBudget keeps the per-dimension minimum, so a value above the
+		// policy budget clamps back down to the policy budget.
+		if body.Tightening != nil {
+			requested := budget
+			if body.Tightening.DurationSeconds != 0 {
+				requested.DurationSeconds = body.Tightening.DurationSeconds
+			}
+			if body.Tightening.ToolCalls != 0 {
+				requested.Usage.ToolCalls = body.Tightening.ToolCalls
+			}
+			if !requested.Valid() {
+				investigationError(w, investigation.ErrInvalid, actor.RequestID)
+				return
+			}
+			if budget, err = investigation.LowerBudget(budget, requested); err != nil {
+				investigationError(w, investigation.ErrInvalid, actor.RequestID)
+				return
+			}
+		}
 		job, err := h.Repository.CreateJob(r.Context(), investigation.CreateInvestigationRequest{IdempotencyKey: r.Header.Get("Idempotency-Key"), RequestDigest: graph.ScopeDigest(struct {
 			IncidentID uuid.UUID
 			Body       any
-		}{id, body}), TenantID: actor.TenantID, Subject: actor.Subject, IncidentID: id, TriggerRevision: revision, TriggerKind: "manual", PolicyVersion: version, Scope: scope, ToolCatalogDigest: tools.Digest(defs), Budget: budget})
+		}{id, body}), TenantID: actor.TenantID, Subject: actor.Subject, IncidentID: id, TriggerRevision: revision, TriggerKind: "manual", PolicyVersion: version, Scope: scope, ToolCatalogDigest: tools.Digest(defs), Budget: budget, Focus: focus})
 		if err != nil {
 			investigationError(w, err, actor.RequestID)
 			return

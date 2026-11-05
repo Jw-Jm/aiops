@@ -2325,6 +2325,39 @@ func (e UnavailableGraphV2SchemaVersion) Valid() bool {
 	}
 }
 
+// Defines values for ListCommandExecutionsParamsState.
+const (
+	ListCommandExecutionsParamsStateCancelled        ListCommandExecutionsParamsState = "cancelled"
+	ListCommandExecutionsParamsStateDispatching      ListCommandExecutionsParamsState = "dispatching"
+	ListCommandExecutionsParamsStateExecutionUnknown ListCommandExecutionsParamsState = "execution_unknown"
+	ListCommandExecutionsParamsStateFailed           ListCommandExecutionsParamsState = "failed"
+	ListCommandExecutionsParamsStatePrepared         ListCommandExecutionsParamsState = "prepared"
+	ListCommandExecutionsParamsStateRunning          ListCommandExecutionsParamsState = "running"
+	ListCommandExecutionsParamsStateSucceeded        ListCommandExecutionsParamsState = "succeeded"
+)
+
+// Valid indicates whether the value is a known member of the ListCommandExecutionsParamsState enum.
+func (e ListCommandExecutionsParamsState) Valid() bool {
+	switch e {
+	case ListCommandExecutionsParamsStateCancelled:
+		return true
+	case ListCommandExecutionsParamsStateDispatching:
+		return true
+	case ListCommandExecutionsParamsStateExecutionUnknown:
+		return true
+	case ListCommandExecutionsParamsStateFailed:
+		return true
+	case ListCommandExecutionsParamsStatePrepared:
+		return true
+	case ListCommandExecutionsParamsStateRunning:
+		return true
+	case ListCommandExecutionsParamsStateSucceeded:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for GetResourcesParamsDomain.
 const (
 	GetResourcesParamsDomainHardware   GetResourcesParamsDomain = "hardware"
@@ -3117,8 +3150,10 @@ type CommandRiskAssessmentRequestVerificationKind string
 
 // CreateInvestigationV2 defines model for CreateInvestigationV2.
 type CreateInvestigationV2 struct {
-	TriggerKind     interface{} `json:"triggerKind,omitempty"`
-	TriggerRevision *int        `json:"triggerRevision,omitempty"`
+	Focus           *string                    `json:"focus,omitempty"`
+	Tightening      *InvestigationTighteningV1 `json:"tightening,omitempty"`
+	TriggerKind     interface{}                `json:"triggerKind,omitempty"`
+	TriggerRevision *int                       `json:"triggerRevision,omitempty"`
 }
 
 // CurrentRCASuccessV2 defines model for CurrentRCASuccessV2.
@@ -3576,6 +3611,34 @@ type IdentitySessionRevocationV1 struct {
 	SessionVersion       int `json:"sessionVersion"`
 }
 
+// IncidentAlertLinksV2 defines model for IncidentAlertLinksV2.
+type IncidentAlertLinksV2 struct {
+	Action           interface{}          `json:"action"`
+	ExpectedRevision int                  `json:"expectedRevision"`
+	FindingIds       []openapi_types.UUID `json:"findingIds"`
+	Reason           string               `json:"reason"`
+}
+
+// IncidentClaimV2 defines model for IncidentClaimV2.
+type IncidentClaimV2 struct {
+	ExpectedRevision int     `json:"expectedRevision"`
+	Note             *string `json:"note,omitempty"`
+}
+
+// IncidentCommentCreateV2 defines model for IncidentCommentCreateV2.
+type IncidentCommentCreateV2 struct {
+	Body string `json:"body"`
+
+	// Impact Current business impact assessment; the latest non-empty value is displayed as the incident's impact.
+	Impact *string `json:"impact,omitempty"`
+}
+
+// IncidentCommentSuccessV2 defines model for IncidentCommentSuccessV2.
+type IncidentCommentSuccessV2 struct {
+	Data      IncidentTimelineV2 `json:"data"`
+	RequestId string             `json:"requestId"`
+}
+
 // IncidentEvidencePageV2 defines model for IncidentEvidencePageV2.
 type IncidentEvidencePageV2 struct {
 	Data []EvidenceV2 `json:"data"`
@@ -3583,6 +3646,53 @@ type IncidentEvidencePageV2 struct {
 		NextCursor *string `json:"nextCursor,omitempty"`
 	} `json:"meta"`
 	RequestId string `json:"requestId"`
+}
+
+// IncidentFollowUpCompleteV2 defines model for IncidentFollowUpCompleteV2.
+type IncidentFollowUpCompleteV2 struct {
+	Note string `json:"note"`
+}
+
+// IncidentFollowUpCreateV2 defines model for IncidentFollowUpCreateV2.
+type IncidentFollowUpCreateV2 struct {
+	Detail *string `json:"detail,omitempty"`
+
+	// OwnerSubject Responsible operator subject; must currently be eligible for the incident when provided.
+	OwnerSubject *string `json:"ownerSubject,omitempty"`
+	Title        string  `json:"title"`
+}
+
+// IncidentFollowUpPageV2 defines model for IncidentFollowUpPageV2.
+type IncidentFollowUpPageV2 struct {
+	Data []IncidentFollowUpV2 `json:"data"`
+	Meta *struct {
+		NextCursor *string `json:"nextCursor,omitempty"`
+	} `json:"meta,omitempty"`
+	RequestId string `json:"requestId"`
+}
+
+// IncidentFollowUpSuccessV2 defines model for IncidentFollowUpSuccessV2.
+type IncidentFollowUpSuccessV2 struct {
+	Data      IncidentFollowUpV2 `json:"data"`
+	RequestId string             `json:"requestId"`
+}
+
+// IncidentFollowUpV2 defines model for IncidentFollowUpV2.
+type IncidentFollowUpV2 struct {
+	CompletedAt      *time.Time         `json:"completedAt,omitempty"`
+	CompleterSubject *string            `json:"completerSubject,omitempty"`
+	CreatedAt        time.Time          `json:"createdAt"`
+	CreatorSubject   string             `json:"creatorSubject"`
+	Detail           *string            `json:"detail,omitempty"`
+	FollowUpId       openapi_types.UUID `json:"followUpId"`
+	IncidentId       openapi_types.UUID `json:"incidentId"`
+
+	// OwnerSubject Responsible operator for the todo; defaults to the creator.
+	OwnerSubject   *string     `json:"ownerSubject,omitempty"`
+	ResolutionNote *string     `json:"resolutionNote,omitempty"`
+	SchemaVersion  interface{} `json:"schemaVersion"`
+	State          interface{} `json:"state"`
+	Title          string      `json:"title"`
 }
 
 // IncidentMergeV2 defines model for IncidentMergeV2.
@@ -3666,6 +3776,13 @@ type IncidentTimelineV2 struct {
 	TimelineId    openapi_types.UUID     `json:"timelineId"`
 }
 
+// IncidentTransferV2 defines model for IncidentTransferV2.
+type IncidentTransferV2 struct {
+	ExpectedRevision int    `json:"expectedRevision"`
+	Reason           string `json:"reason"`
+	ToSubject        string `json:"toSubject"`
+}
+
 // IncidentTransitionRequest defines model for IncidentTransitionRequest.
 type IncidentTransitionRequest struct {
 	ExpectedRevision int    `json:"expectedRevision"`
@@ -3684,6 +3801,10 @@ type IncidentTransitionV2 struct {
 
 // IncidentV2 defines model for IncidentV2.
 type IncidentV2 struct {
+	AssignedAt *time.Time `json:"assignedAt,omitempty"`
+
+	// AssigneeSubject Current assignee subject; empty when unassigned. Collaboration metadata outside the revision CAS.
+	AssigneeSubject     *string                 `json:"assigneeSubject,omitempty"`
 	ClusterUid          string                  `json:"clusterUid"`
 	CreatedAt           time.Time               `json:"createdAt"`
 	CurrentRcaRevision  int                     `json:"currentRcaRevision"`
@@ -3747,6 +3868,7 @@ type InvestigationEventEventType string
 
 // InvestigationJobV2 defines model for InvestigationJobV2.
 type InvestigationJobV2 struct {
+	AdmissionDigest      *string                `json:"admissionDigest,omitempty"`
 	Budget               InvestigationBudgetV1  `json:"budget"`
 	BudgetConsumed       InvestigationUsageV1   `json:"budgetConsumed"`
 	BudgetReserved       InvestigationUsageV1   `json:"budgetReserved"`
@@ -3754,6 +3876,7 @@ type InvestigationJobV2 struct {
 	ErrorCode            *string                `json:"errorCode,omitempty"`
 	EventSeq             int                    `json:"eventSeq"`
 	ExpiresAt            time.Time              `json:"expiresAt"`
+	Focus                string                 `json:"focus"`
 	IncidentId           openapi_types.UUID     `json:"incidentId"`
 	JobId                openapi_types.UUID     `json:"jobId"`
 	NextCallSeq          int                    `json:"nextCallSeq"`
@@ -3846,6 +3969,12 @@ type InvestigationStepsSuccessV2 struct {
 type InvestigationSuccessV2 struct {
 	Data      InvestigationJobV2 `json:"data"`
 	RequestId string             `json:"requestId"`
+}
+
+// InvestigationTighteningV1 defines model for InvestigationTighteningV1.
+type InvestigationTighteningV1 struct {
+	DurationSeconds *int `json:"durationSeconds,omitempty"`
+	ToolCalls       *int `json:"toolCalls,omitempty"`
 }
 
 // InvestigationUsageV1 defines model for InvestigationUsageV1.
@@ -5862,6 +5991,19 @@ type GetCapabilitiesdefaultJSONResponseBody struct {
 	union json.RawMessage
 }
 
+// ListCommandExecutionsParams defines parameters for ListCommandExecutions.
+type ListCommandExecutionsParams struct {
+	// Cursor Signed keyset cursor from a previous page; rows outside the caller's authorized scope are skipped, never leaked.
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit  *int    `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// State Exact state filter.
+	State *ListCommandExecutionsParamsState `form:"state,omitempty" json:"state,omitempty"`
+}
+
+// ListCommandExecutionsParamsState defines parameters for ListCommandExecutions.
+type ListCommandExecutionsParamsState string
+
 // CreateCommandExecutionParams defines parameters for CreateCommandExecution.
 type CreateCommandExecutionParams struct {
 	// IdempotencyKey Stable key for replay-safe write handling.
@@ -5991,6 +6133,28 @@ type GetIncidentdefaultJSONResponseBody struct {
 	union json.RawMessage
 }
 
+// LinkIncidentAlertsParams defines parameters for LinkIncidentAlerts.
+type LinkIncidentAlertsParams struct {
+	// IdempotencyKey Stable key for replay-safe write handling.
+	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// LinkIncidentAlertsdefaultJSONResponseBody defines parameters for LinkIncidentAlerts.
+type LinkIncidentAlertsdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
+// CreateIncidentCommentParams defines parameters for CreateIncidentComment.
+type CreateIncidentCommentParams struct {
+	// IdempotencyKey Stable key for replay-safe write handling.
+	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// CreateIncidentCommentdefaultJSONResponseBody defines parameters for CreateIncidentComment.
+type CreateIncidentCommentdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
 // GetIncidentEvidenceParams defines parameters for GetIncidentEvidence.
 type GetIncidentEvidenceParams struct {
 	// Cursor Opaque cursor for keyset pagination.
@@ -6000,6 +6164,54 @@ type GetIncidentEvidenceParams struct {
 
 // GetIncidentEvidencedefaultJSONResponseBody defines parameters for GetIncidentEvidence.
 type GetIncidentEvidencedefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
+// ListIncidentFollowUpsParams defines parameters for ListIncidentFollowUps.
+type ListIncidentFollowUpsParams struct {
+	State  interface{} `form:"state,omitempty" json:"state,omitempty"`
+	Cursor *string     `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit  *int        `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// ListIncidentFollowUpsdefaultJSONResponseBody defines parameters for ListIncidentFollowUps.
+type ListIncidentFollowUpsdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
+// CreateIncidentFollowUpParams defines parameters for CreateIncidentFollowUp.
+type CreateIncidentFollowUpParams struct {
+	// IdempotencyKey Stable key for replay-safe write handling.
+	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// CreateIncidentFollowUpdefaultJSONResponseBody defines parameters for CreateIncidentFollowUp.
+type CreateIncidentFollowUpdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
+// CompleteIncidentFollowUpParams defines parameters for CompleteIncidentFollowUp.
+type CompleteIncidentFollowUpParams struct {
+	// IdempotencyKey Stable key for replay-safe write handling.
+	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// CompleteIncidentFollowUpdefaultJSONResponseBody defines parameters for CompleteIncidentFollowUp.
+type CompleteIncidentFollowUpdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
+// ReopenIncidentFollowUpJSONBody defines parameters for ReopenIncidentFollowUp.
+type ReopenIncidentFollowUpJSONBody = map[string]interface{}
+
+// ReopenIncidentFollowUpParams defines parameters for ReopenIncidentFollowUp.
+type ReopenIncidentFollowUpParams struct {
+	// IdempotencyKey Stable key for replay-safe write handling.
+	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// ReopenIncidentFollowUpdefaultJSONResponseBody defines parameters for ReopenIncidentFollowUp.
+type ReopenIncidentFollowUpdefaultJSONResponseBody struct {
 	union json.RawMessage
 }
 
@@ -6063,6 +6275,17 @@ type GetIncidentTimelinedefaultJSONResponseBody struct {
 	union json.RawMessage
 }
 
+// ClaimIncidentParams defines parameters for ClaimIncident.
+type ClaimIncidentParams struct {
+	// IdempotencyKey Stable key for replay-safe write handling.
+	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// ClaimIncidentdefaultJSONResponseBody defines parameters for ClaimIncident.
+type ClaimIncidentdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
 // SplitIncidentParams defines parameters for SplitIncident.
 type SplitIncidentParams struct {
 	// IdempotencyKey Stable key for replay-safe write handling.
@@ -6071,6 +6294,17 @@ type SplitIncidentParams struct {
 
 // SplitIncidentdefaultJSONResponseBody defines parameters for SplitIncident.
 type SplitIncidentdefaultJSONResponseBody struct {
+	union json.RawMessage
+}
+
+// TransferIncidentParams defines parameters for TransferIncident.
+type TransferIncidentParams struct {
+	// IdempotencyKey Stable key for replay-safe write handling.
+	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// TransferIncidentdefaultJSONResponseBody defines parameters for TransferIncident.
+type TransferIncidentdefaultJSONResponseBody struct {
 	union json.RawMessage
 }
 
@@ -6467,11 +6701,32 @@ type QueryEvidenceJSONRequestBody = EvidenceQueryRequest
 // Deprecated: this type has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 type IngestFindingJSONRequestBody = FindingEnvelope
 
+// LinkIncidentAlertsJSONRequestBody defines body for LinkIncidentAlerts for application/json ContentType.
+type LinkIncidentAlertsJSONRequestBody = IncidentAlertLinksV2
+
+// CreateIncidentCommentJSONRequestBody defines body for CreateIncidentComment for application/json ContentType.
+type CreateIncidentCommentJSONRequestBody = IncidentCommentCreateV2
+
+// CreateIncidentFollowUpJSONRequestBody defines body for CreateIncidentFollowUp for application/json ContentType.
+type CreateIncidentFollowUpJSONRequestBody = IncidentFollowUpCreateV2
+
+// CompleteIncidentFollowUpJSONRequestBody defines body for CompleteIncidentFollowUp for application/json ContentType.
+type CompleteIncidentFollowUpJSONRequestBody = IncidentFollowUpCompleteV2
+
+// ReopenIncidentFollowUpJSONRequestBody defines body for ReopenIncidentFollowUp for application/json ContentType.
+type ReopenIncidentFollowUpJSONRequestBody = ReopenIncidentFollowUpJSONBody
+
 // CreateInvestigationJSONRequestBody defines body for CreateInvestigation for application/json ContentType.
 type CreateInvestigationJSONRequestBody = CreateInvestigationV2
 
+// ClaimIncidentJSONRequestBody defines body for ClaimIncident for application/json ContentType.
+type ClaimIncidentJSONRequestBody = IncidentClaimV2
+
 // SplitIncidentJSONRequestBody defines body for SplitIncident for application/json ContentType.
 type SplitIncidentJSONRequestBody = IncidentSplitV2
+
+// TransferIncidentJSONRequestBody defines body for TransferIncident for application/json ContentType.
+type TransferIncidentJSONRequestBody = IncidentTransferV2
 
 // TransitionIncidentJSONRequestBody defines body for TransitionIncident for application/json ContentType.
 type TransitionIncidentJSONRequestBody TransitionIncidentJSONBody
@@ -8418,6 +8673,130 @@ func (t *GetIncidentdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsErrorEnvelope returns the union data inside the LinkIncidentAlertsdefaultJSONResponseBody as a ErrorEnvelope
+func (t LinkIncidentAlertsdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the LinkIncidentAlertsdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *LinkIncidentAlertsdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the LinkIncidentAlertsdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *LinkIncidentAlertsdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the LinkIncidentAlertsdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t LinkIncidentAlertsdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the LinkIncidentAlertsdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *LinkIncidentAlertsdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the LinkIncidentAlertsdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *LinkIncidentAlertsdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t LinkIncidentAlertsdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *LinkIncidentAlertsdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the CreateIncidentCommentdefaultJSONResponseBody as a ErrorEnvelope
+func (t CreateIncidentCommentdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the CreateIncidentCommentdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *CreateIncidentCommentdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the CreateIncidentCommentdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *CreateIncidentCommentdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the CreateIncidentCommentdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t CreateIncidentCommentdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the CreateIncidentCommentdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *CreateIncidentCommentdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the CreateIncidentCommentdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *CreateIncidentCommentdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t CreateIncidentCommentdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *CreateIncidentCommentdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsErrorEnvelope returns the union data inside the GetIncidentEvidencedefaultJSONResponseBody as a ErrorEnvelope
 func (t GetIncidentEvidencedefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
 	var body ErrorEnvelope
@@ -8476,6 +8855,254 @@ func (t GetIncidentEvidencedefaultJSONResponseBody) MarshalJSON() ([]byte, error
 }
 
 func (t *GetIncidentEvidencedefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the ListIncidentFollowUpsdefaultJSONResponseBody as a ErrorEnvelope
+func (t ListIncidentFollowUpsdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the ListIncidentFollowUpsdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *ListIncidentFollowUpsdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the ListIncidentFollowUpsdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *ListIncidentFollowUpsdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the ListIncidentFollowUpsdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t ListIncidentFollowUpsdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the ListIncidentFollowUpsdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *ListIncidentFollowUpsdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the ListIncidentFollowUpsdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *ListIncidentFollowUpsdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ListIncidentFollowUpsdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ListIncidentFollowUpsdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the CreateIncidentFollowUpdefaultJSONResponseBody as a ErrorEnvelope
+func (t CreateIncidentFollowUpdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the CreateIncidentFollowUpdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *CreateIncidentFollowUpdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the CreateIncidentFollowUpdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *CreateIncidentFollowUpdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the CreateIncidentFollowUpdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t CreateIncidentFollowUpdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the CreateIncidentFollowUpdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *CreateIncidentFollowUpdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the CreateIncidentFollowUpdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *CreateIncidentFollowUpdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t CreateIncidentFollowUpdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *CreateIncidentFollowUpdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the CompleteIncidentFollowUpdefaultJSONResponseBody as a ErrorEnvelope
+func (t CompleteIncidentFollowUpdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the CompleteIncidentFollowUpdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *CompleteIncidentFollowUpdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the CompleteIncidentFollowUpdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *CompleteIncidentFollowUpdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the CompleteIncidentFollowUpdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t CompleteIncidentFollowUpdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the CompleteIncidentFollowUpdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *CompleteIncidentFollowUpdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the CompleteIncidentFollowUpdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *CompleteIncidentFollowUpdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t CompleteIncidentFollowUpdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *CompleteIncidentFollowUpdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the ReopenIncidentFollowUpdefaultJSONResponseBody as a ErrorEnvelope
+func (t ReopenIncidentFollowUpdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the ReopenIncidentFollowUpdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *ReopenIncidentFollowUpdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the ReopenIncidentFollowUpdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *ReopenIncidentFollowUpdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the ReopenIncidentFollowUpdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t ReopenIncidentFollowUpdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the ReopenIncidentFollowUpdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *ReopenIncidentFollowUpdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the ReopenIncidentFollowUpdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *ReopenIncidentFollowUpdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ReopenIncidentFollowUpdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ReopenIncidentFollowUpdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -8852,6 +9479,68 @@ func (t *GetIncidentTimelinedefaultJSONResponseBody) UnmarshalJSON(b []byte) err
 	return err
 }
 
+// AsErrorEnvelope returns the union data inside the ClaimIncidentdefaultJSONResponseBody as a ErrorEnvelope
+func (t ClaimIncidentdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the ClaimIncidentdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *ClaimIncidentdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the ClaimIncidentdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *ClaimIncidentdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the ClaimIncidentdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t ClaimIncidentdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the ClaimIncidentdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *ClaimIncidentdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the ClaimIncidentdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *ClaimIncidentdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ClaimIncidentdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ClaimIncidentdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsErrorEnvelope returns the union data inside the SplitIncidentdefaultJSONResponseBody as a ErrorEnvelope
 func (t SplitIncidentdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
 	var body ErrorEnvelope
@@ -8910,6 +9599,68 @@ func (t SplitIncidentdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
 }
 
 func (t *SplitIncidentdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsErrorEnvelope returns the union data inside the TransferIncidentdefaultJSONResponseBody as a ErrorEnvelope
+func (t TransferIncidentdefaultJSONResponseBody) AsErrorEnvelope() (ErrorEnvelope, error) {
+	var body ErrorEnvelope
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorEnvelope overwrites any union data inside the TransferIncidentdefaultJSONResponseBody as the provided ErrorEnvelope
+func (t *TransferIncidentdefaultJSONResponseBody) FromErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorEnvelope performs a merge with any union data inside the TransferIncidentdefaultJSONResponseBody, using the provided ErrorEnvelope
+func (t *TransferIncidentdefaultJSONResponseBody) MergeErrorEnvelope(v ErrorEnvelope) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSP04ErrorEnvelopeV2 returns the union data inside the TransferIncidentdefaultJSONResponseBody as a SP04ErrorEnvelopeV2
+func (t TransferIncidentdefaultJSONResponseBody) AsSP04ErrorEnvelopeV2() (SP04ErrorEnvelopeV2, error) {
+	var body SP04ErrorEnvelopeV2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSP04ErrorEnvelopeV2 overwrites any union data inside the TransferIncidentdefaultJSONResponseBody as the provided SP04ErrorEnvelopeV2
+func (t *TransferIncidentdefaultJSONResponseBody) FromSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSP04ErrorEnvelopeV2 performs a merge with any union data inside the TransferIncidentdefaultJSONResponseBody, using the provided SP04ErrorEnvelopeV2
+func (t *TransferIncidentdefaultJSONResponseBody) MergeSP04ErrorEnvelopeV2(v SP04ErrorEnvelopeV2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t TransferIncidentdefaultJSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *TransferIncidentdefaultJSONResponseBody) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -9882,6 +10633,9 @@ type ServerInterface interface {
 	// GetCapabilities getCapabilities
 	// (GET /api/v1/capabilities)
 	GetCapabilities(w http.ResponseWriter, r *http.Request, params GetCapabilitiesParams)
+	// ListCommandExecutions listCommandExecutions
+	// (GET /api/v1/command-executions)
+	ListCommandExecutions(w http.ResponseWriter, r *http.Request, params ListCommandExecutionsParams)
 	// CreateCommandExecution createCommandExecution
 	// (POST /api/v1/command-executions)
 	CreateCommandExecution(w http.ResponseWriter, r *http.Request, params CreateCommandExecutionParams)
@@ -9929,9 +10683,27 @@ type ServerInterface interface {
 	// GetIncident getIncident
 	// (GET /api/v1/incidents/{incidentId})
 	GetIncident(w http.ResponseWriter, r *http.Request, incidentId string)
+	// LinkIncidentAlerts linkIncidentAlerts
+	// (POST /api/v1/incidents/{incidentId}/alert-links)
+	LinkIncidentAlerts(w http.ResponseWriter, r *http.Request, incidentId string, params LinkIncidentAlertsParams)
+	// CreateIncidentComment createIncidentComment
+	// (POST /api/v1/incidents/{incidentId}/comments)
+	CreateIncidentComment(w http.ResponseWriter, r *http.Request, incidentId string, params CreateIncidentCommentParams)
 	// GetIncidentEvidence getIncidentEvidence
 	// (GET /api/v1/incidents/{incidentId}/evidence)
 	GetIncidentEvidence(w http.ResponseWriter, r *http.Request, incidentId string, params GetIncidentEvidenceParams)
+	// ListIncidentFollowUps listIncidentFollowUps
+	// (GET /api/v1/incidents/{incidentId}/follow-ups)
+	ListIncidentFollowUps(w http.ResponseWriter, r *http.Request, incidentId string, params ListIncidentFollowUpsParams)
+	// CreateIncidentFollowUp createIncidentFollowUp
+	// (POST /api/v1/incidents/{incidentId}/follow-ups)
+	CreateIncidentFollowUp(w http.ResponseWriter, r *http.Request, incidentId string, params CreateIncidentFollowUpParams)
+	// CompleteIncidentFollowUp completeIncidentFollowUp
+	// (POST /api/v1/incidents/{incidentId}/follow-ups/{followUpId}:complete)
+	CompleteIncidentFollowUp(w http.ResponseWriter, r *http.Request, incidentId string, followUpId string, params CompleteIncidentFollowUpParams)
+	// ReopenIncidentFollowUp reopenIncidentFollowUp
+	// (POST /api/v1/incidents/{incidentId}/follow-ups/{followUpId}:reopen)
+	ReopenIncidentFollowUp(w http.ResponseWriter, r *http.Request, incidentId string, followUpId string, params ReopenIncidentFollowUpParams)
 	// GetIncidentInvestigations List owned or explicitly mapped legacy investigations under current operator scope
 	// (GET /api/v1/incidents/{incidentId}/investigations)
 	GetIncidentInvestigations(w http.ResponseWriter, r *http.Request, incidentId openapi_types.UUID, params GetIncidentInvestigationsParams)
@@ -9950,9 +10722,15 @@ type ServerInterface interface {
 	// GetIncidentTimeline getIncidentTimeline
 	// (GET /api/v1/incidents/{incidentId}/timeline)
 	GetIncidentTimeline(w http.ResponseWriter, r *http.Request, incidentId string, params GetIncidentTimelineParams)
+	// ClaimIncident claimIncident
+	// (POST /api/v1/incidents/{incidentId}:claim)
+	ClaimIncident(w http.ResponseWriter, r *http.Request, incidentId string, params ClaimIncidentParams)
 	// SplitIncident splitIncident
 	// (POST /api/v1/incidents/{incidentId}:split)
 	SplitIncident(w http.ResponseWriter, r *http.Request, incidentId string, params SplitIncidentParams)
+	// TransferIncident transferIncident
+	// (POST /api/v1/incidents/{incidentId}:transfer)
+	TransferIncident(w http.ResponseWriter, r *http.Request, incidentId string, params TransferIncidentParams)
 	// TransitionIncident transitionIncident
 	// (POST /api/v1/incidents/{incidentId}:transition)
 	TransitionIncident(w http.ResponseWriter, r *http.Request, incidentId string, params TransitionIncidentParams)
@@ -10456,6 +11234,12 @@ func (_ Unimplemented) GetCapabilities(w http.ResponseWriter, r *http.Request, p
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// ListCommandExecutions listCommandExecutions
+// (GET /api/v1/command-executions)
+func (_ Unimplemented) ListCommandExecutions(w http.ResponseWriter, r *http.Request, params ListCommandExecutionsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // CreateCommandExecution createCommandExecution
 // (POST /api/v1/command-executions)
 func (_ Unimplemented) CreateCommandExecution(w http.ResponseWriter, r *http.Request, params CreateCommandExecutionParams) {
@@ -10548,9 +11332,45 @@ func (_ Unimplemented) GetIncident(w http.ResponseWriter, r *http.Request, incid
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// LinkIncidentAlerts linkIncidentAlerts
+// (POST /api/v1/incidents/{incidentId}/alert-links)
+func (_ Unimplemented) LinkIncidentAlerts(w http.ResponseWriter, r *http.Request, incidentId string, params LinkIncidentAlertsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CreateIncidentComment createIncidentComment
+// (POST /api/v1/incidents/{incidentId}/comments)
+func (_ Unimplemented) CreateIncidentComment(w http.ResponseWriter, r *http.Request, incidentId string, params CreateIncidentCommentParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // GetIncidentEvidence getIncidentEvidence
 // (GET /api/v1/incidents/{incidentId}/evidence)
 func (_ Unimplemented) GetIncidentEvidence(w http.ResponseWriter, r *http.Request, incidentId string, params GetIncidentEvidenceParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListIncidentFollowUps listIncidentFollowUps
+// (GET /api/v1/incidents/{incidentId}/follow-ups)
+func (_ Unimplemented) ListIncidentFollowUps(w http.ResponseWriter, r *http.Request, incidentId string, params ListIncidentFollowUpsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CreateIncidentFollowUp createIncidentFollowUp
+// (POST /api/v1/incidents/{incidentId}/follow-ups)
+func (_ Unimplemented) CreateIncidentFollowUp(w http.ResponseWriter, r *http.Request, incidentId string, params CreateIncidentFollowUpParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CompleteIncidentFollowUp completeIncidentFollowUp
+// (POST /api/v1/incidents/{incidentId}/follow-ups/{followUpId}:complete)
+func (_ Unimplemented) CompleteIncidentFollowUp(w http.ResponseWriter, r *http.Request, incidentId string, followUpId string, params CompleteIncidentFollowUpParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ReopenIncidentFollowUp reopenIncidentFollowUp
+// (POST /api/v1/incidents/{incidentId}/follow-ups/{followUpId}:reopen)
+func (_ Unimplemented) ReopenIncidentFollowUp(w http.ResponseWriter, r *http.Request, incidentId string, followUpId string, params ReopenIncidentFollowUpParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -10590,9 +11410,21 @@ func (_ Unimplemented) GetIncidentTimeline(w http.ResponseWriter, r *http.Reques
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// ClaimIncident claimIncident
+// (POST /api/v1/incidents/{incidentId}:claim)
+func (_ Unimplemented) ClaimIncident(w http.ResponseWriter, r *http.Request, incidentId string, params ClaimIncidentParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // SplitIncident splitIncident
 // (POST /api/v1/incidents/{incidentId}:split)
 func (_ Unimplemented) SplitIncident(w http.ResponseWriter, r *http.Request, incidentId string, params SplitIncidentParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TransferIncident transferIncident
+// (POST /api/v1/incidents/{incidentId}:transfer)
+func (_ Unimplemented) TransferIncident(w http.ResponseWriter, r *http.Request, incidentId string, params TransferIncidentParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -13917,6 +14749,65 @@ func (siw *ServerInterfaceWrapper) GetCapabilities(w http.ResponseWriter, r *htt
 	handler.ServeHTTP(w, r)
 }
 
+// ListCommandExecutions operation middleware
+func (siw *ServerInterfaceWrapper) ListCommandExecutions(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListCommandExecutionsParams
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "state" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "state", r.URL.Query(), &params.State, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "state"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "state", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListCommandExecutions(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // CreateCommandExecution operation middleware
 func (siw *ServerInterfaceWrapper) CreateCommandExecution(w http.ResponseWriter, r *http.Request) {
 
@@ -14746,6 +15637,114 @@ func (siw *ServerInterfaceWrapper) GetIncident(w http.ResponseWriter, r *http.Re
 	handler.ServeHTTP(w, r)
 }
 
+// LinkIncidentAlerts operation middleware
+func (siw *ServerInterfaceWrapper) LinkIncidentAlerts(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "incidentId" -------------
+	var incidentId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "incidentId", chi.URLParam(r, "incidentId"), &incidentId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "identifier", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "incidentId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params LinkIncidentAlertsParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.LinkIncidentAlerts(w, r, incidentId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateIncidentComment operation middleware
+func (siw *ServerInterfaceWrapper) CreateIncidentComment(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "incidentId" -------------
+	var incidentId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "incidentId", chi.URLParam(r, "incidentId"), &incidentId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "identifier", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "incidentId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateIncidentCommentParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateIncidentComment(w, r, incidentId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetIncidentEvidence operation middleware
 func (siw *ServerInterfaceWrapper) GetIncidentEvidence(w http.ResponseWriter, r *http.Request) {
 
@@ -14792,6 +15791,254 @@ func (siw *ServerInterfaceWrapper) GetIncidentEvidence(w http.ResponseWriter, r 
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetIncidentEvidence(w, r, incidentId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListIncidentFollowUps operation middleware
+func (siw *ServerInterfaceWrapper) ListIncidentFollowUps(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "incidentId" -------------
+	var incidentId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "incidentId", chi.URLParam(r, "incidentId"), &incidentId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "identifier", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "incidentId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListIncidentFollowUpsParams
+
+	// ------------- Optional query parameter "state" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "state", r.URL.Query(), &params.State, runtime.BindQueryParameterOptions{Type: "", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "state"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "state", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListIncidentFollowUps(w, r, incidentId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateIncidentFollowUp operation middleware
+func (siw *ServerInterfaceWrapper) CreateIncidentFollowUp(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "incidentId" -------------
+	var incidentId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "incidentId", chi.URLParam(r, "incidentId"), &incidentId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "identifier", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "incidentId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateIncidentFollowUpParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateIncidentFollowUp(w, r, incidentId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CompleteIncidentFollowUp operation middleware
+func (siw *ServerInterfaceWrapper) CompleteIncidentFollowUp(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "incidentId" -------------
+	var incidentId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "incidentId", chi.URLParam(r, "incidentId"), &incidentId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "identifier", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "incidentId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "followUpId" -------------
+	var followUpId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "followUpId", chi.URLParam(r, "followUpId"), &followUpId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "identifier", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "followUpId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CompleteIncidentFollowUpParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CompleteIncidentFollowUp(w, r, incidentId, followUpId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ReopenIncidentFollowUp operation middleware
+func (siw *ServerInterfaceWrapper) ReopenIncidentFollowUp(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "incidentId" -------------
+	var incidentId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "incidentId", chi.URLParam(r, "incidentId"), &incidentId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "identifier", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "incidentId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "followUpId" -------------
+	var followUpId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "followUpId", chi.URLParam(r, "followUpId"), &followUpId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "identifier", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "followUpId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ReopenIncidentFollowUpParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ReopenIncidentFollowUp(w, r, incidentId, followUpId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -15120,6 +16367,60 @@ func (siw *ServerInterfaceWrapper) GetIncidentTimeline(w http.ResponseWriter, r 
 	handler.ServeHTTP(w, r)
 }
 
+// ClaimIncident operation middleware
+func (siw *ServerInterfaceWrapper) ClaimIncident(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "incidentId" -------------
+	var incidentId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "incidentId", chi.URLParam(r, "incidentId"), &incidentId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "identifier", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "incidentId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ClaimIncidentParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ClaimIncident(w, r, incidentId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // SplitIncident operation middleware
 func (siw *ServerInterfaceWrapper) SplitIncident(w http.ResponseWriter, r *http.Request) {
 
@@ -15165,6 +16466,60 @@ func (siw *ServerInterfaceWrapper) SplitIncident(w http.ResponseWriter, r *http.
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SplitIncident(w, r, incidentId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TransferIncident operation middleware
+func (siw *ServerInterfaceWrapper) TransferIncident(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "incidentId" -------------
+	var incidentId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "incidentId", chi.URLParam(r, "incidentId"), &incidentId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "identifier", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "incidentId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params TransferIncidentParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TransferIncident(w, r, incidentId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -16605,6 +17960,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/api/v1/capabilities", wrapper.GetCapabilities)
 	})
 	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/command-executions", wrapper.ListCommandExecutions)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/command-executions", wrapper.CreateCommandExecution)
 	})
 	r.Group(func(r chi.Router) {
@@ -16681,6 +18039,30 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/incidents:merge", wrapper.MergeIncidents)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/incidents/{incidentId}:claim", wrapper.ClaimIncident)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/incidents/{incidentId}:transfer", wrapper.TransferIncident)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/incidents/{incidentId}/comments", wrapper.CreateIncidentComment)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/incidents/{incidentId}/follow-ups", wrapper.ListIncidentFollowUps)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/incidents/{incidentId}/follow-ups", wrapper.CreateIncidentFollowUp)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/incidents/{incidentId}/follow-ups/{followUpId}:reopen", wrapper.ReopenIncidentFollowUp)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/incidents/{incidentId}/follow-ups/{followUpId}:complete", wrapper.CompleteIncidentFollowUp)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/incidents/{incidentId}/alert-links", wrapper.LinkIncidentAlerts)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/v1/investigations/{jobId}", wrapper.GetInvestigation)
@@ -19803,6 +21185,59 @@ func (response GetCapabilitiesdefaultJSONResponse) VisitGetCapabilitiesResponse(
 	return err
 }
 
+type ListCommandExecutionsRequestObject struct {
+	Params ListCommandExecutionsParams
+}
+
+type ListCommandExecutionsResponseObject interface {
+	VisitListCommandExecutionsResponse(w http.ResponseWriter) error
+}
+
+type ListCommandExecutions200JSONResponse PageEnvelope
+
+func (response ListCommandExecutions200JSONResponse) VisitListCommandExecutionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCommandExecutions410JSONResponse ErrorEnvelope
+
+func (response ListCommandExecutions410JSONResponse) VisitListCommandExecutionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(410)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCommandExecutionsdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response ListCommandExecutionsdefaultJSONResponse) VisitListCommandExecutionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type CreateCommandExecutionRequestObject struct {
 	Params CreateCommandExecutionParams
 	Body   *CreateCommandExecutionJSONRequestBody
@@ -20467,6 +21902,88 @@ func (response GetIncidentdefaultJSONResponse) VisitGetIncidentResponse(w http.R
 	return err
 }
 
+type LinkIncidentAlertsRequestObject struct {
+	IncidentId string `json:"incidentId"`
+	Params     LinkIncidentAlertsParams
+	Body       *LinkIncidentAlertsJSONRequestBody
+}
+
+type LinkIncidentAlertsResponseObject interface {
+	VisitLinkIncidentAlertsResponse(w http.ResponseWriter) error
+}
+
+type LinkIncidentAlerts200JSONResponse IncidentSuccessV2
+
+func (response LinkIncidentAlerts200JSONResponse) VisitLinkIncidentAlertsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type LinkIncidentAlertsdefaultJSONResponse struct {
+	Body       LinkIncidentAlertsdefaultJSONResponseBody
+	StatusCode int
+}
+
+func (response LinkIncidentAlertsdefaultJSONResponse) VisitLinkIncidentAlertsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateIncidentCommentRequestObject struct {
+	IncidentId string `json:"incidentId"`
+	Params     CreateIncidentCommentParams
+	Body       *CreateIncidentCommentJSONRequestBody
+}
+
+type CreateIncidentCommentResponseObject interface {
+	VisitCreateIncidentCommentResponse(w http.ResponseWriter) error
+}
+
+type CreateIncidentComment200JSONResponse IncidentCommentSuccessV2
+
+func (response CreateIncidentComment200JSONResponse) VisitCreateIncidentCommentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateIncidentCommentdefaultJSONResponse struct {
+	Body       CreateIncidentCommentdefaultJSONResponseBody
+	StatusCode int
+}
+
+func (response CreateIncidentCommentdefaultJSONResponse) VisitCreateIncidentCommentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type GetIncidentEvidenceRequestObject struct {
 	IncidentId string `json:"incidentId"`
 	Params     GetIncidentEvidenceParams
@@ -20496,6 +22013,171 @@ type GetIncidentEvidencedefaultJSONResponse struct {
 }
 
 func (response GetIncidentEvidencedefaultJSONResponse) VisitGetIncidentEvidenceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListIncidentFollowUpsRequestObject struct {
+	IncidentId string `json:"incidentId"`
+	Params     ListIncidentFollowUpsParams
+}
+
+type ListIncidentFollowUpsResponseObject interface {
+	VisitListIncidentFollowUpsResponse(w http.ResponseWriter) error
+}
+
+type ListIncidentFollowUps200JSONResponse IncidentFollowUpPageV2
+
+func (response ListIncidentFollowUps200JSONResponse) VisitListIncidentFollowUpsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListIncidentFollowUpsdefaultJSONResponse struct {
+	Body       ListIncidentFollowUpsdefaultJSONResponseBody
+	StatusCode int
+}
+
+func (response ListIncidentFollowUpsdefaultJSONResponse) VisitListIncidentFollowUpsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateIncidentFollowUpRequestObject struct {
+	IncidentId string `json:"incidentId"`
+	Params     CreateIncidentFollowUpParams
+	Body       *CreateIncidentFollowUpJSONRequestBody
+}
+
+type CreateIncidentFollowUpResponseObject interface {
+	VisitCreateIncidentFollowUpResponse(w http.ResponseWriter) error
+}
+
+type CreateIncidentFollowUp200JSONResponse IncidentFollowUpSuccessV2
+
+func (response CreateIncidentFollowUp200JSONResponse) VisitCreateIncidentFollowUpResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateIncidentFollowUpdefaultJSONResponse struct {
+	Body       CreateIncidentFollowUpdefaultJSONResponseBody
+	StatusCode int
+}
+
+func (response CreateIncidentFollowUpdefaultJSONResponse) VisitCreateIncidentFollowUpResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CompleteIncidentFollowUpRequestObject struct {
+	IncidentId string `json:"incidentId"`
+	FollowUpId string `json:"followUpId"`
+	Params     CompleteIncidentFollowUpParams
+	Body       *CompleteIncidentFollowUpJSONRequestBody
+}
+
+type CompleteIncidentFollowUpResponseObject interface {
+	VisitCompleteIncidentFollowUpResponse(w http.ResponseWriter) error
+}
+
+type CompleteIncidentFollowUp200JSONResponse IncidentFollowUpSuccessV2
+
+func (response CompleteIncidentFollowUp200JSONResponse) VisitCompleteIncidentFollowUpResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CompleteIncidentFollowUpdefaultJSONResponse struct {
+	Body       CompleteIncidentFollowUpdefaultJSONResponseBody
+	StatusCode int
+}
+
+func (response CompleteIncidentFollowUpdefaultJSONResponse) VisitCompleteIncidentFollowUpResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReopenIncidentFollowUpRequestObject struct {
+	IncidentId string `json:"incidentId"`
+	FollowUpId string `json:"followUpId"`
+	Params     ReopenIncidentFollowUpParams
+	Body       *ReopenIncidentFollowUpJSONRequestBody
+}
+
+type ReopenIncidentFollowUpResponseObject interface {
+	VisitReopenIncidentFollowUpResponse(w http.ResponseWriter) error
+}
+
+type ReopenIncidentFollowUp200JSONResponse IncidentFollowUpSuccessV2
+
+func (response ReopenIncidentFollowUp200JSONResponse) VisitReopenIncidentFollowUpResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ReopenIncidentFollowUpdefaultJSONResponse struct {
+	Body       ReopenIncidentFollowUpdefaultJSONResponseBody
+	StatusCode int
+}
+
+func (response ReopenIncidentFollowUpdefaultJSONResponse) VisitReopenIncidentFollowUpResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
@@ -20747,6 +22429,47 @@ func (response GetIncidentTimelinedefaultJSONResponse) VisitGetIncidentTimelineR
 	return err
 }
 
+type ClaimIncidentRequestObject struct {
+	IncidentId string `json:"incidentId"`
+	Params     ClaimIncidentParams
+	Body       *ClaimIncidentJSONRequestBody
+}
+
+type ClaimIncidentResponseObject interface {
+	VisitClaimIncidentResponse(w http.ResponseWriter) error
+}
+
+type ClaimIncident200JSONResponse IncidentSuccessV2
+
+func (response ClaimIncident200JSONResponse) VisitClaimIncidentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ClaimIncidentdefaultJSONResponse struct {
+	Body       ClaimIncidentdefaultJSONResponseBody
+	StatusCode int
+}
+
+func (response ClaimIncidentdefaultJSONResponse) VisitClaimIncidentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type SplitIncidentRequestObject struct {
 	IncidentId string `json:"incidentId"`
 	Params     SplitIncidentParams
@@ -20777,6 +22500,47 @@ type SplitIncidentdefaultJSONResponse struct {
 }
 
 func (response SplitIncidentdefaultJSONResponse) VisitSplitIncidentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TransferIncidentRequestObject struct {
+	IncidentId string `json:"incidentId"`
+	Params     TransferIncidentParams
+	Body       *TransferIncidentJSONRequestBody
+}
+
+type TransferIncidentResponseObject interface {
+	VisitTransferIncidentResponse(w http.ResponseWriter) error
+}
+
+type TransferIncident200JSONResponse IncidentSuccessV2
+
+func (response TransferIncident200JSONResponse) VisitTransferIncidentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TransferIncidentdefaultJSONResponse struct {
+	Body       TransferIncidentdefaultJSONResponseBody
+	StatusCode int
+}
+
+func (response TransferIncidentdefaultJSONResponse) VisitTransferIncidentResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body.union); err != nil {
@@ -21855,6 +23619,9 @@ type StrictServerInterface interface {
 	// GetCapabilities getCapabilities
 	// (GET /api/v1/capabilities)
 	GetCapabilities(ctx context.Context, request GetCapabilitiesRequestObject) (GetCapabilitiesResponseObject, error)
+	// ListCommandExecutions listCommandExecutions
+	// (GET /api/v1/command-executions)
+	ListCommandExecutions(ctx context.Context, request ListCommandExecutionsRequestObject) (ListCommandExecutionsResponseObject, error)
 	// CreateCommandExecution createCommandExecution
 	// (POST /api/v1/command-executions)
 	CreateCommandExecution(ctx context.Context, request CreateCommandExecutionRequestObject) (CreateCommandExecutionResponseObject, error)
@@ -21902,9 +23669,27 @@ type StrictServerInterface interface {
 	// GetIncident getIncident
 	// (GET /api/v1/incidents/{incidentId})
 	GetIncident(ctx context.Context, request GetIncidentRequestObject) (GetIncidentResponseObject, error)
+	// LinkIncidentAlerts linkIncidentAlerts
+	// (POST /api/v1/incidents/{incidentId}/alert-links)
+	LinkIncidentAlerts(ctx context.Context, request LinkIncidentAlertsRequestObject) (LinkIncidentAlertsResponseObject, error)
+	// CreateIncidentComment createIncidentComment
+	// (POST /api/v1/incidents/{incidentId}/comments)
+	CreateIncidentComment(ctx context.Context, request CreateIncidentCommentRequestObject) (CreateIncidentCommentResponseObject, error)
 	// GetIncidentEvidence getIncidentEvidence
 	// (GET /api/v1/incidents/{incidentId}/evidence)
 	GetIncidentEvidence(ctx context.Context, request GetIncidentEvidenceRequestObject) (GetIncidentEvidenceResponseObject, error)
+	// ListIncidentFollowUps listIncidentFollowUps
+	// (GET /api/v1/incidents/{incidentId}/follow-ups)
+	ListIncidentFollowUps(ctx context.Context, request ListIncidentFollowUpsRequestObject) (ListIncidentFollowUpsResponseObject, error)
+	// CreateIncidentFollowUp createIncidentFollowUp
+	// (POST /api/v1/incidents/{incidentId}/follow-ups)
+	CreateIncidentFollowUp(ctx context.Context, request CreateIncidentFollowUpRequestObject) (CreateIncidentFollowUpResponseObject, error)
+	// CompleteIncidentFollowUp completeIncidentFollowUp
+	// (POST /api/v1/incidents/{incidentId}/follow-ups/{followUpId}:complete)
+	CompleteIncidentFollowUp(ctx context.Context, request CompleteIncidentFollowUpRequestObject) (CompleteIncidentFollowUpResponseObject, error)
+	// ReopenIncidentFollowUp reopenIncidentFollowUp
+	// (POST /api/v1/incidents/{incidentId}/follow-ups/{followUpId}:reopen)
+	ReopenIncidentFollowUp(ctx context.Context, request ReopenIncidentFollowUpRequestObject) (ReopenIncidentFollowUpResponseObject, error)
 	// GetIncidentInvestigations List owned or explicitly mapped legacy investigations under current operator scope
 	// (GET /api/v1/incidents/{incidentId}/investigations)
 	GetIncidentInvestigations(ctx context.Context, request GetIncidentInvestigationsRequestObject) (GetIncidentInvestigationsResponseObject, error)
@@ -21923,9 +23708,15 @@ type StrictServerInterface interface {
 	// GetIncidentTimeline getIncidentTimeline
 	// (GET /api/v1/incidents/{incidentId}/timeline)
 	GetIncidentTimeline(ctx context.Context, request GetIncidentTimelineRequestObject) (GetIncidentTimelineResponseObject, error)
+	// ClaimIncident claimIncident
+	// (POST /api/v1/incidents/{incidentId}:claim)
+	ClaimIncident(ctx context.Context, request ClaimIncidentRequestObject) (ClaimIncidentResponseObject, error)
 	// SplitIncident splitIncident
 	// (POST /api/v1/incidents/{incidentId}:split)
 	SplitIncident(ctx context.Context, request SplitIncidentRequestObject) (SplitIncidentResponseObject, error)
+	// TransferIncident transferIncident
+	// (POST /api/v1/incidents/{incidentId}:transfer)
+	TransferIncident(ctx context.Context, request TransferIncidentRequestObject) (TransferIncidentResponseObject, error)
 	// TransitionIncident transitionIncident
 	// (POST /api/v1/incidents/{incidentId}:transition)
 	TransitionIncident(ctx context.Context, request TransitionIncidentRequestObject) (TransitionIncidentResponseObject, error)
@@ -24260,6 +26051,32 @@ func (sh *strictHandler) GetCapabilities(w http.ResponseWriter, r *http.Request,
 	}
 }
 
+// ListCommandExecutions operation middleware
+func (sh *strictHandler) ListCommandExecutions(w http.ResponseWriter, r *http.Request, params ListCommandExecutionsParams) {
+	var request ListCommandExecutionsRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListCommandExecutions(ctx, request.(ListCommandExecutionsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListCommandExecutions")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListCommandExecutionsResponseObject); ok {
+		if err := validResponse.VisitListCommandExecutionsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // CreateCommandExecution operation middleware
 func (sh *strictHandler) CreateCommandExecution(w http.ResponseWriter, r *http.Request, params CreateCommandExecutionParams) {
 	var request CreateCommandExecutionRequestObject
@@ -24694,6 +26511,74 @@ func (sh *strictHandler) GetIncident(w http.ResponseWriter, r *http.Request, inc
 	}
 }
 
+// LinkIncidentAlerts operation middleware
+func (sh *strictHandler) LinkIncidentAlerts(w http.ResponseWriter, r *http.Request, incidentId string, params LinkIncidentAlertsParams) {
+	var request LinkIncidentAlertsRequestObject
+
+	request.IncidentId = incidentId
+	request.Params = params
+
+	var body LinkIncidentAlertsJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.LinkIncidentAlerts(ctx, request.(LinkIncidentAlertsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "LinkIncidentAlerts")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(LinkIncidentAlertsResponseObject); ok {
+		if err := validResponse.VisitLinkIncidentAlertsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateIncidentComment operation middleware
+func (sh *strictHandler) CreateIncidentComment(w http.ResponseWriter, r *http.Request, incidentId string, params CreateIncidentCommentParams) {
+	var request CreateIncidentCommentRequestObject
+
+	request.IncidentId = incidentId
+	request.Params = params
+
+	var body CreateIncidentCommentJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateIncidentComment(ctx, request.(CreateIncidentCommentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateIncidentComment")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateIncidentCommentResponseObject); ok {
+		if err := validResponse.VisitCreateIncidentCommentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // GetIncidentEvidence operation middleware
 func (sh *strictHandler) GetIncidentEvidence(w http.ResponseWriter, r *http.Request, incidentId string, params GetIncidentEvidenceParams) {
 	var request GetIncidentEvidenceRequestObject
@@ -24714,6 +26599,137 @@ func (sh *strictHandler) GetIncidentEvidence(w http.ResponseWriter, r *http.Requ
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetIncidentEvidenceResponseObject); ok {
 		if err := validResponse.VisitGetIncidentEvidenceResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListIncidentFollowUps operation middleware
+func (sh *strictHandler) ListIncidentFollowUps(w http.ResponseWriter, r *http.Request, incidentId string, params ListIncidentFollowUpsParams) {
+	var request ListIncidentFollowUpsRequestObject
+
+	request.IncidentId = incidentId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListIncidentFollowUps(ctx, request.(ListIncidentFollowUpsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListIncidentFollowUps")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListIncidentFollowUpsResponseObject); ok {
+		if err := validResponse.VisitListIncidentFollowUpsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateIncidentFollowUp operation middleware
+func (sh *strictHandler) CreateIncidentFollowUp(w http.ResponseWriter, r *http.Request, incidentId string, params CreateIncidentFollowUpParams) {
+	var request CreateIncidentFollowUpRequestObject
+
+	request.IncidentId = incidentId
+	request.Params = params
+
+	var body CreateIncidentFollowUpJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateIncidentFollowUp(ctx, request.(CreateIncidentFollowUpRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateIncidentFollowUp")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateIncidentFollowUpResponseObject); ok {
+		if err := validResponse.VisitCreateIncidentFollowUpResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CompleteIncidentFollowUp operation middleware
+func (sh *strictHandler) CompleteIncidentFollowUp(w http.ResponseWriter, r *http.Request, incidentId string, followUpId string, params CompleteIncidentFollowUpParams) {
+	var request CompleteIncidentFollowUpRequestObject
+
+	request.IncidentId = incidentId
+	request.FollowUpId = followUpId
+	request.Params = params
+
+	var body CompleteIncidentFollowUpJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CompleteIncidentFollowUp(ctx, request.(CompleteIncidentFollowUpRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CompleteIncidentFollowUp")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CompleteIncidentFollowUpResponseObject); ok {
+		if err := validResponse.VisitCompleteIncidentFollowUpResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ReopenIncidentFollowUp operation middleware
+func (sh *strictHandler) ReopenIncidentFollowUp(w http.ResponseWriter, r *http.Request, incidentId string, followUpId string, params ReopenIncidentFollowUpParams) {
+	var request ReopenIncidentFollowUpRequestObject
+
+	request.IncidentId = incidentId
+	request.FollowUpId = followUpId
+	request.Params = params
+
+	var body ReopenIncidentFollowUpJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ReopenIncidentFollowUp(ctx, request.(ReopenIncidentFollowUpRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ReopenIncidentFollowUp")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ReopenIncidentFollowUpResponseObject); ok {
+		if err := validResponse.VisitReopenIncidentFollowUpResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -24889,6 +26905,40 @@ func (sh *strictHandler) GetIncidentTimeline(w http.ResponseWriter, r *http.Requ
 	}
 }
 
+// ClaimIncident operation middleware
+func (sh *strictHandler) ClaimIncident(w http.ResponseWriter, r *http.Request, incidentId string, params ClaimIncidentParams) {
+	var request ClaimIncidentRequestObject
+
+	request.IncidentId = incidentId
+	request.Params = params
+
+	var body ClaimIncidentJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ClaimIncident(ctx, request.(ClaimIncidentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ClaimIncident")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ClaimIncidentResponseObject); ok {
+		if err := validResponse.VisitClaimIncidentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // SplitIncident operation middleware
 func (sh *strictHandler) SplitIncident(w http.ResponseWriter, r *http.Request, incidentId string, params SplitIncidentParams) {
 	var request SplitIncidentRequestObject
@@ -24916,6 +26966,40 @@ func (sh *strictHandler) SplitIncident(w http.ResponseWriter, r *http.Request, i
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(SplitIncidentResponseObject); ok {
 		if err := validResponse.VisitSplitIncidentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TransferIncident operation middleware
+func (sh *strictHandler) TransferIncident(w http.ResponseWriter, r *http.Request, incidentId string, params TransferIncidentParams) {
+	var request TransferIncidentRequestObject
+
+	request.IncidentId = incidentId
+	request.Params = params
+
+	var body TransferIncidentJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TransferIncident(ctx, request.(TransferIncidentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TransferIncident")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TransferIncidentResponseObject); ok {
+		if err := validResponse.VisitTransferIncidentResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

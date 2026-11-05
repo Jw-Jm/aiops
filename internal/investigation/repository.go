@@ -28,7 +28,7 @@ type Repository struct {
 
 func raw(v any) []byte { b, _ := json.Marshal(v); return b }
 
-const jobColumns = `schema_version,tenant_id,job_id,COALESCE(incident_id,'00000000-0000-0000-0000-000000000000'::uuid),requesting_subject,COALESCE(trigger_revision,0),trigger_kind,policy_version,effective_scope,effective_scope_digest,tool_catalog_digest,state,budget,budget_reserved,budget_consumed,expires_at,event_seq,next_call_seq,result,error_code,assistant_binding,COALESCE(authorization_source,''),COALESCE(authorization_user_id,'00000000-0000-0000-0000-000000000000'::uuid),COALESCE(authorization_version,0)`
+const jobColumns = `schema_version,tenant_id,job_id,COALESCE(incident_id,'00000000-0000-0000-0000-000000000000'::uuid),requesting_subject,COALESCE(trigger_revision,0),trigger_kind,policy_version,effective_scope,effective_scope_digest,tool_catalog_digest,state,budget,budget_reserved,budget_consumed,expires_at,event_seq,next_call_seq,result,error_code,assistant_binding,COALESCE(authorization_source,''),COALESCE(authorization_user_id,'00000000-0000-0000-0000-000000000000'::uuid),COALESCE(authorization_version,0),focus,admission_digest`
 
 func load(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID, lock bool) (Job, error) {
 	var j Job
@@ -37,7 +37,7 @@ func load(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID, lock bool) (Job,
 	if lock {
 		suffix = " FOR UPDATE"
 	}
-	err := tx.QueryRow(ctx, `SELECT `+jobColumns+` FROM investigation.jobs WHERE tenant_id=$1 AND job_id=$2 AND schema_version IN('investigation-job/v2','investigation-job/v3')`+suffix, tenant, id).Scan(&j.SchemaVersion, &j.TenantID, &j.JobID, &j.IncidentID, &j.Subject, &j.TriggerRevision, &j.TriggerKind, &j.PolicyVersion, &scope, &j.EffectiveScopeDigest, &j.ToolCatalogDigest, &j.State, &budget, &reserved, &consumed, &j.ExpiresAt, &j.EventSeq, &j.NextCallSeq, &result, &j.ErrorCode, &assistant, &j.authority.source, &j.authority.userID, &j.authority.version)
+	err := tx.QueryRow(ctx, `SELECT `+jobColumns+` FROM investigation.jobs WHERE tenant_id=$1 AND job_id=$2 AND schema_version IN('investigation-job/v2','investigation-job/v3')`+suffix, tenant, id).Scan(&j.SchemaVersion, &j.TenantID, &j.JobID, &j.IncidentID, &j.Subject, &j.TriggerRevision, &j.TriggerKind, &j.PolicyVersion, &scope, &j.EffectiveScopeDigest, &j.ToolCatalogDigest, &j.State, &budget, &reserved, &consumed, &j.ExpiresAt, &j.EventSeq, &j.NextCallSeq, &result, &j.ErrorCode, &assistant, &j.authority.source, &j.authority.userID, &j.authority.version, &j.Focus, &j.AdmissionDigest)
 	if err != nil {
 		return j, err
 	}
@@ -165,9 +165,16 @@ func event(ctx context.Context, tx pgx.Tx, j Job, kind string, payload any) erro
 }
 func (r Repository) CreateJob(ctx context.Context, q CreateInvestigationRequest) (Job, error) {
 	var out Job
-	if q.TenantID == uuid.Nil || q.IncidentID == uuid.Nil || q.Subject == "" || q.TriggerRevision < 1 || q.PolicyVersion == "" || q.ToolCatalogDigest == "" || !q.Budget.Valid() || q.Scope.Tenant != q.TenantID.String() || (q.TriggerKind != "manual" && q.TriggerKind != "incident_policy" && q.TriggerKind != "new_evidence") {
+	if q.TenantID == uuid.Nil || q.IncidentID == uuid.Nil || q.Subject == "" || q.TriggerRevision < 1 || q.PolicyVersion == "" || q.ToolCatalogDigest == "" || !q.Budget.Valid() || q.Scope.Tenant != q.TenantID.String() || len(q.Focus) > 500 || (q.TriggerKind != "manual" && q.TriggerKind != "incident_policy" && q.TriggerKind != "new_evidence") {
 		return out, ErrInvalid
 	}
+	// The admission digest is the dedup identity of the admission itself: the
+	// same revision re-admitted under a different effective budget or focus is
+	// a new job, never a silent reuse of the previous run.
+	admission := graph.ScopeDigest(struct {
+		Budget Budget
+		Focus  string
+	}{q.Budget, q.Focus})
 	// The identity source comes from the trusted authentication context, never
 	// from the request body, and is persisted in the same transaction as the Job.
 	authority, err := jobAuthorityFromContext(ctx)
@@ -243,7 +250,7 @@ func (r Repository) CreateJob(ctx context.Context, q CreateInvestigationRequest)
 		if authority.source == JobAuthorityNative {
 			userID, version = &authority.userID, &authority.version
 		}
-		err = tx.QueryRow(ctx, `INSERT INTO investigation.jobs(tenant_id,job_id,incident_id,trigger_revision,state,schema_version,requesting_subject,trigger_kind,policy_version,effective_scope,effective_scope_digest,tool_catalog_digest,budget,budget_reserved,budget_consumed,expires_at,authorization_source,authorization_user_id,authorization_version) VALUES($1,$2,$3,$4,'queued','investigation-job/v2',$5,$6,$7,$8,$9,$10,$11,$12,$12,clock_timestamp()+make_interval(secs=>$13),$14,$15,$16) ON CONFLICT(tenant_id,incident_id,policy_version,trigger_revision,trigger_kind,requesting_subject,effective_scope_digest) WHERE schema_version IN('investigation-job/v1','investigation-job/v2') DO UPDATE SET updated_at=investigation.jobs.updated_at RETURNING job_id`, q.TenantID, uuid.Must(uuid.NewV7()), q.IncidentID, q.TriggerRevision, q.Subject, q.TriggerKind, q.PolicyVersion, raw(q.Scope), j.EffectiveScopeDigest, q.ToolCatalogDigest, raw(q.Budget), raw(Usage{}), q.Budget.DurationSeconds, authority.source, userID, version).Scan(&id)
+		err = tx.QueryRow(ctx, `INSERT INTO investigation.jobs(tenant_id,job_id,incident_id,trigger_revision,state,schema_version,requesting_subject,trigger_kind,policy_version,effective_scope,effective_scope_digest,tool_catalog_digest,budget,budget_reserved,budget_consumed,expires_at,authorization_source,authorization_user_id,authorization_version,focus,admission_digest) VALUES($1,$2,$3,$4,'queued','investigation-job/v2',$5,$6,$7,$8,$9,$10,$11,$12,$12,clock_timestamp()+make_interval(secs=>$13),$14,$15,$16,$17,$18) ON CONFLICT(tenant_id,incident_id,policy_version,trigger_revision,trigger_kind,requesting_subject,effective_scope_digest,admission_digest) WHERE schema_version IN('investigation-job/v1','investigation-job/v2') DO UPDATE SET updated_at=investigation.jobs.updated_at RETURNING job_id`, q.TenantID, uuid.Must(uuid.NewV7()), q.IncidentID, q.TriggerRevision, q.Subject, q.TriggerKind, q.PolicyVersion, raw(q.Scope), j.EffectiveScopeDigest, q.ToolCatalogDigest, raw(q.Budget), raw(Usage{}), q.Budget.DurationSeconds, authority.source, userID, version, q.Focus, admission).Scan(&id)
 		if err != nil {
 			return err
 		}

@@ -2605,6 +2605,205 @@ components:
         suppressedUntil:
           type: string
           format: date-time
+    IncidentClaimV2:
+      type: object
+      additionalProperties: false
+      required:
+      - expectedRevision
+      properties:
+        expectedRevision:
+          type: integer
+          minimum: 1
+        note:
+          type: string
+          maxLength: 1000
+    IncidentTransferV2:
+      type: object
+      additionalProperties: false
+      required:
+      - expectedRevision
+      - toSubject
+      - reason
+      properties:
+        expectedRevision:
+          type: integer
+          minimum: 1
+        toSubject:
+          type: string
+          minLength: 1
+          maxLength: 256
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
+    IncidentCommentCreateV2:
+      type: object
+      additionalProperties: false
+      required:
+      - body
+      properties:
+        body:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        impact:
+          type: string
+          maxLength: 1000
+          description: Current business impact assessment; the latest non-empty value is displayed as the incident's impact.
+    IncidentCommentSuccessV2:
+      type: object
+      additionalProperties: false
+      required:
+      - data
+      - requestId
+      properties:
+        data:
+          $ref: '#/components/schemas/IncidentTimelineV2'
+        requestId:
+          type: string
+          minLength: 1
+    IncidentFollowUpV2:
+      type: object
+      additionalProperties: false
+      required:
+      - schemaVersion
+      - followUpId
+      - incidentId
+      - title
+      - state
+      - creatorSubject
+      - createdAt
+      properties:
+        schemaVersion:
+          enum:
+          - incident-followup/v1
+        followUpId:
+          type: string
+          format: uuid
+        incidentId:
+          type: string
+          format: uuid
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        detail:
+          type: string
+          maxLength: 4000
+        state:
+          enum:
+          - open
+          - done
+          - cancelled
+        creatorSubject:
+          type: string
+        ownerSubject:
+          type: string
+          description: Responsible operator for the todo; defaults to the creator.
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        completerSubject:
+          anyOf:
+          - type: string
+          - type: 'null'
+        resolutionNote:
+          type: string
+          maxLength: 1000
+    IncidentFollowUpCreateV2:
+      type: object
+      additionalProperties: false
+      required:
+      - title
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        detail:
+          type: string
+          maxLength: 4000
+        ownerSubject:
+          type: string
+          minLength: 1
+          maxLength: 256
+          description: Responsible operator subject; must currently be eligible for the incident when provided.
+    IncidentFollowUpCompleteV2:
+      type: object
+      additionalProperties: false
+      required:
+      - note
+      properties:
+        note:
+          type: string
+          minLength: 1
+          maxLength: 1000
+    IncidentFollowUpSuccessV2:
+      type: object
+      additionalProperties: false
+      required:
+      - data
+      - requestId
+      properties:
+        data:
+          $ref: '#/components/schemas/IncidentFollowUpV2'
+        requestId:
+          type: string
+          minLength: 1
+    IncidentFollowUpPageV2:
+      type: object
+      additionalProperties: false
+      required:
+      - data
+      - requestId
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncidentFollowUpV2'
+        requestId:
+          type: string
+          minLength: 1
+        meta:
+          type: object
+          additionalProperties: false
+          properties:
+            nextCursor:
+              type: string
+          required: []
+    IncidentAlertLinksV2:
+      type: object
+      additionalProperties: false
+      required:
+      - expectedRevision
+      - findingIds
+      - action
+      - reason
+      properties:
+        expectedRevision:
+          type: integer
+          minimum: 1
+        findingIds:
+          type: array
+          minItems: 1
+          maxItems: 100
+          uniqueItems: true
+          items:
+            type: string
+            format: uuid
+        action:
+          enum:
+          - link
+          - unlink
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
     FindingV2:
       type: object
       additionalProperties: false
@@ -2876,6 +3075,14 @@ components:
         lastObservedAt:
           type: string
           format: date-time
+        assigneeSubject:
+          type: string
+          description: Current assignee subject; empty when unassigned. Collaboration metadata outside the revision CAS.
+        assignedAt:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
       required:
       - schemaVersion
       - tenantId
@@ -3900,6 +4107,12 @@ components:
           type: string
           minLength: 1
           maxLength: 128
+        focus:
+          type: string
+          maxLength: 500
+        admissionDigest:
+          type: string
+          pattern: ^(sha256:[0-9a-f]{64})?$
       required:
       - schemaVersion
       - tenantId
@@ -3916,6 +4129,7 @@ components:
       - budget
       - budgetReserved
       - budgetConsumed
+      - focus
       - expiresAt
       - eventSeq
       - nextCallSeq
@@ -4088,8 +4302,25 @@ components:
         triggerKind:
           enum:
           - manual
+        focus:
+          type: string
+          maxLength: 500
+        tightening:
+          $ref: '#/components/schemas/InvestigationTighteningV1'
       required: []
       additionalProperties: false
+    InvestigationTighteningV1:
+      type: object
+      additionalProperties: false
+      properties:
+        durationSeconds:
+          type: integer
+          minimum: 1
+          maximum: 600
+        toolCalls:
+          type: integer
+          minimum: 1
+          maximum: 40
     ActionPlanV2:
       type: object
       properties:
@@ -6280,6 +6511,59 @@ paths:
         description: Observe this currently authorized cluster through the bounded resource API. Omission reports null for
           unobserved Graph/source readiness.
   /api/v1/command-executions:
+    get:
+      operationId: listCommandExecutions
+      parameters:
+      - description: Signed keyset cursor from a previous page; rows outside the caller's
+          authorized scope are skipped, never leaked.
+        in: query
+        name: cursor
+        schema:
+          type: string
+      - in: query
+        name: limit
+        schema:
+          default: 20
+          maximum: 50
+          minimum: 1
+          type: integer
+      - description: Exact state filter.
+        in: query
+        name: state
+        schema:
+          enum:
+          - prepared
+          - dispatching
+          - running
+          - succeeded
+          - failed
+          - cancelled
+          - execution_unknown
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageEnvelope'
+          description: Successful response.
+        '410':
+          description: The cursor expired; restart from the first page.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Unified API error.
+      security:
+      - BearerAuth: []
+      summary: listCommandExecutions
+      tags:
+      - CommandExecutions
     post:
       operationId: createCommandExecution
       parameters:
@@ -7328,6 +7612,384 @@ paths:
       security:
       - BearerAuth: []
       summary: mergeIncidents
+      tags:
+      - Incidents
+      x-idempotency: required
+  /api/v1/incidents/{incidentId}:claim:
+    post:
+      operationId: claimIncident
+      description: Assign the incident to the caller. Assignment is collaboration metadata; the incident state and revision stay unchanged and the current RCA view stays valid.
+      parameters:
+      - in: path
+        name: incidentId
+        required: true
+        schema:
+          format: identifier
+          type: string
+      - description: Stable key for replay-safe write handling.
+        in: header
+        name: Idempotency-Key
+        required: true
+        schema:
+          minLength: 1
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncidentClaimV2'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncidentSuccessV2'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
+          description: Unified API error.
+      security:
+      - BearerAuth: []
+      summary: claimIncident
+      tags:
+      - Incidents
+      x-idempotency: required
+  /api/v1/incidents/{incidentId}:transfer:
+    post:
+      operationId: transferIncident
+      description: Hand the incident to another eligible operator. A transfer never changes state or recovery facts.
+      parameters:
+      - in: path
+        name: incidentId
+        required: true
+        schema:
+          format: identifier
+          type: string
+      - description: Stable key for replay-safe write handling.
+        in: header
+        name: Idempotency-Key
+        required: true
+        schema:
+          minLength: 1
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncidentTransferV2'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncidentSuccessV2'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
+          description: Unified API error.
+      security:
+      - BearerAuth: []
+      summary: transferIncident
+      tags:
+      - Incidents
+      x-idempotency: required
+  /api/v1/incidents/{incidentId}/comments:
+    post:
+      operationId: createIncidentComment
+      description: Append one operator remark to the incident timeline. Comments are allowed in any state and never rewrite incident facts.
+      parameters:
+      - in: path
+        name: incidentId
+        required: true
+        schema:
+          format: identifier
+          type: string
+      - description: Stable key for replay-safe write handling.
+        in: header
+        name: Idempotency-Key
+        required: true
+        schema:
+          minLength: 1
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncidentCommentCreateV2'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncidentCommentSuccessV2'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
+          description: Unified API error.
+      security:
+      - BearerAuth: []
+      summary: createIncidentComment
+      tags:
+      - Incidents
+      x-idempotency: required
+  /api/v1/incidents/{incidentId}/follow-ups:
+    get:
+      operationId: listIncidentFollowUps
+      parameters:
+      - in: path
+        name: incidentId
+        required: true
+        schema:
+          format: identifier
+          type: string
+      - in: query
+        name: state
+        schema:
+          enum:
+          - open
+          - done
+          - cancelled
+        required: false
+      - in: query
+        name: cursor
+        schema:
+          type: string
+        required: false
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 200
+        required: false
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncidentFollowUpPageV2'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
+          description: Unified API error.
+      security:
+      - BearerAuth: []
+      summary: listIncidentFollowUps
+      tags:
+      - Incidents
+    post:
+      operationId: createIncidentFollowUp
+      description: Record a retrospective follow-up todo. Follow-ups survive resolution and never modify incident facts.
+      parameters:
+      - in: path
+        name: incidentId
+        required: true
+        schema:
+          format: identifier
+          type: string
+      - description: Stable key for replay-safe write handling.
+        in: header
+        name: Idempotency-Key
+        required: true
+        schema:
+          minLength: 1
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncidentFollowUpCreateV2'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncidentFollowUpSuccessV2'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
+          description: Unified API error.
+      security:
+      - BearerAuth: []
+      summary: createIncidentFollowUp
+      tags:
+      - Incidents
+      x-idempotency: required
+  /api/v1/incidents/{incidentId}/follow-ups/{followUpId}:reopen:
+    post:
+      operationId: reopenIncidentFollowUp
+      description: Return a completed or cancelled follow-up to the open state. The creator, the responsible owner, the current assignee and platform administrators may reopen it.
+      parameters:
+      - in: path
+        name: incidentId
+        required: true
+        schema:
+          format: identifier
+          type: string
+      - in: path
+        name: followUpId
+        required: true
+        schema:
+          format: identifier
+          type: string
+      - description: Stable key for replay-safe write handling.
+        in: header
+        name: Idempotency-Key
+        required: true
+        schema:
+          minLength: 1
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties: {}
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncidentFollowUpSuccessV2'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
+          description: Unified API error.
+      security:
+      - BearerAuth: []
+      summary: reopenIncidentFollowUp
+      tags:
+      - Incidents
+      x-idempotency: required
+  /api/v1/incidents/{incidentId}/follow-ups/{followUpId}:complete:
+    post:
+      operationId: completeIncidentFollowUp
+      description: Close an open follow-up with a resolution note. The creator, the current assignee and platform administrators may complete it.
+      parameters:
+      - in: path
+        name: incidentId
+        required: true
+        schema:
+          format: identifier
+          type: string
+      - in: path
+        name: followUpId
+        required: true
+        schema:
+          format: identifier
+          type: string
+      - description: Stable key for replay-safe write handling.
+        in: header
+        name: Idempotency-Key
+        required: true
+        schema:
+          minLength: 1
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncidentFollowUpCompleteV2'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncidentFollowUpSuccessV2'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
+          description: Unified API error.
+      security:
+      - BearerAuth: []
+      summary: completeIncidentFollowUp
+      tags:
+      - Incidents
+      x-idempotency: required
+  /api/v1/incidents/{incidentId}/alert-links:
+    post:
+      operationId: linkIncidentAlerts
+      description: Manually link or unlink findings on one incident. Manual alert links change the evidence set, so they take the incident revision CAS path and recompute the recovery clock. A finding linked to another incident must be unlinked there first.
+      parameters:
+      - in: path
+        name: incidentId
+        required: true
+        schema:
+          format: identifier
+          type: string
+      - description: Stable key for replay-safe write handling.
+        in: header
+        name: Idempotency-Key
+        required: true
+        schema:
+          minLength: 1
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncidentAlertLinksV2'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncidentSuccessV2'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ErrorEnvelope'
+                - $ref: '#/components/schemas/SP04ErrorEnvelopeV2'
+          description: Unified API error.
+      security:
+      - BearerAuth: []
+      summary: linkIncidentAlerts
       tags:
       - Incidents
       x-idempotency: required

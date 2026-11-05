@@ -38,18 +38,27 @@ func (h *SP05Handlers) serveMutation(w http.ResponseWriter, r *http.Request) {
 		ids = []string{body.Source, body.Target}
 		request.URL.Path = "/api/v1/incidents/" + body.Source + "/merge"
 	} else {
-		for _, action := range []string{"transition", "split"} {
+		for _, action := range []string{"transition", "split", "claim", "transfer"} {
 			suffix := ":" + action
 			if strings.HasSuffix(originalPath, suffix) {
 				request.URL.Path = strings.TrimSuffix(originalPath, suffix) + "/" + action
 			}
 		}
 		parts := strings.Split(strings.TrimPrefix(request.URL.Path, "/api/v1/incidents/"), "/")
-		if len(parts) != 2 || (parts[1] != "transition" && parts[1] != "split") {
+		if len(parts) == 2 && (parts[1] == "transition" || parts[1] == "split" || parts[1] == "claim" || parts[1] == "transfer") {
+			ids = []string{parts[0]}
+		} else if len(parts) == 2 && (parts[1] == "comments" || parts[1] == "follow-ups" || parts[1] == "alert-links") {
+			ids = []string{parts[0]}
+		} else if len(parts) == 3 && parts[1] == "follow-ups" && (strings.HasSuffix(parts[2], ":complete") || strings.HasSuffix(parts[2], ":reopen")) {
+			if _, err := uuid.Parse(strings.TrimSuffix(strings.TrimSuffix(parts[2], ":reopen"), ":complete")); err != nil {
+				writeSP04Error(w, 400, "INVALID_ARGUMENT", "invalid incident mutation", false, "")
+				return
+			}
+			ids = []string{parts[0]}
+		} else {
 			writeSP04Error(w, 404, "NOT_FOUND", "incident action unavailable", false, "")
 			return
 		}
-		ids = []string{parts[0]}
 	}
 	for _, id := range ids {
 		if _, err := uuid.Parse(id); err != nil {

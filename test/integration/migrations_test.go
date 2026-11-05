@@ -422,8 +422,27 @@ func TestWithTenantTxIsolatesTenantsAndUsesAppendOnlyAudit(t *testing.T) {
 	}
 }
 
+// grantSchemaOwnerDatabaseCreate mirrors the installer prerequisite of
+// granting CREATE ON DATABASE to schema_owner before forward migration 00044
+// (CREATE SCHEMA identity). Fresh test databases need the same grant, applied
+// as the database-owning admin, because the migration files SET ROLE
+// schema_owner which drops superuser privileges.
+func grantSchemaOwnerDatabaseCreate(ctx context.Context, db *sql.DB) error {
+	var database string
+	if err := db.QueryRowContext(ctx, `SELECT current_database()`).Scan(&database); err != nil {
+		return err
+	}
+	if _, err := db.ExecContext(ctx, `GRANT CREATE ON DATABASE "`+database+`" TO schema_owner`); err != nil {
+		return fmt.Errorf("grant schema_owner database create: %w", err)
+	}
+	return nil
+}
+
 func runRemainingMigrationsAsMigrationRole(t *testing.T, ctx context.Context, adminDB *sql.DB, adminURL, migrationDir string) error {
 	t.Helper()
+	if err := grantSchemaOwnerDatabaseCreate(ctx, adminDB); err != nil {
+		return err
+	}
 	roleName := "sp03_migrator_" + strings.ReplaceAll(uuid.NewString(), "-", "")
 	password := strings.ReplaceAll(uuid.NewString()+uuid.NewString(), "-", "")
 	if _, err := adminDB.ExecContext(ctx, `CREATE ROLE "`+roleName+`" LOGIN PASSWORD '`+password+`'`); err != nil {

@@ -5,9 +5,13 @@
  * OpenAPI spec version: 1.4.0
  */
 import type { CreateInvestigationV2TriggerKind } from './createInvestigationV2TriggerKind.ts';
+import type { InvestigationTighteningV1 } from './investigationTighteningV1.ts';
 
 export interface CreateInvestigationV2 {
   /** @minimum 1 */
   triggerRevision?: number;
   triggerKind?: CreateInvestigationV2TriggerKind;
+  /** @maxLength 500 */
+  focus?: string;
+  tightening?: InvestigationTighteningV1;
 }

@@ -84,6 +84,8 @@ func (h *SP05Handlers) incidentPage(ctx context.Context, actor auth.RequestConte
 		sql = `SELECT timeline_id::text,jsonb_build_object('timelineId',timeline_id,'kind',kind,'actor',actor,'policyVersion',policy_version,'reason',reason,'payload',payload,'createdAt',created_at) FROM incident.timeline WHERE tenant_id=$1 AND incident_id=$2 AND ($3='' OR timeline_id::text>$3) AND ($5='' OR kind=$5) AND ($6::timestamptz IS NULL OR created_at>=$6) AND ($7::timestamptz IS NULL OR created_at<=$7) ORDER BY timeline_id LIMIT $4`
 	case "evidence":
 		sql = `SELECT DISTINCT e.evidence_id::text,e.metadata FROM incident.finding_links l JOIN finding.evidence_refs r USING(tenant_id,finding_id) JOIN platform.evidence_metadata e USING(tenant_id,evidence_id) WHERE l.tenant_id=$1 AND l.incident_id=$2 AND NOT e.deleting AND ($3='' OR e.evidence_id::text>$3) ORDER BY e.evidence_id::text LIMIT $4`
+	case "follow-ups":
+		sql = `SELECT followup_id::text,jsonb_build_object('followUpId',followup_id,'incidentId',incident_id,'title',title,'detail',detail,'state',state,'creatorSubject',creator_subject,'ownerSubject',COALESCE(owner_subject,''),'createdAt',created_at,'completedAt',completed_at,'completerSubject',completer_subject,'resolutionNote',resolution_note) FROM incident.followups WHERE tenant_id=$1 AND incident_id=$2 AND ($3='' OR followup_id::text>$3) AND ($5='' OR state=$5) ORDER BY followup_id LIMIT $4`
 	case "rca/revisions":
 		if after != "" {
 			n, err := strconv.ParseInt(after, 10, 64)
@@ -118,6 +120,13 @@ func (h *SP05Handlers) incidentPage(ctx context.Context, actor auth.RequestConte
 				return finding.ErrInvalid
 			}
 			args = append(args, r.URL.Query().Get("eventType"), from, to)
+		}
+		if kind == "follow-ups" {
+			state := r.URL.Query().Get("state")
+			if state != "" && state != "open" && state != "done" && state != "cancelled" {
+				return finding.ErrInvalid
+			}
+			args = append(args, state)
 		}
 		rows, err := tx.Query(ctx, sql, args...)
 		if err != nil {

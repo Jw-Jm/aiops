@@ -1,6 +1,8 @@
 package httpapi
 
 import (
+	"crypto/ed25519"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"github.com/google/uuid"
@@ -19,6 +21,19 @@ import (
 type ActionHandlers struct {
 	Service           action.Service
 	ConfigurationOnly bool
+	CursorKey         ed25519.PrivateKey
+}
+
+var executionListStates = map[string]bool{
+	"prepared": true, "dispatching": true, "running": true,
+	"succeeded": true, "failed": true, "cancelled": true, "execution_unknown": true,
+}
+
+type executionListCursor struct {
+	Tenant  uuid.UUID `json:"tenant"`
+	Subject string    `json:"subject"`
+	Before  uuid.UUID `json:"before"`
+	Expires int64     `json:"expires"`
 }
 
 func decodeAction(r *http.Request, v any) error {
@@ -159,6 +174,64 @@ func (h *ActionHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, 200, map[string]any{"data": out, "requestId": a.RequestID})
 		return
 	case "/api/v1/command-executions":
+		if r.Method == "GET" {
+			limit := 20
+			for k, v := range r.URL.Query() {
+				if (k != "cursor" && k != "limit" && k != "state") || len(v) != 1 {
+					fail(action.ErrInvalid)
+					return
+				}
+			}
+			var err error
+			if v := r.URL.Query().Get("limit"); v != "" {
+				limit, err = strconv.Atoi(v)
+			}
+			state := r.URL.Query().Get("state")
+			if err != nil || limit < 1 || limit > 50 || (state != "" && !executionListStates[state]) {
+				fail(action.ErrInvalid)
+				return
+			}
+			var before *uuid.UUID
+			if token := r.URL.Query().Get("cursor"); token != "" {
+				parts := strings.Split(token, ".")
+				var c executionListCursor
+				valid := len(parts) == 2 && len(token) <= 4096 && len(h.CursorKey) == ed25519.PrivateKeySize
+				if valid {
+					b, e := base64.RawURLEncoding.DecodeString(parts[0])
+					sig, se := base64.RawURLEncoding.DecodeString(parts[1])
+					valid = e == nil && se == nil && ed25519.Verify(h.CursorKey.Public().(ed25519.PublicKey), b, sig) && json.Unmarshal(b, &c) == nil && c.Tenant == a.TenantID && c.Subject == a.Subject
+				}
+				if !valid {
+					fail(action.ErrDenied)
+					return
+				}
+				if c.Expires <= time.Now().Unix() {
+					fail(action.ErrCursorExpired)
+					return
+				}
+				before = &c.Before
+			}
+			page, last, err := h.Service.ListExecutions(r.Context(), a, before, state, limit)
+			if err != nil {
+				fail(err)
+				return
+			}
+			data := []map[string]any{}
+			for _, e := range page {
+				data = append(data, e.Public())
+			}
+			var next any
+			if last != nil {
+				if len(h.CursorKey) != ed25519.PrivateKeySize {
+					fail(action.ErrInvalid)
+					return
+				}
+				b, _ := json.Marshal(executionListCursor{a.TenantID, a.Subject, *last, time.Now().Add(10 * time.Minute).Unix()})
+				next = base64.RawURLEncoding.EncodeToString(b) + "." + base64.RawURLEncoding.EncodeToString(ed25519.Sign(h.CursorKey, b))
+			}
+			writeJSON(w, 200, map[string]any{"data": data, "meta": map[string]any{"nextCursor": next}, "requestId": a.RequestID})
+			return
+		}
 		if r.Method != "POST" {
 			break
 		}

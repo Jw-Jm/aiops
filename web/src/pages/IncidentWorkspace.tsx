@@ -53,6 +53,7 @@ const AuditPage = lazy(() =>
   import("./admin/AuditPage").then((m) => ({ default: m.AuditPage })),
 );
 import { useAuth } from "../auth/AuthProvider";
+import { IncidentCollaboration } from "../features/collab/IncidentCollaboration";
 export function IncidentWorkspace() {
   const { incidentId = "" } = useParams();
   const client = useQueryClient();
@@ -205,6 +206,26 @@ export function IncidentWorkspace() {
               incidentId={incidentId}
               state={text(incident.state)}
               revision={Number(incident.revision)}
+              onChanged={async () => {
+                await Promise.all([
+                  client.invalidateQueries({
+                    queryKey: ["incident", incidentId],
+                  }),
+                  client.invalidateQueries({
+                    queryKey: ["incident-region", incidentId],
+                  }),
+                  client.invalidateQueries({ queryKey: ["incidents"] }),
+                ]);
+              }}
+            />
+            <IncidentCollaboration
+              key={"collab-" + incidentId + "-" + incident.revision}
+              incidentId={incidentId}
+              state={text(incident.state)}
+              revision={Number(incident.revision)}
+              assigneeSubject={text(incident.assigneeSubject)}
+              currentSubject={auth.session?.subject ?? ""}
+              isAdmin={!!auth.session?.roles.includes("platform_admin")}
               onChanged={async () => {
                 await Promise.all([
                   client.invalidateQueries({

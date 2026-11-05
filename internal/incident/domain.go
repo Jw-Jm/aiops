@@ -9,6 +9,7 @@ import (
 
 var ErrRevision = errors.New("REVISION_CONFLICT")
 var ErrTransition = errors.New("INVALID_STATE_TRANSITION")
+var ErrAssigned = errors.New("INCIDENT_ALREADY_ASSIGNED")
 
 const PolicyVersion = "correlation/nonvirtual/v1"
 const CorrelationWindow = 10 * time.Minute
@@ -55,6 +56,28 @@ type Incident struct {
 	LastObservedAt      time.Time  `json:"lastObservedAt"`
 	CreatedAt           time.Time  `json:"createdAt"`
 	UpdatedAt           time.Time  `json:"updatedAt"`
+	// Assignment is collaboration metadata outside the revision CAS: it never
+	// represents an incident fact, so it must not invalidate RCA views or open
+	// investigations. Empty subject means unassigned.
+	AssigneeSubject string     `json:"assigneeSubject"`
+	AssignedAt      *time.Time `json:"assignedAt"`
+}
+
+// FollowUp is a retrospective todo attached to an incident. It never rewrites
+// incident facts and survives resolution for post-mortem work.
+type FollowUp struct {
+	SchemaVersion    string     `json:"schemaVersion"`
+	FollowUpID       string     `json:"followUpId"`
+	IncidentID       string     `json:"incidentId"`
+	Title            string     `json:"title"`
+	Detail           string     `json:"detail"`
+	State            string     `json:"state"`
+	CreatorSubject   string     `json:"creatorSubject"`
+	OwnerSubject     string     `json:"ownerSubject"`
+	CreatedAt        time.Time  `json:"createdAt"`
+	CompletedAt      *time.Time `json:"completedAt"`
+	CompleterSubject string     `json:"completerSubject"`
+	ResolutionNote   string     `json:"resolutionNote"`
 }
 
 // Unknown source clocks stay NULL in storage and cannot become exact duration samples.

@@ -50,4 +50,8 @@ export interface InvestigationJobV2 {
      * @maxLength 128
      */
   errorCode?: string;
+  /** @maxLength 500 */
+  focus: string;
+  /** @pattern ^(sha256:[0-9a-f]{64})?$ */
+  admissionDigest?: string;
 }

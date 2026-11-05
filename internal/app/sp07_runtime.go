@@ -154,7 +154,7 @@ func StartSP07API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Han
 		return nil, err
 	}
 	server := &http.Server{TLSConfig: tlsConfig, Handler: handler, ReadHeaderTimeout: 5 * time.Second, IdleTimeout: time.Minute}
-	sp04.Action = &httpapi.ActionHandlers{Service: s}
+	sp04.Action = &httpapi.ActionHandlers{Service: s, CursorKey: sp04.SigningKey}
 	go func() {
 		if err := server.ServeTLS(listener, "", ""); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			observeStartupFailure(optionalRuntime(runtimes), "action", "sp07 api listener stopped", err)

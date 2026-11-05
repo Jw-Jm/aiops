@@ -79,12 +79,21 @@ import type {
   GetTenantsParams,
   GetToolsParams,
   Identifier,
+  IncidentAlertLinksV2,
+  IncidentClaimV2,
+  IncidentCommentCreateV2,
+  IncidentCommentSuccessV2,
   IncidentEvidencePageV2,
+  IncidentFollowUpCompleteV2,
+  IncidentFollowUpCreateV2,
+  IncidentFollowUpPageV2,
+  IncidentFollowUpSuccessV2,
   IncidentMergeV2,
   IncidentPageV2,
   IncidentSplitV2,
   IncidentSuccessV2,
   IncidentTimelinePageV2,
+  IncidentTransferV2,
   IncidentTransitionRequest,
   IncidentTransitionV2,
   InvestigationCancelSuccessV2,
@@ -97,6 +106,8 @@ import type {
   LegalHoldResultV1,
   ListAssistantConversationsParams,
   ListAssistantMessagesParams,
+  ListCommandExecutionsParams,
+  ListIncidentFollowUpsParams,
   ListObservationQueriesParams,
   NativeAccountSuccessV1,
   NativeAdminMFAResetRequestV1,
@@ -152,6 +163,7 @@ import type {
   RegistryDraftUpdateRequest,
   RegistryPublishRequest,
   RegistryVersionRetireRequest,
+  ReopenIncidentFollowUpBody,
   ResourceGraphSuccessV2,
   ResourcePageV2,
   SP04ErrorEnvelopeV2,
@@ -4921,6 +4933,68 @@ export const getCapabilities = async (params?: GetCapabilitiesParams, options?: 
 
 
 
+export type listCommandExecutionsResponse200 = {
+  data: PageEnvelope
+  status: 200
+}
+
+export type listCommandExecutionsResponse410 = {
+  data: ErrorEnvelope
+  status: 410
+}
+
+export type listCommandExecutionsResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200 | 410>
+}
+
+export type listCommandExecutionsResponseSuccess = (listCommandExecutionsResponse200) & {
+  headers: Headers;
+};
+export type listCommandExecutionsResponseError = (listCommandExecutionsResponse410 | listCommandExecutionsResponseDefault) & {
+  headers: Headers;
+};
+
+export type listCommandExecutionsResponse = (listCommandExecutionsResponseSuccess | listCommandExecutionsResponseError)
+
+export const getListCommandExecutionsUrl = (params?: ListCommandExecutionsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/command-executions?${stringifiedParams}` : `/api/v1/command-executions`
+}
+
+/**
+ * @summary listCommandExecutions
+ */
+export const listCommandExecutions = async (params?: ListCommandExecutionsParams, options?: RequestInit): Promise<listCommandExecutionsResponse> => {
+
+  const res = await fetch(getListCommandExecutionsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: listCommandExecutionsResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as listCommandExecutionsResponse
+}
+
+
+
 export type createCommandExecutionResponse202 = {
   data: SuccessEnvelope
   status: 202
@@ -6444,6 +6518,531 @@ const res = await fetch(getMergeIncidentsUrl(),
 
   const data: mergeIncidentsResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as mergeIncidentsResponse
+}
+
+
+
+export type claimIncidentResponse200 = {
+  data: IncidentSuccessV2
+  status: 200
+}
+
+export type claimIncidentResponseDefault = {
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type claimIncidentResponseSuccess = (claimIncidentResponse200) & {
+  headers: Headers;
+};
+export type claimIncidentResponseError = (claimIncidentResponseDefault) & {
+  headers: Headers;
+};
+
+export type claimIncidentResponse = (claimIncidentResponseSuccess | claimIncidentResponseError)
+
+export const getClaimIncidentUrl = (incidentId: string,) => {
+
+
+
+
+  return `/api/v1/incidents/${incidentId}:claim`
+}
+
+/**
+ * Assign the incident to the caller. Assignment is collaboration metadata; the incident state and revision stay unchanged and the current RCA view stays valid.
+ * @summary claimIncident
+ */
+export const claimIncident = async (incidentId: string,
+    incidentClaimV2: IncidentClaimV2, options?: RequestInit): Promise<claimIncidentResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getClaimIncidentUrl(incidentId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(incidentClaimV2)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: claimIncidentResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as claimIncidentResponse
+}
+
+
+
+export type transferIncidentResponse200 = {
+  data: IncidentSuccessV2
+  status: 200
+}
+
+export type transferIncidentResponseDefault = {
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type transferIncidentResponseSuccess = (transferIncidentResponse200) & {
+  headers: Headers;
+};
+export type transferIncidentResponseError = (transferIncidentResponseDefault) & {
+  headers: Headers;
+};
+
+export type transferIncidentResponse = (transferIncidentResponseSuccess | transferIncidentResponseError)
+
+export const getTransferIncidentUrl = (incidentId: string,) => {
+
+
+
+
+  return `/api/v1/incidents/${incidentId}:transfer`
+}
+
+/**
+ * Hand the incident to another eligible operator. A transfer never changes state or recovery facts.
+ * @summary transferIncident
+ */
+export const transferIncident = async (incidentId: string,
+    incidentTransferV2: IncidentTransferV2, options?: RequestInit): Promise<transferIncidentResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getTransferIncidentUrl(incidentId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(incidentTransferV2)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: transferIncidentResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as transferIncidentResponse
+}
+
+
+
+export type createIncidentCommentResponse200 = {
+  data: IncidentCommentSuccessV2
+  status: 200
+}
+
+export type createIncidentCommentResponseDefault = {
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type createIncidentCommentResponseSuccess = (createIncidentCommentResponse200) & {
+  headers: Headers;
+};
+export type createIncidentCommentResponseError = (createIncidentCommentResponseDefault) & {
+  headers: Headers;
+};
+
+export type createIncidentCommentResponse = (createIncidentCommentResponseSuccess | createIncidentCommentResponseError)
+
+export const getCreateIncidentCommentUrl = (incidentId: string,) => {
+
+
+
+
+  return `/api/v1/incidents/${incidentId}/comments`
+}
+
+/**
+ * Append one operator remark to the incident timeline. Comments are allowed in any state and never rewrite incident facts.
+ * @summary createIncidentComment
+ */
+export const createIncidentComment = async (incidentId: string,
+    incidentCommentCreateV2: IncidentCommentCreateV2, options?: RequestInit): Promise<createIncidentCommentResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getCreateIncidentCommentUrl(incidentId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(incidentCommentCreateV2)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: createIncidentCommentResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as createIncidentCommentResponse
+}
+
+
+
+export type listIncidentFollowUpsResponse200 = {
+  data: IncidentFollowUpPageV2
+  status: 200
+}
+
+export type listIncidentFollowUpsResponseDefault = {
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type listIncidentFollowUpsResponseSuccess = (listIncidentFollowUpsResponse200) & {
+  headers: Headers;
+};
+export type listIncidentFollowUpsResponseError = (listIncidentFollowUpsResponseDefault) & {
+  headers: Headers;
+};
+
+export type listIncidentFollowUpsResponse = (listIncidentFollowUpsResponseSuccess | listIncidentFollowUpsResponseError)
+
+export const getListIncidentFollowUpsUrl = (incidentId: string,
+    params?: ListIncidentFollowUpsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/incidents/${incidentId}/follow-ups?${stringifiedParams}` : `/api/v1/incidents/${incidentId}/follow-ups`
+}
+
+/**
+ * @summary listIncidentFollowUps
+ */
+export const listIncidentFollowUps = async (incidentId: string,
+    params?: ListIncidentFollowUpsParams, options?: RequestInit): Promise<listIncidentFollowUpsResponse> => {
+
+  const res = await fetch(getListIncidentFollowUpsUrl(incidentId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: listIncidentFollowUpsResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as listIncidentFollowUpsResponse
+}
+
+
+
+export type createIncidentFollowUpResponse200 = {
+  data: IncidentFollowUpSuccessV2
+  status: 200
+}
+
+export type createIncidentFollowUpResponseDefault = {
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type createIncidentFollowUpResponseSuccess = (createIncidentFollowUpResponse200) & {
+  headers: Headers;
+};
+export type createIncidentFollowUpResponseError = (createIncidentFollowUpResponseDefault) & {
+  headers: Headers;
+};
+
+export type createIncidentFollowUpResponse = (createIncidentFollowUpResponseSuccess | createIncidentFollowUpResponseError)
+
+export const getCreateIncidentFollowUpUrl = (incidentId: string,) => {
+
+
+
+
+  return `/api/v1/incidents/${incidentId}/follow-ups`
+}
+
+/**
+ * Record a retrospective follow-up todo. Follow-ups survive resolution and never modify incident facts.
+ * @summary createIncidentFollowUp
+ */
+export const createIncidentFollowUp = async (incidentId: string,
+    incidentFollowUpCreateV2: IncidentFollowUpCreateV2, options?: RequestInit): Promise<createIncidentFollowUpResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getCreateIncidentFollowUpUrl(incidentId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(incidentFollowUpCreateV2)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: createIncidentFollowUpResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as createIncidentFollowUpResponse
+}
+
+
+
+export type reopenIncidentFollowUpResponse200 = {
+  data: IncidentFollowUpSuccessV2
+  status: 200
+}
+
+export type reopenIncidentFollowUpResponseDefault = {
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type reopenIncidentFollowUpResponseSuccess = (reopenIncidentFollowUpResponse200) & {
+  headers: Headers;
+};
+export type reopenIncidentFollowUpResponseError = (reopenIncidentFollowUpResponseDefault) & {
+  headers: Headers;
+};
+
+export type reopenIncidentFollowUpResponse = (reopenIncidentFollowUpResponseSuccess | reopenIncidentFollowUpResponseError)
+
+export const getReopenIncidentFollowUpUrl = (incidentId: string,
+    followUpId: string,) => {
+
+
+
+
+  return `/api/v1/incidents/${incidentId}/follow-ups/${followUpId}:reopen`
+}
+
+/**
+ * Return a completed or cancelled follow-up to the open state. The creator, the responsible owner, the current assignee and platform administrators may reopen it.
+ * @summary reopenIncidentFollowUp
+ */
+export const reopenIncidentFollowUp = async (incidentId: string,
+    followUpId: string,
+    reopenIncidentFollowUpBody: ReopenIncidentFollowUpBody, options?: RequestInit): Promise<reopenIncidentFollowUpResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getReopenIncidentFollowUpUrl(incidentId,followUpId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(reopenIncidentFollowUpBody)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: reopenIncidentFollowUpResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as reopenIncidentFollowUpResponse
+}
+
+
+
+export type completeIncidentFollowUpResponse200 = {
+  data: IncidentFollowUpSuccessV2
+  status: 200
+}
+
+export type completeIncidentFollowUpResponseDefault = {
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type completeIncidentFollowUpResponseSuccess = (completeIncidentFollowUpResponse200) & {
+  headers: Headers;
+};
+export type completeIncidentFollowUpResponseError = (completeIncidentFollowUpResponseDefault) & {
+  headers: Headers;
+};
+
+export type completeIncidentFollowUpResponse = (completeIncidentFollowUpResponseSuccess | completeIncidentFollowUpResponseError)
+
+export const getCompleteIncidentFollowUpUrl = (incidentId: string,
+    followUpId: string,) => {
+
+
+
+
+  return `/api/v1/incidents/${incidentId}/follow-ups/${followUpId}:complete`
+}
+
+/**
+ * Close an open follow-up with a resolution note. The creator, the current assignee and platform administrators may complete it.
+ * @summary completeIncidentFollowUp
+ */
+export const completeIncidentFollowUp = async (incidentId: string,
+    followUpId: string,
+    incidentFollowUpCompleteV2: IncidentFollowUpCompleteV2, options?: RequestInit): Promise<completeIncidentFollowUpResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getCompleteIncidentFollowUpUrl(incidentId,followUpId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(incidentFollowUpCompleteV2)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: completeIncidentFollowUpResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as completeIncidentFollowUpResponse
+}
+
+
+
+export type linkIncidentAlertsResponse200 = {
+  data: IncidentSuccessV2
+  status: 200
+}
+
+export type linkIncidentAlertsResponseDefault = {
+  data: ErrorEnvelope | SP04ErrorEnvelopeV2
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type linkIncidentAlertsResponseSuccess = (linkIncidentAlertsResponse200) & {
+  headers: Headers;
+};
+export type linkIncidentAlertsResponseError = (linkIncidentAlertsResponseDefault) & {
+  headers: Headers;
+};
+
+export type linkIncidentAlertsResponse = (linkIncidentAlertsResponseSuccess | linkIncidentAlertsResponseError)
+
+export const getLinkIncidentAlertsUrl = (incidentId: string,) => {
+
+
+
+
+  return `/api/v1/incidents/${incidentId}/alert-links`
+}
+
+/**
+ * Manually link or unlink findings on one incident. Manual alert links change the evidence set, so they take the incident revision CAS path and recompute the recovery clock. A finding linked to another incident must be unlinked there first.
+ * @summary linkIncidentAlerts
+ */
+export const linkIncidentAlerts = async (incidentId: string,
+    incidentAlertLinksV2: IncidentAlertLinksV2, options?: RequestInit): Promise<linkIncidentAlertsResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getLinkIncidentAlertsUrl(incidentId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(incidentAlertLinksV2)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: linkIncidentAlertsResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as linkIncidentAlertsResponse
 }
 
 

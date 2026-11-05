@@ -16,6 +16,7 @@ import (
 	"ops-platform/internal/investigation"
 	"ops-platform/internal/policy"
 	"os"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -204,4 +205,45 @@ func sp06JobFixture(t *testing.T) (context.Context, *sql.DB, investigation.Repos
 	repo := investigation.Repository{Pool: pool}
 	req := investigation.CreateInvestigationRequest{TenantID: b.TenantID, IncidentID: incidentID, Subject: "sp06-operator", TriggerRevision: revision, TriggerKind: "manual", PolicyVersion: sp06Policy(t, ctx, db, pool, b.TenantID), Scope: scope, ToolCatalogDigest: "catalog/v1", Budget: investigation.DefaultBudget()}
 	return ctx, db, repo, req
+}
+
+// P4-05: the admission digest makes the tightening and focus part of the job
+// identity — the same revision re-admitted with a different tightening or focus
+// is a new job, while an identical admission still deduplicates.
+func TestSP06AdmissionDigestSeparatesTightenedJobs(t *testing.T) {
+	ctx, _, repo, req := sp06JobFixture(t)
+	base, err := repo.CreateJob(ctx, req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if base.AdmissionDigest == "" || base.Focus != "" {
+		t.Fatalf("admission digest or focus not projected: %+v", base)
+	}
+	duplicate, err := repo.CreateJob(ctx, req)
+	if err != nil || duplicate.JobID != base.JobID {
+		t.Fatalf("identical admission did not deduplicate: %v %v %v", err, duplicate.JobID, base.JobID)
+	}
+	tightened := req
+	tightened.Budget.DurationSeconds = req.Budget.DurationSeconds / 2
+	tight, err := repo.CreateJob(ctx, tightened)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if tight.JobID == base.JobID || tight.AdmissionDigest == base.AdmissionDigest || tight.Budget.DurationSeconds != req.Budget.DurationSeconds/2 {
+		t.Fatalf("tightened admission did not create a new job: %v %v", tight.JobID, base.JobID)
+	}
+	focused := req
+	focused.Focus = "内存通道与节点运行环境"
+	focus, err := repo.CreateJob(ctx, focused)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if focus.JobID == base.JobID || focus.AdmissionDigest == base.AdmissionDigest || focus.Focus != focused.Focus {
+		t.Fatalf("focus did not create a new job: %v %v", focus.JobID, base.JobID)
+	}
+	oversized := req
+	oversized.Focus = strings.Repeat("x", 501)
+	if _, err = repo.CreateJob(ctx, oversized); !errors.Is(err, investigation.ErrInvalid) {
+		t.Fatalf("oversized focus accepted: %v", err)
+	}
 }

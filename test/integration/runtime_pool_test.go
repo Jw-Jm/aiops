@@ -12,6 +12,12 @@ import (
 
 func TestRuntimeDatabaseLoginCannotRegainOwnerOrOtherProcess(t *testing.T) {
 	ctx, db, dir, dsn := newMigrationDatabase(t)
+	if err := goose.UpToContext(ctx, db, dir, 1); err != nil {
+		t.Fatal(err)
+	}
+	if err := grantSchemaOwnerDatabaseCreate(ctx, db); err != nil {
+		t.Fatal(err)
+	}
 	if err := goose.UpContext(ctx, db, dir); err != nil {
 		t.Fatal(err)
 	}

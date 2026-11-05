@@ -9,6 +9,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"ops-platform/internal/auth"
 	"ops-platform/internal/authz"
+	"ops-platform/internal/graph"
 	"ops-platform/internal/persistence"
 	"slices"
 	"time"
@@ -101,17 +102,22 @@ func (s Service) RetireProfile(ctx context.Context, a auth.RequestContext, id uu
 		return complete(ctx, tx, d, map[string]any{"status": "retired"}, 200)
 	})
 }
-func executionTx(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID) (Execution, error) {
+const executionColumns = `execution_id,binding,authority,request_digest,state,suggestion_match,comparator_version,exit_code,output_bytes,output_truncated,post_check,created_at,risk_acknowledgement_id,policy_decision_id,claimed_at,completed_at,output_archive_ref,output_digest,output_previews,post_checked_at,COALESCE((SELECT (content->>'iteration')::int FROM action.plans WHERE tenant_id=$1 AND action_plan_id=(action.executions.binding->>'actionPlanId')::uuid),1),(SELECT content->>'suggestedCommand' FROM action.plans WHERE tenant_id=$1 AND action_plan_id=(action.executions.binding->>'actionPlanId')::uuid),step_up_session_id,step_up_proof_id,step_up_operation,step_up_binding_digest,step_up_expires_at`
+
+type executionScanner interface {
+	Scan(dest ...any) error
+}
+
+func scanExecution(s executionScanner) (Execution, error) {
 	var e Execution
 	var b []byte
 	var authorityRaw []byte
 	var suggested *string
-	e.ID = id
 	var stepSession, stepProof *uuid.UUID
 	var stepOperation *string
 	var stepDigest []byte
 	var stepExpires *time.Time
-	err := tx.QueryRow(ctx, `SELECT binding,authority,request_digest,state,suggestion_match,comparator_version,exit_code,output_bytes,output_truncated,post_check,created_at,risk_acknowledgement_id,policy_decision_id,claimed_at,completed_at,output_archive_ref,output_digest,output_previews,post_checked_at,COALESCE((SELECT (content->>'iteration')::int FROM action.plans WHERE tenant_id=$1 AND action_plan_id=(action.executions.binding->>'actionPlanId')::uuid),1),(SELECT content->>'suggestedCommand' FROM action.plans WHERE tenant_id=$1 AND action_plan_id=(action.executions.binding->>'actionPlanId')::uuid),step_up_session_id,step_up_proof_id,step_up_operation,step_up_binding_digest,step_up_expires_at FROM action.executions WHERE tenant_id=$1 AND execution_id=$2 FOR UPDATE`, tenant, id).Scan(&b, &authorityRaw, &e.RequestDigest, &e.State, &e.SuggestionMatch, &e.ComparatorVersion, &e.ExitCode, &e.OutputBytes, &e.Truncated, &e.PostCheck, &e.CreatedAt, &e.AckID, &e.PolicyID, &e.StartedAt, &e.CompletedAt, &e.ArchiveRef, &e.OutputDigest, &e.OutputPreviews, &e.PostCheckedAt, &e.Iteration, &suggested, &stepSession, &stepProof, &stepOperation, &stepDigest, &stepExpires)
+	err := s.Scan(&e.ID, &b, &authorityRaw, &e.RequestDigest, &e.State, &e.SuggestionMatch, &e.ComparatorVersion, &e.ExitCode, &e.OutputBytes, &e.Truncated, &e.PostCheck, &e.CreatedAt, &e.AckID, &e.PolicyID, &e.StartedAt, &e.CompletedAt, &e.ArchiveRef, &e.OutputDigest, &e.OutputPreviews, &e.PostCheckedAt, &e.Iteration, &suggested, &stepSession, &stepProof, &stepOperation, &stepDigest, &stepExpires)
 	if err != nil {
 		return e, err
 	}
@@ -126,6 +132,85 @@ func executionTx(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID) (Executio
 		e.SuggestedDigest = &d
 	}
 	return e, nil
+}
+
+func executionTx(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID) (Execution, error) {
+	e, err := scanExecution(tx.QueryRow(ctx, `SELECT `+executionColumns+` FROM action.executions WHERE tenant_id=$1 AND execution_id=$2 FOR UPDATE`, tenant, id))
+	if err != nil {
+		return e, err
+	}
+	if e.ID != id {
+		return Execution{}, ErrInvalid
+	}
+	return e, nil
+}
+
+// ListExecutions returns one tenant-wide page newest first. Rows the caller's
+// effective scope cannot read are skipped, never leaked; the keyset cursor is
+// the last returned execution id, so hidden rows are re-scanned on later pages.
+func (s Service) ListExecutions(ctx context.Context, a auth.RequestContext, before *uuid.UUID, state string, limit int) ([]Execution, *uuid.UUID, error) {
+	out := []Execution{}
+	var next *uuid.UUID
+	err := s.with(ctx, a, func(tx pgx.Tx) error {
+		scopes := map[string]graph.Scope{}
+		cursor := before
+		for len(out) < limit {
+			rows, err := tx.Query(ctx, `SELECT `+executionColumns+` FROM action.executions WHERE tenant_id=$1 AND ($2::uuid IS NULL OR execution_id<$2) AND ($3='' OR state=$3) ORDER BY execution_id DESC LIMIT 100`, a.TenantID, cursor, state)
+			if err != nil {
+				return err
+			}
+			// Buffer the batch before filtering: authorization re-proof queries
+			// the same transaction and cannot overlap an open result set.
+			batch := []Execution{}
+			for rows.Next() {
+				var e Execution
+				if e, err = scanExecution(rows); err != nil {
+					rows.Close()
+					return err
+				}
+				batch = append(batch, e)
+			}
+			rows.Close()
+			if err = rows.Err(); err != nil {
+				return err
+			}
+			if len(batch) == 0 {
+				return nil
+			}
+			scannedAll := true
+			for i, e := range batch {
+				ok, rerr := readable(ctx, tx, a, e.Binding, scopes)
+				if rerr != nil {
+					return rerr
+				}
+				if !ok {
+					continue
+				}
+				out = append(out, e)
+				if len(out) == limit {
+					scannedAll = i == len(batch)-1
+					break
+				}
+			}
+			if len(out) == limit {
+				// A page that ends exactly on the last stored row has no
+				// successor; anything else may continue from the last row.
+				if scannedAll && len(batch) < 100 {
+					return nil
+				}
+				last := out[len(out)-1].ID
+				next = &last
+				return nil
+			}
+			if len(batch) < 100 {
+				return nil
+			}
+			last := batch[len(batch)-1].ID
+			cursor = &last
+		}
+		return nil
+	})
+	return out, next, err
 }
 func (s Service) Get(ctx context.Context, a auth.RequestContext, id uuid.UUID) (Execution, error) {
 	var e Execution

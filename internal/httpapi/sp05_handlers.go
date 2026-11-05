@@ -50,6 +50,8 @@ func (h *SP05Handlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			code, status = "IDEMPOTENCY_CONFLICT", 409
 		case errors.Is(err, incident.ErrRevision), errors.Is(err, rca.ErrStale):
 			code, status = "STALE_CONTEXT", 409
+		case errors.Is(err, incident.ErrAssigned):
+			code, status = "ASSIGNMENT_CONFLICT", 409
 		case errors.Is(err, incident.ErrTransition), errors.Is(err, finding.ErrInvalid):
 			code, status = "INVALID_ARGUMENT", 400
 		}
@@ -132,7 +134,11 @@ func (h *SP05Handlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Mutation replay must still execute current authorization. The service CAS
 	// and timeline are business semantics; the common ledger stores transport replay.
 	path := strings.Split(strings.TrimPrefix(r.URL.Path, "/api/v1/incidents/"), "/")
-	if len(path) != 2 || path[0] == "" || r.Method != "POST" {
+	if path[0] == "" || r.Method != "POST" || len(path) < 2 || len(path) > 3 {
+		fail(pgx.ErrNoRows)
+		return
+	}
+	if len(path) == 3 && !(path[1] == "follow-ups" && (strings.HasSuffix(path[2], ":complete") || strings.HasSuffix(path[2], ":reopen"))) {
 		fail(pgx.ErrNoRows)
 		return
 	}
@@ -156,16 +162,19 @@ func (h *SP05Handlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		mutationPool = tx
 	}
 	service := incident.Service{Pool: mutationPool}
+	adminOverride := auth.HasRole(r.Context(), auth.PlatformAdmin)
 	var out incident.Incident
-	switch path[1] {
-	case "transition":
+	var comment map[string]any
+	var followUp incident.FollowUp
+	switch {
+	case len(path) == 2 && path[1] == "transition":
 		var c incident.Change
 		if decodeSP05(r, &c) != nil {
 			fail(finding.ErrInvalid)
 			return
 		}
 		out, err = service.Change(r.Context(), scope, request.Subject, i.IncidentID, c)
-	case "merge":
+	case len(path) == 2 && path[1] == "merge":
 		var c struct {
 			SourceID         string `json:"sourceIncidentId"`
 			TargetID         string `json:"targetIncidentId"`
@@ -178,7 +187,7 @@ func (h *SP05Handlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		out, err = service.Merge(r.Context(), scope, request.Subject, c.TargetID, i.IncidentID, c.Reason, c.TargetRevision, c.ExpectedRevision)
-	case "split":
+	case len(path) == 2 && path[1] == "split":
 		var c struct {
 			ExpectedRevision int64    `json:"expectedRevision"`
 			FindingIDs       []string `json:"findingIds"`
@@ -189,11 +198,91 @@ func (h *SP05Handlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		out, err = service.Split(r.Context(), scope, request.Subject, i.IncidentID, c.Reason, c.ExpectedRevision, c.FindingIDs)
+	case len(path) == 2 && path[1] == "claim":
+		var c struct {
+			ExpectedRevision int64  `json:"expectedRevision"`
+			Note              string `json:"note"`
+		}
+		if decodeSP05(r, &c) != nil {
+			fail(finding.ErrInvalid)
+			return
+		}
+		out, err = service.Claim(r.Context(), scope, request.Subject, i.IncidentID, c.ExpectedRevision, c.Note)
+	case len(path) == 2 && path[1] == "transfer":
+		var c struct {
+			ExpectedRevision int64  `json:"expectedRevision"`
+			ToSubject        string `json:"toSubject"`
+			Reason           string `json:"reason"`
+		}
+		if decodeSP05(r, &c) != nil {
+			fail(finding.ErrInvalid)
+			return
+		}
+		out, err = service.Transfer(r.Context(), scope, request.Subject, i.IncidentID, c.ToSubject, c.Reason, c.ExpectedRevision, adminOverride)
+	case len(path) == 2 && path[1] == "comments":
+		var c struct {
+			Body   string `json:"body"`
+			Impact string `json:"impact"`
+		}
+		if decodeSP05(r, &c) != nil {
+			fail(finding.ErrInvalid)
+			return
+		}
+		comment, err = service.Comment(r.Context(), scope, request.Subject, i.IncidentID, c.Body, c.Impact)
+	case len(path) == 2 && path[1] == "follow-ups":
+		var c struct {
+			Title        string `json:"title"`
+			Detail       string `json:"detail"`
+			OwnerSubject string `json:"ownerSubject"`
+		}
+		if decodeSP05(r, &c) != nil {
+			fail(finding.ErrInvalid)
+			return
+		}
+		followUp, err = service.CreateFollowUp(r.Context(), scope, request.Subject, i.IncidentID, c.Title, c.Detail, c.OwnerSubject)
+	case len(path) == 3 && path[1] == "follow-ups" && strings.HasSuffix(path[2], ":complete"):
+		var c struct {
+			Note string `json:"note"`
+		}
+		if decodeSP05(r, &c) != nil {
+			fail(finding.ErrInvalid)
+			return
+		}
+		followUp, err = service.CompleteFollowUp(r.Context(), scope, request.Subject, i.IncidentID, strings.TrimSuffix(path[2], ":complete"), c.Note, adminOverride)
+	case len(path) == 3 && path[1] == "follow-ups" && strings.HasSuffix(path[2], ":reopen"):
+		var c struct {
+			Note string `json:"note"`
+		}
+		if decodeSP05(r, &c) != nil {
+			fail(finding.ErrInvalid)
+			return
+		}
+		followUp, err = service.ReopenFollowUp(r.Context(), scope, request.Subject, i.IncidentID, strings.TrimSuffix(path[2], ":reopen"), adminOverride)
+	case len(path) == 2 && path[1] == "alert-links":
+		var c struct {
+			ExpectedRevision int64    `json:"expectedRevision"`
+			FindingIDs       []string `json:"findingIds"`
+			Action           string   `json:"action"`
+			Reason           string   `json:"reason"`
+		}
+		if decodeSP05(r, &c) != nil {
+			fail(finding.ErrInvalid)
+			return
+		}
+		out, err = service.AlertLinks(r.Context(), scope, request.Subject, i.IncidentID, c.Action, c.FindingIDs, c.Reason, c.ExpectedRevision)
 	default:
 		err = pgx.ErrNoRows
 	}
 	if err != nil {
 		fail(err)
+		return
+	}
+	if comment != nil {
+		writeJSON(w, 200, map[string]any{"data": comment, "requestId": request.RequestID})
+		return
+	}
+	if followUp.FollowUpID != "" {
+		writeJSON(w, 200, map[string]any{"data": followUp, "requestId": request.RequestID})
 		return
 	}
 	writeJSON(w, 200, map[string]any{"data": out, "requestId": request.RequestID})
@@ -279,7 +368,7 @@ func (h *SP05Handlers) read(ctx context.Context, actor auth.RequestContext, r *h
 		if len(path) == 2 {
 			return incidentItem, "", nil
 		}
-		if len(path) == 3 && (path[2] == "timeline" || path[2] == "evidence") {
+		if len(path) == 3 && (path[2] == "timeline" || path[2] == "evidence" || path[2] == "follow-ups") {
 			return h.incidentPage(ctx, actor, scope, incidentItem, r, path[2], limit)
 		}
 		if len(path) == 4 && path[2] == "rca" && path[3] == "revisions" {

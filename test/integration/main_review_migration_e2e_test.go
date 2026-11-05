@@ -29,8 +29,13 @@ func TestMainReviewMigration63To69(t *testing.T) {
 	if err := runRemainingMigrationsAsMigrationRole(t, ctx, db, dsn, dir); err != nil {
 		t.Fatal(err)
 	}
-	var latest, count int
-	if err := db.QueryRowContext(ctx, `SELECT max(version_id),count(*) FROM goose_db_version WHERE is_applied AND version_id>0`).Scan(&latest, &count); err != nil || latest != 69 || count != 69 {
-		t.Fatalf("forward result %d/%d: %v", latest, count, err)
+	migrations, err := goose.CollectMigrations(dir, 0, goose.MaxVersion)
+	if err != nil || len(migrations) == 0 {
+		t.Fatalf("collect delivered migrations: %v", err)
+	}
+	want := migrations[len(migrations)-1].Version
+	var latest, count int64
+	if err := db.QueryRowContext(ctx, `SELECT max(version_id),count(*) FROM goose_db_version WHERE is_applied AND version_id>0`).Scan(&latest, &count); err != nil || latest != want || count != want {
+		t.Fatalf("forward result %d/%d, want %d: %v", latest, count, want, err)
 	}
 }

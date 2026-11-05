@@ -168,13 +168,13 @@ func Consume(ctx context.Context, tx pgx.Tx, d finding.Delivery) error {
 	return err
 }
 
-const selectIncident = `SELECT tenant_id,incident_id,state,revision,COALESCE(fingerprint,''),COALESCE(policy_version,''),COALESCE(cluster_uid,''),COALESCE(resource_canonical_id,''),namespace,resolved_at,recovery_known_at,current_rca_revision,suppressed_until,created_at,updated_at,COALESCE(started_at,created_at),COALESCE(last_observed_at,updated_at) FROM incident.records`
+const selectIncident = `SELECT tenant_id,incident_id,state,revision,COALESCE(fingerprint,''),COALESCE(policy_version,''),COALESCE(cluster_uid,''),COALESCE(resource_canonical_id,''),namespace,resolved_at,recovery_known_at,current_rca_revision,suppressed_until,created_at,updated_at,COALESCE(started_at,created_at),COALESCE(last_observed_at,updated_at),COALESCE(assignee_subject,''),assigned_at FROM incident.records`
 
 type scanner interface{ Scan(...any) error }
 
 func scanIncident(row scanner) (Incident, error) {
 	var i Incident
-	err := row.Scan(&i.TenantID, &i.IncidentID, &i.State, &i.Revision, &i.Fingerprint, &i.PolicyVersion, &i.ClusterUID, &i.ResourceCanonicalID, &i.Namespace, &i.ResolvedAt, &i.RecoveryKnownAt, &i.CurrentRCARevision, &i.SuppressedUntil, &i.CreatedAt, &i.UpdatedAt, &i.StartedAt, &i.LastObservedAt)
+	err := row.Scan(&i.TenantID, &i.IncidentID, &i.State, &i.Revision, &i.Fingerprint, &i.PolicyVersion, &i.ClusterUID, &i.ResourceCanonicalID, &i.Namespace, &i.ResolvedAt, &i.RecoveryKnownAt, &i.CurrentRCARevision, &i.SuppressedUntil, &i.CreatedAt, &i.UpdatedAt, &i.StartedAt, &i.LastObservedAt, &i.AssigneeSubject, &i.AssignedAt)
 	i.SchemaVersion = "incident/v2"
 	return i, err
 }

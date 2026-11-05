@@ -11,6 +11,10 @@ const timelineLabels: Record<string, string> = {
   suppression_expired: "故障抑制期限结束",
   merge: "故障记录合并",
   split: "故障记录拆分",
+  assignment: "认领与转交",
+  comment: "协作评论",
+  followup: "复盘待办",
+  alert_link: "告警关联调整",
 };
 export function IncidentRecord({
   value,

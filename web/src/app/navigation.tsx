@@ -73,8 +73,8 @@ export const NAV: NavGroup[] = [
         children: [
           { path: "/observe/metrics", name: "指标查询", available: true },
           { path: "/observe/logs", name: "日志查询", available: true },
-          { path: "/observe/network", name: "网络观测", available: false },
-          { path: "/observe/hardware", name: "硬件健康", available: false },
+          { path: "/observe/network", name: "网络观测", available: true },
+          { path: "/observe/hardware", name: "硬件健康", available: true },
         ],
       },
       {
@@ -89,7 +89,7 @@ export const NAV: NavGroup[] = [
         name: "运维作业",
         icon: <PlayCircleOutlined />,
         children: [
-          { path: "/jobs/commands", name: "命令执行", available: false },
+          { path: "/jobs/commands", name: "命令执行", available: true },
           { path: "/jobs/inspections", name: "巡检任务", available: false },
         ],
       },
@@ -117,7 +117,7 @@ export const NAV: NavGroup[] = [
         name: "接入管理",
         icon: <CloudServerOutlined />,
         children: [
-          { path: "/access/clusters", name: "集群接入", available: false },
+          { path: "/access/clusters", name: "集群接入", available: true },
           { path: "/access/sources", name: "数据来源", available: true },
           { path: "/access/models", name: "模型服务", available: false },
           { path: "/access/readiness", name: "接入状态", available: true },

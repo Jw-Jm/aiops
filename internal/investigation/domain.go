@@ -123,6 +123,7 @@ type CreateInvestigationRequest struct {
 	Scope             graph.Scope
 	ToolCatalogDigest string
 	Budget            Budget
+	Focus             string
 }
 type Job struct {
 	Assistant            *AssistantTask `json:"assistant,omitempty"`
@@ -142,6 +143,8 @@ type Job struct {
 	Budget               Budget          `json:"budget"`
 	Reserved             Usage           `json:"budgetReserved"`
 	Consumed             Usage           `json:"budgetConsumed"`
+	Focus                string          `json:"focus"`
+	AdmissionDigest      string          `json:"admissionDigest"`
 	ExpiresAt            time.Time       `json:"expiresAt"`
 	EventSeq             int64           `json:"eventSeq"`
 	NextCallSeq          int64           `json:"nextCallSeq"`

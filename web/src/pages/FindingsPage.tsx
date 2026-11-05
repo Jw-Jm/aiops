@@ -1,9 +1,11 @@
 import { useResourceNames, resourceLabel } from "../components/ResourceLabel";
 import { symptomLabel, resourceIdentifier } from "../components/FaultSummary";
 import { fieldLabels, stateLabel } from "../components/presentation";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Input, Button, Select } from "antd";
 import { DataTable as Table } from "../components/v12/primitives";
+import { AlertLinkDialog } from "../features/collab/AlertLinkDialog";
 import { Link, useSearchParams } from "react-router-dom";
 import { getFindings, getIncidents } from "../api/generated/platform";
 import { checked, requestOptions } from "../api/client";
@@ -17,6 +19,7 @@ import { EnvelopeMeta } from "../components/EnvelopeMeta";
 import { list, record, text, displayTime } from "../components/data";
 export function FindingsPage({ incidents = false }: { incidents?: boolean }) {
   const [url, setUrl] = useSearchParams();
+  const [alertLink, setAlertLink] = useState<{ findingId: string; incidentId: string } | null>(null);
   const { clusterUid: cluster, invalid } = useOperationalCluster();
   const params = {
     clusterUid: cluster,
@@ -222,6 +225,27 @@ export function FindingsPage({ incidents = false }: { incidents?: boolean }) {
                 render: (_, r) =>
                   displayTime(r.lastObservedAt ?? r.updatedAt ?? r.observedAt),
               },
+              ...(!incidents
+                ? [
+                    {
+                      title: "操作",
+                      width: 140,
+                      render: (_: unknown, r: unknown) => (
+                        <Button
+                          size="small"
+                          onClick={() =>
+                            setAlertLink({
+                              findingId: text(record(r).findingId),
+                              incidentId: text(record(r).incidentId),
+                            })
+                          }
+                        >
+                          关联 / 纠正故障
+                        </Button>
+                      ),
+                    },
+                  ]
+                : []),
             ]}
           />
           <div className="pagination">
@@ -247,6 +271,13 @@ export function FindingsPage({ incidents = false }: { incidents?: boolean }) {
           </div>
         </QueryState>
       </section>
+      <AlertLinkDialog
+        open={!!alertLink}
+        findingId={alertLink?.findingId ?? ""}
+        currentIncidentId={alertLink?.incidentId ?? ""}
+        clusterUid={cluster}
+        onClose={() => setAlertLink(null)}
+      />
     </>
   );
 }

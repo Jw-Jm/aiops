@@ -84,8 +84,21 @@ export function RCAPanel({
                   : revision.actor}
               </span>
             </Space>
+            {revision.result.partial && (
+              <Alert
+                type="warning"
+                showIcon
+                title="部分结果：分析未完整完成"
+                description="本次分析因预算、中断或来源缺失没有跑完全部检查，以下候选和证据核对都基于不完整的输入，不能当作完整结论使用。"
+              />
+            )}
             <p className="status-note">
-              规则诊断与模型判断分别记录。根因未确定时，请先核对证据，不能据此认定故障原因。
+              {revision.result.status === "confirmed"
+                ? "规则诊断已确认根因，仍需通过证据核对判断依据后才能据此处置。"
+                : revision.result.status === "probable"
+                  ? "当前结论是最可能的假设，尚未确认。处置前必须先核对支持与矛盾证据。"
+                  : "根因未确定：以下候选均为待验证假设，不能据此认定故障原因。"}
+              {" "}规则诊断与模型判断分别记录。
             </p>
             {revision.result.candidates.map((c) => (
               <section className="section" key={c.candidateKey}>
@@ -97,6 +110,7 @@ export function RCAPanel({
                       node_runtime_failure: "节点运行环境异常",
                     } as Record<string, string>
                   )[c.candidateType] ?? c.candidateType}
+                  {revision.result.status !== "confirmed" ? "（待验证假设）" : ""}
                 </h3>
                 <Descriptions
                   size="small"
@@ -204,6 +218,25 @@ export function RCAPanel({
                       ))
                     : "未报告矛盾证据",
                 },
+                ...(revision.result.evidenceBundle.degradedSources.length
+                  ? [
+                      {
+                        key: "degraded",
+                        label: "分析时不可用来源",
+                        children: (
+                          <ul>
+                            {revision.result.evidenceBundle.degradedSources.map(
+                              (value, index) => (
+                                <li key={index} title={value}>
+                                  {diagnosisLabel(value)}
+                                </li>
+                              ),
+                            )}
+                          </ul>
+                        ),
+                      },
+                    ]
+                  : []),
               ]}
             />
             <details className="technical-details">
