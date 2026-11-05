@@ -1,0 +1,29 @@
+{
+  "startedAt": "2026-11-05T01:54:32.279488+00:00",
+  "architecture": "linux/amd64",
+  "binarySHA256": "sha256:d8360db3cc19d682523b7d1ad1440b2e398d881d08fc35ec9ec62394bced35c8",
+  "postgresImage": "ops.local/amd64-poc/postgresql-bookworm:17.11",
+  "scope": "isolated test databases; no preview or production database access",
+  "cases": [
+    {
+      "case": "fresh_1_to74_restricted_retry_lower_target_negative_refusal",
+      "passed": true,
+      "version": 74
+    },
+    {
+      "case": "upgrade_72_to73_to74_retry_seed_unchanged_collab_rls_transfer_fn_admission_index",
+      "passed": true,
+      "version": 74,
+      "retainedTenantDigest": "4e895db0a8fc8c60f75337b0bc1f3dd9"
+    }
+  ],
+  "status": "passed",
+  "network": "none",
+  "restrictedMigrationLogin": true,
+  "formalOpsctlBootstrap": true,
+  "createSchemaGrantedOnlyToOwner": true,
+  "negativeTargetRefused": true,
+  "nativeArm64SQLRun": false,
+  "completedAt": "2026-11-05T01:54:43.768848+00:00",
+  "testContainerRemoved": true
+}

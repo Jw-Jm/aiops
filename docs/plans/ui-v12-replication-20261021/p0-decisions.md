@@ -218,3 +218,13 @@ C002通过可选includeFilterOptions复用当前授权图快照，返回meta.sum
 ## 2026-10-29 r48：实际日志源采用当前 Kubernetes 原生读取
 
 当前环境有VictoriaLogs服务但没有持续日志采集代理。按用户“来源改成实际的”要求，最小完整路径复用真实Kubernetes来源/CA/自动投射身份与现有独立观测查询，不新建Agent/手工周期快照或把旧快照延长。PodLogs按集群显式启用、默认关闭；仅一个运行容器，UID/NamespaceUID/ContainerID/重启次数固定，当前pods/log权限实际验证。该路径是按需读取当前缓冲，不宣称持续归档或历史完整。沿用resultView既有not_measured/partial合同，不做虚假aggregate/no_data；刷新来源获取新绝对窗口。迁移72在原source/credential/cluster/namespace/租户锁内允许已有Kubernetes来源，保持collection不接受非空nativeTenant的语义，不改旧来源记录。schema72只前滚，不使用旧库/旧身份恢复。当前来源不恢复延期虚拟化、模型任务或SP05。
+
+## 2026-11-05 r55：事件协作/调查准入与迁移来源闭包续期
+
+工作树落地事件协作（migration 73：`incident.records` 指派列、带 RLS 的 `incident.followups`、SECURITY DEFINER 的 `incident.transfer_eligible` 双路径——原生授权或 legacy operator 围栏；指派不计入 revision CAS）与调查准入去重（migration 74：`investigation.jobs.admission_digest` + `investigation_job_identity` 部分唯一索引，覆盖 v1/v2 身份维度）；执行列表按授权过滤。Go/TS 生成物、OpenAPI、delivery-baseline（72→74）同步。
+
+集成测试基建三处最小修复：直接 `goose.UpContext` 的两个测试改为先 UpTo(1) 再补 `GRANT CREATE ON DATABASE … TO schema_owner`（与 r50 正式 `ProvisionDatabaseLogins` 引导同一前置，复用新抽出的 `grantSchemaOwnerDatabaseCreate`）；`TestMainReviewMigration63To69` 断言由硬编码 69 改为 `goose.CollectMigrations` 最新版本，测试名保留（r13 证据引用）。
+
+迁移准入证据按 r50 流程续期：两架构归档仅新增 00073/00074（go.mod 仅 direct/indirect 注释移动），`--network none` 空缓存重建二进制与原准入逐字节一致（amd64 `d8360db3…`、arm64 `5e9a23d8…`）；断网 PG 实测全新库 1→74、72→73→74 带 tenant 行摘要不变，73 的 RLS/函数权限与 74 的索引/列逐项核对，重试/低目标/负目标行为保持。证据 `docs/evidence/migration-renew-20261105/`。
+
+验证：`make check-delivery`、`make test-contract` 通过；完整集成回归（一次性隔离 PG17.11）212 pass / 46 skip / 15 fail——15 个失败全部为活环境门禁（OpenBao/Keycloak/K8sGPT/SeaweedFS 固定镜像/SP06 真实链），无代码回归；新增协作/准入/执行列表三测试真实执行通过（`artifacts/test-reports/integration-r55d.jsonl`）。未做 ARM64 原生 SQL、签名 Bundle 安装、全栈重启与产品视觉；六维不提升，不恢复 KubeVirt/CDI/Trace。
