@@ -1,0 +1,123 @@
+{
+  "recordedAt": "2026-11-06T04:16:47Z",
+  "recordedBy": "MSSC",
+  "scope": "current environment recovery and storage triage",
+  "metricsServer": {
+    "status": "PASS",
+    "apiService": "v1beta1.metrics.k8s.io",
+    "available": true,
+    "newBackend": {
+      "namespace": "ops-current",
+      "deployment": "ops-metrics-server-metrics",
+      "ready": "1/1"
+    },
+    "oldBackend": {
+      "namespace": "ops-amd64-core-20261009",
+      "deployment": "ops-metrics-server-metrics",
+      "replicas": 0,
+      "retainedForRollback": true
+    },
+    "topNodesReturnedRealSamples": true,
+    "deletionProof": {
+      "namespace": "ops-metrics-delete-proof-20261106",
+      "result": "NotFound after natural deletion"
+    }
+  },
+  "schedulerAndControlPlane": {
+    "status": "PARTIALLY_STABILIZED",
+    "schedulerLoopbackMitigation": {
+      "server": "https://127.0.0.1:6443",
+      "tlsServerName": "mssc",
+      "backup": "/etc/kubernetes/scheduler.conf.before-loopback-20261106",
+      "ready": true,
+      "latestStart": "2026-11-06T04:05:57Z",
+      "restartCountAtFinalCheck": 429
+    },
+    "routesAndCni": {
+      "node": "Ready",
+      "defaultRouteInterface": "wlp3s0",
+      "flannel": "Running",
+      "cni0": "UP",
+      "coreDnsEndpoints": 2,
+      "readyz": "pass"
+    },
+    "remainingRisk": "API server, scheduler, controller-manager, metrics-server, and API probes timed out in the same 2026-11-06T04:05Z window; the prior API-server container exited 137 after roughly four hours. Current symptoms point to shared storage latency rather than the scheduler network path.",
+    "observedNoAdditionalRestartsBeforeGateRerun": "10m"
+  },
+  "amd64AnalyzerGate": {
+    "status": "PASS",
+    "report": "artifacts/test-reports/sp05-locked-analyzer-amd64-r59-20261106.log",
+    "test": "TestSP05LockedAnalyzerRealOrbStackSandboxAndNativeFaults",
+    "durationSeconds": 24.26,
+    "binarySHA256": "e6ce7073f35889bc678443034169d4a64e94106442a5775fe3f59ca4ae6b66a4",
+    "containerdAddress": "/run/containerd/containerd.sock"
+  },
+  "signedBundleDecision": {
+    "status": "NO_INSTALL_TARGET_MISMATCH",
+    "r11": {
+      "bundleId": "amd64-sp01-sp07-20261010-r11",
+      "signatureVerified": true,
+      "payloadDigest": "sha256:03e3630200c39c91470091b0bd4fdd8379216fecc4fa715b37baaf6e985da059",
+      "payloadFilesVerified": 97,
+      "payloadBytesVerified": 9775873408,
+      "verifierSHA256": "e2e115fd9238672a9bdd444618f17f8939db3a13f247b7bdcacb005ec1b2e2c6",
+      "trustKeySHA256": "d25f489833ac4e2b0352016ca76a788cff5144286d67b5782a56bd8145bd48a1"
+    },
+    "r12": {
+      "bundleId": "amd64-sp01-sp07-20261010-r12",
+      "localLockAndSignatureReadable": false,
+      "historicalVerificationEvidenceRetained": true
+    },
+    "decision": "r11 and r12 are historical 2026-10-10 packages and do not match current b3d7208b5410f72bc4adc22a0e0423e3f6e0ab3f. Installing either would roll back the current release, so no Bundle installation was performed."
+  },
+  "storageTriage": {
+    "root": {
+      "device": "/dev/nvme0n1p2",
+      "filesystem": "ext4",
+      "size": "233G",
+      "available": "36G"
+    },
+    "data": {
+      "device": "/dev/sda1",
+      "model": "ST2000DM008-2FR1",
+      "filesystem": "ext4",
+      "size": "1.8T",
+      "used": "217G",
+      "randomSync4KiB": {
+        "iops": 8.93,
+        "p50Ms": 85.737,
+        "p95Ms": 185.502,
+        "p99Ms": 381.878
+      }
+    },
+    "candidate": {
+      "device": "/dev/sdb3",
+      "transport": "USB",
+      "filesystem": "exFAT",
+      "size": "1.8T",
+      "used": "45G",
+      "randomSync4KiBRuns": [
+        {
+          "iops": 131.59,
+          "p50Ms": 0.23,
+          "p95Ms": 0.264,
+          "p99Ms": 216.225
+        },
+        {
+          "iops": 132.82,
+          "p50Ms": 0.229,
+          "p95Ms": 0.242,
+          "p99Ms": 0.323
+        },
+        {
+          "iops": 132.92,
+          "p50Ms": 0.229,
+          "p95Ms": 0.294,
+          "p99Ms": 272.769
+        }
+      ],
+      "longTailMsMaxObserved": 1447.482
+    },
+    "decision": "Do not move live PostgreSQL, OpenBao, SeaweedFS, Victoria data, or container runtime state to the existing exFAT/USB filesystem. Reformat and destructive migration require explicit user approval after backup and sustained direct-I/O/power-loss testing; current root NVMe does not have enough free space to absorb /data."
+  }
+}
