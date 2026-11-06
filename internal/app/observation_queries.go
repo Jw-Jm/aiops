@@ -23,7 +23,7 @@ import (
 	"time"
 )
 
-func observationService(pool *pgxpool.Pool, adapters map[string]*analytics.Victoria, owner graph.InternalHandler, namespaces []string) observationquery.Service {
+func observationService(pool *pgxpool.Pool, adapters map[string]*analytics.Victoria, owner graph.InternalHandler, cluster SP04Cluster) observationquery.Service {
 	return observationquery.Service{Repository: observationquery.Repository{Pool: pool}, Adapters: adapters, CheckResource: func(ctx context.Context, target observationquery.Resource) error {
 		meta, err := readObservationIdentity(ctx, owner.Lease.Client, "/api/v1/namespaces/"+url.PathEscape(*target.NamespaceScope.Namespace)+"/pods/"+url.PathEscape(target.Name))
 		if err != nil {
@@ -38,45 +38,61 @@ func observationService(pool *pgxpool.Pool, adapters map[string]*analytics.Victo
 			return nil, err
 		}
 		out := []observationquery.Resource{}
-		for _, ns := range scope.Namespaces {
-			if !slices.Contains(namespaces, ns) {
-				continue
-			}
-			namespace, err := readObservationIdentity(ctx, owner.Lease.Client, "/api/v1/namespaces/"+url.PathEscape(ns))
+		namespaceUIDs := map[string]string{}
+		var pods []observationIdentity
+		client := owner.Lease.Client
+		if cluster.ClusterWatch && len(scope.Namespaces) > 1 {
+			namespaces, err := listObservationIdentities(ctx, client, "/api/v1/namespaces")
 			if err != nil {
 				return nil, err
 			}
-			if namespace.Name != ns {
-				return nil, observationquery.ErrUnavailable
-			}
-			response, err := owner.Lease.Client.Do(ctx, "GET", "/api/v1/namespaces/"+url.PathEscape(ns)+"/pods?limit=201", nil)
-			if err != nil {
-				return nil, err
-			}
-			var list struct {
-				Metadata struct {
-					Continue string `json:"continue"`
-				} `json:"metadata"`
-				Items []struct {
-					Metadata observationIdentity `json:"metadata"`
-				} `json:"items"`
-			}
-			err = json.NewDecoder(io.LimitReader(response.Body, 4<<20)).Decode(&list)
-			response.Body.Close()
-			if response.StatusCode != 200 || err != nil || list.Metadata.Continue != "" || len(list.Items)+len(out) > 200 {
-				return nil, observationquery.ErrUnavailable
-			}
-			for _, item := range list.Items {
-				meta := item.Metadata
-				if meta.Namespace != ns || meta.UID == "" || meta.Name == "" {
-					return nil, observationquery.ErrUnavailable
+			for _, ns := range namespaces {
+				if slices.Contains(cluster.Namespaces, ns.Name) && slices.Contains(scope.Namespaces, ns.Name) {
+					namespaceUIDs[ns.Name] = ns.UID
 				}
-				canonical := resource.CanonicalID{Domain: "k8s", Tenant: scope.Tenant, Scope: scope.Cluster, APIGroup: "core", Kind: "Pod", StableID: meta.UID}.String()
-				if !scope.Allows(canonical, ns) {
+			}
+			pods, err = listObservationIdentities(ctx, client, "/api/v1/pods")
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			for _, ns := range scope.Namespaces {
+				if !slices.Contains(cluster.Namespaces, ns) {
 					continue
 				}
-				nsuid := namespace.UID
-				out = append(out, observationquery.Resource{Name: meta.Name, CanonicalID: canonical, UID: meta.UID, ClusterUID: scope.Cluster, NamespaceScope: observationquery.NamespaceScope{Kind: "namespaced", Namespace: &ns, NamespaceUID: &nsuid}})
+				path := "/api/v1/namespaces/" + url.PathEscape(ns)
+				namespace, err := readObservationIdentity(ctx, client, path)
+				if err != nil {
+					return nil, err
+				}
+				if namespace.Name != ns {
+					return nil, observationquery.ErrUnavailable
+				}
+				namespaceUIDs[ns] = namespace.UID
+				items, err := listObservationIdentities(ctx, client, path+"/pods")
+				if err != nil {
+					return nil, err
+				}
+				for _, pod := range items {
+					if pod.Namespace != ns {
+						return nil, observationquery.ErrUnavailable
+					}
+				}
+				pods = append(pods, items...)
+			}
+		}
+		for _, pod := range pods {
+			nsuid, inScope := namespaceUIDs[pod.Namespace]
+			if !inScope {
+				continue
+			}
+			canonical := resource.CanonicalID{Domain: "k8s", Tenant: scope.Tenant, Scope: scope.Cluster, APIGroup: "core", Kind: "Pod", StableID: pod.UID}.String()
+			if !scope.Allows(canonical, pod.Namespace) {
+				continue
+			}
+			out = append(out, observationquery.Resource{Name: pod.Name, CanonicalID: canonical, UID: pod.UID, ClusterUID: scope.Cluster, NamespaceScope: observationquery.NamespaceScope{Kind: "namespaced", Namespace: &pod.Namespace, NamespaceUID: &nsuid}})
+			if len(out) > 200 {
+				return nil, observationquery.ErrUnavailable
 			}
 		}
 		if err := owner.ValidateSources(ctx); err != nil {
@@ -89,7 +105,7 @@ func observationService(pool *pgxpool.Pool, adapters map[string]*analytics.Victo
 func startObservationQueries(ctx context.Context, pool *pgxpool.Pool, c *SP04Config, adapters map[string]*analytics.Victoria, owners map[string]graph.InternalHandler, group *sync.WaitGroup) {
 	for _, cluster := range c.Clusters {
 		owner := owners[cluster.Tenant+"|"+cluster.ClusterUID]
-		service := observationService(pool, adapters, owner, cluster.Namespaces)
+		service := observationService(pool, adapters, owner, cluster)
 		configureNativeLogs(&service, owner, cluster)
 		group.Add(1)
 		go func() {
@@ -111,7 +127,7 @@ func startObservationQueries(ctx context.Context, pool *pgxpool.Pool, c *SP04Con
 		}()
 	}
 }
-func serveObservationRequest(w http.ResponseWriter, r *http.Request, trust auth.WorkloadTrust, key ed25519.PublicKey, pool *pgxpool.Pool, adapters map[string]*analytics.Victoria, owners map[string]graph.InternalHandler, namespaceScopes map[string][]string, logClusters map[string]SP04Cluster) {
+func serveObservationRequest(w http.ResponseWriter, r *http.Request, trust auth.WorkloadTrust, key ed25519.PublicKey, pool *pgxpool.Pool, adapters map[string]*analytics.Victoria, owners map[string]graph.InternalHandler, logClusters map[string]SP04Cluster) {
 	fail := func(err error) {
 		code := err.Error()
 		status := 503
@@ -176,8 +192,9 @@ func serveObservationRequest(w http.ResponseWriter, r *http.Request, trust auth.
 		fail(observationquery.ErrUnavailable)
 		return
 	}
-	service := observationService(pool, adapters, owner, namespaceScopes[claims.Scope.Tenant+"|"+claims.Scope.Cluster])
-	configureNativeLogs(&service, owner, logClusters[claims.Scope.Tenant+"|"+claims.Scope.Cluster])
+	cluster := logClusters[claims.Scope.Tenant+"|"+claims.Scope.Cluster]
+	service := observationService(pool, adapters, owner, cluster)
+	configureNativeLogs(&service, owner, cluster)
 	var data any
 	switch body.Action {
 	case "capabilities":
@@ -295,6 +312,33 @@ type observationIdentity struct {
 	UID       string `json:"uid"`
 	Name      string `json:"name"`
 	Namespace string `json:"namespace"`
+}
+
+func listObservationIdentities(ctx context.Context, client *kubernetes.Client, path string) ([]observationIdentity, error) {
+	response, err := client.Do(ctx, "GET", path+"?limit=201", nil)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+	var list struct {
+		Metadata struct {
+			Continue string `json:"continue"`
+		} `json:"metadata"`
+		Items []struct {
+			Metadata observationIdentity `json:"metadata"`
+		} `json:"items"`
+	}
+	if response.StatusCode != http.StatusOK || json.NewDecoder(io.LimitReader(response.Body, 4<<20)).Decode(&list) != nil || list.Metadata.Continue != "" || len(list.Items) > 201 {
+		return nil, observationquery.ErrUnavailable
+	}
+	items := make([]observationIdentity, 0, len(list.Items))
+	for _, item := range list.Items {
+		if item.Metadata.UID == "" || item.Metadata.Name == "" {
+			return nil, observationquery.ErrUnavailable
+		}
+		items = append(items, item.Metadata)
+	}
+	return items, nil
 }
 
 func readObservationIdentity(ctx context.Context, client *kubernetes.Client, path string) (observationIdentity, error) {

@@ -743,16 +743,14 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 	if err := startSP05Worker(runContext, pool, archive, c, handlers, adapters, runtime, &group); err != nil {
 		return nil, err
 	}
-	namespaceScopes := map[string][]string{}
 	logClusters := map[string]SP04Cluster{}
 	for _, cluster := range c.Clusters {
-		namespaceScopes[cluster.Tenant+"|"+cluster.ClusterUID] = cluster.Namespaces
 		logClusters[cluster.Tenant+"|"+cluster.ClusterUID] = cluster
 	}
 	startObservationQueries(runContext, pool, c, analysisAdapters, handlers, &group)
 	dispatch := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/internal/v1/observability:request" {
-			serveObservationRequest(w, r, trust, key, pool, analysisAdapters, handlers, namespaceScopes, logClusters)
+			serveObservationRequest(w, r, trust, key, pool, analysisAdapters, handlers, logClusters)
 			return
 		}
 		if r.URL.Path == "/internal/v1/analysis:query" {
