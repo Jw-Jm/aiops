@@ -16,6 +16,7 @@
 - 已建立私有 PG dump、角色定义、配置和 Bao Raft 备份；PG dump 由 `pg_restore --list` 验证格式。已生成固定发布清单并原子设置 `current` 指针。
 - 集群账号范围后续验收确认 operator 默认整集群授权、授权页三个角色、来源 revision 2 的 31 个 namespace、四类 CoreDNS 指标、两次集群级列表的日志资源发现、20 条脱敏日志样本，以及新故障详情/时间线/证据/RCA。证据见 [cluster-account-scope](cluster-account-scope/README.md)。
 - 环境恢复后续完成 metrics APIService 迁移、一次性 namespace 自然删除验证、scheduler/CNI/路由复核、amd64 K8sGPT 门禁复跑和签名 Bundle 目标判定；`/dev/sda1` 与 USB `sdb` 的 IO 证据显示当前不应直接迁移活数据。证据见 [environment-recovery](environment-recovery/README.md)。
+- 后续经单独授权将 current 业务栈停机并迁至 ext4 `/dev/sdb1`，保留 `/data/ops-current.sda-rollback-20261106` 回滚；最终 smoke Graph ready 且无来源降级，5 分钟观察 9/9 Pod Ready、零重启。
 - b3d 后续修复通过源码级回归后完成现场验收和 current 记录；首次 final smoke 在 Graph 冷启动窗口返回 503，保留原失败证据后重试通过，记录后 final smoke 再次通过。
 
 入口、身份材料位置和后续升级/回退步骤见 [运行说明](../../operations/current-environment.md)。`runtime/acceptance.json` 的 `passed_core` 仅代表其中列出的核心检查，不代表产品全部专项或全局健康。

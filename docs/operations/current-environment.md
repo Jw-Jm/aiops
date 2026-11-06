@@ -33,6 +33,8 @@
 
 `current` 是已验收版本的原子指针；Pod 镜像和 Web 的 bind mount 仍明确引用不可变版本，不通过改 symlink 偷换运行中的文件。业务数据不放进 release，不因升级而重建。应用使用 Deployment；依赖镜像及应用镜像均固定内容摘要，禁止自动拉取未准入材料。
 
+自 2026-11-06 存储迁移起，`/data/ops-current` 是指向 `/mnt/ops-sdb/ops-current` 的符号链接；后者位于 GPT/ext4 `/dev/sdb1`（UUID `43598b77-4d08-4dbe-be52-331005a03ff1`），`/etc/fstab` 使用 `noatime,nofail,x-systemd.device-timeout=10s` 挂载。原内部盘数据保留在 `/data/ops-current.sda-rollback-20261106`，仅代表停机时点，切换后不再同步；回滚必须再次停栈并反向切换。未做 USB 断电安全验收，重启后 OpenBao 仍需按既有私有流程手工解封。
+
 当前应用源码版本为 `b3d7208b5410f72bc4adc22a0e0423e3f6e0ab3f`；上一已验收版本 `dd9da1cca0f87d5bd943faee74f883648c916413` 和初始版本 `9372674a87201a4ccaab6737a1019808ea41ffd5` 保留为回滚发布。运维工具后续可单独提交更新，不能因此声称应用二进制也已升级。实际版本以部署主机的 `current/manifest.json` 为准。
 
 应用、Bao、归档、KSM、指标和采集器归属 `ops-current`；PostgreSQL、VictoriaLogs 和 Web 是同一环境下的独立 Docker 容器。它们的数据和配置全部位于 `/data/ops-current`，不能依赖旧 namespace 或旧代际 hostPath。共享 Kubernetes 控制面、CNI 和独立观测目标不是第二套 OPS 业务栈，不随业务升级重建。
@@ -76,7 +78,7 @@ python3 scripts/current/release.py backup
 - 全局能力接口仍可报告 Graph partial/degraded；不能将 Pod Ready 或部分页面 200 称为全局健康。当前 namespace 的指标、日志、资源和故障链路分别验收。
 - 命令配置可发布；真实命令执行仍为 configuration-only/disabled。KubeVirt/CDI、Trace、生产、高可用和空缓存离线交付未恢复验收。
 - b3d Web 构建使用全局 pnpm 10.18.3，仓库声明为 12.7.0；构建与验收通过，但工具链差异保留为风险。
-- Worker Graph Lease 慢告警的现查根因是共享 `/data` 块设备同步写入排队，不是 CPU/内存限额或 Pod 重启；未放宽告警阈值，后续优化写入路径前应保留告警。
+- Worker Graph Lease 慢告警在存储迁移前与共享 `/data` 同步排队吻合；迁移后 PostgreSQL checkpoint sync 已降至 0.020s 内、sdb 写延迟约 0.1–0.3ms，但 `lease_cas` 仍有约 201–303ms 周期告警。该告警未消失，不能继续简单归因于 `/data`，后续应观察 Kubernetes API/Lease 路径。
 - 旧数据、历史失败证据和本次初始化期间的失败记录保留。迁移没有把失败改写成成功，也没有直接修复旧库坏页。
 
 实际证据见 [current 验收记录](../evidence/current-environment-20261106/README.md)。

@@ -1,0 +1,76 @@
+{
+  "authorization": "User explicitly approved stopping the current stack, migrating /data/ops-current to /mnt/ops-sdb, retaining the original directory for rollback, and rerunning health checks.",
+  "maintenanceWindow": {
+    "stackStoppedAt": "2026-11-06T06:04:40Z",
+    "copyVerifiedAt": "2026-11-06T06:13:12Z",
+    "cutoverAt": "2026-11-06T06:14:24Z",
+    "finalSmokePassedAt": "2026-11-06T06:33:47Z",
+    "stabilityWindow": "2026-11-06T06:34:23Z through 2026-11-06T06:39:02Z"
+  },
+  "copy": {
+    "source": "/data/ops-current",
+    "target": "/mnt/ops-sdb/ops-current",
+    "files": 114855,
+    "bytes": 10979011883,
+    "entriesIncludingDirectoriesAndSymlinks": 165804,
+    "verified": "rsync-checksum-sha256-and-metadata"
+  },
+  "cutover": {
+    "activePath": "/data/ops-current",
+    "activePathType": "symbolic-link",
+    "activeTarget": "/mnt/ops-sdb/ops-current",
+    "rollbackPath": "/data/ops-current.sda-rollback-20261106",
+    "rollbackSynchronizedAfterCutover": false,
+    "persistentMount": {
+      "device": "/dev/sdb1",
+      "uuid": "43598b77-4d08-4dbe-be52-331005a03ff1",
+      "mountPoint": "/mnt/ops-sdb",
+      "type": "ext4",
+      "options": "noatime,nofail,x-systemd.device-timeout=10s",
+      "fstabVerified": true
+    }
+  },
+  "recoveryActions": [
+    {
+      "issue": "OpenBao restarted sealed, causing API, Worker, and investigator startup failures.",
+      "action": "Submitted the required Shamir unseal shares without exposing key material.",
+      "result": "sealed=false; Kubernetes login proof succeeded with a 900-second lease."
+    },
+    {
+      "issue": "Stopping the StatefulSet replaced ops-seaweedfs-0 and invalidated the Pod UID embedded in metrics/logs scope probes.",
+      "action": "Updated only the canary Pod UID in ops-runtime for worker and API configuration, then restarted ops-worker.",
+      "oldPodUID": "06b56844-0243-4b15-9dee-ecf3cd27b873",
+      "newPodUID": "a3e3b0c9-bafc-4a3a-ba6e-00faf3f8a563",
+      "result": "VictoriaMetrics and VictoriaLogs scope proofs refreshed at 2026-11-06T06:33:07Z."
+    }
+  ],
+  "health": {
+    "currentPodsReady": "9/9",
+    "currentPodRestartsDuringStabilityWindow": 0,
+    "dockerContainers": ["ops-current-pg", "ops-current-logs", "ops-current-web"],
+    "webRoot": 200,
+    "webHealthz": 200,
+    "postgresVersion": "17.11",
+    "postgresNonSystemTables": 159,
+    "openBaoSealed": false,
+    "metricsAPIServiceAvailable": true,
+    "finalSmoke": {
+      "status": "passed",
+      "graphReady": true,
+      "sourceDegraded": false,
+      "degradedSources": 0,
+      "resourceResultPartial": false,
+      "apiEndpoints": "all checked 200",
+      "primaryPages": "all loaded without login redirect or disabled-feature message"
+    }
+  },
+  "storageObservation": {
+    "sdbWriteAwaitMsDuringStability": "approximately 0.10-0.36",
+    "postgresCheckpointSync": {
+      "beforeMigrationExampleLongestSyncMs": 1320,
+      "afterMigrationLongestSyncMs": 20
+    },
+    "remainingWorkerWarning": "Graph Lease lease_cas stages still intermittently take about 201-303 ms. Post-migration sdb awaits and PostgreSQL checkpoint sync are low, so this warning is not currently attributed to /data synchronous storage and remains open for Kubernetes API/lease-path observation."
+  },
+  "rollbackProcedure": "Stop the current Kubernetes and Docker stack, remove the /data/ops-current symlink, rename /data/ops-current.sda-rollback-20261106 back to /data/ops-current, restart the stack, unseal OpenBao, and rerun the final smoke. The rollback directory is a point-in-time copy from the stop at 06:04:40Z."
+}
