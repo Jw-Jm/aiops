@@ -11,7 +11,7 @@ import (
 )
 
 // ReconcileNativeSnapshot restores deletion knowledge lost across Worker restarts.
-// Only a healthy, complete, unfiltered native list can prove an identity disappeared.
+// Only a healthy, complete native list within the registered scope can prove a deletion.
 //
 // The snapshot must carry the exact watched Kind: identity ownership is decided
 // by comparing the stored canonical Kind with it, never by guessing the resource
@@ -48,7 +48,7 @@ func (r Repository) ReconcileNativeSnapshot(ctx context.Context, tenant, source,
 		if !valid {
 			return resource.ErrIdentity
 		}
-		rows, err := tx.Query(ctx, `SELECT DISTINCT e.canonical_id FROM platform.resource_entities e JOIN platform.resource_aliases a USING(tenant_id,canonical_id) WHERE e.tenant_id=$1 AND a.source_id=$2 AND a.scope=$3 AND a.alias_kind='uid' AND e.deleted_at IS NULL AND e.observed_at<=$4`, tid, sid, cluster, s.State.LastListCompletedAt)
+		rows, err := tx.Query(ctx, `SELECT DISTINCT e.canonical_id FROM platform.resource_entities e JOIN platform.resource_aliases a USING(tenant_id,canonical_id) WHERE e.tenant_id=$1 AND a.source_id=$2 AND a.scope=$3 AND a.alias_kind='uid' AND e.deleted_at IS NULL AND e.observed_at<=$4 AND (NOT $5 OR EXISTS (SELECT 1 FROM platform.source_registrations s WHERE s.tenant_id=e.tenant_id AND s.source_id=$2 AND s.revision=$6 AND s.data_scope_mapping->'scopes'->'namespace' ? e.namespace))`, tid, sid, cluster, s.State.LastListCompletedAt, s.GVR.Namespaced(), r.ExpectedRevision)
 		if err != nil {
 			return err
 		}

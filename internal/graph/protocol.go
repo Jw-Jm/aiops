@@ -18,6 +18,7 @@ import (
 	"ops-platform/internal/auth"
 	"ops-platform/internal/authz"
 	platformcontract "ops-platform/internal/contract"
+	"ops-platform/internal/datascope"
 	"ops-platform/internal/observability"
 	"ops-platform/internal/persistence"
 	"slices"
@@ -154,7 +155,7 @@ func EffectiveTx(ctx context.Context, tx pgx.Tx, tenant, subject, cluster string
 	if out, versions, err = applyNativeGrants(out, cluster, grants, versions); err != nil {
 		return out, err
 	}
-	return finishScopeTx(ctx, tx, tid, clusterID, cluster, out, versions)
+	return finishScopeTx(ctx, tx, tid, clusterID, cluster, out, versions, true)
 }
 
 // EffectiveLegacyTx re-proves authority from platform.role_bindings only. It is
@@ -210,7 +211,7 @@ func EffectiveLegacyTx(ctx context.Context, tx pgx.Tx, tenant, subject, cluster 
 		return out, err
 	}
 	rows.Close()
-	return finishScopeTx(ctx, tx, tid, clusterID, cluster, out, versions)
+	return finishScopeTx(ctx, tx, tid, clusterID, cluster, out, versions, false)
 }
 
 // NativeGrant is one persisted operator grant row. A Worker re-proves a job's
@@ -270,7 +271,7 @@ func EffectiveNativeTx(ctx context.Context, tx pgx.Tx, tenant, subject, cluster 
 	if out, versions, err = applyNativeGrants(out, cluster, grants, versions); err != nil {
 		return out, err
 	}
-	return finishScopeTx(ctx, tx, tid, clusterID, cluster, out, versions)
+	return finishScopeTx(ctx, tx, tid, clusterID, cluster, out, versions, true)
 }
 
 // EffectivePersistedNativeTx re-proves a persisted decision (a Worker job or a
@@ -318,11 +319,10 @@ func EffectivePersistedNativeTx(ctx context.Context, tx pgx.Tx, tenant, subject,
 	return EffectiveNativeTx(ctx, tx, tenant, subject, cluster, userID, authorizationVersion, grants)
 }
 
-func finishScopeTx(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, clusterID uuid.UUID, cluster string, out Scope, versions []any) (Scope, error) {
+func finishScopeTx(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, clusterID uuid.UUID, cluster string, out Scope, versions []any, native bool) (Scope, error) {
 	if !out.ClusterScoped && len(out.Namespaces) == 0 {
 		return out, ErrScope
 	}
-	sort.Strings(out.Namespaces)
 	sourceRows, err := tx.Query(ctx, `SELECT source_id,revision,status,source_type,backend_logical_id,data_scope_mapping FROM platform.source_registrations WHERE tenant_id=$1 AND (cluster_id=$2 OR data_scope_mapping->'scopes'->'cluster' ? $3) ORDER BY source_id`, tenant, clusterID, cluster)
 	if err != nil {
 		return out, err
@@ -336,10 +336,26 @@ func finishScopeTx(ctx context.Context, tx pgx.Tx, tenant uuid.UUID, clusterID u
 			return out, err
 		}
 		versions = append(versions, id, revision, status, sourceType, backend, json.RawMessage(mapping))
+		// Narrowed analytics requests need concrete namespaces even when the
+		// underlying operator grant covers the entire registered cluster.
+		if native && out.ClusterScoped && status == "active" && sourceType == "kubernetes" {
+			var scope datascope.Mapping
+			if err := json.Unmarshal(mapping, &scope); err != nil {
+				return out, err
+			}
+			if slices.Contains(scope.Scopes["cluster"], cluster) {
+				for _, ns := range scope.Scopes["namespace"] {
+					if !slices.Contains(out.Namespaces, ns) {
+						out.Namespaces = append(out.Namespaces, ns)
+					}
+				}
+			}
+		}
 	}
 	if err := sourceRows.Err(); err != nil {
 		return out, err
 	}
+	sort.Strings(out.Namespaces)
 	out.AuthorizationRevision = ScopeDigest(versions)
 	return out, nil
 }
