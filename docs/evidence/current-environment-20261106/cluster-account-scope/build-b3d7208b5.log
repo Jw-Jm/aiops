@@ -1,0 +1,41 @@
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  50.64MB
+Step 1/3 : FROM sha256:be042c3deed1a4227a1576c5e01e55c18d5927780a06b3954f6bffe9e04e52e0
+ ---> be042c3deed1
+Step 2/3 : COPY --chown=65532:65532 ops-api /ops-api
+ ---> 2919c76a8ba2
+Step 3/3 : LABEL org.opencontainers.image.revision=b3d7208b5410f72bc4adc22a0e0423e3f6e0ab3f
+ ---> Running in 188e27d088d2
+ ---> Removed intermediate container 188e27d088d2
+ ---> 91e8b6e86819
+Successfully built 91e8b6e86819
+Successfully tagged ops.local/current/platform-api:b3d7208b5410
+ops.local/current/platform api:b3d7208b5	saved
+application/vnd.oci.image.manifest.v1+json sha256:ffaa5cfdb51c0570e6141e2b71bbf0253cc07c257a0e6466ccd7186ac6f5f5d7
+Importing	elapsed: 18.7s	total:   0.0 B	(0.0 B/s)
+ops.local/current/platform-api@sha256:ffaa5cfdb51c0570e6141e2b71bbf0253cc07c257a0e6466ccd7186ac6f5f5d7
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon   62.6MB
+Step 1/3 : FROM sha256:c7ad4ed320faf12eeebf2f8b1d200c9da3ca1a19bd94fd07ea094b3633394fa6
+ ---> c7ad4ed320fa
+Step 2/3 : COPY --chown=65532:65532 ops-worker /ops-worker
+ ---> e8a398595b6f
+Step 3/3 : LABEL org.opencontainers.image.revision=b3d7208b5410f72bc4adc22a0e0423e3f6e0ab3f
+ ---> Running in ed354b814385
+ ---> Removed intermediate container ed354b814385
+ ---> 7ad2de005ab9
+Successfully built 7ad2de005ab9
+Successfully tagged ops.local/current/platform-worker:b3d7208b5410
+ops.local/current/platform worker:b3d720	saved
+application/vnd.oci.image.manifest.v1+json sha256:68122567ef94548d79701745447011ad044d4e29b6b93b5fdeee46337939ad79
+Importing	elapsed: 28.2s	total:   0.0 B	(0.0 B/s)
+ops.local/current/platform-worker@sha256:68122567ef94548d79701745447011ad044d4e29b6b93b5fdeee46337939ad79
+configmap/ops-runtime patched (no change)
+deployment.apps/ops-worker image updated
+deployment.apps/ops-api image updated

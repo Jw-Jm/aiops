@@ -1,24 +1,24 @@
 {
   "schemaVersion": "ops-current-release/v1",
-  "commit": "dd9da1cca0f87d5bd943faee74f883648c916413",
+  "commit": "b3d7208b5410f72bc4adc22a0e0423e3f6e0ab3f",
   "namespace": "ops-current",
   "namespaceUID": "c4dc825f-0897-417b-a876-f151e7783629",
   "database": "ops_current",
   "databaseSchema": 74,
   "images": {
     "api": {
-      "tag": "ops.local/current/platform-api:dd9da1cca0f8",
-      "image": "ops.local/current/platform-api@sha256:1bb010206acbd932e50e280bd3d79091917d514fe945c5ea17c08b5d8129c7d5",
-      "manifestDigest": "sha256:1bb010206acbd932e50e280bd3d79091917d514fe945c5ea17c08b5d8129c7d5",
-      "imageID": "sha256:be042c3deed1a4227a1576c5e01e55c18d5927780a06b3954f6bffe9e04e52e0",
-      "binarySHA256": "3c9d521c1bb25b0c2444221cdc164e3b5da15469036d63bedd98c2831995bce9"
+      "tag": "ops.local/current/platform-api:b3d7208b5410",
+      "image": "ops.local/current/platform-api@sha256:ffaa5cfdb51c0570e6141e2b71bbf0253cc07c257a0e6466ccd7186ac6f5f5d7",
+      "manifestDigest": "sha256:ffaa5cfdb51c0570e6141e2b71bbf0253cc07c257a0e6466ccd7186ac6f5f5d7",
+      "imageID": "sha256:91e8b6e868197d215efb08ceaf7eb81eb812e6e8f0d7e56b89b913bf3df3ddba",
+      "binarySHA256": "b586720708951d773d7e05792f75643b1dae4c6bc2182d172f7f9f2e8062966d"
     },
     "worker": {
-      "tag": "ops.local/current/platform-worker:dd9da1cca0f8",
-      "image": "ops.local/current/platform-worker@sha256:cc011764a891f0041959143facbbd2548b5d1192fef74a7ac5de5bbdb61f3893",
-      "manifestDigest": "sha256:cc011764a891f0041959143facbbd2548b5d1192fef74a7ac5de5bbdb61f3893",
-      "imageID": "sha256:c7ad4ed320faf12eeebf2f8b1d200c9da3ca1a19bd94fd07ea094b3633394fa6",
-      "binarySHA256": "0d17e39e96e269d6af05d6bec645cfc3bc3296abcaabef07752e76ba80f3b514"
+      "tag": "ops.local/current/platform-worker:b3d7208b5410",
+      "image": "ops.local/current/platform-worker@sha256:68122567ef94548d79701745447011ad044d4e29b6b93b5fdeee46337939ad79",
+      "manifestDigest": "sha256:68122567ef94548d79701745447011ad044d4e29b6b93b5fdeee46337939ad79",
+      "imageID": "sha256:7ad2de005ab9aa6a848fbf700feaec808138778f3cf85ccd01fc10dd0441c880",
+      "binarySHA256": "12811f6397b6fa1ed0a39ef0c2e5b1416ed14be9477d3c62e0730df4681e440b"
     },
     "investigator": {
       "tag": "ops.local/current/investigator:9372674",
@@ -29,13 +29,14 @@
   },
   "runtimeConfigSHA256": "257484d768207818463d0aac95fe1d473ffa190641e6ff7448a996e52ac084e5",
   "webIndexSHA256": "315c2444e8a8637cad0dbdd2d8b6ab87cf25e1ab34fc2782d7491befc1c20b1d",
-  "acceptedAt": "2026-11-06T02:06:35Z",
+  "acceptedAt": "2026-11-06T02:48:02Z",
   "knownLimitations": [
-    "Three Go unit failures in bundle migration admission, fault-chain relation scope, and DIMM impact scope reproduce identically on parent commit 406159e; they are unrelated to the internal/app observation query change.",
-    "The web unit suite passes all 267 assertions but exits nonzero from three existing asynchronous window-is-not-defined teardown errors.",
+    "The first post-deployment smoke returned 503 during Worker graph cold start; the retained retry passed, and this does not establish a warm-up service-level objective.",
+    "DIMM impact and fault-chain follow-up fixes are validated by source-level tests only; no hardware live failure was replayed for this record.",
     "Incident 01a1ae35-7bdd-7af0-93e7-3d5c93f6fea4 was created at source revision 1; its evidence and RCA remain forbidden after the source moved to revision 2.",
     "Global capability, resource-assistant policy, and ordinary investigation states remain bounded by their own receipts; this core acceptance does not broaden them.",
     "Command execution remains configuration-only and disabled.",
+    "Web acceptance used global pnpm 10.18.3 while the repository declares 12.7.0; the build passed, but the toolchain mismatch remains an acceptance risk.",
     "KubeVirt/CDI, Trace, production/HA, and empty-cache offline Bundle acceptance remain deferred or unverified."
   ]
 }

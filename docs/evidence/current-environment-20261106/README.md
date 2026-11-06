@@ -1,6 +1,6 @@
 # 独立 Current 环境迁移验收
 
-2026-11-05 开始，2026-11-06 完成入口切换和旧业务栈停用。初始应用提交为 `9372674a87201a4ccaab6737a1019808ea41ffd5`；随后按集群账号范围与日志发现修复验收切换到 `dd9da1cca0f87d5bd943faee74f883648c916413`。namespace 为 `ops-current`，独立数据根 `/data/ops-current`，干净数据库 `ops_current`（schema 74）。旧 `ui_v12_r24_native` 未整库复制。
+2026-11-05 开始，2026-11-06 完成入口切换和旧业务栈停用。初始应用提交为 `9372674a87201a4ccaab6737a1019808ea41ffd5`；随后按集群账号范围与日志发现修复验收切换到 `dd9da1cca0f87d5bd943faee74f883648c916413`，再按故障链/DIMM 范围修复验收切换到 `b3d7208b5410f72bc4adc22a0e0423e3f6e0ab3f`。namespace 为 `ops-current`，独立数据根 `/data/ops-current`，干净数据库 `ops_current`（schema 74）。旧 `ui_v12_r24_native` 未整库复制。
 
 ## 已完成
 
@@ -15,6 +15,7 @@
 - 最终依赖审计确认仅三个 current Docker 容器活跃、八个 current Pod Ready；应用/采集器 hostPath 除系统日志读取目录外均在 current 根内。API/Worker 都连接 `127.0.0.1:15554/ops_current`。旧业务 namespace 无 Running Pod。
 - 已建立私有 PG dump、角色定义、配置和 Bao Raft 备份；PG dump 由 `pg_restore --list` 验证格式。已生成固定发布清单并原子设置 `current` 指针。
 - 集群账号范围后续验收确认 operator 默认整集群授权、授权页三个角色、来源 revision 2 的 31 个 namespace、四类 CoreDNS 指标、两次集群级列表的日志资源发现、20 条脱敏日志样本，以及新故障详情/时间线/证据/RCA。证据见 [cluster-account-scope](cluster-account-scope/README.md)。
+- b3d 后续修复通过源码级回归后完成现场验收和 current 记录；首次 final smoke 在 Graph 冷启动窗口返回 503，保留原失败证据后重试通过，记录后 final smoke 再次通过。
 
 入口、身份材料位置和后续升级/回退步骤见 [运行说明](../../operations/current-environment.md)。`runtime/acceptance.json` 的 `passed_core` 仅代表其中列出的核心检查，不代表产品全部专项或全局健康。
 
@@ -32,3 +33,4 @@
 - 管理写入必须串行使用 TOTP；并发脚本曾使未完成挑战的写入被拒绝，保留拒绝结果后串行重试。策略签名按 canonical content digest 和明确 schemaId 重新核对。
 - 日志验收脚本曾误指向旧入口并产生失败输出；该失败存入新环境记录，旧 r54 运行回执由 Git 中的规范归档副本恢复，随后仅对 current 重跑。未将旧入口的失败当作 current 成功。
 - 旧故障证据在来源从 revision 1 升到 revision 2 后继续被来源修订校验拒绝；新故障证据在同一来源 revision 下读取通过。全局能力、资源问数策略和普通调查状态仍按各自回执记录，不因本次核心 smoke 通过而扩大结论。真实命令执行、虚拟化、Trace、生产/HA、空缓存离线 Bundle 均不在本次通过范围。
+- Worker Graph Lease 慢告警保留。现查显示共享块设备写入/同步排队是主要根因，未通过放宽阈值或删除告警掩盖。
