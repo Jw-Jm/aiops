@@ -23,6 +23,8 @@
         "dimm_hardware_fault",
         "csi_provisioner_failure",
         "node_runtime_failure",
+        "pod_image_pull_failure",
+        "service_no_ready_endpoints",
         "native_post_check"
       ]
     },
@@ -627,6 +629,128 @@
               "pvc-pending",
               "csi-error",
               "storage-path"
+            ],
+            "exclude": [
+              "healthy-primary",
+              "conflicting-required-facts",
+              "invalid-path",
+              "unreliable-clock"
+            ],
+            "toolAllowlist": [
+              "read_evidence",
+              "diagnostic_graph",
+              "impact_scope"
+            ],
+            "budget": {
+              "maxEvidence": 64,
+              "maxNodes": 200,
+              "maxEdges": 400,
+              "timeoutMs": 3000
+            },
+            "postCheck": "native-related-health/v1"
+          }
+        },
+        {
+          "const": {
+            "schemaVersion": "recipe-registry/v2",
+            "name": "pod-image-pull-failure",
+            "version": "v1",
+            "candidateType": "pod_image_pull_failure",
+            "entry": [
+              "Pod",
+              "Event"
+            ],
+            "graphDepth": 2,
+            "graphPlan": "single-query/v1",
+            "requiredEvidence": [
+              {
+                "key": "pod-pull-failing",
+                "predicate": "pod-pull-failing/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "image-pull-error",
+                "predicate": "image-pull-error/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "pod-path",
+                "predicate": "pod-path/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              }
+            ],
+            "optionalEvidence": [
+              "metric-context",
+              "recent-change"
+            ],
+            "confirm": [
+              "pod-pull-failing",
+              "image-pull-error",
+              "pod-path"
+            ],
+            "exclude": [
+              "healthy-primary",
+              "conflicting-required-facts",
+              "invalid-path",
+              "unreliable-clock"
+            ],
+            "toolAllowlist": [
+              "read_evidence",
+              "diagnostic_graph",
+              "impact_scope"
+            ],
+            "budget": {
+              "maxEvidence": 64,
+              "maxNodes": 200,
+              "maxEdges": 400,
+              "timeoutMs": 3000
+            },
+            "postCheck": "native-related-health/v1"
+          }
+        },
+        {
+          "const": {
+            "schemaVersion": "recipe-registry/v2",
+            "name": "service-no-endpoints",
+            "version": "v1",
+            "candidateType": "service_no_ready_endpoints",
+            "entry": [
+              "Service",
+              "EndpointSlice"
+            ],
+            "graphDepth": 2,
+            "graphPlan": "single-query/v1",
+            "requiredEvidence": [
+              {
+                "key": "service-no-ready-endpoints",
+                "predicate": "service-no-ready-endpoints/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "backend-unready",
+                "predicate": "backend-unready/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "service-selection",
+                "predicate": "service-selection/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              }
+            ],
+            "optionalEvidence": [
+              "metric-context",
+              "recent-change"
+            ],
+            "confirm": [
+              "service-no-ready-endpoints",
+              "backend-unready",
+              "service-selection"
             ],
             "exclude": [
               "healthy-primary",

@@ -81,13 +81,16 @@ func BuiltinVersion(name, version string) (Recipe, error) {
 			return r, nil
 		}
 	}
-	candidate := map[string]string{"dimm-failure": "dimm_hardware_fault", "pvc-csi-failure": "csi_provisioner_failure", "node-failure": "node_runtime_failure"}[name]
+	candidate := map[string]string{"dimm-failure": "dimm_hardware_fault", "pvc-csi-failure": "csi_provisioner_failure", "node-failure": "node_runtime_failure", "pod-image-pull-failure": "pod_image_pull_failure", "service-no-endpoints": "service_no_ready_endpoints"}[name]
 	if candidate == "" {
 		return Recipe{}, ErrRecipe
 	}
-	keys := map[string][]string{"dimm-failure": {"dimm-health", "ecc-uncorrectable", "hardware-path"}, "pvc-csi-failure": {"pvc-pending", "csi-error", "storage-path"}, "node-failure": {"node-not-ready", "kernel-fault", "node-path"}}[name]
-	r := Recipe{SchemaVersion: "recipe-registry/v2", Name: name, Version: version, CandidateType: candidate, Entry: map[string][]string{"dimm-failure": {"DIMM", "Node"}, "pvc-csi-failure": {"PersistentVolumeClaim", "Pod"}, "node-failure": {"Node", "Pod"}}[name], GraphDepth: 2, GraphPlan: "single-query/v1", OptionalEvidence: []string{"metric-context", "recent-change"}, Confirm: append([]string(nil), keys...), Exclude: []string{"healthy-primary", "conflicting-required-facts", "invalid-path", "unreliable-clock"}, ToolAllowlist: []string{"read_evidence", "diagnostic_graph", "impact_scope"}, PostCheck: "fresh-required-evidence/v1"}
+	keys := map[string][]string{"dimm-failure": {"dimm-health", "ecc-uncorrectable", "hardware-path"}, "pvc-csi-failure": {"pvc-pending", "csi-error", "storage-path"}, "node-failure": {"node-not-ready", "kernel-fault", "node-path"}, "pod-image-pull-failure": {"pod-pull-failing", "image-pull-error", "pod-path"}, "service-no-endpoints": {"service-no-ready-endpoints", "backend-unready", "service-selection"}}[name]
+	r := Recipe{SchemaVersion: "recipe-registry/v2", Name: name, Version: version, CandidateType: candidate, Entry: map[string][]string{"dimm-failure": {"DIMM", "Node"}, "pvc-csi-failure": {"PersistentVolumeClaim", "Pod"}, "node-failure": {"Node", "Pod"}, "pod-image-pull-failure": {"Pod", "Event"}, "service-no-endpoints": {"Service", "EndpointSlice"}}[name], GraphDepth: 2, GraphPlan: "single-query/v1", OptionalEvidence: []string{"metric-context", "recent-change"}, Confirm: append([]string(nil), keys...), Exclude: []string{"healthy-primary", "conflicting-required-facts", "invalid-path", "unreliable-clock"}, ToolAllowlist: []string{"read_evidence", "diagnostic_graph", "impact_scope"}, PostCheck: "fresh-required-evidence/v1"}
 	if name == "pvc-csi-failure" && version == "v2" {
+		r.PostCheck = "native-related-health/v1"
+	}
+	if name == "pod-image-pull-failure" || name == "service-no-endpoints" {
 		r.PostCheck = "native-related-health/v1"
 	}
 	if name == "dimm-failure" {

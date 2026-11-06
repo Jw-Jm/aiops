@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "recipe-registry/v2",
+  "name": "service-no-endpoints",
+  "version": "v1",
+  "candidateType": "service_no_ready_endpoints",
+  "entry": [
+    "Service",
+    "EndpointSlice"
+  ],
+  "graphDepth": 2,
+  "graphPlan": "single-query/v1",
+  "requiredEvidence": [
+    {
+      "key": "service-no-ready-endpoints",
+      "predicate": "service-no-ready-endpoints/v1",
+      "maxAgeSeconds": 300,
+      "required": true
+    },
+    {
+      "key": "backend-unready",
+      "predicate": "backend-unready/v1",
+      "maxAgeSeconds": 300,
+      "required": true
+    },
+    {
+      "key": "service-selection",
+      "predicate": "service-selection/v1",
+      "maxAgeSeconds": 300,
+      "required": true
+    }
+  ],
+  "optionalEvidence": [
+    "metric-context",
+    "recent-change"
+  ],
+  "confirm": [
+    "service-no-ready-endpoints",
+    "backend-unready",
+    "service-selection"
+  ],
+  "exclude": [
+    "healthy-primary",
+    "conflicting-required-facts",
+    "invalid-path",
+    "unreliable-clock"
+  ],
+  "toolAllowlist": [
+    "read_evidence",
+    "diagnostic_graph",
+    "impact_scope"
+  ],
+  "budget": {
+    "maxEvidence": 64,
+    "maxNodes": 200,
+    "maxEdges": 400,
+    "timeoutMs": 3000
+  },
+  "postCheck": "native-related-health/v1"
+}

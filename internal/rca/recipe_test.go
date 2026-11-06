@@ -11,7 +11,7 @@ import (
 )
 
 func TestRecipeFrozenGoldenConfirmation(t *testing.T) {
-	for _, name := range []string{"dimm-failure", "pvc-csi-failure", "node-failure"} {
+	for _, name := range []string{"dimm-failure", "pvc-csi-failure", "node-failure", "pod-image-pull-failure", "service-no-endpoints"} {
 		t.Run(name, func(t *testing.T) {
 			raw, err := os.ReadFile("../../test/fixtures/incidents/" + name + "/v1/expected.json")
 			if err != nil {
@@ -48,7 +48,13 @@ func TestRecipeFrozenGoldenConfirmation(t *testing.T) {
 					case "conflict":
 						e := es[0]
 						e.EvidenceID = "conflict"
-						e.Data = []byte(`{"health":"OK","phase":"Bound","ready":true}`)
+						e.Data = []byte(map[string]string{
+							"dimm-failure":           `{"health":"OK","phase":"Bound","ready":true}`,
+							"pvc-csi-failure":        `{"health":"OK","phase":"Bound","ready":true}`,
+							"node-failure":           `{"health":"OK","phase":"Bound","ready":true}`,
+							"pod-image-pull-failure": `{"nativeKind":"Pod","reason":"ImagePullFailure","imagePullFailing":false}`,
+							"service-no-endpoints":   `{"nativeKind":"EndpointSlice","reason":"ServiceNoEndpoints","readyEndpoints":2}`,
+						}[name])
 						e.ContentDigest = evidence.Digest(e.Data)
 						e.IndependenceGroup = "independent-healthy-observation"
 						input.Evidence = append(input.Evidence, e)
@@ -84,10 +90,10 @@ func TestRecipeFrozenGoldenConfirmation(t *testing.T) {
 	}
 }
 func frozenEvidence(name string, clock time.Time) ([]evidence.Evidence, graph.Result) {
-	payloads := map[string][]string{"dimm-failure": {`{"health":"Critical"}`, `{"uncorrectableECC":true}`}, "pvc-csi-failure": {`{"phase":"Pending"}`, `{"reason":"ProvisioningFailed","reportingController":"csi.fixture.example"}`}, "node-failure": {`{"ready":false}`, `{"reason":"KernelOops"}`}}
+	payloads := map[string][]string{"dimm-failure": {`{"health":"Critical"}`, `{"uncorrectableECC":true}`}, "pvc-csi-failure": {`{"phase":"Pending"}`, `{"reason":"ProvisioningFailed","reportingController":"csi.fixture.example"}`}, "node-failure": {`{"ready":false}`, `{"reason":"KernelOops"}`}, "pod-image-pull-failure": {`{"nativeKind":"Pod","reason":"ImagePullFailure","imagePullFailing":true}`, `{"nativeKind":"Event","reason":"ImagePullError","reportingController":"kubelet"}`}, "service-no-endpoints": {`{"nativeKind":"EndpointSlice","reason":"ServiceNoEndpoints","readyEndpoints":0}`, `{"nativeKind":"Pod","reason":"ImagePullFailure","imagePullFailing":true}`}}
 	out := []evidence.Evidence{}
 	for index, data := range payloads[name] {
-		out = append(out, evidence.Evidence{EvidenceID: []string{"e-health", "e-cause"}[index], ResourceCanonicalID: "root", SourceSystem: map[string]string{"dimm-failure": "redfish", "pvc-csi-failure": "kubernetes", "node-failure": "kubernetes"}[name], Type: []string{"resource_state", "event"}[index], QueryTemplateVersion: "sp05-signal/v1", TimeReliable: true, ObservedFrom: clock, ObservedTo: clock, EvaluatedAt: clock, IndependenceGroup: []string{"resource", "event"}[index], ReplayState: "archived_verified", ContentDigest: evidence.Digest([]byte(data)), Data: []byte(data)})
+		out = append(out, evidence.Evidence{EvidenceID: []string{"e-health", "e-cause"}[index], ResourceCanonicalID: "root", SourceSystem: map[string]string{"dimm-failure": "redfish", "pvc-csi-failure": "kubernetes", "node-failure": "kubernetes", "pod-image-pull-failure": "kubernetes", "service-no-endpoints": "kubernetes"}[name], Type: []string{"resource_state", "event"}[index], QueryTemplateVersion: "sp05-signal/v1", TimeReliable: true, ObservedFrom: clock, ObservedTo: clock, EvaluatedAt: clock, IndependenceGroup: []string{"resource", "event"}[index], ReplayState: "archived_verified", ContentDigest: evidence.Digest([]byte(data)), Data: []byte(data)})
 	}
 	if name == "node-failure" {
 		out[1].SourceSystem = "victorialogs"
@@ -96,13 +102,18 @@ func frozenEvidence(name string, clock time.Time) ([]evidence.Evidence, graph.Re
 		out[1].Data, _ = json.Marshal([]map[string]string{{"_TRANSPORT": "kernel", "_time": clock.Format(time.RFC3339Nano), "_msg": "BUG: unable to handle kernel NULL pointer dereference at 0000"}})
 		out[1].ContentDigest = evidence.Digest(out[1].Data)
 	}
-	primaryKind := map[string]string{"dimm-failure": "DIMM", "pvc-csi-failure": "PersistentVolumeClaim", "node-failure": "Node"}[name]
+	primaryKind := map[string]string{"dimm-failure": "DIMM", "pvc-csi-failure": "PersistentVolumeClaim", "node-failure": "Node", "pod-image-pull-failure": "Pod", "service-no-endpoints": "Service"}[name]
 	canonical := func(kind, uid string) string {
 		return resource.CanonicalID{Domain: "k8s", Tenant: "tenant-a", Scope: "cluster-a", APIGroup: "core", Kind: kind, StableID: uid}.String()
 	}
 	primary := canonical(primaryKind, "root")
 	for n := range out {
 		out[n].ResourceCanonicalID = primary
+	}
+	backend := canonical("Pod", "pod-b")
+	if name == "service-no-endpoints" {
+		// The backend cause vote lives on the selected Pod, not the Service.
+		out[1].ResourceCanonicalID = backend
 	}
 	node := canonical("Node", "node-a")
 	pod := canonical("Pod", "pod-a")
@@ -123,6 +134,14 @@ func frozenEvidence(name string, clock time.Time) ([]evidence.Evidence, graph.Re
 	case "dimm-failure":
 		g.Nodes = append(g.Nodes, resource.Entity{CanonicalID: server, Kind: "PhysicalServer"}, resource.Entity{CanonicalID: node, Kind: "Node"})
 		g.Edges = []resource.Relation{edge(primary, server, "component_of"), edge(server, node, "hosts"), edge(pod, node, "scheduled_on")}
+	case "pod-image-pull-failure":
+		g.Nodes = append(g.Nodes, resource.Entity{CanonicalID: node, Kind: "Node"})
+		g.Edges = []resource.Relation{edge(primary, node, "scheduled_on")}
+	case "service-no-endpoints":
+		g.Nodes = append(g.Nodes, resource.Entity{CanonicalID: backend, Kind: "Pod", Namespace: "apps"})
+		selector := edge(primary, backend, "selects_pod")
+		selector.Confidence = 0.95
+		g.Edges = []resource.Relation{selector}
 	}
 	return out, g
 }

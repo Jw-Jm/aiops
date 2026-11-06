@@ -1,0 +1,8 @@
+    sp05_pod_pull_service_endpoints_test.go:271: pull-a sufficient: {Candidate:pod_image_pull_failure Recipe:pod-image-pull-failure/v1 Status:confirmed Missing:[]}
+    sp05_pod_pull_service_endpoints_test.go:291: pull-b insufficient: {Candidate:pod_image_pull_failure Recipe:pod-image-pull-failure/v1 Status:unresolved Missing:[image-pull-error]}
+    sp05_pod_pull_service_endpoints_test.go:300: svc-empty insufficient: {Candidate:service_no_ready_endpoints Recipe:service-no-endpoints/v1 Status:unresolved Missing:[backend-unready service-selection]}
+    sp05_pod_pull_service_endpoints_test.go:309: svc-a sufficient: {Candidate:service_no_ready_endpoints Recipe:service-no-endpoints/v1 Status:confirmed Missing:[]}
+    sp05_pod_pull_service_endpoints_test.go:353: actual cluster batch-1 acceptance: pod image pull + service endpoint diagnosis, evidence sufficient/insufficient/recovered on real kubelet events, EndpointSlices and graph selection
+--- PASS: TestSP05ActualPodImagePullAndServiceNoEndpointsDiagnosis (360.98s)
+PASS
+ok  	ops-platform/test/integration	361.020s

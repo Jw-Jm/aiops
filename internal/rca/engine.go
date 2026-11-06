@@ -55,12 +55,28 @@ type Result struct {
 	GraphPlan     string       `json:"graphPlan"`
 }
 
+// A scope-limited graph marks topology beyond the authorized scope, not a
+// gap inside it (the analytics completeness doctrine). Visible nodes and
+// edges stay individually proven, so a partial flag raised only by
+// scope_limited never degrades an in-scope evidence judgment.
+func visibleScopeComplete(g graph.Result) bool {
+	if !g.Partial || len(g.Warnings) == 0 {
+		return false
+	}
+	for _, warning := range g.Warnings {
+		if warning != "scope_limited" {
+			return false
+		}
+	}
+	return true
+}
+
 func Evaluate(r Recipe, input Input) (Result, error) {
 	baseline, err := BuiltinVersion(r.Name, r.Version)
 	if err != nil || !sameJSON(baseline, r) || r.CandidateType == "native_post_check" {
 		return Result{}, ErrRecipe
 	}
-	out := Result{SchemaVersion: "rca-evaluation/v2", Status: "unresolved", Partial: input.Graph.Partial, RecipeVersion: r.Version, RecipeDigest: finding.Hash(r), Impact: input.Graph, GraphPlan: r.GraphPlan, Bundle: Bundle{Supporting: []string{}, Contradicting: []string{}, Missing: []string{}, DegradedSources: append([]string{}, input.Graph.DegradedSources...), Ranked: []api.RankedEvidence{}, Conflicts: []api.DiagnosticConflict{}}}
+	out := Result{SchemaVersion: "rca-evaluation/v2", Status: "unresolved", Partial: input.Graph.Partial && !visibleScopeComplete(input.Graph), RecipeVersion: r.Version, RecipeDigest: finding.Hash(r), Impact: input.Graph, GraphPlan: r.GraphPlan, Bundle: Bundle{Supporting: []string{}, Contradicting: []string{}, Missing: []string{}, DegradedSources: append([]string{}, input.Graph.DegradedSources...), Ranked: []api.RankedEvidence{}, Conflicts: []api.DiagnosticConflict{}}}
 	if len(input.Evidence) > r.Budget.MaxEvidence {
 		return out, fmt.Errorf("BUDGET_EXHAUSTED")
 	}
@@ -89,6 +105,12 @@ func Evaluate(r Recipe, input Input) (Result, error) {
 			continue
 		}
 		seen[e.EvidenceID] = e.ContentDigest
+		// A fresh native observation awaits durable archive verification. It
+		// carries no vote and is no degradation of verified evidence; if the
+		// archive never verifies it, the required fact stays Missing.
+		if e.ReplayState == "archive_pending" {
+			continue
+		}
 		if !e.TimeReliable || e.ObservedTo.After(input.EvaluatedAt) || e.ObservedTo.Before(input.EvaluatedAt.Add(-300*time.Second)) || e.ObservedFrom.After(input.To) || e.ObservedTo.Before(input.From) || e.ReplayState != "archived_verified" || e.ContentDigest != evidence.Digest(e.Data) || e.IndependenceGroup == "" {
 			out.Bundle.DegradedSources = append(out.Bundle.DegradedSources, "evidence/"+e.EvidenceID)
 			continue
@@ -98,6 +120,12 @@ func Evaluate(r Recipe, input Input) (Result, error) {
 		matched, contradicts := recipeFacts(r.Name, e, input.ResourceCanonicalID, input.EvaluatedAt)
 		if r.Name == "pvc-csi-failure" && slices.Contains(matched, "csi-error") && !csiSourceMatches(input, e) {
 			matched = nil
+		}
+		// A Service outage is judged with its selected backends: their own
+		// bounded facts are an independent cause vote, gated by the same graph
+		// that proves the selector relation.
+		if len(matched) == 0 && r.Name == "service-no-endpoints" && serviceSelectsPod(input, e.ResourceCanonicalID) {
+			matched, contradicts = backendUnreadyFact(e)
 		}
 		if contradicts {
 			out.Bundle.Contradicting = append(out.Bundle.Contradicting, e.EvidenceID)
@@ -126,7 +154,7 @@ func Evaluate(r Recipe, input Input) (Result, error) {
 		out.Bundle.Supporting = append(out.Bundle.Supporting, e.EvidenceID)
 		nodes = append(nodes, api.DiagnosticNode{CanonicalID: e.EvidenceID, Kind: api.NodeKindEvent, Attributes: map[string]any{"reason": "FailureEvidence", "message": r.CandidateType, "lastTimestamp": e.ObservedTo.Format(time.RFC3339Nano)}})
 	}
-	pathKey := map[string]string{"dimm-failure": "hardware-path", "pvc-csi-failure": "storage-path", "node-failure": "node-path"}[r.Name]
+	pathKey := map[string]string{"dimm-failure": "hardware-path", "pvc-csi-failure": "storage-path", "node-failure": "node-path", "pod-image-pull-failure": "pod-path", "service-no-endpoints": "service-selection"}[r.Name]
 	if recipePath(r.Name, input) {
 		keys[pathKey] = append([]string{}, out.Bundle.Supporting...)
 	}
@@ -240,6 +268,26 @@ func recipeFacts(name string, e evidence.Evidence, target string, evaluatedAt ti
 		if raw["ready"] == false {
 			return []string{"node-not-ready"}, false
 		}
+	case "pod-image-pull-failure":
+		if raw["nativeKind"] == "Pod" && raw["reason"] == "ImagePullFailure" {
+			if raw["imagePullFailing"] == false {
+				return nil, true
+			}
+			if raw["imagePullFailing"] == true {
+				return []string{"pod-pull-failing"}, false
+			}
+		}
+		if raw["nativeKind"] == "Event" && raw["reason"] == "ImagePullError" && raw["reportingController"] == "kubelet" {
+			return []string{"image-pull-error"}, false
+		}
+	case "service-no-endpoints":
+		if raw["nativeKind"] == "EndpointSlice" && raw["reason"] == "ServiceNoEndpoints" {
+			ready, _ := raw["readyEndpoints"].(float64)
+			if ready > 0 {
+				return nil, true
+			}
+			return []string{"service-no-ready-endpoints"}, false
+		}
 	}
 	return nil, false
 }
@@ -247,7 +295,7 @@ func recipeFacts(name string, e evidence.Evidence, target string, evaluatedAt ti
 // These checks validate only fixed Recipe path shapes returned by the bounded
 // Ariadne/ontology query; graph discovery and traversal stay in that kernel.
 func recipePath(name string, input Input) bool {
-	if input.Graph.Partial || input.Graph.Freshness != "fresh" {
+	if (input.Graph.Partial && !visibleScopeComplete(input.Graph)) || input.Graph.Freshness != "fresh" {
 		return false
 	}
 	kinds := map[string]string{}
@@ -256,7 +304,9 @@ func recipePath(name string, input Input) bool {
 	}
 	edges := []resource.Relation{}
 	for _, e := range input.Graph.Edges {
-		if e.ValidFrom.IsZero() || e.ObservedAt.IsZero() || e.Provenance.SourceRegistrationID == "" || e.Provenance.RuleVersion == "" || e.Provenance.ObservedAt.IsZero() || e.Confidence < 1 || e.ValidFrom.After(input.To) || (e.ValidTo != nil && !e.ValidTo.After(input.From)) {
+		// Selector matches are the one inferred relation admitted as path evidence
+	// (confidence 0.95); every other path kind is asserted or observed.
+	if e.ValidFrom.IsZero() || e.ObservedAt.IsZero() || e.Provenance.SourceRegistrationID == "" || e.Provenance.RuleVersion == "" || e.Provenance.ObservedAt.IsZero() || e.Confidence < 0.95 || e.ValidFrom.After(input.To) || (e.ValidTo != nil && !e.ValidTo.After(input.From)) {
 			continue
 		}
 		if kinds[e.From] == "" || kinds[e.To] == "" {
@@ -294,6 +344,34 @@ func recipePath(name string, input Input) bool {
 			}
 		}
 		return mounted && storage && driver
+	case "pod-image-pull-failure":
+		if kinds[target] != "Pod" {
+			return false
+		}
+		// Namespace-scoped collection never observes cluster-scoped kinds, so
+		// the anchoring edge is whichever real topology the source can see:
+		// the node (cluster grant), the owning workload, or an inbound
+		// service selection.
+		for _, e := range edges {
+			if e.Kind == "scheduled_on" && e.From == target && kinds[e.To] == "Node" {
+				return true
+			}
+			if e.Kind == "managed_by" && e.From == target && (kinds[e.To] == "Workload" || kinds[e.To] == "ReplicaSet" || kinds[e.To] == "Deployment" || kinds[e.To] == "StatefulSet" || kinds[e.To] == "DaemonSet" || kinds[e.To] == "Job") {
+				return true
+			}
+			if e.Kind == "selects_pod" && e.To == target && kinds[e.From] == "Service" {
+				return true
+			}
+		}
+	case "service-no-endpoints":
+		if kinds[target] != "Service" {
+			return false
+		}
+		for _, e := range edges {
+			if e.Kind == "selects_pod" && e.From == target && kinds[e.To] == "Pod" {
+				return true
+			}
+		}
 	case "dimm-failure":
 		if kinds[target] != "DIMM" {
 			return false
@@ -344,4 +422,31 @@ func csiSourceMatches(input Input, e evidence.Evidence) bool {
 		}
 	}
 	return false
+}
+
+// Only pods the target Service actually selects may contribute backend facts;
+// the selector relation is read from the same bounded graph as the path check.
+func serviceSelectsPod(input Input, pod string) bool {
+	for _, edge := range input.Graph.Edges {
+		if edge.Kind == "selects_pod" && edge.From == input.ResourceCanonicalID && edge.To == pod {
+			return true
+		}
+	}
+	return false
+}
+
+// A selected backend that cannot become ready is the independent cause vote
+// for an endpoint-less Service. Only bounded native pod facts participate.
+func backendUnreadyFact(e evidence.Evidence) ([]string, bool) {
+	if e.QueryTemplateVersion != "sp05-signal/v1" {
+		return nil, false
+	}
+	var raw map[string]any
+	if json.Unmarshal(e.Data, &raw) != nil || raw["nativeKind"] != "Pod" {
+		return nil, false
+	}
+	if raw["reason"] == "Unschedulable" || raw["imagePullFailing"] == true {
+		return []string{"backend-unready"}, false
+	}
+	return nil, false
 }

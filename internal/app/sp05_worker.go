@@ -175,6 +175,15 @@ func sp05RCAIncident(ctx context.Context, pool persistence.TxBeginner, archive *
 			recipeName = "dimm-failure"
 		}
 	}
+	// Symptoms name the fault class more precisely than the target kind: a Pod
+	// may fail scheduling, pulling or probing, each with its own recipe.
+	if symptoms, err := incidentSymptoms(ctx, pool, tenant, i.IncidentID); err == nil {
+		if slices.ContainsFunc(symptoms, func(s string) bool { return s == "ImagePullFailure" || s == "ImagePullError" }) {
+			recipeName = "pod-image-pull-failure"
+		} else if slices.Contains(symptoms, "ServiceNoEndpoints") {
+			recipeName = "service-no-endpoints"
+		}
+	}
 	clusterID, err := clusterContextID(ctx, pool, tenant, cluster.ClusterUID)
 	if err != nil {
 		return err
@@ -202,12 +211,15 @@ func sp05RCAIncident(ctx context.Context, pool persistence.TxBeginner, archive *
 	if err != nil {
 		return err
 	}
-	// Namespace incidents must not freeze neighboring cluster or namespace data their operators cannot read.
+	// Namespace incidents must not freeze neighboring namespace data their
+	// operators cannot read. Cluster-scoped topology (Node, StorageClass,
+	// CSIDriver) is path context, not neighbor data: the frozen golden
+	// contract expects it in a namespaced incident's bounded impact graph.
 	if i.Namespace != "" {
 		if !slices.Contains(graphScope.Namespaces, i.Namespace) {
 			return finding.ErrUnauthorized
 		}
-		graphScope.Namespaces = []string{i.Namespace}
+		graphScope.Namespaces = []string{i.Namespace, ""}
 		graphScope.ClusterScoped = false
 	}
 	input := rca.Input{ResourceCanonicalID: i.ResourceCanonicalID, From: now.Add(-5 * time.Minute), To: now, EvaluatedAt: now, Evidence: []evidence.Evidence{}, Graph: graph.Result{SchemaVersion: "rca-graph-unavailable/v2", Freshness: "unavailable", Partial: true, DegradedSources: []string{"graph"}, Nodes: []resource.Entity{}, Edges: []resource.Relation{}}}
@@ -321,6 +333,26 @@ func sp05WorkerGraphScope(ctx context.Context, pool persistence.TxBeginner, clus
 func resourceKind(raw string) (string, error) {
 	id, err := resource.ParseCanonicalID(raw)
 	return id.Kind, err
+}
+
+func incidentSymptoms(ctx context.Context, pool persistence.TxBeginner, tenant uuid.UUID, incidentID string) ([]string, error) {
+	out := []string{}
+	err := persistence.WithTenantTx(ctx, pool, tenant, func(tx pgx.Tx) error {
+		rows, err := tx.Query(ctx, `SELECT DISTINCT f.payload->>'normalizedSymptom' FROM incident.finding_links l JOIN finding.records f USING(tenant_id,finding_id) WHERE l.tenant_id=$1 AND l.incident_id=$2`, tenant, incidentID)
+		if err != nil {
+			return err
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var symptom string
+			if err := rows.Scan(&symptom); err != nil {
+				return err
+			}
+			out = append(out, symptom)
+		}
+		return rows.Err()
+	})
+	return out, err
 }
 
 // sp05HealthKeys are the business health keys one configured cluster source

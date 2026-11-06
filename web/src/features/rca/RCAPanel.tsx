@@ -108,6 +108,8 @@ export function RCAPanel({
                       dimm_hardware_fault: "内存硬件故障",
                       csi_provisioner_failure: "存储供应组件异常",
                       node_runtime_failure: "节点运行环境异常",
+                      pod_image_pull_failure: "镜像拉取失败",
+                      service_no_ready_endpoints: "服务无可用后端",
                     } as Record<string, string>
                   )[c.candidateType] ?? c.candidateType}
                   {revision.result.status !== "confirmed" ? "（待验证假设）" : ""}

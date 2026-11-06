@@ -20,7 +20,7 @@ import (
 // no labels, annotations, credentials, command text or arbitrary event messages.
 func HistoryProjection(o unstructured.Unstructured) map[string]any {
 	out := map[string]any{"kind": o.GetKind(), "uid": string(o.GetUID()), "name": o.GetName(), "namespace": o.GetNamespace()}
-	for _, path := range [][]string{{"status", "phase"}, {"status", "conditions"}, {"status", "containerStatuses"}, {"status", "initContainerStatuses"}, {"spec", "containers"}, {"spec", "initContainers"}, {"spec", "template", "spec", "containers"}, {"spec", "template", "spec", "initContainers"}, {"spec", "nodeName"}, {"spec", "volumeName"}, {"spec", "storageClassName"}, {"spec", "replicas"}, {"spec", "unschedulable"}, {"spec", "volumes"}, {"spec", "claimRef"}, {"spec", "csi", "driver"}, {"involvedObject"}, {"regarding"}, {"reason"}, {"type"}, {"reportingController"}, {"count"}} {
+	for _, path := range [][]string{{"status", "phase"}, {"status", "conditions"}, {"status", "containerStatuses"}, {"status", "initContainerStatuses"}, {"spec", "containers"}, {"spec", "initContainers"}, {"spec", "template", "spec", "containers"}, {"spec", "template", "spec", "initContainers"}, {"spec", "nodeName"}, {"spec", "volumeName"}, {"spec", "storageClassName"}, {"spec", "replicas"}, {"spec", "unschedulable"}, {"spec", "volumes"}, {"spec", "claimRef"}, {"spec", "csi", "driver"}, {"involvedObject"}, {"regarding"}, {"reason"}, {"type"}, {"reportingComponent"}, {"count"}} {
 		if value, ok, _ := unstructured.NestedFieldCopy(o.Object, path...); ok {
 			_ = unstructured.SetNestedField(out, value, path...)
 		}

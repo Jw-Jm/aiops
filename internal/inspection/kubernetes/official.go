@@ -6,6 +6,7 @@ import (
 	"ops-platform/internal/finding"
 	"ops-platform/internal/resource"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -97,19 +98,67 @@ func Signals(o unstructured.Unstructured) []Candidate {
 			add("storage", "PVCUnbound", o.GetKind(), string(o.GetUID()), o.GetNamespace(), "resolved", o.GetCreationTimestamp().Time)
 		}
 	}
+	if o.GetKind() == "Pod" {
+		pulling, running := false, false
+		for _, raw := range containerStates(o) {
+			state, _ := raw["state"].(map[string]any)
+			if wait, _ := state["waiting"].(map[string]any); wait != nil {
+				reason, _ := wait["reason"].(string)
+				if reason == "ErrImagePull" || reason == "ImagePullBackOff" || reason == "ErrImageNeverPull" {
+					pulling = true
+				}
+			}
+			if _, ok := state["running"].(map[string]any); ok && raw["ready"] == true {
+				running = true
+			}
+		}
+		if pulling {
+			add("image", "ImagePullFailure", "Pod", string(o.GetUID()), o.GetNamespace(), "firing", o.GetCreationTimestamp().Time)
+		} else if running {
+			// The running container also settles the kubelet pull-error
+			// occurrence: both symptoms describe the same pull condition.
+			add("image", "ImagePullFailure", "Pod", string(o.GetUID()), o.GetNamespace(), "resolved", o.GetCreationTimestamp().Time)
+			add("image", "ImagePullError", "Pod", string(o.GetUID()), o.GetNamespace(), "resolved", o.GetCreationTimestamp().Time)
+		}
+	}
+	if o.GetKind() == "EndpointSlice" {
+		if service := owningServiceUID(o); service != "" {
+			ready := 0
+			endpoints, _, _ := unstructured.NestedSlice(o.Object, "endpoints")
+			for _, raw := range endpoints {
+				endpoint, ok := raw.(map[string]any)
+				if !ok {
+					continue
+				}
+				conditions, _ := endpoint["conditions"].(map[string]any)
+				if unready, ok := conditions["ready"].(bool); ok && !unready {
+					continue
+				}
+				ready++
+			}
+			state := "firing"
+			if ready > 0 {
+				state = "resolved"
+			}
+			// shortcut: one occurrence per Service; multi-slice flapping
+			// (one full, one empty slice) is not aggregated, upgrade when
+			// services with >100 or topology-partitioned endpoints appear.
+			add("network", "ServiceNoEndpoints", "Service", service, o.GetNamespace(), state, o.GetCreationTimestamp().Time)
+		}
+	}
 	if o.GetKind() == "Event" {
 		reason, _, _ := unstructured.NestedString(o.Object, "reason")
 		eventType, _, _ := unstructured.NestedString(o.Object, "type")
+		kind, _, _ := unstructured.NestedString(o.Object, "involvedObject", "kind")
+		uid, _, _ := unstructured.NestedString(o.Object, "involvedObject", "uid")
+		ns, _, _ := unstructured.NestedString(o.Object, "involvedObject", "namespace")
+		ts, _, _ := unstructured.NestedString(o.Object, "firstTimestamp")
+		start, _ := time.Parse(time.RFC3339Nano, ts)
+		if start.IsZero() {
+			ts, _, _ = unstructured.NestedString(o.Object, "lastTimestamp")
+			start, _ = time.Parse(time.RFC3339Nano, ts)
+		}
 		if eventType == "Warning" && (reason == "FailedMount" || reason == "FailedAttachVolume" || reason == "ProvisioningFailed" || reason == "FailedScheduling") {
-			kind, _, _ := unstructured.NestedString(o.Object, "involvedObject", "kind")
-			uid, _, _ := unstructured.NestedString(o.Object, "involvedObject", "uid")
-			ns, _, _ := unstructured.NestedString(o.Object, "involvedObject", "namespace")
-			ts, _, _ := unstructured.NestedString(o.Object, "firstTimestamp")
-			start, _ := time.Parse(time.RFC3339Nano, ts)
-			if start.IsZero() {
-				ts, _, _ = unstructured.NestedString(o.Object, "lastTimestamp")
-				start, _ = time.Parse(time.RFC3339Nano, ts)
-			}
 			if uid != "" {
 				family := "storage"
 				if reason == "FailedScheduling" {
@@ -118,8 +167,40 @@ func Signals(o unstructured.Unstructured) []Candidate {
 				add(family, reason, kind, uid, ns, "firing", start)
 			}
 		}
+		// Kubelet reports pull failures as generic Failed/BackOff events; the
+		// bounded message is the only pull-specific discriminator.
+		if eventType == "Warning" && kind == "Pod" && uid != "" {
+			reporter, _, _ := unstructured.NestedString(o.Object, "reportingComponent")
+			if reporter == "" {
+				reporter, _, _ = unstructured.NestedString(o.Object, "source", "component")
+			}
+			message, _, _ := unstructured.NestedString(o.Object, "message")
+			if reporter == "kubelet" && (strings.Contains(message, "pull image") || strings.Contains(message, "ErrImagePull") || strings.Contains(message, "ImagePullBackOff") || strings.Contains(message, "pulling image")) {
+				add("image", "ImagePullError", "Pod", uid, ns, "firing", start)
+			}
+		}
 	}
 	return out
+}
+func containerStates(o unstructured.Unstructured) []map[string]any {
+	states := []map[string]any{}
+	for _, field := range []string{"containerStatuses", "initContainerStatuses"} {
+		statuses, _, _ := unstructured.NestedSlice(o.Object, "status", field)
+		for _, raw := range statuses {
+			if m, ok := raw.(map[string]any); ok {
+				states = append(states, m)
+			}
+		}
+	}
+	return states
+}
+func owningServiceUID(o unstructured.Unstructured) string {
+	for _, owner := range o.GetOwnerReferences() {
+		if owner.Kind == "Service" && owner.UID != "" {
+			return string(owner.UID)
+		}
+	}
+	return ""
 }
 func (c Candidate) CanonicalID(tenant, cluster string) string {
 	return resource.CanonicalID{Domain: "k8s", Tenant: tenant, Scope: cluster, APIGroup: "core", Kind: c.ResourceKind, StableID: c.ResourceUID}.String()

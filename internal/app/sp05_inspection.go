@@ -76,9 +76,17 @@ func InspectSP05Snapshot(ctx context.Context, cluster SP04Cluster, s kubernetes.
 			}
 			fact := map[string]any{"nativeKind": o.GetKind(), "nativeUID": string(o.GetUID()), "resourceVersion": o.GetResourceVersion(), "reason": c.NormalizedSymptom}
 			if o.GetKind() == "Event" {
-				reporter, _, _ := unstructured.NestedString(o.Object, "reportingController")
+				// Native core/v1 events carry reportingComponent; the legacy
+				// source.component is the fallback for older API servers.
+				reporter, _, _ := unstructured.NestedString(o.Object, "reportingComponent")
+				if reporter == "" {
+					reporter, _, _ = unstructured.NestedString(o.Object, "source", "component")
+				}
 				if reporter != "" {
 					fact["reportingController"] = reporter
+				}
+				if message, _, _ := unstructured.NestedString(o.Object, "message"); message != "" {
+					fact["message"] = message
 				}
 			}
 			switch c.NormalizedSymptom {
@@ -90,6 +98,10 @@ func InspectSP05Snapshot(ctx context.Context, cluster SP04Cluster, s kubernetes.
 				} else {
 					fact["phase"] = "Bound"
 				}
+			case "ImagePullFailure":
+				fact["imagePullFailing"] = c.State == "firing"
+			case "ServiceNoEndpoints":
+				fact["readyEndpoints"] = countReadyEndpoints(o)
 			}
 			raw, _ := json.Marshal(fact)
 			candidate := finding.FindingCandidate{ResourceCanonicalID: id, Namespace: c.Namespace, RuleID: c.RuleID, RuleFamily: c.RuleFamily, NormalizedSymptom: c.NormalizedSymptom, State: c.State, NativeIdentity: string(o.GetUID()) + "/" + o.GetResourceVersion(), IndependenceGroup: string(o.GetUID()), ObservedAt: observed, TimeReliable: c.TimeReliable, QueryTemplateVersion: "sp05-signal/v1", Data: raw}
@@ -99,4 +111,23 @@ func InspectSP05Snapshot(ctx context.Context, cluster SP04Cluster, s kubernetes.
 		}
 	}
 	return nil
+}
+
+// A missing conditions.ready on an EndpointSlice endpoint means ready, per the
+// discovery.k8s.io contract; only an explicit false marks it unready.
+func countReadyEndpoints(o unstructured.Unstructured) int {
+	ready := 0
+	endpoints, _, _ := unstructured.NestedSlice(o.Object, "endpoints")
+	for _, raw := range endpoints {
+		m, ok := raw.(map[string]any)
+		if !ok {
+			continue
+		}
+		conditions, _ := m["conditions"].(map[string]any)
+		if unready, ok := conditions["ready"].(bool); ok && !unready {
+			continue
+		}
+		ready++
+	}
+	return ready
 }

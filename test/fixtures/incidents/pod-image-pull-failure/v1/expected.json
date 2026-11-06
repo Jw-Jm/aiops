@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "golden-slice/v1",
+  "scenario": "pod-image-pull-failure",
+  "clock": "2026-11-06T00:00:00Z",
+  "ruleVersion": "v1",
+  "expected": {
+    "entityKinds": [
+      "Pod",
+      "Node"
+    ],
+    "relationKinds": [
+      "scheduled_on"
+    ],
+    "findingState": "firing",
+    "incidentState": "open",
+    "candidateType": "pod_image_pull_failure",
+    "requiredPredicates": [
+      "pod-pull-failing",
+      "image-pull-error",
+      "pod-path"
+    ],
+    "rcaStatus": "confirmed",
+    "missingStatus": "unresolved",
+    "conflictStatus": "unresolved",
+    "degradedStatus": "unresolved",
+    "impactDirect": [],
+    "impactPartial": false
+  },
+  "provenance": "Frozen from the 2026-11-06 batch-1 scope: kubelet ErrImagePull/ImagePullBackOff waiting reasons plus real kubelet pull-failure events observed on cluster mssc (registry.example.invalid probe)."
+}

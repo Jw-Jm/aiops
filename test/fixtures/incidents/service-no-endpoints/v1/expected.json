@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "golden-slice/v1",
+  "scenario": "service-no-endpoints",
+  "clock": "2026-11-06T00:00:00Z",
+  "ruleVersion": "v1",
+  "expected": {
+    "entityKinds": [
+      "Service",
+      "Pod"
+    ],
+    "relationKinds": [
+      "selects_pod"
+    ],
+    "findingState": "firing",
+    "incidentState": "open",
+    "candidateType": "service_no_ready_endpoints",
+    "requiredPredicates": [
+      "service-no-ready-endpoints",
+      "backend-unready",
+      "service-selection"
+    ],
+    "rcaStatus": "confirmed",
+    "missingStatus": "unresolved",
+    "conflictStatus": "unresolved",
+    "degradedStatus": "unresolved",
+    "impactDirect": [],
+    "impactPartial": false
+  },
+  "provenance": "Frozen from the 2026-11-06 batch-1 scope: EndpointSlice ready-endpoint counting with selector-gated backend facts; selector edges carry the production 0.95 confidence."
+}
