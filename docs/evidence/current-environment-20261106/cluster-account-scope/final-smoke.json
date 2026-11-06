@@ -1,0 +1,117 @@
+{
+  "at": "2026-11-06T01:58:12.737Z",
+  "origin": "https://192.168.0.63:30471",
+  "resources": [
+    {
+      "namespace": "kube-system",
+      "kind": "Pod",
+      "name": "coredns-6b5f954497-bm49k",
+      "count": 1
+    },
+    {
+      "namespace": "ops-current",
+      "kind": "Pod",
+      "name": "ops-seaweedfs-0",
+      "count": 1
+    },
+    {
+      "namespace": "__cluster__",
+      "kind": "Node",
+      "name": "mssc",
+      "count": 1
+    },
+    {
+      "namespace": "__cluster__",
+      "kind": "PersistentVolume",
+      "name": "ops-current-acceptance",
+      "count": 1
+    }
+  ],
+  "metrics": [
+    {
+      "datasetId": "metrics.pod-cpu",
+      "rows": 4,
+      "status": "partial",
+      "exact": false,
+      "requestId": "01a1ae93-f91b-7e89-9bb4-6ede686338af"
+    },
+    {
+      "datasetId": "metrics.pod-memory",
+      "rows": 4,
+      "status": "partial",
+      "exact": false,
+      "requestId": "01a1ae93-f9e4-7068-aeab-195079d2f7bd"
+    },
+    {
+      "datasetId": "metrics.pod-restarts",
+      "rows": 4,
+      "status": "partial",
+      "exact": false,
+      "requestId": "01a1ae93-fb75-7c2c-b5ba-138c52d45a9a"
+    },
+    {
+      "datasetId": "metrics.pod-phase",
+      "rows": 4,
+      "status": "partial",
+      "exact": false,
+      "requestId": "01a1ae93-fd07-7988-ae3e-ed1475e5acda"
+    }
+  ],
+  "roles": [
+    {
+      "role": "operator",
+      "scope": {
+        "clusterUids": [
+          "79014400-9453-4cb4-9678-0fae47981d79"
+        ],
+        "namespaces": []
+      }
+    },
+    {
+      "role": "platform_admin",
+      "scope": {
+        "clusterUids": [],
+        "namespaces": []
+      }
+    }
+  ],
+  "permissionsUI": true,
+  "foreignCluster": 403,
+  "capabilities": {
+    "apiReady": true,
+    "cdi": {
+      "reason": "ADR0008-development-deferred",
+      "status": "disabled",
+      "verification": "unverified"
+    },
+    "commandExecution": {
+      "reason": "SP07-runtime-not-configured",
+      "status": "disabled",
+      "verification": "unverified"
+    },
+    "graphReady": true,
+    "investigation": {
+      "enabled": true,
+      "readOnly": true,
+      "reason": "configured-awaiting-successful-job",
+      "status": "unverified"
+    },
+    "kubevirt": {
+      "reason": "ADR0008-development-deferred",
+      "status": "disabled",
+      "verification": "unverified"
+    },
+    "pyrca": {
+      "reason": "ADR0020-not-admitted",
+      "status": "disabled"
+    },
+    "schemaVersion": "platform-capabilities/v1",
+    "sourceDegraded": false
+  },
+  "logs": {
+    "queryId": "0ca4035b-e956-40f1-a13c-dfe904e31cd9",
+    "returned": 20,
+    "status": "partial"
+  },
+  "status": "passed"
+}

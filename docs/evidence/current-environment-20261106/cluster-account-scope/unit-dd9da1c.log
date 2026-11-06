@@ -1,0 +1,79 @@
+?   	ops-platform/cmd/command-runner	[no test files]
+ok  	ops-platform/cmd/db-migrate	(cached)
+ok  	ops-platform/cmd/opsctl	16.399s
+?   	ops-platform/cmd/platform-api	[no test files]
+?   	ops-platform/cmd/platform-worker	[no test files]
+ok  	ops-platform/internal/action	0.333s
+ok  	ops-platform/internal/analytics	1.106s
+ok  	ops-platform/internal/app	12.119s
+ok  	ops-platform/internal/archive	(cached)
+ok  	ops-platform/internal/assistant	0.282s
+ok  	ops-platform/internal/audit	(cached)
+ok  	ops-platform/internal/auth	(cached)
+ok  	ops-platform/internal/authz	(cached)
+ok  	ops-platform/internal/bootstrap	(cached)
+--- FAIL: TestOfflineMigrationToolRequiresSeparateExactSourceAdmission (0.00s)
+    migration_admission_test.go:20: migration tool requires its separate exact source/license closure
+--- FAIL: TestAMD64MigrationRequiresIndependentlyRebuiltAndTestedPair (0.00s)
+    migration_admission_test.go:38: migration tool requires its separate exact source/license closure
+FAIL
+FAIL	ops-platform/internal/bundle	28.581s
+ok  	ops-platform/internal/bundle/drivers	(cached)
+ok  	ops-platform/internal/configregistry	0.201s
+?   	ops-platform/internal/contract	[no test files]
+ok  	ops-platform/internal/crypto	(cached)
+?   	ops-platform/internal/datascope	[no test files]
+ok  	ops-platform/internal/evidence	0.181s
+ok  	ops-platform/internal/finding	0.125s
+ok  	ops-platform/internal/graph	1.578s
+--- FAIL: TestFaultChainRelationReadKeepsFrozenIdentityWindowAndSelection (0.01s)
+    --- FAIL: TestFaultChainRelationReadKeepsFrozenIdentityWindowAndSelection/outside-namespace (0.01s)
+        assistant_fault_chain_test.go:103: unfrozen relation request admitted
+FAIL
+FAIL	ops-platform/internal/httpapi	2.261s
+ok  	ops-platform/internal/identity	(cached)
+ok  	ops-platform/internal/incident	0.165s
+ok  	ops-platform/internal/inspection/hardware	(cached)
+ok  	ops-platform/internal/inspection/kubernetes	(cached)
+ok  	ops-platform/internal/inspection/npd	(cached)
+?   	ops-platform/internal/integrations	[no test files]
+ok  	ops-platform/internal/integrations/deepflow	4.862s
+ok  	ops-platform/internal/integrations/k8sgpt	0.454s
+ok  	ops-platform/internal/integrations/keycloak	(cached)
+ok  	ops-platform/internal/integrations/kubernetes	20.924s
+ok  	ops-platform/internal/integrations/openbao	2.093s
+ok  	ops-platform/internal/integrations/redfish	0.380s
+ok  	ops-platform/internal/integrations/s3	(cached)
+?   	ops-platform/internal/integrations/victorialogs	[no test files]
+?   	ops-platform/internal/integrations/victorialogs/adapter	[no test files]
+?   	ops-platform/internal/integrations/victoriametrics	[no test files]
+?   	ops-platform/internal/integrations/victoriametrics/adapter	[no test files]
+?   	ops-platform/internal/integrations/vmalert	[no test files]
+ok  	ops-platform/internal/investigation	0.213s
+ok  	ops-platform/internal/investigation/mcp	0.208s
+ok  	ops-platform/internal/investigation/tools	0.138s
+ok  	ops-platform/internal/modelprofile	0.081s
+ok  	ops-platform/internal/observability	(cached)
+ok  	ops-platform/internal/observationquery	0.725s
+ok  	ops-platform/internal/persistence	(cached)
+?   	ops-platform/internal/persistence/dbgen	[no test files]
+ok  	ops-platform/internal/policy	0.150s
+ok  	ops-platform/internal/profile	0.390s
+--- FAIL: TestDIMMFixedPlanComposesRealKernelAndHonorsNamespaceScope (0.00s)
+    impact_test.go:48: scope leak: {ObservationSources:[] Summary:<nil> DirectlyAffected:[hardware+v1://tenant-a/cluster-a/redfish/PhysicalServer/server] IndirectlyAffected:[k8s+v1://tenant-a/cluster-a/core/Node/node-a k8s+v1://tenant-a/cluster-a/core/Pod/pod-a] DependencyOnly:[] SchemaVersion:resource-graph/v2 GraphRevision:{OwnerEpoch:1 GraphGeneration:3} OwnerInstance:worker-a CollectedAt:2026-11-06 10:03:19.990163171 +0800 CST m=+0.066166097 Freshness:fresh Partial:false Warnings:[] DegradedSources:[] Nodes:[{SourceRefs:[hardware] FirstObservedAt:2026-11-06 02:03:18.988782327 +0000 UTC CanonicalID:hardware+v1://tenant-a/cluster-a/redfish/DIMM/server%2FDIMM1 Kind:DIMM Namespace: Name:hardware-01de93e1ee4b9737153cd0cfafc3ad6a9463cd879ad71345b90a72f963abac91 Labels:map[] Attributes:map[health:unknown resourceDomain:hardware] UpdatedAt:2026-11-06 02:03:18.988782327 +0000 UTC} {SourceRefs:[hardware] FirstObservedAt:2026-11-06 02:03:18.988782327 +0000 UTC CanonicalID:hardware+v1://tenant-a/cluster-a/redfish/PhysicalServer/server Kind:PhysicalServer Namespace: Name:hardware-74f0797c64e3938cd5db749e238e3861c3d167e3c99f84e8af60b5d706a89a6b Labels:map[] Attributes:map[health:unknown resourceDomain:hardware] UpdatedAt:2026-11-06 02:03:18.988782327 +0000 UTC} {SourceRefs:[] FirstObservedAt:2026-11-06 02:03:18.988782327 +0000 UTC CanonicalID:k8s+v1://tenant-a/cluster-a/core/Node/node-a Kind:Node Namespace: Name:node-a Labels:map[] Attributes:map[health:unknown resourceDomain:kubernetes] UpdatedAt:2026-11-06 02:03:18.988782327 +0000 UTC} {SourceRefs:[] FirstObservedAt:2026-11-06 02:03:18.988782327 +0000 UTC CanonicalID:k8s+v1://tenant-a/cluster-a/core/Pod/pod-a Kind:Pod Namespace:apps Name:pod-a Labels:map[] Attributes:map[health:unknown resourceDomain:kubernetes] UpdatedAt:2026-11-06 02:03:18.988782327 +0000 UTC}] Edges:[{From:hardware+v1://tenant-a/cluster-a/redfish/DIMM/server%2FDIMM1 To:hardware+v1://tenant-a/cluster-a/redfish/PhysicalServer/server Kind:component_of Provenance:{SourceRegistrationID:hardware RuleVersion:fixed-input/v1 SourceValues:map[] ObservedAt:2026-11-06 10:03:18.988782327 +0800 CST m=-0.935214744} Confidence:1 ObservedAt:2026-11-06 10:03:18.988782327 +0800 CST m=-0.935214744 ValidFrom:2026-11-06 10:03:18.988782327 +0800 CST m=-0.935214744 ValidTo:<nil> TTLSeconds:600} {From:hardware+v1://tenant-a/cluster-a/redfish/PhysicalServer/server To:k8s+v1://tenant-a/cluster-a/core/Node/node-a Kind:hosts Provenance:{SourceRegistrationID:hardware RuleVersion:fixed-input/v1 SourceValues:map[] ObservedAt:2026-11-06 10:03:18.988782327 +0800 CST m=-0.935214744} Confidence:1 ObservedAt:2026-11-06 10:03:18.988782327 +0800 CST m=-0.935214744 ValidFrom:2026-11-06 10:03:18.988782327 +0800 CST m=-0.935214744 ValidTo:<nil> TTLSeconds:600} {From:k8s+v1://tenant-a/cluster-a/core/Pod/pod-a To:k8s+v1://tenant-a/cluster-a/core/Node/node-a Kind:scheduled_on Provenance:{SourceRegistrationID: RuleVersion:ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1 SourceValues:map[] ObservedAt:2026-11-06 02:03:18.988782327 +0000 UTC} Confidence:1 ObservedAt:2026-11-06 02:03:18.988782327 +0000 UTC ValidFrom:2026-11-06 02:03:18.988782327 +0000 UTC ValidTo:<nil> TTLSeconds:0}] Budgets:{MaxDepth:2 StorageMaxDepth:2 MaxNodes:200 MaxEdges:400 NodeCount:4 EdgeCount:3 Truncated:false TruncationReasons:[]} RankedEvidence:[] Conflicts:[] NextCanonicalID:} <nil>
+FAIL
+FAIL	ops-platform/internal/rca	0.105s
+ok  	ops-platform/internal/resource	(cached)
+ok  	ops-platform/internal/resourcestore	0.088s
+ok  	ops-platform/internal/source	(cached)
+ok  	ops-platform/internal/supplychain	(cached)
+ok  	ops-platform/internal/tenant	(cached)
+?   	ops-platform/internal/upstream/corootcheck	[no test files]
+?   	ops-platform/internal/upstream/keepmodel	[no test files]
+?   	ops-platform/internal/upstream/metal3	[no test files]
+?   	ops-platform/internal/upstream/ontology/api	[no test files]
+?   	ops-platform/internal/upstream/ontology/model	[no test files]
+?   	ops-platform/internal/upstream/ontology/service/diagnostic	[no test files]
+?   	ops-platform/gen/api	[no test files]
+?   	ops-platform/gen/internalgraph	[no test files]
+FAIL

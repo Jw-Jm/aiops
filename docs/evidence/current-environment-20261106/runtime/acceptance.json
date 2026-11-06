@@ -1,27 +1,30 @@
 {
-  "at": "2026-11-06T00:38:00.905188+00:00",
+  "at": "2026-11-06T02:06:35Z",
   "status": "passed_core",
-  "commit": "9372674a87201a4ccaab6737a1019808ea41ffd5",
+  "commit": "dd9da1cca0f87d5bd943faee74f883648c916413",
   "namespace": "ops-current",
   "namespaceUID": "c4dc825f-0897-417b-a876-f151e7783629",
   "origin": "https://192.168.0.63:30471",
   "database": "ops_current",
   "schema": 74,
   "checks": [
-    "native login and MFA enrollment",
-    "explicit independent admin/operator roles and foreign-scope denial",
-    "four native metric trends and guards",
-    "native and archived log capabilities, archived query and persisted history",
-    "real PVC finding, incident acknowledgement, mitigation, automatic recovery and UI closure",
-    "namespace-scoped RCA and archived evidence",
-    "signed execution profile publication, command execution disabled",
-    "real audit-assistant model/worker roundtrip",
-    "no legacy active business workloads or runtime hostPath dependencies"
+    "deployed API, Worker, investigator, and Web artifacts match release dd9da1cca0f87d5bd943faee74f883648c916413",
+    "authorization UI offers operator, platform administrator, and administrator/operator only",
+    "cluster-scoped operator grant works and foreign-cluster reads return 403",
+    "Kubernetes, metrics, and logs sources share the registered 31-namespace scope at revision 2",
+    "four real CoreDNS metric families return rows through the platform API",
+    "cluster log discovery is bounded to two cluster-level list requests with source, authorization, canonical-ID, pagination, payload, and result-count guards",
+    "final archived log query returns 20 redacted samples and a durable result",
+    "post-revision-2 incident detail, timeline, evidence, and RCA return 200",
+    "pre-revision-2 incident evidence remains rejected by source-revision fencing",
+    "pre-release backup 20261106T020242Z contains PG, configuration, namespace, and OpenBao material privately"
   ],
   "knownLimitations": [
-    "Operational resource assistant submission is rejected with 403 for namespace-only authorization; no privileges were broadened. Audit data-query model roundtrip completed.",
-    "Global graph capability can report partial/degraded; namespace-bound resource, metrics, logs and incident reads were verified separately.",
-    "Command execution remains configuration-only and disabled, matching the previous authorized scope.",
-    "KubeVirt/CDI, Trace, production/HA and empty-cache offline Bundle acceptance remain deferred or unverified."
+    "Three Go unit failures in bundle migration admission, fault-chain relation scope, and DIMM impact scope reproduce identically on parent commit 406159e; they are unrelated to the internal/app observation query change.",
+    "The web unit suite passes all 267 assertions but exits nonzero from three existing asynchronous window-is-not-defined teardown errors.",
+    "Incident 01a1ae35-7bdd-7af0-93e7-3d5c93f6fea4 was created at source revision 1; its evidence and RCA remain forbidden after the source moved to revision 2.",
+    "Global capability, resource-assistant policy, and ordinary investigation states remain bounded by their own receipts; this core acceptance does not broaden them.",
+    "Command execution remains configuration-only and disabled.",
+    "KubeVirt/CDI, Trace, production/HA, and empty-cache offline Bundle acceptance remain deferred or unverified."
   ]
 }

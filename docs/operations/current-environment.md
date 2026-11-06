@@ -33,7 +33,7 @@
 
 `current` 是已验收版本的原子指针；Pod 镜像和 Web 的 bind mount 仍明确引用不可变版本，不通过改 symlink 偷换运行中的文件。业务数据不放进 release，不因升级而重建。应用使用 Deployment；依赖镜像及应用镜像均固定内容摘要，禁止自动拉取未准入材料。
 
-当前应用源码版本为 `9372674a87201a4ccaab6737a1019808ea41ffd5`。运维工具后续可单独提交更新，不能因此声称应用二进制也已升级。实际版本以部署主机的 `current/manifest.json` 为准。
+当前应用源码版本为 `dd9da1cca0f87d5bd943faee74f883648c916413`；初始 current 版本 `9372674a87201a4ccaab6737a1019808ea41ffd5` 保留为回滚发布。运维工具后续可单独提交更新，不能因此声称应用二进制也已升级。实际版本以部署主机的 `current/manifest.json` 为准。
 
 应用、Bao、归档、KSM、指标和采集器归属 `ops-current`；PostgreSQL、VictoriaLogs 和 Web 是同一环境下的独立 Docker 容器。它们的数据和配置全部位于 `/data/ops-current`，不能依赖旧 namespace 或旧代际 hostPath。共享 Kubernetes 控制面、CNI 和独立观测目标不是第二套 OPS 业务栈，不随业务升级重建。
 

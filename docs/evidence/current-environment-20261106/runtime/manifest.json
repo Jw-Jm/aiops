@@ -1,24 +1,24 @@
 {
   "schemaVersion": "ops-current-release/v1",
-  "commit": "9372674a87201a4ccaab6737a1019808ea41ffd5",
+  "commit": "dd9da1cca0f87d5bd943faee74f883648c916413",
   "namespace": "ops-current",
   "namespaceUID": "c4dc825f-0897-417b-a876-f151e7783629",
   "database": "ops_current",
   "databaseSchema": 74,
   "images": {
     "api": {
-      "tag": "ops.local/current/platform-api:9372674",
-      "image": "ops.local/current/platform-api@sha256:0979cd69822b32d88b5beae4af461844310a1eb2895d50ae4cd3fde71f5d5b52",
-      "manifestDigest": "sha256:0979cd69822b32d88b5beae4af461844310a1eb2895d50ae4cd3fde71f5d5b52",
-      "imageID": "sha256:a7acc6519fa716213c7d448063155b33811875e11b45a80f75519c6e54c088f4",
-      "binarySHA256": "8de99b550420b79bd880a4cef6a59cdb804df51da98c861348bdc2021899270f"
+      "tag": "ops.local/current/platform-api:dd9da1cca0f8",
+      "image": "ops.local/current/platform-api@sha256:1bb010206acbd932e50e280bd3d79091917d514fe945c5ea17c08b5d8129c7d5",
+      "manifestDigest": "sha256:1bb010206acbd932e50e280bd3d79091917d514fe945c5ea17c08b5d8129c7d5",
+      "imageID": "sha256:be042c3deed1a4227a1576c5e01e55c18d5927780a06b3954f6bffe9e04e52e0",
+      "binarySHA256": "3c9d521c1bb25b0c2444221cdc164e3b5da15469036d63bedd98c2831995bce9"
     },
     "worker": {
-      "tag": "ops.local/current/platform-worker:9372674-current1",
-      "image": "ops.local/current/platform-worker@sha256:a2828f57c0936083e9abb935c752bffb3b5c43721164306928d94403285990d2",
-      "manifestDigest": "sha256:a2828f57c0936083e9abb935c752bffb3b5c43721164306928d94403285990d2",
-      "imageID": "sha256:dcbbc97724a8c651626a9854803792845c19fa71f5b919bec664f858d924b9ab",
-      "binarySHA256": "ab17c7919ae82e318b510b4518432e963bc84ce971bbcbca28b9d49a280d4310"
+      "tag": "ops.local/current/platform-worker:dd9da1cca0f8",
+      "image": "ops.local/current/platform-worker@sha256:cc011764a891f0041959143facbbd2548b5d1192fef74a7ac5de5bbdb61f3893",
+      "manifestDigest": "sha256:cc011764a891f0041959143facbbd2548b5d1192fef74a7ac5de5bbdb61f3893",
+      "imageID": "sha256:c7ad4ed320faf12eeebf2f8b1d200c9da3ca1a19bd94fd07ea094b3633394fa6",
+      "binarySHA256": "0d17e39e96e269d6af05d6bec645cfc3bc3296abcaabef07752e76ba80f3b514"
     },
     "investigator": {
       "tag": "ops.local/current/investigator:9372674",
@@ -27,13 +27,15 @@
       "imageID": "sha256:47431dedb53f609d3f8c57ad67d052170286011a11393eaa499e799f2df3774f"
     }
   },
-  "runtimeConfigSHA256": "a1179b19d54c57d7a585b51c1b7e9dde386e392c9994bd891c2b4f4fbc0db0f0",
-  "webIndexSHA256": "e8731c962fcd987c4f21692f6cc74e97334d5740404642b506c011b3bc2815ec",
-  "acceptedAt": "2026-11-06T00:38:00.905188+00:00",
+  "runtimeConfigSHA256": "257484d768207818463d0aac95fe1d473ffa190641e6ff7448a996e52ac084e5",
+  "webIndexSHA256": "315c2444e8a8637cad0dbdd2d8b6ab87cf25e1ab34fc2782d7491befc1c20b1d",
+  "acceptedAt": "2026-11-06T02:06:35Z",
   "knownLimitations": [
-    "Operational resource assistant submission is rejected with 403 for namespace-only authorization; no privileges were broadened. Audit data-query model roundtrip completed.",
-    "Global graph capability can report partial/degraded; namespace-bound resource, metrics, logs and incident reads were verified separately.",
-    "Command execution remains configuration-only and disabled, matching the previous authorized scope.",
-    "KubeVirt/CDI, Trace, production/HA and empty-cache offline Bundle acceptance remain deferred or unverified."
+    "Three Go unit failures in bundle migration admission, fault-chain relation scope, and DIMM impact scope reproduce identically on parent commit 406159e; they are unrelated to the internal/app observation query change.",
+    "The web unit suite passes all 267 assertions but exits nonzero from three existing asynchronous window-is-not-defined teardown errors.",
+    "Incident 01a1ae35-7bdd-7af0-93e7-3d5c93f6fea4 was created at source revision 1; its evidence and RCA remain forbidden after the source moved to revision 2.",
+    "Global capability, resource-assistant policy, and ordinary investigation states remain bounded by their own receipts; this core acceptance does not broaden them.",
+    "Command execution remains configuration-only and disabled.",
+    "KubeVirt/CDI, Trace, production/HA, and empty-cache offline Bundle acceptance remain deferred or unverified."
   ]
 }
