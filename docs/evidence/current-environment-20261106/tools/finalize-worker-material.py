@@ -1,0 +1,11 @@
+from pathlib import Path
+import json,subprocess,hashlib
+r=Path('/data/ops-current');rel=r/'releases/9372674a87201a4ccaab6737a1019808ea41ffd5';p=rel/'images.json';images=json.loads(p.read_text());directory=rel/'image-worker-legal';directory.mkdir(exist_ok=True)
+source=rel/'materials/k8sgpt-runtime-source-amd64.tar';h=hashlib.sha256()
+with source.open('rb')as f:
+ for b in iter(lambda:f.read(1048576),b''):h.update(b)
+assert h.hexdigest()=='1e79bee49bab0acf5ba40b0ad732bccb7d9a310105c57aa571d414e001956948'
+manifest=json.loads((rel/'image-worker/legal/k8sgpt/SOURCE-DISTRIBUTION.json').read_text());manifest['sourceMaterial']='k8sgpt-runtime-source-amd64.tar';(directory/'SOURCE-DISTRIBUTION.json').write_text(json.dumps(manifest,indent=2)+'\n');(directory/'Dockerfile').write_text('FROM '+images['worker']['imageID']+'\nCOPY SOURCE-DISTRIBUTION.json /usr/share/ops/legal/k8sgpt/SOURCE-DISTRIBUTION.json\n')
+tag='ops.local/current/platform-worker:9372674-current1';proc=subprocess.run(['docker','build','--network=none','--pull=false','-t',tag,str(directory)],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True);(r/'evidence/worker-material-final.log').write_text(proc.stdout);assert proc.returncode==0
+archive=rel/'platform-worker-current1.tar';subprocess.run(['docker','save','-o',str(archive),tag],check=True);subprocess.run(['ctr','-n','k8s.io','images','import',str(archive)],check=True,stdout=subprocess.DEVNULL);lines=subprocess.check_output(['ctr','-n','k8s.io','images','ls'],text=True).splitlines();digest=next(x.split()[2]for x in lines if x.split()[0]==tag);ref='ops.local/current/platform-worker@'+digest;subprocess.run(['ctr','-n','k8s.io','images','tag',tag,ref],check=True,stdout=subprocess.DEVNULL)
+images['worker'].update(tag=tag,image=ref,manifestDigest=digest,imageID=json.loads(subprocess.check_output(['docker','image','inspect',tag]))[0]['Id']);p.write_text(json.dumps(images,indent=2)+'\n');(rel/'materials.json').write_text(json.dumps({'k8sgpt-runtime-source-amd64.tar':{'sha256':h.hexdigest(),'bytes':source.stat().st_size}},indent=2)+'\n');subprocess.run(['kubectl','set','image','deployment/ops-worker','worker='+ref,'-n','ops-current'],check=True,stdout=subprocess.DEVNULL);print('Worker source distribution now refers to material retained in this release, without a legacy directory dependency')

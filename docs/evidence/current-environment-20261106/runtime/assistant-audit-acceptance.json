@@ -1,0 +1,948 @@
+{
+  "at": "2026-11-06T00:24:51.050Z",
+  "capabilities": {
+    "status": 200,
+    "body": {
+      "data": {
+        "catalog": {
+          "schemaVersion": "analysis-catalog/v1",
+          "version": "analysis-catalog/v1",
+          "datasets": [
+            {
+              "operations": [
+                "aggregate"
+              ],
+              "id": "resources.current",
+              "name": "当前资源统计",
+              "description": "指定非虚拟化 Kubernetes 资源类型的当前授权快照统计；不提供历史资源数量。",
+              "authorizationDomain": "operational",
+              "source": "graph",
+              "templateVersion": "resources-current-summary/v1",
+              "metric": "resource_count",
+              "unit": "resources",
+              "calculation": "按真实 Canonical ID 统计；复用 Graph 完整授权范围 summary，先授权再筛选和聚合。",
+              "dimensions": [
+                "kind",
+                "health"
+              ],
+              "kinds": [
+                "Pod",
+                "Node",
+                "Deployment",
+                "StatefulSet",
+                "DaemonSet",
+                "Service",
+                "PersistentVolumeClaim",
+                "PersistentVolume",
+                "Namespace",
+                "Job",
+                "CronJob",
+                "ReplicaSet",
+                "ConfigMap",
+                "Secret",
+                "ServiceAccount",
+                "Ingress",
+                "EndpointSlice",
+                "Endpoints",
+                "Event"
+              ],
+              "clusterScopedKinds": [
+                "Node",
+                "PersistentVolume",
+                "Namespace"
+              ],
+              "filters": [
+                "kind",
+                "namespace",
+                "name",
+                "health"
+              ],
+              "requiredFilters": [
+                "kind"
+              ],
+              "healthValues": [
+                "normal",
+                "abnormal",
+                "unknown",
+                "degraded"
+              ],
+              "maxGroups": 50,
+              "historySupported": false,
+              "zeroMeaning": "只有 fresh、完整且来源无降级的成功快照才可以报告精确零。"
+            },
+            {
+              "operations": [
+                "aggregate"
+              ],
+              "id": "findings.occurrences",
+              "name": "告警 occurrence 统计",
+              "description": "每个已校验 occurrence 只统计一次；使用可靠 startsAt，排除旧 Schema 和不可靠时间。",
+              "authorizationDomain": "operational",
+              "source": "postgresql",
+              "templateVersion": "findings.occurrences/v1",
+              "metric": "occurrence_count",
+              "unit": "findings",
+              "calculation": "每个已校验 occurrence 只统计一次；使用可靠 startsAt，排除旧 Schema 和不可靠时间。",
+              "dimensions": [
+                "namespace",
+                "state",
+                "severity",
+                "day"
+              ],
+              "kinds": [],
+              "clusterScopedKinds": [],
+              "filters": [
+                "namespace",
+                "state",
+                "severity"
+              ],
+              "requiredFilters": [],
+              "healthValues": [],
+              "maxGroups": 50,
+              "historySupported": true,
+              "zeroMeaning": "授权过滤后的成功控制面快照为零；不能推断物理环境不存在故障。"
+            },
+            {
+              "operations": [
+                "aggregate"
+              ],
+              "id": "incidents.records",
+              "name": "Incident 记录统计",
+              "description": "按 Incident ID 去重；全部关联 Finding 必须在授权范围。",
+              "authorizationDomain": "operational",
+              "source": "postgresql",
+              "templateVersion": "incidents.records/v1",
+              "metric": "incident_count",
+              "unit": "incidents",
+              "calculation": "按 Incident ID 去重；全部关联 Finding 必须在授权范围。",
+              "dimensions": [
+                "namespace",
+                "state",
+                "day"
+              ],
+              "kinds": [],
+              "clusterScopedKinds": [],
+              "filters": [
+                "namespace",
+                "state"
+              ],
+              "requiredFilters": [],
+              "healthValues": [],
+              "maxGroups": 50,
+              "historySupported": true,
+              "zeroMeaning": "授权过滤后的成功控制面快照为零；不能推断物理环境不存在故障。"
+            },
+            {
+              "operations": [
+                "aggregate"
+              ],
+              "id": "executions.records",
+              "name": "本人执行记录统计",
+              "description": "仅本人及当前授权目标；不读取命令或输出。",
+              "authorizationDomain": "operational",
+              "source": "postgresql",
+              "templateVersion": "executions.records/v1",
+              "metric": "execution_count",
+              "unit": "executions",
+              "calculation": "仅本人及当前授权目标；不读取命令或输出。",
+              "dimensions": [
+                "state",
+                "day"
+              ],
+              "kinds": [],
+              "clusterScopedKinds": [],
+              "filters": [
+                "state"
+              ],
+              "requiredFilters": [],
+              "healthValues": [],
+              "maxGroups": 50,
+              "historySupported": true,
+              "zeroMeaning": "授权过滤后的成功控制面快照为零；不能推断物理环境不存在故障。"
+            },
+            {
+              "operations": [
+                "aggregate"
+              ],
+              "id": "audit.events",
+              "name": "管理员审计元数据统计",
+              "description": "独立管理员审计授权域；只读取操作、主体和时间元数据。",
+              "authorizationDomain": "audit",
+              "source": "postgresql",
+              "templateVersion": "audit.events/v1",
+              "metric": "audit_count",
+              "unit": "events",
+              "calculation": "独立管理员审计授权域；只读取操作、主体和时间元数据。",
+              "dimensions": [
+                "operation",
+                "subject",
+                "day"
+              ],
+              "kinds": [],
+              "clusterScopedKinds": [],
+              "filters": [
+                "operation",
+                "subject"
+              ],
+              "requiredFilters": [],
+              "healthValues": [],
+              "maxGroups": 50,
+              "historySupported": true,
+              "zeroMeaning": "授权过滤后的成功控制面快照为零；不能推断物理环境不存在故障。"
+            },
+            {
+              "operations": [
+                "aggregate",
+                "trend",
+                "compare",
+                "compare_percent"
+              ],
+              "id": "metrics.pod-restarts",
+              "name": "Pod 重启增量",
+              "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
+              "authorizationDomain": "operational",
+              "source": "victoriametrics",
+              "templateVersion": "metrics.pod-restarts/v1",
+              "metric": "restart_increase",
+              "unit": "restarts",
+              "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。",
+              "dimensions": [
+                "namespace",
+                "uid",
+                "time",
+                "comparison"
+              ],
+              "kinds": [],
+              "clusterScopedKinds": [],
+              "filters": [
+                "namespace"
+              ],
+              "requiredFilters": [],
+              "healthValues": [],
+              "maxGroups": 50,
+              "historySupported": true,
+              "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。"
+            },
+            {
+              "operations": [
+                "aggregate",
+                "trend",
+                "compare",
+                "compare_percent"
+              ],
+              "id": "metrics.pod-cpu",
+              "name": "Pod CPU 平均使用",
+              "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
+              "authorizationDomain": "operational",
+              "source": "victoriametrics",
+              "templateVersion": "metrics.pod-cpu/v1",
+              "metric": "cpu_cores",
+              "unit": "cores",
+              "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。",
+              "dimensions": [
+                "namespace",
+                "uid",
+                "time",
+                "comparison"
+              ],
+              "kinds": [],
+              "clusterScopedKinds": [],
+              "filters": [
+                "namespace"
+              ],
+              "requiredFilters": [],
+              "healthValues": [],
+              "maxGroups": 50,
+              "historySupported": true,
+              "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。"
+            },
+            {
+              "operations": [
+                "aggregate",
+                "trend",
+                "compare",
+                "compare_percent",
+                "average"
+              ],
+              "id": "metrics.pod-memory",
+              "name": "Pod 工作集内存",
+              "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。 趋势仅返回固定时间网格上的历史求值，使用显式 5 分钟 last_over_time 回看，须单独验证趋势来源。",
+              "authorizationDomain": "operational",
+              "source": "victoriametrics",
+              "templateVersion": "metrics.pod-memory/v1",
+              "metric": "memory_bytes",
+              "unit": "bytes",
+              "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 trend 不按资源分组，固定时间步长，最多 50 点，缺失点不补零；aggregate 仍为窗口末端求值。 趋势窗口开始前额外 5 分钟也须在已验证覆盖内；状态计数使用 bool 比较，仅有观测时才可返回零。 compare 比较两个等长、不重叠窗口末端的授权 gauge 快照；服务端计算增加/减少的绝对变化量，仅双方完整时发布变化，不计算百分比。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。 average 按每条授权序列窗口内的实际采样求平均后求和；不补缺失采样、不等同于完整墙钟时间平均。",
+              "dimensions": [
+                "namespace",
+                "uid",
+                "time",
+                "comparison"
+              ],
+              "kinds": [],
+              "clusterScopedKinds": [],
+              "filters": [
+                "namespace"
+              ],
+              "requiredFilters": [],
+              "healthValues": [],
+              "maxGroups": 50,
+              "historySupported": true,
+              "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。"
+            },
+            {
+              "operations": [
+                "aggregate",
+                "trend",
+                "compare",
+                "compare_percent",
+                "average"
+              ],
+              "id": "metrics.pod-phase",
+              "name": "Pod phase 数量",
+              "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。 趋势仅返回固定时间网格上的历史求值，使用显式 5 分钟 last_over_time 回看，须单独验证趋势来源。",
+              "authorizationDomain": "operational",
+              "source": "victoriametrics",
+              "templateVersion": "metrics.pod-phase/v1",
+              "metric": "phase_count",
+              "unit": "resources",
+              "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 trend 不按资源分组，固定时间步长，最多 50 点，缺失点不补零；aggregate 仍为窗口末端求值。 趋势窗口开始前额外 5 分钟也须在已验证覆盖内；状态计数使用 bool 比较，仅有观测时才可返回零。 compare 比较两个等长、不重叠窗口末端的授权 gauge 快照；服务端计算增加/减少的绝对变化量，仅双方完整时发布变化，不计算百分比。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。 average 按每条授权序列窗口内的实际采样求平均后求和；不补缺失采样、不等同于完整墙钟时间平均。",
+              "dimensions": [
+                "namespace",
+                "phase",
+                "time",
+                "comparison"
+              ],
+              "kinds": [],
+              "clusterScopedKinds": [],
+              "filters": [
+                "namespace"
+              ],
+              "requiredFilters": [],
+              "healthValues": [],
+              "maxGroups": 50,
+              "historySupported": true,
+              "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。"
+            },
+            {
+              "operations": [
+                "aggregate",
+                "trend",
+                "compare",
+                "compare_percent",
+                "average"
+              ],
+              "id": "metrics.node-ready",
+              "name": "Node Ready 数量",
+              "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。 趋势仅返回固定时间网格上的历史求值，使用显式 5 分钟 last_over_time 回看，须单独验证趋势来源。",
+              "authorizationDomain": "operational",
+              "source": "victoriametrics",
+              "templateVersion": "metrics.node-ready/v1",
+              "metric": "ready_count",
+              "unit": "resources",
+              "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 trend 不按资源分组，固定时间步长，最多 50 点，缺失点不补零；aggregate 仍为窗口末端求值。 趋势窗口开始前额外 5 分钟也须在已验证覆盖内；状态计数使用 bool 比较，仅有观测时才可返回零。 compare 比较两个等长、不重叠窗口末端的授权 gauge 快照；服务端计算增加/减少的绝对变化量，仅双方完整时发布变化，不计算百分比。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。 average 按每条授权序列窗口内的实际采样求平均后求和；不补缺失采样、不等同于完整墙钟时间平均。",
+              "dimensions": [
+                "time",
+                "comparison"
+              ],
+              "kinds": [],
+              "clusterScopedKinds": [],
+              "filters": [
+                "namespace"
+              ],
+              "requiredFilters": [],
+              "healthValues": [],
+              "maxGroups": 50,
+              "historySupported": true,
+              "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。"
+            },
+            {
+              "operations": [
+                "aggregate",
+                "trend",
+                "compare",
+                "compare_percent",
+                "samples"
+              ],
+              "id": "logs.records",
+              "name": "日志完整聚合",
+              "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
+              "authorizationDomain": "operational",
+              "source": "victorialogs",
+              "templateVersion": "logs.records/v1",
+              "metric": "log_count",
+              "unit": "logs",
+              "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。 samples 最多返回20条脱敏样例；value仅表示本次返回样例数，不是日志总数；样例始终partial。",
+              "dimensions": [
+                "namespace",
+                "level",
+                "time",
+                "comparison"
+              ],
+              "kinds": [],
+              "clusterScopedKinds": [],
+              "filters": [
+                "namespace",
+                "level"
+              ],
+              "requiredFilters": [],
+              "healthValues": [],
+              "maxGroups": 50,
+              "historySupported": true,
+              "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。"
+            },
+            {
+              "operations": [
+                "aggregate"
+              ],
+              "id": "incidents.recovery-duration",
+              "name": "Incident 平均恢复时长",
+              "description": "按 resolved_at 窗口，resolved/closed 且 started_at 与 resolved_at 可靠且顺序有效；平均恢复毫秒，不使用 created_at 替代。",
+              "authorizationDomain": "operational",
+              "source": "postgresql",
+              "templateVersion": "incidents.recovery-duration/v1",
+              "metric": "mean_recovery_ms",
+              "unit": "milliseconds",
+              "calculation": "按 resolved_at 窗口，resolved/closed 且 started_at 与 resolved_at 可靠且顺序有效；平均恢复毫秒，不使用 created_at 替代。",
+              "dimensions": [
+                "namespace",
+                "day"
+              ],
+              "kinds": [],
+              "clusterScopedKinds": [],
+              "filters": [
+                "namespace"
+              ],
+              "requiredFilters": [],
+              "healthValues": [],
+              "maxGroups": 50,
+              "historySupported": true,
+              "zeroMeaning": "只有有效样本的计算结果可为零；无有效样本返回 no_data。"
+            },
+            {
+              "operations": [
+                "aggregate"
+              ],
+              "id": "executions.success-rate",
+              "name": "本人执行成功率",
+              "description": "窗口内本人当前授权目标的 succeeded/(succeeded+failed)*100；queued/running/cancelled/execution_unknown 不纳入分母；无分母返回 no_data。",
+              "authorizationDomain": "operational",
+              "source": "postgresql",
+              "templateVersion": "executions.success-rate/v1",
+              "metric": "success_percent",
+              "unit": "percent",
+              "calculation": "窗口内本人当前授权目标的 succeeded/(succeeded+failed)*100；queued/running/cancelled/execution_unknown 不纳入分母；无分母返回 no_data。",
+              "dimensions": [
+                "day"
+              ],
+              "kinds": [],
+              "clusterScopedKinds": [],
+              "filters": [],
+              "requiredFilters": [],
+              "healthValues": [],
+              "maxGroups": 50,
+              "historySupported": true,
+              "zeroMeaning": "只有有效样本的计算结果可为零；无有效样本返回 no_data。"
+            },
+            {
+              "operations": [
+                "aggregate",
+                "trend",
+                "compare",
+                "compare_percent"
+              ],
+              "id": "network.http-responses",
+              "name": "HTTP 完成响应观测数",
+              "description": "同一授权 namespace 内明确双端身份和单一已验证采集点的固定网络统计；不代表所有用户请求。",
+              "authorizationDomain": "operational",
+              "source": "deepflow",
+              "templateVersion": "deepflow-network-summary/v1",
+              "metric": "response_count",
+              "unit": "responses",
+              "calculation": "固定 Querier 聚合；HTTP 仅 type=2 且 200<=code<600 完成会话；比率使用同窗分母，平均耗时以微秒总量/会话数转换为毫秒。TCP 仅按已证明计数口径开放。",
+              "dimensions": [
+                "time",
+                "comparison"
+              ],
+              "kinds": [
+                "Pod"
+              ],
+              "clusterScopedKinds": [],
+              "filters": [],
+              "requiredFilters": [],
+              "healthValues": [],
+              "maxGroups": 50,
+              "historySupported": true,
+              "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。"
+            },
+            {
+              "operations": [
+                "aggregate",
+                "trend",
+                "compare",
+                "compare_percent"
+              ],
+              "id": "network.http-5xx",
+              "name": "HTTP 5xx 响应观测数",
+              "description": "同一授权 namespace 内明确双端身份和单一已验证采集点的固定网络统计；不代表所有用户请求。",
+              "authorizationDomain": "operational",
+              "source": "deepflow",
+              "templateVersion": "deepflow-network-summary/v1",
+              "metric": "http_5xx_count",
+              "unit": "responses",
+              "calculation": "固定 Querier 聚合；HTTP 仅 type=2 且 200<=code<600 完成会话；比率使用同窗分母，平均耗时以微秒总量/会话数转换为毫秒。TCP 仅按已证明计数口径开放。",
+              "dimensions": [
+                "time",
+                "comparison"
+              ],
+              "kinds": [
+                "Pod"
+              ],
+              "clusterScopedKinds": [],
+              "filters": [],
+              "requiredFilters": [],
+              "healthValues": [],
+              "maxGroups": 50,
+              "historySupported": true,
+              "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。"
+            },
+            {
+              "operations": [
+                "aggregate",
+                "trend",
+                "compare"
+              ],
+              "id": "network.http-5xx-rate",
+              "name": "HTTP 5xx 观测比例",
+              "description": "同一授权 namespace 内明确双端身份和单一已验证采集点的固定网络统计；不代表所有用户请求。",
+              "authorizationDomain": "operational",
+              "source": "deepflow",
+              "templateVersion": "deepflow-network-summary/v1",
+              "metric": "http_5xx_percent",
+              "unit": "percent",
+              "calculation": "固定 Querier 聚合；HTTP 仅 type=2 且 200<=code<600 完成会话；比率使用同窗分母，平均耗时以微秒总量/会话数转换为毫秒。TCP 仅按已证明计数口径开放。",
+              "dimensions": [
+                "time",
+                "comparison"
+              ],
+              "kinds": [
+                "Pod"
+              ],
+              "clusterScopedKinds": [],
+              "filters": [],
+              "requiredFilters": [],
+              "healthValues": [],
+              "maxGroups": 50,
+              "historySupported": true,
+              "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。"
+            },
+            {
+              "operations": [
+                "aggregate",
+                "trend",
+                "compare",
+                "compare_percent"
+              ],
+              "id": "network.http-response-time",
+              "name": "HTTP 完成响应平均耗时",
+              "description": "同一授权 namespace 内明确双端身份和单一已验证采集点的固定网络统计；不代表所有用户请求。",
+              "authorizationDomain": "operational",
+              "source": "deepflow",
+              "templateVersion": "deepflow-network-summary/v1",
+              "metric": "mean_http_response_ms",
+              "unit": "milliseconds",
+              "calculation": "固定 Querier 聚合；HTTP 仅 type=2 且 200<=code<600 完成会话；比率使用同窗分母，平均耗时以微秒总量/会话数转换为毫秒。TCP 仅按已证明计数口径开放。",
+              "dimensions": [
+                "time",
+                "comparison"
+              ],
+              "kinds": [
+                "Pod"
+              ],
+              "clusterScopedKinds": [],
+              "filters": [],
+              "requiredFilters": [],
+              "healthValues": [],
+              "maxGroups": 50,
+              "historySupported": true,
+              "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。"
+            },
+            {
+              "operations": [
+                "aggregate",
+                "trend",
+                "compare",
+                "compare_percent"
+              ],
+              "id": "network.tcp-retransmissions",
+              "name": "TCP 重传观测数",
+              "description": "同一授权 namespace 内明确双端身份和单一已验证采集点的固定网络统计；不代表所有用户请求。",
+              "authorizationDomain": "operational",
+              "source": "deepflow",
+              "templateVersion": "deepflow-network-summary/v1",
+              "metric": "retransmission_count",
+              "unit": "retransmissions",
+              "calculation": "固定 Querier 聚合；HTTP 仅 type=2 且 200<=code<600 完成会话；比率使用同窗分母，平均耗时以微秒总量/会话数转换为毫秒。TCP 仅按已证明计数口径开放。",
+              "dimensions": [
+                "time",
+                "comparison"
+              ],
+              "kinds": [
+                "Pod"
+              ],
+              "clusterScopedKinds": [],
+              "filters": [],
+              "requiredFilters": [],
+              "healthValues": [],
+              "maxGroups": 50,
+              "historySupported": true,
+              "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。"
+            },
+            {
+              "operations": [
+                "aggregate",
+                "trend",
+                "compare",
+                "compare_percent"
+              ],
+              "id": "network.connection-failure-observations",
+              "name": "TCP 客户端/服务端错误观测数",
+              "description": "同一授权 namespace 内明确双端身份和单一已验证采集点的固定网络统计；不代表所有用户请求。",
+              "authorizationDomain": "operational",
+              "source": "deepflow",
+              "templateVersion": "deepflow-network-summary/v1",
+              "metric": "connection_failure_observation_count",
+              "unit": "observations",
+              "calculation": "protocol=6、单一合格采集点中 status=3/4 的记录数，含建连、重置、超时等错误分类；不是独立失败连接数，不代表失败请求数。",
+              "dimensions": [
+                "time",
+                "comparison"
+              ],
+              "kinds": [
+                "Pod"
+              ],
+              "clusterScopedKinds": [],
+              "filters": [],
+              "requiredFilters": [],
+              "healthValues": [],
+              "maxGroups": 50,
+              "historySupported": true,
+              "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。"
+            },
+            {
+              "operations": [
+                "aggregate",
+                "trend",
+                "compare",
+                "compare_percent"
+              ],
+              "id": "network.http-summary",
+              "name": "HTTP 完成响应统计",
+              "description": "单一合格采集点的固定统计快照；数值按独立单位 Fact 引用，避免重复读取同一总体。",
+              "authorizationDomain": "operational",
+              "source": "deepflow",
+              "templateVersion": "deepflow-network-summary/v1",
+              "metric": "http_5xx_percent",
+              "unit": "percent",
+              "calculation": "HTTP：完成会话的响应数、5xx 数、比例及样本加权平均耗时；TCP：status=3/4 的客户端/服务端错误观测记录及周期重传计数。不是独立失败连接数或丢包率。",
+              "dimensions": [
+                "time",
+                "comparison"
+              ],
+              "kinds": [
+                "Pod"
+              ],
+              "clusterScopedKinds": [],
+              "filters": [],
+              "requiredFilters": [],
+              "healthValues": [],
+              "maxGroups": 50,
+              "historySupported": true,
+              "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。"
+            },
+            {
+              "operations": [
+                "aggregate",
+                "trend",
+                "compare",
+                "compare_percent"
+              ],
+              "id": "network.tcp-summary",
+              "name": "TCP 观测记录统计",
+              "description": "单一合格采集点的固定统计快照；数值按独立单位 Fact 引用，避免重复读取同一总体。",
+              "authorizationDomain": "operational",
+              "source": "deepflow",
+              "templateVersion": "deepflow-network-summary/v1",
+              "metric": "connection_failure_observation_count",
+              "unit": "observations",
+              "calculation": "HTTP：完成会话的响应数、5xx 数、比例及样本加权平均耗时；TCP：status=3/4 的客户端/服务端错误观测记录及周期重传计数。不是独立失败连接数或丢包率。",
+              "dimensions": [
+                "time",
+                "comparison"
+              ],
+              "kinds": [
+                "Pod"
+              ],
+              "clusterScopedKinds": [],
+              "filters": [],
+              "requiredFilters": [],
+              "healthValues": [],
+              "maxGroups": 50,
+              "historySupported": true,
+              "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。"
+            }
+          ]
+        },
+        "enabled": true,
+        "faultChainEnabled": false,
+        "networkCapabilities": [],
+        "runtimeAcceptance": "unverified",
+        "sourceCapabilities": [
+          {
+            "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+            "sourceType": "victoriametrics",
+            "revision": 1,
+            "datasetId": "metrics.pod-cpu",
+            "operation": "aggregate",
+            "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+            "proofDigest": "sha256:d4507852234cedf28cb23de32ba5817d9ae25c55e46015faeba18b3b48601583",
+            "coverageFrom": "2026-11-05T10:23:42.093201Z",
+            "coverageTo": "2026-11-06T00:24:35.411Z",
+            "verifiedUntil": "2026-11-06T00:25:21.163268689Z",
+            "maxWindowSeconds": 1800,
+            "status": "continuous_verified"
+          },
+          {
+            "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+            "sourceType": "victoriametrics",
+            "revision": 1,
+            "datasetId": "metrics.pod-cpu",
+            "operation": "trend",
+            "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+            "proofDigest": "sha256:a9634a0edaf5b16fbd3e9b3e9f5572e9fac292385e6ee11db27e2acb4557eddb",
+            "coverageFrom": "2026-11-05T10:23:42.093201Z",
+            "coverageTo": "2026-11-06T00:24:35.411Z",
+            "verifiedUntil": "2026-11-06T00:25:21.163268689Z",
+            "maxWindowSeconds": 1800,
+            "status": "continuous_verified"
+          },
+          {
+            "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+            "sourceType": "victoriametrics",
+            "revision": 1,
+            "datasetId": "metrics.pod-memory",
+            "operation": "aggregate",
+            "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+            "proofDigest": "sha256:1af86052dc0d08d7564744a920ff4357c40e3c9711ff54e193bcb0bcc8d2793f",
+            "coverageFrom": "2026-11-05T10:23:42.093201Z",
+            "coverageTo": "2026-11-06T00:24:35.411Z",
+            "verifiedUntil": "2026-11-06T00:25:21.163268689Z",
+            "maxWindowSeconds": 1800,
+            "status": "continuous_verified"
+          },
+          {
+            "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+            "sourceType": "victoriametrics",
+            "revision": 1,
+            "datasetId": "metrics.pod-memory",
+            "operation": "trend",
+            "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+            "proofDigest": "sha256:37a0cfb491a9e5a65c9028ec7237cc9fef4c3454f0aa3dd2b88abd39b087f219",
+            "coverageFrom": "2026-11-05T10:23:42.093201Z",
+            "coverageTo": "2026-11-06T00:24:35.411Z",
+            "verifiedUntil": "2026-11-06T00:25:21.163268689Z",
+            "maxWindowSeconds": 1800,
+            "status": "continuous_verified"
+          },
+          {
+            "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+            "sourceType": "victoriametrics",
+            "revision": 1,
+            "datasetId": "metrics.pod-phase",
+            "operation": "aggregate",
+            "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+            "proofDigest": "sha256:426b9fdfe07a5f1fe142c17aca425195506ac69da0f3e80249df31daae82afab",
+            "coverageFrom": "2026-11-05T10:23:42.093201Z",
+            "coverageTo": "2026-11-06T00:24:35.411Z",
+            "verifiedUntil": "2026-11-06T00:25:21.163268689Z",
+            "maxWindowSeconds": 1800,
+            "status": "continuous_verified"
+          },
+          {
+            "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+            "sourceType": "victoriametrics",
+            "revision": 1,
+            "datasetId": "metrics.pod-phase",
+            "operation": "trend",
+            "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+            "proofDigest": "sha256:1154d5d96b63125cfc969b7f1cc85a886b12aa080f73164e1ec477e00b024313",
+            "coverageFrom": "2026-11-05T10:23:42.093201Z",
+            "coverageTo": "2026-11-06T00:24:35.411Z",
+            "verifiedUntil": "2026-11-06T00:25:21.163268689Z",
+            "maxWindowSeconds": 1800,
+            "status": "continuous_verified"
+          },
+          {
+            "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+            "sourceType": "victoriametrics",
+            "revision": 1,
+            "datasetId": "metrics.pod-restarts",
+            "operation": "aggregate",
+            "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+            "proofDigest": "sha256:f2d3aa205f547917a5d10155ba3b1f802688430950edd6e993e7d1fb863c6a33",
+            "coverageFrom": "2026-11-05T10:23:42.093201Z",
+            "coverageTo": "2026-11-06T00:24:35.411Z",
+            "verifiedUntil": "2026-11-06T00:25:21.163268689Z",
+            "maxWindowSeconds": 1800,
+            "status": "continuous_verified"
+          },
+          {
+            "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+            "sourceType": "victoriametrics",
+            "revision": 1,
+            "datasetId": "metrics.pod-restarts",
+            "operation": "trend",
+            "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+            "proofDigest": "sha256:4b7cd3635e2708b4e3577cea68537da5c05a7ba1cda5ad9a0faca84477fe38a4",
+            "coverageFrom": "2026-11-05T10:23:42.093201Z",
+            "coverageTo": "2026-11-06T00:24:35.411Z",
+            "verifiedUntil": "2026-11-06T00:25:21.163268689Z",
+            "maxWindowSeconds": 1800,
+            "status": "continuous_verified"
+          },
+          {
+            "sourceId": "01a1ae32-b7a2-7987-bc83-9a7d8855093d",
+            "sourceType": "victorialogs",
+            "revision": 1,
+            "datasetId": "logs.records",
+            "operation": "aggregate",
+            "collectorVersion": "v1.52.0-ops1",
+            "proofDigest": "sha256:e705dfddac706d3209823fc436f8aa2f8ffe3fe98463f27b63e0b625f778a365",
+            "coverageFrom": "2026-11-05T10:23:42.093201Z",
+            "coverageTo": "2026-11-06T00:24:47.257528848Z",
+            "verifiedUntil": "2026-11-06T00:25:21.161762564Z",
+            "maxWindowSeconds": 1800,
+            "status": "continuous_verified"
+          },
+          {
+            "sourceId": "01a1ae32-b7a2-7987-bc83-9a7d8855093d",
+            "sourceType": "victorialogs",
+            "revision": 1,
+            "datasetId": "logs.records",
+            "operation": "samples",
+            "collectorVersion": "v1.52.0-ops1",
+            "proofDigest": "sha256:1daa09ac29ff5a971a2108b4b7f34b2f4f4f74507853b50b0234dfe8d57f30fa",
+            "coverageFrom": "2026-11-05T10:23:42.093201Z",
+            "coverageTo": "2026-11-06T00:24:47.257528848Z",
+            "verifiedUntil": "2026-11-06T00:25:21.161762564Z",
+            "maxWindowSeconds": 1800,
+            "status": "continuous_verified"
+          }
+        ],
+        "sourceCapabilityStatus": "available",
+        "taskKinds": [
+          "data_query"
+        ],
+        "virtualization": "deferred"
+      },
+      "requestId": "01a1ae3e-7473-77b8-b066-fac672b7ebfb"
+    }
+  },
+  "submission": {
+    "conversation": {
+      "status": 201,
+      "body": {
+        "data": {
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "conversationId": "01a1ae3e-771e-7714-9c0b-ac05998eec22",
+          "ownerSubject": "user:01a1ab0b-3e7a-7160-926d-891871ad3d1e",
+          "title": "Current 实际审计问数验收",
+          "mode": "data_query",
+          "authorizationDomain": "audit",
+          "binding": {
+            "grantSnapshot": {
+              "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+              "clusterUid": "",
+              "namespaces": [],
+              "resources": [],
+              "clusterScoped": false,
+              "authorizationRevision": "sha256:73e271c474af3d705d6a1716ae3d504942d0fb9289c814e886210e30554351db"
+            },
+            "selection": {
+              "Namespaces": null,
+              "IncludeClusterScoped": false,
+              "CanonicalIDs": null
+            },
+            "executionScope": {
+              "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+              "clusterUid": "",
+              "namespaces": [],
+              "resources": [],
+              "clusterScoped": false,
+              "authorizationRevision": "sha256:73e271c474af3d705d6a1716ae3d504942d0fb9289c814e886210e30554351db"
+            },
+            "timezone": "Asia/Shanghai",
+            "incidentId": "00000000-0000-0000-0000-000000000000"
+          },
+          "revision": 1,
+          "createdAt": "2026-11-06T00:24:51.745582Z",
+          "updatedAt": "2026-11-06T00:24:51.745582Z"
+        },
+        "requestId": "01a1ae3e-76bb-7a6d-88ba-95ec323e5ec1"
+      }
+    },
+    "turn": {
+      "status": 202,
+      "body": {
+        "data": {
+          "turnId": "01a1ae3e-7816-7cc3-a4b6-bafed5c9f921",
+          "conversationId": "01a1ae3e-771e-7714-9c0b-ac05998eec22",
+          "jobId": "01a1ae3e-7816-7cc4-b040-f5bf1e3df428",
+          "state": "queued",
+          "createdAt": "2026-11-06T00:24:52.04798Z",
+          "conversationRevision": 2
+        },
+        "requestId": "01a1ae3e-776c-7a21-a19c-f90efeb3bcc6"
+      }
+    }
+  },
+  "turn": {
+    "turnId": "01a1ae3e-7816-7cc3-a4b6-bafed5c9f921",
+    "conversationId": "01a1ae3e-771e-7714-9c0b-ac05998eec22",
+    "jobId": "01a1ae3e-7816-7cc4-b040-f5bf1e3df428",
+    "state": "completed",
+    "answer": {
+      "asOf": "2026-11-06T00:25:12.266651208Z",
+      "partial": false,
+      "summary": "当前租户在最近 15 分钟（2026-11-06T00:09:51.990743584Z 至 2026-11-06T00:24:51.990743584Z，Asia/Shanghai）内的审计事件总数为 376 条。数据来源是 PostgreSQL 控制面数据集 audit.events（管理员审计元数据统计，指标 audit_count，单位 events）；本次只读取了操作、主体和时间元数据，未读取日志，也未执行任何命令。",
+      "factRefs": [
+        {
+          "factId": "sha256:9b7c469ee720fe9c3a92a471fa68c6251052f54d8d9560b9d2708241e8a3799e",
+          "queryResultId": "01a1ae3e-ba02-7a7f-a7b8-4d986ea414e6"
+        }
+      ],
+      "warnings": [
+        "该计数是授权过滤后的控制面快照，零值或低值不能推断物理环境不存在故障。",
+        "时间窗口按平台冻结的 requestedAt 向前 15 分钟计算，未使用模型时钟。"
+      ],
+      "answerKind": "data",
+      "entityRefs": [],
+      "hypotheses": [],
+      "nextChecks": [
+        "如需按操作类型或主体拆分，可对 audit.events 按 operation 或 subject 维度聚合。",
+        "如需对比趋势，可对同一数据集执行 trend 查询并指定 stepSeconds。"
+      ],
+      "evidenceRefs": [],
+      "scopeSummary": "audit:",
+      "schemaVersion": "assistant-answer/v1",
+      "degradedSources": [],
+      "missingEvidence": [],
+      "queryResultRefs": [
+        "01a1ae3e-ba02-7a7f-a7b8-4d986ea414e6"
+      ]
+    },
+    "createdAt": "2026-11-06T00:24:52.04798Z",
+    "conversationRevision": 2
+  },
+  "status": "passed_real_model_worker_roundtrip"
+}

@@ -1,0 +1,135 @@
+{
+  "at": "2026-11-06T00:36:43.326215+00:00",
+  "namespace": "ops-current",
+  "namespaceUID": "c4dc825f-0897-417b-a876-f151e7783629",
+  "pods": [
+    {
+      "name": "ops-api-7cb87cf8b8-26g2t",
+      "uid": "85b00011-378f-4c27-9240-65dde8054d2c",
+      "phase": "Running",
+      "ready": true,
+      "images": [
+        "ops.local/current/platform-api@sha256:0979cd69822b32d88b5beae4af461844310a1eb2895d50ae4cd3fde71f5d5b52"
+      ],
+      "hostPaths": []
+    },
+    {
+      "name": "ops-investigator-6fc4595975-kmw42",
+      "uid": "8a7d126e-cd1f-4225-9d83-35ae1cdc2f1f",
+      "phase": "Running",
+      "ready": true,
+      "images": [
+        "ops.local/current/investigator@sha256:a48a693fed1e9caad8a354641255656cb650e708fe3dbe52dfbc8782e756f009"
+      ],
+      "hostPaths": []
+    },
+    {
+      "name": "ops-ksm",
+      "uid": "79dc6676-44d6-498a-9b7a-1b8cbcc659f1",
+      "phase": "Running",
+      "ready": true,
+      "images": [
+        "docker.io/library/ops-r51-kube-state-metrics:v2.17.0"
+      ],
+      "hostPaths": []
+    },
+    {
+      "name": "ops-log-collector-fhvpt",
+      "uid": "d8e2450c-7d30-4bbf-98a6-d17f0807f1ea",
+      "phase": "Running",
+      "ready": true,
+      "images": [
+        "ops.local/verification-20261019/platform-worker@sha256:48d3700cd7595781e5384821b07e8fa38aaf172ada0fe2b55832fedd661a92ad"
+      ],
+      "hostPaths": [
+        "/data/ops-current/releases/9372674a87201a4ccaab6737a1019808ea41ffd5/collector",
+        "/data/ops-current/data/log-collector",
+        "/var/log/containers",
+        "/var/log/pods"
+      ]
+    },
+    {
+      "name": "ops-metrics",
+      "uid": "fbdb0273-a5af-446a-9910-87768b3638eb",
+      "phase": "Running",
+      "ready": true,
+      "images": [
+        "victoriametrics/victoria-metrics@sha256:b10c78f4bd9b52554b7f863ff416e480d931b1811f591049d166eea1fb247638"
+      ],
+      "hostPaths": [
+        "/data/ops-current/data/metrics"
+      ]
+    },
+    {
+      "name": "ops-openbao-0",
+      "uid": "cf122f9a-6be2-42f1-8dfe-cb1f884ca0c5",
+      "phase": "Running",
+      "ready": true,
+      "images": [
+        "ghcr.io/openbao/openbao@sha256:71156a1c6623a5fa3f5e61b0c6a8ead0faf0df29a778339188443551995d1315"
+      ],
+      "hostPaths": [
+        "/data/ops-current/data/openbao"
+      ]
+    },
+    {
+      "name": "ops-seaweedfs-0",
+      "uid": "06b56844-0243-4b15-9dee-ecf3cd27b873",
+      "phase": "Running",
+      "ready": true,
+      "images": [
+        "docker.io/chrislusf/seaweedfs@sha256:ce9e796f1fe6f06968f4c04bdaf8f678dad9c8acdfef3d244133d71bfa6bf882"
+      ],
+      "hostPaths": [
+        "/data/ops-current/data/archive"
+      ]
+    },
+    {
+      "name": "ops-worker-857b4d57f4-px6wq",
+      "uid": "867fdbee-d0d8-4ad3-87a1-13d279d65c1a",
+      "phase": "Running",
+      "ready": true,
+      "images": [
+        "ops.local/current/platform-worker@sha256:a2828f57c0936083e9abb935c752bffb3b5c43721164306928d94403285990d2"
+      ],
+      "hostPaths": []
+    }
+  ],
+  "docker": [
+    {
+      "name": "ops-current-web",
+      "imageID": "sha256:e873903432722b6a90224219b2e3704ccc2aec198ed663af53d4746c4b23c46a",
+      "mounts": [
+        "/data/ops-current/private/web-tls",
+        "/data/ops-current/releases/9372674a87201a4ccaab6737a1019808ea41ffd5/web",
+        "/data/ops-current/config/nginx-30471.conf"
+      ]
+    },
+    {
+      "name": "ops-current-logs",
+      "imageID": "sha256:cb1bce2cdb457a90949cf4d80dff83e49b5d12a188f8f46341f75b6ddef71a51",
+      "mounts": [
+        "/data/ops-current/private/logs",
+        "/data/ops-current/data/logs"
+      ]
+    },
+    {
+      "name": "ops-current-pg",
+      "imageID": "sha256:589f742565e4f6d22149176b032974f55f8201a8a37b71ed587ec5c6902e689f",
+      "mounts": [
+        "/data/ops-current/private/pg-password",
+        "/data/ops-current/data/postgresql"
+      ]
+    }
+  ],
+  "apiDatabase": {
+    "host": "127.0.0.1",
+    "port": 15554,
+    "name": "ops_current"
+  },
+  "workerDatabase": {
+    "host": "127.0.0.1",
+    "port": 15554,
+    "name": "ops_current"
+  }
+}

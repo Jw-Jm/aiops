@@ -1,0 +1,998 @@
+;
+; Archive created at 2026-11-06 00:26:04 UTC
+;     dbname: ops_current
+;     TOC Entries: 988
+;     Compression: gzip
+;     Dump Version: 1.16-0
+;     Format: CUSTOM
+;     Integer: 4 bytes
+;     Offset: 8 bytes
+;     Dumped from database version: 17.11 (Debian 17.11-1.pgdg12+2)
+;     Dumped by pg_dump version: 17.11 (Debian 17.11-1.pgdg12+2)
+;
+;
+; Selected TOC Entries:
+;
+9; 2615 16408 SCHEMA - action schema_owner
+4992; 0 0 ACL - SCHEMA action schema_owner
+11; 2615 16409 SCHEMA - audit schema_owner
+4993; 0 0 ACL - SCHEMA audit schema_owner
+6; 2615 16405 SCHEMA - finding schema_owner
+4994; 0 0 ACL - SCHEMA finding schema_owner
+12; 2615 17997 SCHEMA - identity schema_owner
+4995; 0 0 ACL - SCHEMA identity schema_owner
+7; 2615 16406 SCHEMA - incident schema_owner
+4996; 0 0 ACL - SCHEMA incident schema_owner
+8; 2615 16407 SCHEMA - investigation schema_owner
+4997; 0 0 ACL - SCHEMA investigation schema_owner
+10; 2615 16404 SCHEMA - platform schema_owner
+4998; 0 0 ACL - SCHEMA platform schema_owner
+331; 1255 17718 FUNCTION action lock_profile(uuid, uuid, integer) schema_owner
+4999; 0 0 ACL action FUNCTION lock_profile(tid uuid, pid uuid, v integer) schema_owner
+385; 1255 17695 FUNCTION action lock_target(uuid, text, text) schema_owner
+5000; 0 0 ACL action FUNCTION lock_target(tid uuid, target text, cuid text) schema_owner
+375; 1255 17717 FUNCTION action onboard_host(uuid, jsonb, text) schema_owner
+5001; 0 0 ACL action FUNCTION onboard_host(tid uuid, r jsonb, actor text) schema_owner
+423; 1255 16913 FUNCTION audit append_record(uuid, uuid, text, text, uuid, text, jsonb, bytea) audit_append_owner
+5002; 0 0 ACL audit FUNCTION append_record(p_tenant_id uuid, p_record_id uuid, p_event_type text, p_entity_kind text, p_entity_id uuid, p_subject text, p_record jsonb, p_canonical_digest bytea) audit_append_owner
+336; 1255 17060 FUNCTION audit append_record_v2(uuid, uuid, text, text, uuid, text, jsonb, bytea, timestamp with time zone) audit_append_owner
+5003; 0 0 ACL audit FUNCTION append_record_v2(p_tenant_id uuid, p_record_id uuid, p_event_type text, p_entity_kind text, p_entity_id uuid, p_subject text, p_record jsonb, p_canonical_digest bytea, p_created_at timestamp with time zone) audit_append_owner
+367; 1255 17061 FUNCTION audit begin_signed_segment(uuid, uuid, bigint, bigint, integer, text) audit_append_owner
+5004; 0 0 ACL audit FUNCTION begin_signed_segment(p_tenant_id uuid, p_segment_id uuid, p_first_audit_seq bigint, p_last_audit_seq bigint, p_record_count integer, p_merkle_root text) audit_append_owner
+396; 1255 17062 FUNCTION audit finish_signed_segment(uuid, uuid, text, text, jsonb, text) audit_append_owner
+5005; 0 0 ACL audit FUNCTION finish_signed_segment(p_tenant_id uuid, p_segment_id uuid, p_signature text, p_signing_key_version text, p_object_ref jsonb, p_object_digest text) audit_append_owner
+355; 1255 17063 FUNCTION audit guard_signed_segment_update() schema_owner
+332; 1255 18364 FUNCTION identity admin_account_view(uuid, uuid) schema_owner
+5006; 0 0 ACL identity FUNCTION admin_account_view(p_tenant uuid, p_user uuid) schema_owner
+392; 1255 18366 FUNCTION identity admin_account_write(uuid, uuid, uuid, integer, integer, integer, uuid, text, jsonb) schema_owner
+5007; 0 0 ACL identity FUNCTION admin_account_write(p_tenant uuid, p_actor uuid, p_session uuid, p_cv integer, p_av integer, p_sv integer, p_target uuid, p_operation text, p_body jsonb) schema_owner
+328; 1255 18365 FUNCTION identity admin_accounts(uuid, uuid, uuid, integer, integer, integer, uuid, integer) schema_owner
+5008; 0 0 ACL identity FUNCTION admin_accounts(p_tenant uuid, p_actor uuid, p_session uuid, p_cv integer, p_av integer, p_sv integer, p_after uuid, p_limit integer) schema_owner
+344; 1255 18363 FUNCTION identity admin_lock_accounts(uuid, uuid, uuid, integer, integer, integer, uuid) schema_owner
+5009; 0 0 ACL identity FUNCTION admin_lock_accounts(p_tenant uuid, p_actor uuid, p_session uuid, p_cv integer, p_av integer, p_sv integer, p_target uuid) schema_owner
+321; 1255 18392 FUNCTION identity admin_map_subject(uuid, uuid, uuid, integer, integer, integer, uuid, jsonb) schema_owner
+5010; 0 0 ACL identity FUNCTION admin_map_subject(p_tenant uuid, p_actor uuid, p_session uuid, p_cv integer, p_av integer, p_sv integer, p_target uuid, p_body jsonb) schema_owner
+334; 1255 18393 FUNCTION identity admin_subject_mappings(uuid, uuid, uuid, integer, integer, integer, uuid, text, uuid, integer) schema_owner
+5011; 0 0 ACL identity FUNCTION admin_subject_mappings(p_tenant uuid, p_actor uuid, p_session uuid, p_cv integer, p_av integer, p_sv integer, p_user uuid, p_subject text, p_after uuid, p_limit integer) schema_owner
+427; 1255 18207 FUNCTION identity administrator_state(uuid, uuid) schema_owner
+5012; 0 0 ACL identity FUNCTION administrator_state(p_tenant_id uuid, p_user_id uuid) schema_owner
+342; 1255 18208 FUNCTION identity admit_login_attempt(timestamp with time zone, integer, integer, integer) schema_owner
+5013; 0 0 ACL identity FUNCTION admit_login_attempt(p_now timestamp with time zone, p_limit integer, p_window_seconds integer, p_lock_seconds integer) schema_owner
+389; 1255 18213 FUNCTION identity authorize_native_session_role(uuid, uuid, uuid, text, integer, integer, integer) schema_owner
+5014; 0 0 ACL identity FUNCTION authorize_native_session_role(p_tenant_id uuid, p_user_id uuid, p_session_id uuid, p_role text, p_authorization_version integer, p_credential_version integer, p_session_version integer) schema_owner
+347; 1255 18206 FUNCTION identity change_own_password(uuid, uuid, uuid, uuid, bytea, bytea, integer, integer, integer, text, timestamp with time zone, timestamp with time zone) schema_owner
+5015; 0 0 ACL identity FUNCTION change_own_password(p_tenant_id uuid, p_user_id uuid, p_old_session_id uuid, p_new_session_id uuid, p_new_token_digest bytea, p_new_csrf_digest bytea, p_expected_credential_version integer, p_expected_authorization_version integer, p_expected_session_version integer, p_new_password_hash text, p_idle_expires_at timestamp with time zone, p_absolute_expires_at timestamp with time zone) schema_owner
+403; 1255 18181 FUNCTION identity clear_password_failure(uuid, uuid) schema_owner
+5016; 0 0 ACL identity FUNCTION clear_password_failure(p_tenant_id uuid, p_user_id uuid) schema_owner
+412; 1255 18202 FUNCTION identity create_native_session(uuid, uuid, uuid, text, bytea, bytea, integer, integer, integer, timestamp with time zone, timestamp with time zone) schema_owner
+5017; 0 0 ACL identity FUNCTION create_native_session(p_tenant_id uuid, p_user_id uuid, p_session_id uuid, p_mode text, p_token_digest bytea, p_csrf_digest bytea, p_credential_version integer, p_authorization_version integer, p_session_version integer, p_idle_expires_at timestamp with time zone, p_absolute_expires_at timestamp with time zone) schema_owner
+345; 1255 18203 FUNCTION identity find_active_session(bytea) schema_owner
+5018; 0 0 ACL identity FUNCTION find_active_session(p_token_digest bytea) schema_owner
+380; 1255 18179 FUNCTION identity find_login_account(text) schema_owner
+5019; 0 0 ACL identity FUNCTION find_login_account(p_login_name text) schema_owner
+374; 1255 18391 FUNCTION identity import_subject_inventory(uuid, text) schema_owner
+5020; 0 0 ACL identity FUNCTION import_subject_inventory(p_tenant uuid, p_canonical text) schema_owner
+329; 1255 18398 FUNCTION identity job_authority_active(text) schema_owner
+5021; 0 0 ACL identity FUNCTION job_authority_active(p_operation text) schema_owner
+362; 1255 18211 FUNCTION identity list_authorized_clusters(uuid, uuid[]) schema_owner
+5022; 0 0 ACL identity FUNCTION list_authorized_clusters(p_tenant_id uuid, p_cluster_ids uuid[]) schema_owner
+411; 1255 18350 FUNCTION identity mfa_admin_reset(uuid, uuid, uuid, text, integer, integer) schema_owner
+5023; 0 0 ACL identity FUNCTION mfa_admin_reset(p_tenant_id uuid, p_admin_user_id uuid, p_target_user_id uuid, p_confirm_login_name text, p_expected_revision integer, p_expected_credential_version integer) schema_owner
+400; 1255 18336 FUNCTION identity mfa_begin_enrollment(uuid, uuid, uuid, uuid, text, text, text, integer, integer, timestamp with time zone) schema_owner
+5024; 0 0 ACL identity FUNCTION mfa_begin_enrollment(p_tenant_id uuid, p_user_id uuid, p_session_id uuid, p_enrollment_id uuid, p_ciphertext text, p_key_ref text, p_key_version text, p_credential_version integer, p_session_version integer, p_expires_at timestamp with time zone) schema_owner
+381; 1255 18339 FUNCTION identity mfa_confirm_enrollment(uuid, uuid, uuid, uuid, integer, integer, integer, bigint, bytea[]) schema_owner
+5025; 0 0 ACL identity FUNCTION mfa_confirm_enrollment(p_tenant_id uuid, p_user_id uuid, p_session_id uuid, p_enrollment_id uuid, p_expected_revision integer, p_credential_version integer, p_session_version integer, p_last_used_step bigint, p_recovery_digests bytea[]) schema_owner
+353; 1255 18338 FUNCTION identity mfa_enrollment_secret(uuid, uuid, uuid, text) schema_owner
+5026; 0 0 ACL identity FUNCTION mfa_enrollment_secret(p_tenant_id uuid, p_user_id uuid, p_enrollment_id uuid, p_state text) schema_owner
+429; 1255 18337 FUNCTION identity mfa_enrollment_view(uuid, uuid, uuid) schema_owner
+5027; 0 0 ACL identity FUNCTION mfa_enrollment_view(p_tenant_id uuid, p_user_id uuid, p_enrollment_id uuid) schema_owner
+364; 1255 18358 FUNCTION identity mfa_lock_reset_accounts(uuid, uuid, uuid) schema_owner
+5028; 0 0 ACL identity FUNCTION mfa_lock_reset_accounts(p_tenant_id uuid, p_actor_id uuid, p_target_id uuid) schema_owner
+418; 1255 18354 FUNCTION identity mfa_lock_session(uuid, uuid, uuid) schema_owner
+5029; 0 0 ACL identity FUNCTION mfa_lock_session(p_tenant_id uuid, p_user_id uuid, p_session_id uuid) schema_owner
+395; 1255 18340 FUNCTION identity mfa_record_totp_step(uuid, uuid, uuid, bigint) schema_owner
+5030; 0 0 ACL identity FUNCTION mfa_record_totp_step(p_tenant_id uuid, p_user_id uuid, p_enrollment_id uuid, p_step bigint) schema_owner
+356; 1255 18215 FUNCTION identity mfa_scope_active() schema_owner
+5031; 0 0 ACL identity FUNCTION mfa_scope_active() schema_owner
+348; 1255 18335 FUNCTION identity mfa_session_proof(uuid, uuid, uuid, integer, integer) schema_owner
+5032; 0 0 ACL identity FUNCTION mfa_session_proof(p_tenant_id uuid, p_user_id uuid, p_session_id uuid, p_credential_version integer, p_session_version integer) schema_owner
+368; 1255 18356 FUNCTION identity mfa_setup_required(uuid, uuid) schema_owner
+5033; 0 0 ACL identity FUNCTION mfa_setup_required(p_tenant_id uuid, p_user_id uuid) schema_owner
+394; 1255 18341 FUNCTION identity mfa_state(uuid, uuid) schema_owner
+5034; 0 0 ACL identity FUNCTION mfa_state(p_tenant_id uuid, p_user_id uuid) schema_owner
+365; 1255 18448 FUNCTION identity native_command_proof_recheck(uuid, uuid, uuid, uuid, text, bytea, integer) schema_owner
+5035; 0 0 ACL identity FUNCTION native_command_proof_recheck(p_tenant_id uuid, p_user_id uuid, p_session_id uuid, p_step_up_ref uuid, p_operation text, p_binding_digest bytea, p_authorization_version integer) schema_owner
+361; 1255 18437 FUNCTION identity native_internal_session_shared(uuid, uuid) schema_owner
+5036; 0 0 ACL identity FUNCTION native_internal_session_shared(p_tenant_id uuid, p_session_id uuid) schema_owner
+393; 1255 18214 FUNCTION identity native_role_authority(uuid, uuid, text) schema_owner
+5037; 0 0 ACL identity FUNCTION native_role_authority(p_tenant_id uuid, p_user_id uuid, p_role text) schema_owner
+318; 1255 18171 FUNCTION identity preauth_context_active(text) schema_owner
+5038; 0 0 ACL identity FUNCTION preauth_context_active(p_operation text) schema_owner
+424; 1255 18397 FUNCTION identity read_mapped_legacy_subjects(uuid, uuid) schema_owner
+5039; 0 0 ACL identity FUNCTION read_mapped_legacy_subjects(p_tenant uuid, p_user uuid) schema_owner
+419; 1255 18209 FUNCTION identity record_known_login_failure(uuid, uuid, timestamp with time zone, integer, integer) schema_owner
+5040; 0 0 ACL identity FUNCTION record_known_login_failure(p_tenant_id uuid, p_user_id uuid, p_failed_at timestamp with time zone, p_limit integer, p_lock_seconds integer) schema_owner
+358; 1255 18180 FUNCTION identity record_password_failure(uuid, uuid, timestamp with time zone, timestamp with time zone) schema_owner
+5041; 0 0 ACL identity FUNCTION record_password_failure(p_tenant_id uuid, p_user_id uuid, p_failed_at timestamp with time zone, p_locked_until timestamp with time zone) schema_owner
+349; 1255 18349 FUNCTION identity recovery_code_consume(uuid, uuid, uuid, uuid, bytea, integer) schema_owner
+5042; 0 0 ACL identity FUNCTION recovery_code_consume(p_tenant_id uuid, p_user_id uuid, p_session_id uuid, p_challenge_id uuid, p_code_digest bytea, p_expected_revision integer) schema_owner
+373; 1255 18210 FUNCTION identity resolve_cluster_ids(uuid, text[]) schema_owner
+5043; 0 0 ACL identity FUNCTION resolve_cluster_ids(p_tenant_id uuid, p_cluster_uids text[]) schema_owner
+352; 1255 18205 FUNCTION identity revoke_native_session(uuid, uuid, uuid, timestamp with time zone, text, integer, integer, integer) schema_owner
+5044; 0 0 ACL identity FUNCTION revoke_native_session(p_tenant_id uuid, p_user_id uuid, p_session_id uuid, p_revoked_at timestamp with time zone, p_reason text, p_expected_credential_version integer, p_expected_authorization_version integer, p_expected_session_version integer) schema_owner
+383; 1255 18192 FUNCTION identity session_context_active(text) schema_owner
+5045; 0 0 ACL identity FUNCTION session_context_active(p_operation text) schema_owner
+330; 1255 18435 FUNCTION identity step_up_attempt_begin(uuid, uuid, uuid, uuid, integer, text) schema_owner
+5046; 0 0 ACL identity FUNCTION step_up_attempt_begin(p_tenant_id uuid, p_user_id uuid, p_challenge_id uuid, p_session_id uuid, p_expected_revision integer, p_method text) schema_owner
+351; 1255 18436 FUNCTION identity step_up_attempt_failed(uuid, uuid, uuid, uuid, integer, text) schema_owner
+5047; 0 0 ACL identity FUNCTION step_up_attempt_failed(p_tenant_id uuid, p_user_id uuid, p_challenge_id uuid, p_session_id uuid, p_expected_revision integer, p_method text) schema_owner
+410; 1255 18431 FUNCTION identity step_up_budget_check(uuid, uuid) schema_owner
+5048; 0 0 ACL identity FUNCTION step_up_budget_check(p_tenant_id uuid, p_user_id uuid) schema_owner
+415; 1255 18433 FUNCTION identity step_up_budget_clear(uuid, uuid) schema_owner
+5049; 0 0 ACL identity FUNCTION step_up_budget_clear(p_tenant_id uuid, p_user_id uuid) schema_owner
+390; 1255 18429 FUNCTION identity step_up_budget_factor_in_scope(uuid, uuid, text) schema_owner
+5050; 0 0 ACL identity FUNCTION step_up_budget_factor_in_scope(p_tenant_id uuid, p_user_id uuid, p_factor text) schema_owner
+354; 1255 18430 FUNCTION identity step_up_budget_factor_state(uuid, uuid, text) schema_owner
+5051; 0 0 ACL identity FUNCTION step_up_budget_factor_state(p_tenant_id uuid, p_user_id uuid, p_factor text) schema_owner
+346; 1255 18432 FUNCTION identity step_up_budget_fail(uuid, uuid, text) schema_owner
+5052; 0 0 ACL identity FUNCTION step_up_budget_fail(p_tenant_id uuid, p_user_id uuid, p_factor text) schema_owner
+371; 1255 18344 FUNCTION identity step_up_challenge_add_method(uuid, uuid, uuid, uuid, integer, text, integer, integer, timestamp with time zone) schema_owner
+5053; 0 0 ACL identity FUNCTION step_up_challenge_add_method(p_tenant_id uuid, p_user_id uuid, p_challenge_id uuid, p_session_id uuid, p_expected_revision integer, p_method text, p_credential_version integer, p_session_version integer, p_idle_expires_at timestamp with time zone) schema_owner
+343; 1255 18342 FUNCTION identity step_up_challenge_create(uuid, uuid, uuid, uuid, text, jsonb, bytea, integer, integer, integer, timestamp with time zone, timestamp with time zone) schema_owner
+5054; 0 0 ACL identity FUNCTION step_up_challenge_create(p_tenant_id uuid, p_user_id uuid, p_session_id uuid, p_challenge_id uuid, p_operation text, p_target jsonb, p_binding_digest bytea, p_credential_version integer, p_authorization_version integer, p_session_version integer, p_idle_expires_at timestamp with time zone, p_absolute_expires_at timestamp with time zone) schema_owner
+341; 1255 18345 FUNCTION identity step_up_challenge_fail(uuid, uuid, uuid, uuid, integer) schema_owner
+5055; 0 0 ACL identity FUNCTION step_up_challenge_fail(p_tenant_id uuid, p_user_id uuid, p_challenge_id uuid, p_session_id uuid, p_expected_revision integer) schema_owner
+377; 1255 18343 FUNCTION identity step_up_challenge_get(uuid, uuid, uuid) schema_owner
+5056; 0 0 ACL identity FUNCTION step_up_challenge_get(p_tenant_id uuid, p_user_id uuid, p_challenge_id uuid) schema_owner
+421; 1255 18434 FUNCTION identity step_up_lock_account(uuid, uuid) schema_owner
+5057; 0 0 ACL identity FUNCTION step_up_lock_account(p_tenant_id uuid, p_user_id uuid) schema_owner
+339; 1255 18357 FUNCTION identity step_up_proof_for_challenge(uuid, uuid, uuid, uuid) schema_owner
+5058; 0 0 ACL identity FUNCTION step_up_proof_for_challenge(p_tenant_id uuid, p_user_id uuid, p_session_id uuid, p_challenge_id uuid) schema_owner
+422; 1255 18348 FUNCTION identity step_up_recheck(uuid, uuid, uuid, uuid, text, bytea, integer, integer, integer, integer) schema_owner
+5059; 0 0 ACL identity FUNCTION step_up_recheck(p_tenant_id uuid, p_user_id uuid, p_session_id uuid, p_step_up_ref uuid, p_operation text, p_binding_digest bytea, p_authorization_version integer, p_credential_version integer, p_session_version integer, p_idle_seconds integer) schema_owner
+327; 1255 18346 FUNCTION identity step_up_session_mint(uuid, uuid, uuid, uuid, uuid, integer, integer) schema_owner
+5060; 0 0 ACL identity FUNCTION step_up_session_mint(p_tenant_id uuid, p_user_id uuid, p_session_id uuid, p_challenge_id uuid, p_step_up_ref uuid, p_idle_seconds integer, p_absolute_seconds integer) schema_owner
+335; 1255 18347 FUNCTION identity step_up_session_view(uuid, uuid, uuid) schema_owner
+5061; 0 0 ACL identity FUNCTION step_up_session_view(p_tenant_id uuid, p_user_id uuid, p_session_id uuid) schema_owner
+325; 1255 18204 FUNCTION identity touch_native_session(bytea, integer) schema_owner
+5062; 0 0 ACL identity FUNCTION touch_native_session(p_token_digest bytea, p_idle_seconds integer) schema_owner
+426; 1255 18510 FUNCTION incident transfer_eligible(uuid, text, text, text, text) schema_owner
+5063; 0 0 ACL incident FUNCTION transfer_eligible(p_tenant_id uuid, p_subject text, p_cluster_uid text, p_resource_canonical_id text, p_namespace text) schema_owner
+360; 1255 17951 FUNCTION investigation assistant_cleanup(uuid, integer) schema_owner
+5064; 0 0 ACL investigation FUNCTION assistant_cleanup(tid uuid, batch_limit integer) schema_owner
+357; 1255 17882 FUNCTION investigation assistant_immutable_message() schema_owner
+398; 1255 17918 FUNCTION investigation assistant_relay_event() schema_owner
+417; 1255 17950 FUNCTION investigation assistant_set_hold(uuid, uuid, text, boolean, text) schema_owner
+5065; 0 0 ACL investigation FUNCTION assistant_set_hold(tid uuid, turn uuid, sub text, hold boolean, why text) schema_owner
+397; 1255 17948 FUNCTION investigation assistant_step_retention() schema_owner
+408; 1255 17916 FUNCTION investigation assistant_sync_job() schema_owner
+322; 1255 18399 FUNCTION investigation job_native_operator_scope(uuid, uuid) schema_owner
+5066; 0 0 ACL investigation FUNCTION job_native_operator_scope(p_tenant_id uuid, p_user_id uuid) schema_owner
+324; 1255 18475 FUNCTION investigation observation_immutable() schema_owner
+420; 1255 17593 FUNCTION investigation protect_success() schema_owner
+413; 1255 18361 FUNCTION platform advance_resource_revision() schema_owner
+5067; 0 0 ACL platform FUNCTION advance_resource_revision() schema_owner
+369; 1255 17884 FUNCTION platform assistant_lock_audit_authority(uuid, text) schema_owner
+5068; 0 0 ACL platform FUNCTION assistant_lock_audit_authority(tid uuid, sub text) schema_owner
+326; 1255 16967 FUNCTION platform delete_expired_idempotency(uuid, timestamp with time zone, integer) schema_owner
+5069; 0 0 ACL platform FUNCTION delete_expired_idempotency(p_tenant_id uuid, p_before timestamp with time zone, p_limit integer) schema_owner
+428; 1255 17031 FUNCTION platform guard_registry_draft_lifecycle() schema_owner
+386; 1255 17033 FUNCTION platform guard_registry_version_immutability() schema_owner
+405; 1255 16990 FUNCTION platform keep_cluster_uid_immutable() schema_owner
+338; 1255 17091 FUNCTION platform keep_source_backend_immutable() schema_owner
+399; 1255 18401 FUNCTION platform native_authority_locked(uuid, uuid, text) schema_owner
+5070; 0 0 ACL platform FUNCTION native_authority_locked(p_tenant_id uuid, p_user_id uuid, p_role text) schema_owner
+359; 1255 18405 FUNCTION platform native_authority_shared(uuid, uuid, text) schema_owner
+5071; 0 0 ACL platform FUNCTION native_authority_shared(p_tenant_id uuid, p_user_id uuid, p_role text) schema_owner
+376; 1255 18443 FUNCTION platform native_incident_job_subject_shared(uuid, uuid) schema_owner
+5072; 0 0 ACL platform FUNCTION native_incident_job_subject_shared(p_tenant_id uuid, p_job_id uuid) schema_owner
+404; 1255 18444 FUNCTION platform native_incident_task_shared(uuid, uuid) schema_owner
+5073; 0 0 ACL platform FUNCTION native_incident_task_shared(p_tenant_id uuid, p_job_id uuid) schema_owner
+382; 1255 18438 FUNCTION platform native_internal_task_shared(uuid, uuid) schema_owner
+5074; 0 0 ACL platform FUNCTION native_internal_task_shared(p_tenant_id uuid, p_job_id uuid) schema_owner
+379; 1255 18400 FUNCTION platform native_operator_scope_locked(uuid, uuid) schema_owner
+5075; 0 0 ACL platform FUNCTION native_operator_scope_locked(p_tenant_id uuid, p_user_id uuid) schema_owner
+414; 1255 18404 FUNCTION platform native_operator_scope_shared(uuid, uuid) schema_owner
+5076; 0 0 ACL platform FUNCTION native_operator_scope_shared(p_tenant_id uuid, p_user_id uuid) schema_owner
+406; 1255 18477 FUNCTION platform observation_lock_source(uuid, uuid, bigint, bigint, text, text) schema_owner
+5077; 0 0 ACL platform FUNCTION observation_lock_source(tid uuid, sid uuid, rev bigint, cred bigint, cuid text, ns text) schema_owner
+416; 1255 16968 FUNCTION platform provision_tenant(uuid, text, uuid, uuid, text, text) schema_owner
+5078; 0 0 ACL platform FUNCTION provision_tenant(p_actor_tenant_id uuid, p_actor_subject text, p_tenant_id uuid, p_binding_id uuid, p_slug text, p_display_name text) schema_owner
+378; 1255 17996 FUNCTION platform resource_coverage_cleanup(uuid, integer) schema_owner
+5079; 0 0 ACL platform FUNCTION resource_coverage_cleanup(tid uuid, batch_limit integer) schema_owner
+350; 1255 17981 FUNCTION platform resource_history_cleanup(uuid, integer) schema_owner
+5080; 0 0 ACL platform FUNCTION resource_history_cleanup(tid uuid, batch_limit integer) schema_owner
+340; 1255 17461 FUNCTION platform sp05_lock_evidence_source(uuid, uuid, bigint) schema_owner
+5081; 0 0 ACL platform FUNCTION sp05_lock_evidence_source(tid uuid, sid uuid, rev bigint) schema_owner
+407; 1255 17443 FUNCTION platform sp05_lock_operator_scope(uuid, text, text, text) schema_owner
+5082; 0 0 ACL platform FUNCTION sp05_lock_operator_scope(tid uuid, sub text, cuid text, ns text) schema_owner
+320; 1255 17462 FUNCTION platform sp05_lock_recipe(uuid, uuid) schema_owner
+5083; 0 0 ACL platform FUNCTION sp05_lock_recipe(tid uuid, vid uuid) schema_owner
+317; 1255 17390 FUNCTION platform sp05_lock_source_binding(uuid, uuid, bigint, bigint, uuid, text, text, text) schema_owner
+5084; 0 0 ACL platform FUNCTION sp05_lock_source_binding(tid uuid, sid uuid, rev bigint, cred bigint, cid uuid, cuid text, ns text, sv text) schema_owner
+388; 1255 17595 FUNCTION platform sp06_lock_authority(uuid, text, text) schema_owner
+5085; 0 0 ACL platform FUNCTION sp06_lock_authority(tid uuid, sub text, cuid text) schema_owner
+319; 1255 17597 FUNCTION platform sp06_lock_policy(uuid, uuid, text, text[]) schema_owner
+5086; 0 0 ACL platform FUNCTION sp06_lock_policy(tid uuid, vid uuid, cuid text, namespaces text[]) schema_owner
+387; 1255 17598 FUNCTION platform sp06_read_fence(uuid, uuid) schema_owner
+5087; 0 0 ACL platform FUNCTION sp06_read_fence(tid uuid, jid uuid) schema_owner
+372; 1255 17599 FUNCTION platform sp06_rotate_fence(uuid, uuid, uuid) schema_owner
+5088; 0 0 ACL platform FUNCTION sp06_rotate_fence(tid uuid, jid uuid, token uuid) schema_owner
+323; 1255 16969 FUNCTION platform update_tenant(uuid, text, bigint, text, text) schema_owner
+5089; 0 0 ACL platform FUNCTION update_tenant(p_tenant_id uuid, p_actor_subject text, p_expected_revision bigint, p_display_name text, p_status text) schema_owner
+282; 1259 17617 TABLE action assessments schema_owner
+5090; 0 0 ACL action TABLE assessments schema_owner
+283; 1259 17645 TABLE action attempts schema_owner
+5091; 0 0 ACL action TABLE attempts schema_owner
+285; 1259 17675 TABLE action events schema_owner
+5092; 0 0 ACL action TABLE events schema_owner
+244; 1259 16826 TABLE action executions schema_owner
+5093; 0 0 COMMENT action COLUMN executions.step_up_session_id schema_owner
+5094; 0 0 COMMENT action COLUMN executions.step_up_proof_id schema_owner
+5095; 0 0 COMMENT action COLUMN executions.step_up_operation schema_owner
+5096; 0 0 COMMENT action COLUMN executions.step_up_binding_digest schema_owner
+5097; 0 0 COMMENT action COLUMN executions.step_up_expires_at schema_owner
+5098; 0 0 ACL action TABLE executions schema_owner
+287; 1259 17709 TABLE action host_onboardings schema_owner
+5099; 0 0 ACL action TABLE host_onboardings schema_owner
+286; 1259 17696 TABLE action output_archives schema_owner
+5100; 0 0 ACL action TABLE output_archives schema_owner
+284; 1259 17659 TABLE action output_chunks schema_owner
+5101; 0 0 ACL action TABLE output_chunks schema_owner
+281; 1259 17602 TABLE action plans schema_owner
+5102; 0 0 ACL action TABLE plans schema_owner
+243; 1259 16801 TABLE action risk_acknowledgements schema_owner
+5103; 0 0 ACL action TABLE risk_acknowledgements schema_owner
+247; 1259 16868 TABLE audit records schema_owner
+5104; 0 0 ACL audit TABLE records schema_owner
+246; 1259 16867 SEQUENCE audit records_audit_seq_seq schema_owner
+5105; 0 0 ACL audit SEQUENCE records_audit_seq_seq schema_owner
+248; 1259 16892 TABLE audit segments schema_owner
+5106; 0 0 ACL audit TABLE segments schema_owner
+252; 1259 17035 TABLE audit signed_segments schema_owner
+5107; 0 0 ACL audit TABLE signed_segments schema_owner
+245; 1259 16855 TABLE audit tenant_heads schema_owner
+273; 1259 17444 TABLE finding evidence_refs schema_owner
+5108; 0 0 ACL finding TABLE evidence_refs schema_owner
+237; 1259 16658 TABLE finding inbox schema_owner
+5109; 0 0 ACL finding TABLE inbox schema_owner
+238; 1259 16683 TABLE finding outbox schema_owner
+5110; 0 0 ACL finding TABLE outbox schema_owner
+270; 1259 17391 TABLE finding poll_occurrences schema_owner
+5111; 0 0 ACL finding TABLE poll_occurrences schema_owner
+236; 1259 16630 TABLE finding records schema_owner
+5112; 0 0 ACL finding TABLE records schema_owner
+264; 1259 17296 TABLE finding rejections schema_owner
+5113; 0 0 ACL finding TABLE rejections schema_owner
+263; 1259 17277 TABLE finding timeline schema_owner
+5114; 0 0 ACL finding TABLE timeline schema_owner
+262; 1259 17258 TABLE finding transport_keys schema_owner
+5115; 0 0 ACL finding TABLE transport_keys schema_owner
+301; 1259 17998 TABLE identity accounts schema_owner
+5116; 0 0 ACL identity TABLE accounts schema_owner
+307; 1259 18152 TABLE identity administrator_initializations schema_owner
+5117; 0 0 ACL identity TABLE administrator_initializations schema_owner
+302; 1259 18030 TABLE identity credentials schema_owner
+5118; 0 0 ACL identity TABLE credentials schema_owner
+308; 1259 18182 TABLE identity login_entry_attempts schema_owner
+309; 1259 18216 TABLE identity mfa_enrollments schema_owner
+310; 1259 18248 TABLE identity mfa_recovery_codes schema_owner
+303; 1259 18053 TABLE identity password_attempts schema_owner
+5119; 0 0 ACL identity TABLE password_attempts schema_owner
+305; 1259 18103 TABLE identity role_grants schema_owner
+5120; 0 0 ACL identity TABLE role_grants schema_owner
+304; 1259 18071 TABLE identity sessions schema_owner
+5121; 0 0 ACL identity TABLE sessions schema_owner
+311; 1259 18267 TABLE identity step_up_challenges schema_owner
+314; 1259 18407 TABLE identity step_up_failures schema_owner
+5122; 0 0 ACL identity TABLE step_up_failures schema_owner
+312; 1259 18305 TABLE identity step_up_sessions schema_owner
+313; 1259 18370 TABLE identity subject_mapping_inventories schema_owner
+306; 1259 18129 TABLE identity subject_mappings schema_owner
+5123; 0 0 ACL identity TABLE subject_mappings schema_owner
+267; 1259 17343 TABLE incident applied_revisions schema_owner
+5124; 0 0 ACL incident TABLE applied_revisions schema_owner
+265; 1259 17310 TABLE incident correlation_subjects schema_owner
+5125; 0 0 ACL incident TABLE correlation_subjects schema_owner
+240; 1259 16729 TABLE incident finding_links schema_owner
+5126; 0 0 ACL incident TABLE finding_links schema_owner
+316; 1259 18480 TABLE incident followups schema_owner
+5127; 0 0 ACL incident TABLE followups schema_owner
+266; 1259 17326 TABLE incident inbox schema_owner
+5128; 0 0 ACL incident TABLE inbox schema_owner
+269; 1259 17366 TABLE incident outbox schema_owner
+5129; 0 0 ACL incident TABLE outbox schema_owner
+272; 1259 17425 TABLE incident rca_evidence_refs schema_owner
+5130; 0 0 ACL incident TABLE rca_evidence_refs schema_owner
+271; 1259 17403 TABLE incident rca_revisions schema_owner
+5131; 0 0 ACL incident TABLE rca_revisions schema_owner
+239; 1259 16708 TABLE incident records schema_owner
+5132; 0 0 ACL incident TABLE records schema_owner
+268; 1259 17353 TABLE incident timeline schema_owner
+5133; 0 0 ACL incident TABLE timeline schema_owner
+275; 1259 17499 TABLE investigation admissions schema_owner
+5134; 0 0 ACL investigation TABLE admissions schema_owner
+297; 1259 17920 TABLE investigation assistant_binding_requests schema_owner
+5135; 0 0 ACL investigation TABLE assistant_binding_requests schema_owner
+288; 1259 17721 TABLE investigation assistant_conversations schema_owner
+5136; 0 0 ACL investigation TABLE assistant_conversations schema_owner
+289; 1259 17741 TABLE investigation assistant_creation_keys schema_owner
+5137; 0 0 ACL investigation TABLE assistant_creation_keys schema_owner
+295; 1259 17847 TABLE investigation assistant_events schema_owner
+5138; 0 0 ACL investigation TABLE assistant_events schema_owner
+294; 1259 17846 SEQUENCE investigation assistant_events_event_seq_seq schema_owner
+5139; 0 0 ACL investigation SEQUENCE assistant_events_event_seq_seq schema_owner
+298; 1259 17934 TABLE investigation assistant_legal_holds schema_owner
+5140; 0 0 ACL investigation TABLE assistant_legal_holds schema_owner
+291; 1259 17784 TABLE investigation assistant_messages schema_owner
+5141; 0 0 ACL investigation TABLE assistant_messages schema_owner
+293; 1259 17829 TABLE investigation assistant_query_results schema_owner
+5142; 0 0 ACL investigation TABLE assistant_query_results schema_owner
+292; 1259 17817 TABLE investigation assistant_request_keys schema_owner
+5143; 0 0 ACL investigation TABLE assistant_request_keys schema_owner
+290; 1259 17753 TABLE investigation assistant_turns schema_owner
+5144; 0 0 ACL investigation TABLE assistant_turns schema_owner
+296; 1259 17869 TABLE investigation assistant_worker_capabilities schema_owner
+5145; 0 0 ACL investigation TABLE assistant_worker_capabilities schema_owner
+278; 1259 17549 TABLE investigation call_allocations schema_owner
+5146; 0 0 ACL investigation TABLE call_allocations schema_owner
+280; 1259 17574 TABLE investigation contexts schema_owner
+5147; 0 0 ACL investigation TABLE contexts schema_owner
+277; 1259 17535 TABLE investigation events schema_owner
+5148; 0 0 ACL investigation TABLE events schema_owner
+241; 1259 16750 TABLE investigation jobs schema_owner
+5149; 0 0 COMMENT investigation COLUMN jobs.authorization_source schema_owner
+5150; 0 0 COMMENT investigation COLUMN jobs.authorization_user_id schema_owner
+5151; 0 0 COMMENT investigation COLUMN jobs.authorization_version schema_owner
+5152; 0 0 ACL investigation TABLE jobs schema_owner
+315; 1259 18451 TABLE investigation observation_queries schema_owner
+5153; 0 0 ACL investigation TABLE observation_queries schema_owner
+276; 1259 17521 TABLE investigation replay_ledger schema_owner
+5154; 0 0 ACL investigation TABLE replay_ledger schema_owner
+279; 1259 17562 TABLE investigation request_keys schema_owner
+5155; 0 0 ACL investigation TABLE request_keys schema_owner
+274; 1259 17481 TABLE investigation steps schema_owner
+5156; 0 0 ACL investigation TABLE steps schema_owner
+242; 1259 16778 TABLE investigation worker_queue schema_owner
+5157; 0 0 ACL investigation TABLE worker_queue schema_owner
+256; 1259 17143 TABLE platform adapter_scope_verifications schema_owner
+5158; 0 0 ACL platform TABLE adapter_scope_verifications schema_owner
+250; 1259 16970 TABLE platform cluster_registration_revisions schema_owner
+5159; 0 0 ACL platform TABLE cluster_registration_revisions schema_owner
+228; 1259 16454 TABLE platform cluster_registrations schema_owner
+5160; 0 0 ACL platform TABLE cluster_registrations schema_owner
+258; 1259 17175 TABLE platform evidence_archive_intents schema_owner
+5161; 0 0 ACL platform TABLE evidence_archive_intents schema_owner
+259; 1259 17192 TABLE platform evidence_dependencies schema_owner
+5162; 0 0 ACL platform TABLE evidence_dependencies schema_owner
+257; 1259 17157 TABLE platform evidence_metadata schema_owner
+5163; 0 0 ACL platform TABLE evidence_metadata schema_owner
+5164; 0 0 ACL platform COLUMN evidence_metadata.legal_hold schema_owner
+5165; 0 0 ACL platform COLUMN evidence_metadata.protection_synced_at schema_owner
+260; 1259 17208 TABLE platform evidence_retention_references schema_owner
+5166; 0 0 ACL platform TABLE evidence_retention_references schema_owner
+234; 1259 16595 TABLE platform execution_profile_versions schema_owner
+5167; 0 0 ACL platform TABLE execution_profile_versions schema_owner
+5168; 0 0 ACL platform COLUMN execution_profile_versions.status schema_owner
+255; 1259 17129 TABLE platform graph_ownership schema_owner
+5169; 0 0 ACL platform TABLE graph_ownership schema_owner
+249; 1259 16935 TABLE platform idempotency_request_ledger schema_owner
+5170; 0 0 ACL platform TABLE idempotency_request_ledger schema_owner
+251; 1259 17005 TABLE platform registry_activation_history schema_owner
+5171; 0 0 ACL platform TABLE registry_activation_history schema_owner
+233; 1259 16570 TABLE platform registry_activations schema_owner
+5172; 0 0 ACL platform TABLE registry_activations schema_owner
+231; 1259 16526 TABLE platform registry_drafts schema_owner
+5173; 0 0 ACL platform TABLE registry_drafts schema_owner
+232; 1259 16549 TABLE platform registry_versions schema_owner
+5174; 0 0 ACL platform TABLE registry_versions schema_owner
+5175; 0 0 ACL platform COLUMN registry_versions.retired_at schema_owner
+254; 1259 17112 TABLE platform resource_aliases schema_owner
+5176; 0 0 ACL platform TABLE resource_aliases schema_owner
+253; 1259 17093 TABLE platform resource_entities schema_owner
+5177; 0 0 ACL platform TABLE resource_entities schema_owner
+300; 1259 17982 TABLE platform resource_observation_coverage schema_owner
+5178; 0 0 ACL platform TABLE resource_observation_coverage schema_owner
+299; 1259 17955 TABLE platform resource_observations schema_owner
+5179; 0 0 ACL platform TABLE resource_observations schema_owner
+227; 1259 16427 TABLE platform role_bindings schema_owner
+5180; 0 0 ACL platform TABLE role_bindings schema_owner
+230; 1259 16508 TABLE platform source_registration_revisions schema_owner
+5181; 0 0 ACL platform TABLE source_registration_revisions schema_owner
+229; 1259 16476 TABLE platform source_registrations schema_owner
+5182; 0 0 ACL platform TABLE source_registrations schema_owner
+261; 1259 17231 TABLE platform sp04_request_ledger schema_owner
+5183; 0 0 ACL platform TABLE sp04_request_ledger schema_owner
+235; 1259 16616 TABLE platform step_up_sessions schema_owner
+5184; 0 0 ACL platform TABLE step_up_sessions schema_owner
+5185; 0 0 ACL platform COLUMN step_up_sessions.last_used_at schema_owner
+226; 1259 16410 TABLE platform tenants schema_owner
+5186; 0 0 ACL platform TABLE tenants schema_owner
+225; 1259 16390 TABLE public goose_db_version postgres
+5187; 0 0 ACL public TABLE goose_db_version postgres
+224; 1259 16389 SEQUENCE public goose_db_version_id_seq postgres
+4950; 0 17617 TABLE DATA action assessments schema_owner
+4951; 0 17645 TABLE DATA action attempts schema_owner
+4953; 0 17675 TABLE DATA action events schema_owner
+4912; 0 16826 TABLE DATA action executions schema_owner
+4955; 0 17709 TABLE DATA action host_onboardings schema_owner
+4954; 0 17696 TABLE DATA action output_archives schema_owner
+4952; 0 17659 TABLE DATA action output_chunks schema_owner
+4949; 0 17602 TABLE DATA action plans schema_owner
+4911; 0 16801 TABLE DATA action risk_acknowledgements schema_owner
+4915; 0 16868 TABLE DATA audit records schema_owner
+4916; 0 16892 TABLE DATA audit segments schema_owner
+4920; 0 17035 TABLE DATA audit signed_segments schema_owner
+4913; 0 16855 TABLE DATA audit tenant_heads schema_owner
+4941; 0 17444 TABLE DATA finding evidence_refs schema_owner
+4905; 0 16658 TABLE DATA finding inbox schema_owner
+4906; 0 16683 TABLE DATA finding outbox schema_owner
+4938; 0 17391 TABLE DATA finding poll_occurrences schema_owner
+4904; 0 16630 TABLE DATA finding records schema_owner
+4932; 0 17296 TABLE DATA finding rejections schema_owner
+4931; 0 17277 TABLE DATA finding timeline schema_owner
+4930; 0 17258 TABLE DATA finding transport_keys schema_owner
+4969; 0 17998 TABLE DATA identity accounts schema_owner
+4975; 0 18152 TABLE DATA identity administrator_initializations schema_owner
+4970; 0 18030 TABLE DATA identity credentials schema_owner
+4976; 0 18182 TABLE DATA identity login_entry_attempts schema_owner
+4977; 0 18216 TABLE DATA identity mfa_enrollments schema_owner
+4978; 0 18248 TABLE DATA identity mfa_recovery_codes schema_owner
+4971; 0 18053 TABLE DATA identity password_attempts schema_owner
+4973; 0 18103 TABLE DATA identity role_grants schema_owner
+4972; 0 18071 TABLE DATA identity sessions schema_owner
+4979; 0 18267 TABLE DATA identity step_up_challenges schema_owner
+4982; 0 18407 TABLE DATA identity step_up_failures schema_owner
+4980; 0 18305 TABLE DATA identity step_up_sessions schema_owner
+4981; 0 18370 TABLE DATA identity subject_mapping_inventories schema_owner
+4974; 0 18129 TABLE DATA identity subject_mappings schema_owner
+4935; 0 17343 TABLE DATA incident applied_revisions schema_owner
+4933; 0 17310 TABLE DATA incident correlation_subjects schema_owner
+4908; 0 16729 TABLE DATA incident finding_links schema_owner
+4984; 0 18480 TABLE DATA incident followups schema_owner
+4934; 0 17326 TABLE DATA incident inbox schema_owner
+4937; 0 17366 TABLE DATA incident outbox schema_owner
+4940; 0 17425 TABLE DATA incident rca_evidence_refs schema_owner
+4939; 0 17403 TABLE DATA incident rca_revisions schema_owner
+4907; 0 16708 TABLE DATA incident records schema_owner
+4936; 0 17353 TABLE DATA incident timeline schema_owner
+4943; 0 17499 TABLE DATA investigation admissions schema_owner
+4965; 0 17920 TABLE DATA investigation assistant_binding_requests schema_owner
+4956; 0 17721 TABLE DATA investigation assistant_conversations schema_owner
+4957; 0 17741 TABLE DATA investigation assistant_creation_keys schema_owner
+4963; 0 17847 TABLE DATA investigation assistant_events schema_owner
+4966; 0 17934 TABLE DATA investigation assistant_legal_holds schema_owner
+4959; 0 17784 TABLE DATA investigation assistant_messages schema_owner
+4961; 0 17829 TABLE DATA investigation assistant_query_results schema_owner
+4960; 0 17817 TABLE DATA investigation assistant_request_keys schema_owner
+4958; 0 17753 TABLE DATA investigation assistant_turns schema_owner
+4964; 0 17869 TABLE DATA investigation assistant_worker_capabilities schema_owner
+4946; 0 17549 TABLE DATA investigation call_allocations schema_owner
+4948; 0 17574 TABLE DATA investigation contexts schema_owner
+4945; 0 17535 TABLE DATA investigation events schema_owner
+4909; 0 16750 TABLE DATA investigation jobs schema_owner
+4983; 0 18451 TABLE DATA investigation observation_queries schema_owner
+4944; 0 17521 TABLE DATA investigation replay_ledger schema_owner
+4947; 0 17562 TABLE DATA investigation request_keys schema_owner
+4942; 0 17481 TABLE DATA investigation steps schema_owner
+4910; 0 16778 TABLE DATA investigation worker_queue schema_owner
+4924; 0 17143 TABLE DATA platform adapter_scope_verifications schema_owner
+4918; 0 16970 TABLE DATA platform cluster_registration_revisions schema_owner
+4896; 0 16454 TABLE DATA platform cluster_registrations schema_owner
+4926; 0 17175 TABLE DATA platform evidence_archive_intents schema_owner
+4927; 0 17192 TABLE DATA platform evidence_dependencies schema_owner
+4925; 0 17157 TABLE DATA platform evidence_metadata schema_owner
+4928; 0 17208 TABLE DATA platform evidence_retention_references schema_owner
+4902; 0 16595 TABLE DATA platform execution_profile_versions schema_owner
+4923; 0 17129 TABLE DATA platform graph_ownership schema_owner
+4917; 0 16935 TABLE DATA platform idempotency_request_ledger schema_owner
+4919; 0 17005 TABLE DATA platform registry_activation_history schema_owner
+4901; 0 16570 TABLE DATA platform registry_activations schema_owner
+4899; 0 16526 TABLE DATA platform registry_drafts schema_owner
+4900; 0 16549 TABLE DATA platform registry_versions schema_owner
+4922; 0 17112 TABLE DATA platform resource_aliases schema_owner
+4921; 0 17093 TABLE DATA platform resource_entities schema_owner
+4968; 0 17982 TABLE DATA platform resource_observation_coverage schema_owner
+4967; 0 17955 TABLE DATA platform resource_observations schema_owner
+4895; 0 16427 TABLE DATA platform role_bindings schema_owner
+4898; 0 16508 TABLE DATA platform source_registration_revisions schema_owner
+4897; 0 16476 TABLE DATA platform source_registrations schema_owner
+4929; 0 17231 TABLE DATA platform sp04_request_ledger schema_owner
+4903; 0 16616 TABLE DATA platform step_up_sessions schema_owner
+4894; 0 16410 TABLE DATA platform tenants schema_owner
+4893; 0 16390 TABLE DATA public goose_db_version postgres
+5188; 0 0 SEQUENCE SET audit records_audit_seq_seq schema_owner
+5189; 0 0 SEQUENCE SET investigation assistant_events_event_seq_seq schema_owner
+5190; 0 0 SEQUENCE SET public goose_db_version_id_seq postgres
+4196; 2606 17629 CONSTRAINT action risk_acknowledgements acknowledgement_single_assessment schema_owner
+4303; 2606 17627 CONSTRAINT action assessments assessments_pkey schema_owner
+4305; 2606 17653 CONSTRAINT action attempts attempts_pkey schema_owner
+4309; 2606 17683 CONSTRAINT action events events_pkey schema_owner
+4201; 2606 16837 CONSTRAINT action executions executions_pkey schema_owner
+4203; 2606 16839 CONSTRAINT action executions executions_tenant_id_subject_idempotency_key_digest_key schema_owner
+4313; 2606 17715 CONSTRAINT action host_onboardings host_onboardings_pkey schema_owner
+4311; 2606 17702 CONSTRAINT action output_archives output_archives_pkey schema_owner
+4307; 2606 17669 CONSTRAINT action output_chunks output_chunks_pkey schema_owner
+4301; 2606 17611 CONSTRAINT action plans plans_pkey schema_owner
+4198; 2606 16810 CONSTRAINT action risk_acknowledgements risk_acknowledgements_pkey schema_owner
+4209; 2606 16882 CONSTRAINT audit records records_audit_seq_key schema_owner
+4211; 2606 16880 CONSTRAINT audit records records_pkey schema_owner
+4213; 2606 16884 CONSTRAINT audit records records_tenant_id_record_id_key schema_owner
+4215; 2606 16905 CONSTRAINT audit segments segments_pkey schema_owner
+4217; 2606 16907 CONSTRAINT audit segments segments_tenant_id_first_tenant_seq_key schema_owner
+4232; 2606 17050 CONSTRAINT audit signed_segments signed_segments_pkey schema_owner
+4234; 2606 17052 CONSTRAINT audit signed_segments signed_segments_tenant_id_first_audit_seq_key schema_owner
+4205; 2606 16861 CONSTRAINT audit tenant_heads tenant_heads_pkey schema_owner
+4281; 2606 17448 CONSTRAINT finding evidence_refs evidence_refs_pkey schema_owner
+4177; 2606 16667 CONSTRAINT finding inbox inbox_pkey schema_owner
+4180; 2606 16696 CONSTRAINT finding outbox outbox_pkey schema_owner
+4273; 2606 17397 CONSTRAINT finding poll_occurrences poll_occurrences_pkey schema_owner
+4173; 2606 16639 CONSTRAINT finding records records_pkey schema_owner
+4175; 2606 16641 CONSTRAINT finding records records_tenant_id_source_id_event_id_key schema_owner
+4261; 2606 17303 CONSTRAINT finding rejections rejections_pkey schema_owner
+4259; 2606 17285 CONSTRAINT finding timeline timeline_pkey schema_owner
+4257; 2606 17266 CONSTRAINT finding transport_keys transport_keys_pkey schema_owner
+4359; 2606 18021 CONSTRAINT identity accounts accounts_login_name_key schema_owner
+4361; 2606 18017 CONSTRAINT identity accounts accounts_pkey schema_owner
+4363; 2606 18023 CONSTRAINT identity accounts accounts_tenant_id_subject_key schema_owner
+4366; 2606 18019 CONSTRAINT identity accounts accounts_user_id_key schema_owner
+4388; 2606 18160 CONSTRAINT identity administrator_initializations administrator_initializations_pkey schema_owner
+4368; 2606 18040 CONSTRAINT identity credentials credentials_pkey schema_owner
+4370; 2606 18042 CONSTRAINT identity credentials credentials_user_id_credential_version_key schema_owner
+4390; 2606 18191 CONSTRAINT identity login_entry_attempts login_entry_attempts_pkey schema_owner
+4394; 2606 18233 CONSTRAINT identity mfa_enrollments mfa_enrollments_pkey schema_owner
+4396; 2606 18235 CONSTRAINT identity mfa_enrollments mfa_enrollments_user_id_enrollment_id_key schema_owner
+4398; 2606 18256 CONSTRAINT identity mfa_recovery_codes mfa_recovery_codes_pkey schema_owner
+4372; 2606 18060 CONSTRAINT identity password_attempts password_attempts_pkey schema_owner
+4382; 2606 18117 CONSTRAINT identity role_grants role_grants_pkey schema_owner
+4375; 2606 18091 CONSTRAINT identity sessions sessions_csrf_digest_key schema_owner
+4377; 2606 18087 CONSTRAINT identity sessions sessions_pkey schema_owner
+4379; 2606 18089 CONSTRAINT identity sessions sessions_token_digest_key schema_owner
+4400; 2606 18291 CONSTRAINT identity step_up_challenges step_up_challenges_pkey schema_owner
+4402; 2606 18293 CONSTRAINT identity step_up_challenges step_up_challenges_session_id_challenge_id_key schema_owner
+4412; 2606 18417 CONSTRAINT identity step_up_failures step_up_failures_pkey schema_owner
+4405; 2606 18317 CONSTRAINT identity step_up_sessions step_up_sessions_pkey schema_owner
+4408; 2606 18319 CONSTRAINT identity step_up_sessions step_up_sessions_tenant_id_challenge_id_key schema_owner
+4410; 2606 18379 CONSTRAINT identity subject_mapping_inventories subject_mapping_inventories_pkey schema_owner
+4384; 2606 18139 CONSTRAINT identity subject_mappings subject_mappings_pkey schema_owner
+4386; 2606 18141 CONSTRAINT identity subject_mappings subject_mappings_tenant_id_legacy_subject_key schema_owner
+4267; 2606 17347 CONSTRAINT incident applied_revisions applied_revisions_pkey schema_owner
+4263; 2606 17316 CONSTRAINT incident correlation_subjects correlation_subjects_pkey schema_owner
+4187; 2606 16734 CONSTRAINT incident finding_links finding_links_pkey schema_owner
+4421; 2606 18497 CONSTRAINT incident followups followups_pkey schema_owner
+4265; 2606 17332 CONSTRAINT incident inbox inbox_pkey schema_owner
+4271; 2606 17375 CONSTRAINT incident outbox outbox_pkey schema_owner
+4279; 2606 17429 CONSTRAINT incident rca_evidence_refs rca_evidence_refs_pkey schema_owner
+4275; 2606 17412 CONSTRAINT incident rca_revisions rca_revisions_pkey schema_owner
+4277; 2606 17414 CONSTRAINT incident rca_revisions rca_revisions_tenant_id_incident_id_evaluation_key_key schema_owner
+4185; 2606 16722 CONSTRAINT incident records records_pkey schema_owner
+4269; 2606 17360 CONSTRAINT incident timeline timeline_pkey schema_owner
+4285; 2606 17511 CONSTRAINT investigation admissions admissions_pkey schema_owner
+4287; 2606 17515 CONSTRAINT investigation admissions admissions_tenant_id_job_id_call_jti_key schema_owner
+4289; 2606 17513 CONSTRAINT investigation admissions admissions_tenant_id_job_id_call_seq_key schema_owner
+4347; 2606 17927 CONSTRAINT investigation assistant_binding_requests assistant_binding_requests_pkey schema_owner
+4315; 2606 17734 CONSTRAINT investigation assistant_conversations assistant_conversations_pkey schema_owner
+4318; 2606 17747 CONSTRAINT investigation assistant_creation_keys assistant_creation_keys_pkey schema_owner
+4341; 2606 17854 CONSTRAINT investigation assistant_events assistant_events_pkey schema_owner
+4343; 2606 17856 CONSTRAINT investigation assistant_events assistant_events_tenant_id_turn_id_job_event_seq_key schema_owner
+4349; 2606 17941 CONSTRAINT investigation assistant_legal_holds assistant_legal_holds_pkey schema_owner
+4327; 2606 17795 CONSTRAINT investigation assistant_messages assistant_messages_pkey schema_owner
+4329; 2606 17799 CONSTRAINT investigation assistant_messages assistant_messages_tenant_id_conversation_id_message_id_key schema_owner
+4331; 2606 17797 CONSTRAINT investigation assistant_messages assistant_messages_tenant_id_conversation_id_sequence_key schema_owner
+4333; 2606 17801 CONSTRAINT investigation assistant_messages assistant_messages_tenant_id_turn_id_role_key schema_owner
+4337; 2606 17838 CONSTRAINT investigation assistant_query_results assistant_query_results_pkey schema_owner
+4339; 2606 17840 CONSTRAINT investigation assistant_query_results assistant_query_results_tenant_id_turn_id_plan_digest_key schema_owner
+4335; 2606 17823 CONSTRAINT investigation assistant_request_keys assistant_request_keys_pkey schema_owner
+4321; 2606 17763 CONSTRAINT investigation assistant_turns assistant_turns_pkey schema_owner
+4323; 2606 17767 CONSTRAINT investigation assistant_turns assistant_turns_tenant_id_conversation_id_turn_id_key schema_owner
+4325; 2606 17765 CONSTRAINT investigation assistant_turns assistant_turns_tenant_id_job_id_key schema_owner
+4345; 2606 17875 CONSTRAINT investigation assistant_worker_capabilities assistant_worker_capabilities_pkey schema_owner
+4295; 2606 17556 CONSTRAINT investigation call_allocations call_allocations_pkey schema_owner
+4299; 2606 17580 CONSTRAINT investigation contexts contexts_pkey schema_owner
+4293; 2606 17543 CONSTRAINT investigation events events_pkey schema_owner
+4191; 2606 16760 CONSTRAINT investigation jobs jobs_pkey schema_owner
+4416; 2606 18463 CONSTRAINT investigation observation_queries observation_queries_pkey schema_owner
+4418; 2606 18465 CONSTRAINT investigation observation_queries observation_queries_tenant_id_owner_subject_request_key_key schema_owner
+4291; 2606 17529 CONSTRAINT investigation replay_ledger replay_ledger_pkey schema_owner
+4297; 2606 17568 CONSTRAINT investigation request_keys request_keys_pkey schema_owner
+4283; 2606 17493 CONSTRAINT investigation steps steps_pkey schema_owner
+4194; 2606 16789 CONSTRAINT investigation worker_queue worker_queue_pkey schema_owner
+4242; 2606 17151 CONSTRAINT platform adapter_scope_verifications adapter_scope_verifications_pkey schema_owner
+4226; 2606 16982 CONSTRAINT platform cluster_registration_revisions cluster_registration_revisions_pkey schema_owner
+4136; 2606 16468 CONSTRAINT platform cluster_registrations cluster_registrations_pkey schema_owner
+4138; 2606 16470 CONSTRAINT platform cluster_registrations cluster_registrations_tenant_id_cluster_uid_key schema_owner
+4247; 2606 17184 CONSTRAINT platform evidence_archive_intents evidence_archive_intents_pkey schema_owner
+4249; 2606 17186 CONSTRAINT platform evidence_archive_intents evidence_archive_intents_tenant_id_object_id_key schema_owner
+4251; 2606 17197 CONSTRAINT platform evidence_dependencies evidence_dependencies_pkey schema_owner
+4244; 2606 17169 CONSTRAINT platform evidence_metadata evidence_metadata_pkey schema_owner
+4253; 2606 17216 CONSTRAINT platform evidence_retention_references evidence_retention_references_pkey schema_owner
+4163; 2606 16608 CONSTRAINT platform execution_profile_versions execution_profile_versions_pkey schema_owner
+4165; 2606 16610 CONSTRAINT platform execution_profile_versions execution_profile_versions_tenant_id_logical_name_version_n_key schema_owner
+4240; 2606 17137 CONSTRAINT platform graph_ownership graph_ownership_pkey schema_owner
+4222; 2606 16955 CONSTRAINT platform idempotency_request_ledger idempotency_request_ledger_pkey schema_owner
+4224; 2606 16957 CONSTRAINT platform idempotency_request_ledger idempotency_request_ledger_tenant_id_subject_operation_idem_key schema_owner
+4228; 2606 17018 CONSTRAINT platform registry_activation_history registry_activation_history_pkey schema_owner
+4158; 2606 16582 CONSTRAINT platform registry_activations registry_activations_pkey schema_owner
+4160; 2606 16584 CONSTRAINT platform registry_activations registry_activations_tenant_id_kind_logical_name_scope_type_key schema_owner
+4148; 2606 16541 CONSTRAINT platform registry_drafts registry_drafts_pkey schema_owner
+4150; 2606 16543 CONSTRAINT platform registry_drafts registry_drafts_tenant_id_kind_logical_name_draft_id_key schema_owner
+4152; 2606 16562 CONSTRAINT platform registry_versions registry_versions_pkey schema_owner
+4154; 2606 16994 CONSTRAINT platform registry_versions registry_versions_publication_identity_unique schema_owner
+4156; 2606 16564 CONSTRAINT platform registry_versions registry_versions_tenant_id_kind_logical_name_version_numbe_key schema_owner
+4238; 2606 17118 CONSTRAINT platform resource_aliases resource_aliases_pkey schema_owner
+4236; 2606 17101 CONSTRAINT platform resource_entities resource_entities_pkey schema_owner
+4357; 2606 17989 CONSTRAINT platform resource_observation_coverage resource_observation_coverage_pkey schema_owner
+4353; 2606 17964 CONSTRAINT platform resource_observations resource_observations_pkey schema_owner
+4355; 2606 17966 CONSTRAINT platform resource_observations resource_observations_tenant_id_source_id_source_revision_c_key schema_owner
+4131; 2606 16445 CONSTRAINT platform role_bindings role_bindings_pkey schema_owner
+4134; 2606 16447 CONSTRAINT platform role_bindings role_bindings_tenant_id_subject_role_name_binding_id_key schema_owner
+4146; 2606 16520 CONSTRAINT platform source_registration_revisions source_registration_revisions_pkey schema_owner
+4141; 2606 16495 CONSTRAINT platform source_registrations source_registrations_pkey schema_owner
+4143; 2606 16497 CONSTRAINT platform source_registrations source_registrations_tenant_id_source_type_instance_key_key schema_owner
+4255; 2606 17242 CONSTRAINT platform sp04_request_ledger sp04_request_ledger_pkey schema_owner
+4167; 2606 16622 CONSTRAINT platform step_up_sessions step_up_sessions_pkey schema_owner
+4169; 2606 16624 CONSTRAINT platform step_up_sessions step_up_sessions_tenant_id_subject_keycloak_sid_key schema_owner
+4127; 2606 16424 CONSTRAINT platform tenants tenants_pkey schema_owner
+4129; 2606 16426 CONSTRAINT platform tenants tenants_slug_key schema_owner
+4125; 2606 16395 CONSTRAINT public goose_db_version goose_db_version_pkey postgres
+4199; 1259 17644 INDEX action execution_single_ack schema_owner
+4206; 1259 16891 INDEX audit audit_records_entity_idx schema_owner
+4207; 1259 16890 INDEX audit audit_records_tenant_time_idx schema_owner
+4230; 1259 17058 INDEX audit audit_signed_segments_range_idx schema_owner
+4170; 1259 17257 INDEX finding finding_occurrence_unique schema_owner
+4178; 1259 16707 INDEX finding finding_outbox_pending_idx schema_owner
+4171; 1259 16657 INDEX finding finding_records_tenant_received_idx schema_owner
+4364; 1259 18029 INDEX identity accounts_tenant_idx schema_owner
+4391; 1259 18246 INDEX identity mfa_enrollments_confirmed_unique schema_owner
+4392; 1259 18247 INDEX identity mfa_enrollments_pending_unique schema_owner
+4380; 1259 18128 INDEX identity role_grants_active_unique_idx schema_owner
+4373; 1259 18102 INDEX identity sessions_active_idx schema_owner
+4403; 1259 18304 INDEX identity step_up_challenges_session_idx schema_owner
+4406; 1259 18330 INDEX identity step_up_sessions_session_idx schema_owner
+4181; 1259 17325 INDEX incident incident_correlation_idx schema_owner
+4422; 1259 18508 INDEX incident incident_followups_open_idx schema_owner
+4182; 1259 18479 INDEX incident incident_records_assignee_idx schema_owner
+4183; 1259 16728 INDEX incident incident_records_tenant_state_idx schema_owner
+4188; 1259 17887 INDEX investigation assistant_job_turn schema_owner
+4319; 1259 17783 INDEX investigation assistant_one_active_turn schema_owner
+4316; 1259 17740 INDEX investigation assistant_owner_list schema_owner
+4189; 1259 18515 INDEX investigation investigation_job_identity schema_owner
+4192; 1259 16800 INDEX investigation investigation_worker_queue_claim_idx schema_owner
+4413; 1259 18473 INDEX investigation observation_one_active schema_owner
+4414; 1259 18471 INDEX investigation observation_owner_history schema_owner
+4419; 1259 18472 INDEX investigation observation_work schema_owner
+4139; 1259 16988 INDEX platform cluster_registrations_tenant_status_idx schema_owner
+4245; 1259 17249 INDEX platform evidence_protection_pending schema_owner
+4161; 1259 17694 INDEX platform execution_profile_public_identity schema_owner
+4218; 1259 16963 INDEX platform idempotency_expiration_idx schema_owner
+4219; 1259 16964 INDEX platform idempotency_failed_expiration_idx schema_owner
+4220; 1259 16965 INDEX platform idempotency_lease_idx schema_owner
+4229; 1259 17029 INDEX platform registry_activation_history_resolve_idx schema_owner
+4350; 1259 17978 INDEX platform resource_observation_event_window schema_owner
+4351; 1259 17977 INDEX platform resource_observation_window schema_owner
+4132; 1259 16453 INDEX platform role_bindings_subject_idx schema_owner
+4144; 1259 16989 INDEX platform source_registrations_tenant_status_idx schema_owner
+4563; 2620 17064 TRIGGER audit signed_segments signed_segment_immutable schema_owner
+4568; 2620 17883 TRIGGER investigation assistant_messages assistant_message_immutable schema_owner
+4567; 2620 17919 TRIGGER investigation events assistant_relay schema_owner
+4565; 2620 17949 TRIGGER investigation steps assistant_step_ttl schema_owner
+4562; 2620 17917 TRIGGER investigation jobs assistant_sync_job schema_owner
+4566; 2620 17594 TRIGGER investigation steps investigation_success_immutable schema_owner
+4569; 2620 18476 TRIGGER investigation observation_queries observation_immutable schema_owner
+4558; 2620 16991 TRIGGER platform cluster_registrations cluster_uid_immutable schema_owner
+4560; 2620 17032 TRIGGER platform registry_drafts registry_draft_lifecycle_guard schema_owner
+4561; 2620 17034 TRIGGER platform registry_versions registry_version_immutability_guard schema_owner
+4564; 2620 18362 TRIGGER platform resource_entities resource_projection_revision schema_owner
+4559; 2620 17092 TRIGGER platform source_registrations source_backend_immutable schema_owner
+4455; 2606 17630 FK CONSTRAINT action risk_acknowledgements acknowledgement_assessment schema_owner
+4509; 2606 17654 FK CONSTRAINT action attempts attempts_tenant_id_execution_id_fkey schema_owner
+4511; 2606 17684 FK CONSTRAINT action events events_tenant_id_execution_id_fkey schema_owner
+4459; 2606 16850 FK CONSTRAINT action executions executions_tenant_id_execution_profile_version_id_fkey schema_owner
+4460; 2606 16840 FK CONSTRAINT action executions executions_tenant_id_fkey schema_owner
+4461; 2606 16845 FK CONSTRAINT action executions executions_tenant_id_risk_acknowledgement_id_fkey schema_owner
+4512; 2606 17703 FK CONSTRAINT action output_archives output_archives_tenant_id_execution_id_fkey schema_owner
+4510; 2606 17670 FK CONSTRAINT action output_chunks output_chunks_tenant_id_execution_id_fkey schema_owner
+4508; 2606 17612 FK CONSTRAINT action plans plans_tenant_id_incident_id_fkey schema_owner
+4456; 2606 16811 FK CONSTRAINT action risk_acknowledgements risk_acknowledgements_tenant_id_fkey schema_owner
+4457; 2606 16816 FK CONSTRAINT action risk_acknowledgements risk_acknowledgements_tenant_id_policy_version_id_fkey schema_owner
+4458; 2606 16821 FK CONSTRAINT action risk_acknowledgements risk_acknowledgements_tenant_id_step_up_session_id_fkey schema_owner
+4463; 2606 16885 FK CONSTRAINT audit records records_tenant_id_fkey schema_owner
+4464; 2606 16908 FK CONSTRAINT audit segments segments_tenant_id_fkey schema_owner
+4469; 2606 17067 FK CONSTRAINT audit signed_segments signed_segment_predecessor_fk schema_owner
+4470; 2606 17053 FK CONSTRAINT audit signed_segments signed_segments_tenant_id_fkey schema_owner
+4462; 2606 16862 FK CONSTRAINT audit tenant_heads tenant_heads_tenant_id_fkey schema_owner
+4499; 2606 17454 FK CONSTRAINT finding evidence_refs evidence_refs_tenant_id_evidence_id_fkey schema_owner
+4500; 2606 17449 FK CONSTRAINT finding evidence_refs evidence_refs_tenant_id_finding_id_fkey schema_owner
+4439; 2606 16678 FK CONSTRAINT finding inbox inbox_tenant_id_finding_id_fkey schema_owner
+4440; 2606 16668 FK CONSTRAINT finding inbox inbox_tenant_id_fkey schema_owner
+4441; 2606 16673 FK CONSTRAINT finding inbox inbox_tenant_id_source_id_fkey schema_owner
+4442; 2606 16702 FK CONSTRAINT finding outbox outbox_tenant_id_finding_id_fkey schema_owner
+4443; 2606 16697 FK CONSTRAINT finding outbox outbox_tenant_id_fkey schema_owner
+4494; 2606 17398 FK CONSTRAINT finding poll_occurrences poll_occurrences_tenant_id_source_id_fkey schema_owner
+4436; 2606 16652 FK CONSTRAINT finding records records_tenant_id_cluster_id_fkey schema_owner
+4437; 2606 16642 FK CONSTRAINT finding records records_tenant_id_fkey schema_owner
+4438; 2606 16647 FK CONSTRAINT finding records records_tenant_id_source_id_fkey schema_owner
+4487; 2606 17304 FK CONSTRAINT finding rejections rejections_tenant_id_source_id_fkey schema_owner
+4485; 2606 17286 FK CONSTRAINT finding timeline timeline_tenant_id_finding_id_fkey schema_owner
+4486; 2606 17291 FK CONSTRAINT finding timeline timeline_tenant_id_source_id_fkey schema_owner
+4483; 2606 17272 FK CONSTRAINT finding transport_keys transport_keys_tenant_id_finding_id_fkey schema_owner
+4484; 2606 17267 FK CONSTRAINT finding transport_keys transport_keys_tenant_id_source_id_fkey schema_owner
+4530; 2606 18024 FK CONSTRAINT identity accounts accounts_tenant_id_fkey schema_owner
+4542; 2606 18161 FK CONSTRAINT identity administrator_initializations administrator_initializations_tenant_id_fkey schema_owner
+4543; 2606 18166 FK CONSTRAINT identity administrator_initializations administrator_initializations_tenant_id_user_id_fkey schema_owner
+4531; 2606 18043 FK CONSTRAINT identity credentials credentials_tenant_id_fkey schema_owner
+4532; 2606 18048 FK CONSTRAINT identity credentials credentials_tenant_id_user_id_fkey schema_owner
+4544; 2606 18236 FK CONSTRAINT identity mfa_enrollments mfa_enrollments_tenant_id_fkey schema_owner
+4545; 2606 18241 FK CONSTRAINT identity mfa_enrollments mfa_enrollments_tenant_id_user_id_fkey schema_owner
+4546; 2606 18257 FK CONSTRAINT identity mfa_recovery_codes mfa_recovery_codes_tenant_id_fkey schema_owner
+4547; 2606 18262 FK CONSTRAINT identity mfa_recovery_codes mfa_recovery_codes_tenant_id_user_id_fkey schema_owner
+4533; 2606 18061 FK CONSTRAINT identity password_attempts password_attempts_tenant_id_fkey schema_owner
+4534; 2606 18066 FK CONSTRAINT identity password_attempts password_attempts_tenant_id_user_id_fkey schema_owner
+4537; 2606 18118 FK CONSTRAINT identity role_grants role_grants_tenant_id_fkey schema_owner
+4538; 2606 18123 FK CONSTRAINT identity role_grants role_grants_tenant_id_user_id_fkey schema_owner
+4535; 2606 18092 FK CONSTRAINT identity sessions sessions_tenant_id_fkey schema_owner
+4536; 2606 18097 FK CONSTRAINT identity sessions sessions_tenant_id_user_id_fkey schema_owner
+4548; 2606 18294 FK CONSTRAINT identity step_up_challenges step_up_challenges_tenant_id_fkey schema_owner
+4549; 2606 18299 FK CONSTRAINT identity step_up_challenges step_up_challenges_tenant_id_user_id_fkey schema_owner
+4553; 2606 18418 FK CONSTRAINT identity step_up_failures step_up_failures_tenant_id_fkey schema_owner
+4554; 2606 18423 FK CONSTRAINT identity step_up_failures step_up_failures_tenant_id_user_id_fkey schema_owner
+4550; 2606 18320 FK CONSTRAINT identity step_up_sessions step_up_sessions_tenant_id_fkey schema_owner
+4551; 2606 18325 FK CONSTRAINT identity step_up_sessions step_up_sessions_tenant_id_user_id_fkey schema_owner
+4552; 2606 18380 FK CONSTRAINT identity subject_mapping_inventories subject_mapping_inventories_tenant_id_fkey schema_owner
+4539; 2606 18386 FK CONSTRAINT identity subject_mappings subject_mapping_inventory_fk schema_owner
+4540; 2606 18142 FK CONSTRAINT identity subject_mappings subject_mappings_tenant_id_fkey schema_owner
+4541; 2606 18147 FK CONSTRAINT identity subject_mappings subject_mappings_tenant_id_user_id_fkey schema_owner
+4491; 2606 17348 FK CONSTRAINT incident applied_revisions applied_revisions_tenant_id_finding_id_fkey schema_owner
+4488; 2606 17317 FK CONSTRAINT incident correlation_subjects correlation_subjects_tenant_id_fkey schema_owner
+4445; 2606 16745 FK CONSTRAINT incident finding_links finding_links_tenant_id_finding_id_fkey schema_owner
+4446; 2606 16735 FK CONSTRAINT incident finding_links finding_links_tenant_id_fkey schema_owner
+4447; 2606 16740 FK CONSTRAINT incident finding_links finding_links_tenant_id_incident_id_fkey schema_owner
+4556; 2606 18498 FK CONSTRAINT incident followups followups_tenant_id_fkey schema_owner
+4557; 2606 18503 FK CONSTRAINT incident followups followups_tenant_id_incident_id_fkey schema_owner
+4489; 2606 17333 FK CONSTRAINT incident inbox inbox_tenant_id_finding_id_fkey schema_owner
+4490; 2606 17338 FK CONSTRAINT incident inbox inbox_tenant_id_incident_id_fkey schema_owner
+4493; 2606 17376 FK CONSTRAINT incident outbox outbox_tenant_id_incident_id_fkey schema_owner
+4497; 2606 17435 FK CONSTRAINT incident rca_evidence_refs rca_evidence_refs_tenant_id_evidence_id_fkey schema_owner
+4498; 2606 17430 FK CONSTRAINT incident rca_evidence_refs rca_evidence_refs_tenant_id_incident_id_revision_fkey schema_owner
+4495; 2606 17415 FK CONSTRAINT incident rca_revisions rca_revisions_tenant_id_incident_id_fkey schema_owner
+4496; 2606 17420 FK CONSTRAINT incident rca_revisions rca_revisions_tenant_id_recipe_version_id_fkey schema_owner
+4444; 2606 16723 FK CONSTRAINT incident records records_tenant_id_fkey schema_owner
+4492; 2606 17361 FK CONSTRAINT incident timeline timeline_tenant_id_incident_id_fkey schema_owner
+4502; 2606 17516 FK CONSTRAINT investigation admissions admissions_tenant_id_job_id_step_id_fkey schema_owner
+4525; 2606 17928 FK CONSTRAINT investigation assistant_binding_requests assistant_binding_requests_tenant_id_conversation_id_fkey schema_owner
+4513; 2606 17735 FK CONSTRAINT investigation assistant_conversations assistant_conversations_tenant_id_fkey schema_owner
+4514; 2606 17748 FK CONSTRAINT investigation assistant_creation_keys assistant_creation_keys_tenant_id_conversation_id_fkey schema_owner
+4523; 2606 17857 FK CONSTRAINT investigation assistant_events assistant_events_tenant_id_conversation_id_turn_id_fkey schema_owner
+4448; 2606 17906 FK CONSTRAINT investigation jobs assistant_job_conversation_fk schema_owner
+4449; 2606 17911 FK CONSTRAINT investigation jobs assistant_job_turn_fk schema_owner
+4526; 2606 17942 FK CONSTRAINT investigation assistant_legal_holds assistant_legal_holds_tenant_id_turn_id_fkey schema_owner
+4519; 2606 17802 FK CONSTRAINT investigation assistant_messages assistant_messages_tenant_id_conversation_id_fkey schema_owner
+4520; 2606 17807 FK CONSTRAINT investigation assistant_messages assistant_messages_tenant_id_conversation_id_turn_id_fkey schema_owner
+4522; 2606 17841 FK CONSTRAINT investigation assistant_query_results assistant_query_results_tenant_id_turn_id_fkey schema_owner
+4521; 2606 17824 FK CONSTRAINT investigation assistant_request_keys assistant_request_keys_tenant_id_conversation_id_turn_id_fkey schema_owner
+4515; 2606 17812 FK CONSTRAINT investigation assistant_turns assistant_turn_message_fk schema_owner
+4516; 2606 17768 FK CONSTRAINT investigation assistant_turns assistant_turns_tenant_id_conversation_id_fkey schema_owner
+4517; 2606 17778 FK CONSTRAINT investigation assistant_turns assistant_turns_tenant_id_conversation_id_parent_turn_id_fkey schema_owner
+4518; 2606 17773 FK CONSTRAINT investigation assistant_turns assistant_turns_tenant_id_job_id_fkey schema_owner
+4524; 2606 17876 FK CONSTRAINT investigation assistant_worker_capabilities assistant_worker_capabilities_tenant_id_fkey schema_owner
+4505; 2606 17557 FK CONSTRAINT investigation call_allocations call_allocations_tenant_id_job_id_fkey schema_owner
+4507; 2606 17581 FK CONSTRAINT investigation contexts contexts_tenant_id_job_id_fkey schema_owner
+4504; 2606 17544 FK CONSTRAINT investigation events events_tenant_id_job_id_fkey schema_owner
+4450; 2606 16763 FK CONSTRAINT investigation jobs jobs_tenant_id_fkey schema_owner
+4451; 2606 16768 FK CONSTRAINT investigation jobs jobs_tenant_id_incident_id_fkey schema_owner
+4452; 2606 16773 FK CONSTRAINT investigation jobs jobs_tenant_id_policy_version_id_fkey schema_owner
+4555; 2606 18466 FK CONSTRAINT investigation observation_queries observation_queries_tenant_id_fkey schema_owner
+4503; 2606 17530 FK CONSTRAINT investigation replay_ledger replay_ledger_tenant_id_job_id_step_id_fkey schema_owner
+4506; 2606 17569 FK CONSTRAINT investigation request_keys request_keys_tenant_id_job_id_fkey schema_owner
+4501; 2606 17494 FK CONSTRAINT investigation steps steps_tenant_id_job_id_fkey schema_owner
+4453; 2606 16790 FK CONSTRAINT investigation worker_queue worker_queue_tenant_id_fkey schema_owner
+4454; 2606 16795 FK CONSTRAINT investigation worker_queue worker_queue_tenant_id_job_id_fkey schema_owner
+4476; 2606 17152 FK CONSTRAINT platform adapter_scope_verifications adapter_scope_verifications_tenant_id_source_id_fkey schema_owner
+4466; 2606 16983 FK CONSTRAINT platform cluster_registration_revisions cluster_registration_revisions_tenant_id_cluster_id_fkey schema_owner
+4424; 2606 16471 FK CONSTRAINT platform cluster_registrations cluster_registrations_tenant_id_fkey schema_owner
+4478; 2606 17187 FK CONSTRAINT platform evidence_archive_intents evidence_archive_intents_tenant_id_evidence_id_fkey schema_owner
+4479; 2606 17203 FK CONSTRAINT platform evidence_dependencies evidence_dependencies_tenant_id_dependency_id_fkey schema_owner
+4480; 2606 17198 FK CONSTRAINT platform evidence_dependencies evidence_dependencies_tenant_id_referrer_id_fkey schema_owner
+4477; 2606 17170 FK CONSTRAINT platform evidence_metadata evidence_metadata_tenant_id_source_id_fkey schema_owner
+4481; 2606 17217 FK CONSTRAINT platform evidence_retention_references evidence_retention_references_tenant_id_evidence_id_fkey schema_owner
+4434; 2606 16611 FK CONSTRAINT platform execution_profile_versions execution_profile_versions_tenant_id_fkey schema_owner
+4475; 2606 17138 FK CONSTRAINT platform graph_ownership graph_ownership_tenant_id_cluster_uid_fkey schema_owner
+4465; 2606 16958 FK CONSTRAINT platform idempotency_request_ledger idempotency_request_ledger_tenant_id_fkey schema_owner
+4467; 2606 17024 FK CONSTRAINT platform registry_activation_history registry_activation_history_tenant_id_cluster_id_fkey schema_owner
+4468; 2606 17019 FK CONSTRAINT platform registry_activation_history registry_activation_history_tenant_id_version_id_kind_logi_fkey schema_owner
+4431; 2606 16590 FK CONSTRAINT platform registry_activations registry_activations_tenant_id_cluster_id_fkey schema_owner
+4432; 2606 16585 FK CONSTRAINT platform registry_activations registry_activations_tenant_id_version_id_fkey schema_owner
+4433; 2606 17000 FK CONSTRAINT platform registry_activations registry_activations_version_identity_fk schema_owner
+4428; 2606 16544 FK CONSTRAINT platform registry_drafts registry_drafts_tenant_id_fkey schema_owner
+4429; 2606 16995 FK CONSTRAINT platform registry_versions registry_versions_draft_identity_fk schema_owner
+4430; 2606 16565 FK CONSTRAINT platform registry_versions registry_versions_tenant_id_draft_id_fkey schema_owner
+4473; 2606 17119 FK CONSTRAINT platform resource_aliases resource_aliases_tenant_id_canonical_id_fkey schema_owner
+4474; 2606 17124 FK CONSTRAINT platform resource_aliases resource_aliases_tenant_id_source_id_fkey schema_owner
+4471; 2606 17107 FK CONSTRAINT platform resource_entities resource_entities_tenant_id_cluster_id_fkey schema_owner
+4472; 2606 17102 FK CONSTRAINT platform resource_entities resource_entities_tenant_id_fkey schema_owner
+4529; 2606 17990 FK CONSTRAINT platform resource_observation_coverage resource_observation_coverage_tenant_id_source_id_fkey schema_owner
+4527; 2606 17972 FK CONSTRAINT platform resource_observations resource_observations_tenant_id_canonical_id_fkey schema_owner
+4528; 2606 17967 FK CONSTRAINT platform resource_observations resource_observations_tenant_id_source_id_fkey schema_owner
+4423; 2606 16448 FK CONSTRAINT platform role_bindings role_bindings_tenant_id_fkey schema_owner
+4427; 2606 16521 FK CONSTRAINT platform source_registration_revisions source_registration_revisions_tenant_id_source_id_fkey schema_owner
+4425; 2606 16503 FK CONSTRAINT platform source_registrations source_registrations_tenant_id_cluster_id_fkey schema_owner
+4426; 2606 16498 FK CONSTRAINT platform source_registrations source_registrations_tenant_id_fkey schema_owner
+4482; 2606 17243 FK CONSTRAINT platform sp04_request_ledger sp04_request_ledger_tenant_id_fkey schema_owner
+4435; 2606 16625 FK CONSTRAINT platform step_up_sessions step_up_sessions_tenant_id_fkey schema_owner
+4769; 0 17617 ROW SECURITY action assessments schema_owner
+4770; 0 17645 ROW SECURITY action attempts schema_owner
+4772; 0 17675 ROW SECURITY action events schema_owner
+4732; 0 16826 ROW SECURITY action executions schema_owner
+4774; 0 17709 ROW SECURITY action host_onboardings schema_owner
+4773; 0 17696 ROW SECURITY action output_archives schema_owner
+4771; 0 17659 ROW SECURITY action output_chunks schema_owner
+4768; 0 17602 ROW SECURITY action plans schema_owner
+4731; 0 16801 ROW SECURITY action risk_acknowledgements schema_owner
+4857; 3256 17690 POLICY action assessments tenant_isolation schema_owner
+4858; 3256 17691 POLICY action attempts tenant_isolation schema_owner
+4860; 3256 17693 POLICY action events tenant_isolation schema_owner
+4820; 3256 16931 POLICY action executions tenant_isolation schema_owner
+4862; 3256 17716 POLICY action host_onboardings tenant_isolation schema_owner
+4861; 3256 17708 POLICY action output_archives tenant_isolation schema_owner
+4859; 3256 17692 POLICY action output_chunks tenant_isolation schema_owner
+4856; 3256 17689 POLICY action plans tenant_isolation schema_owner
+4819; 3256 16930 POLICY action risk_acknowledgements tenant_isolation schema_owner
+4734; 0 16868 ROW SECURITY audit records schema_owner
+4735; 0 16892 ROW SECURITY audit segments schema_owner
+4739; 0 17035 ROW SECURITY audit signed_segments schema_owner
+4733; 0 16855 ROW SECURITY audit tenant_heads schema_owner
+4822; 3256 16933 POLICY audit records tenant_isolation schema_owner
+4823; 3256 16934 POLICY audit segments tenant_isolation schema_owner
+4827; 3256 17059 POLICY audit signed_segments tenant_isolation schema_owner
+4821; 3256 16932 POLICY audit tenant_heads tenant_isolation schema_owner
+4760; 0 17444 ROW SECURITY finding evidence_refs schema_owner
+4725; 0 16658 ROW SECURITY finding inbox schema_owner
+4726; 0 16683 ROW SECURITY finding outbox schema_owner
+4757; 0 17391 ROW SECURITY finding poll_occurrences schema_owner
+4724; 0 16630 ROW SECURITY finding records schema_owner
+4751; 0 17296 ROW SECURITY finding rejections schema_owner
+4848; 3256 17459 POLICY finding evidence_refs tenant_isolation schema_owner
+4813; 3256 16924 POLICY finding inbox tenant_isolation schema_owner
+4814; 3256 16925 POLICY finding outbox tenant_isolation schema_owner
+4845; 3256 17440 POLICY finding poll_occurrences tenant_isolation schema_owner
+4812; 3256 16923 POLICY finding records tenant_isolation schema_owner
+4839; 3256 17383 POLICY finding rejections tenant_isolation schema_owner
+4838; 3256 17382 POLICY finding timeline tenant_isolation schema_owner
+4837; 3256 17381 POLICY finding transport_keys tenant_isolation schema_owner
+4750; 0 17277 ROW SECURITY finding timeline schema_owner
+4749; 0 17258 ROW SECURITY finding transport_keys schema_owner
+4787; 0 17998 ROW SECURITY identity accounts schema_owner
+4793; 0 18152 ROW SECURITY identity administrator_initializations schema_owner
+4788; 0 18030 ROW SECURITY identity credentials schema_owner
+4794; 0 18182 ROW SECURITY identity login_entry_attempts schema_owner
+4881; 3256 18199 POLICY identity login_entry_attempts login_entry_isolation schema_owner
+4795; 0 18216 ROW SECURITY identity mfa_enrollments schema_owner
+4796; 0 18248 ROW SECURITY identity mfa_recovery_codes schema_owner
+4789; 0 18053 ROW SECURITY identity password_attempts schema_owner
+4791; 0 18103 ROW SECURITY identity role_grants schema_owner
+4790; 0 18071 ROW SECURITY identity sessions schema_owner
+4797; 0 18267 ROW SECURITY identity step_up_challenges schema_owner
+4800; 0 18407 ROW SECURITY identity step_up_failures schema_owner
+4798; 0 18305 ROW SECURITY identity step_up_sessions schema_owner
+4799; 0 18370 ROW SECURITY identity subject_mapping_inventories schema_owner
+4792; 0 18129 ROW SECURITY identity subject_mappings schema_owner
+4878; 3256 18193 POLICY identity accounts tenant_isolation schema_owner
+4880; 3256 18198 POLICY identity administrator_initializations tenant_isolation schema_owner
+4877; 3256 18194 POLICY identity credentials tenant_isolation schema_owner
+4884; 3256 18331 POLICY identity mfa_enrollments tenant_isolation schema_owner
+4885; 3256 18332 POLICY identity mfa_recovery_codes tenant_isolation schema_owner
+4876; 3256 18174 POLICY identity password_attempts tenant_isolation schema_owner
+4889; 3256 18196 POLICY identity role_grants tenant_isolation schema_owner
+4882; 3256 18195 POLICY identity sessions tenant_isolation schema_owner
+4886; 3256 18333 POLICY identity step_up_challenges tenant_isolation schema_owner
+4890; 3256 18428 POLICY identity step_up_failures tenant_isolation schema_owner
+4887; 3256 18334 POLICY identity step_up_sessions tenant_isolation schema_owner
+4888; 3256 18385 POLICY identity subject_mapping_inventories tenant_isolation schema_owner
+4879; 3256 18197 POLICY identity subject_mappings tenant_isolation schema_owner
+4754; 0 17343 ROW SECURITY incident applied_revisions schema_owner
+4752; 0 17310 ROW SECURITY incident correlation_subjects schema_owner
+4728; 0 16729 ROW SECURITY incident finding_links schema_owner
+4802; 0 18480 ROW SECURITY incident followups schema_owner
+4753; 0 17326 ROW SECURITY incident inbox schema_owner
+4756; 0 17366 ROW SECURITY incident outbox schema_owner
+4759; 0 17425 ROW SECURITY incident rca_evidence_refs schema_owner
+4758; 0 17403 ROW SECURITY incident rca_revisions schema_owner
+4727; 0 16708 ROW SECURITY incident records schema_owner
+4842; 3256 17386 POLICY incident applied_revisions tenant_isolation schema_owner
+4840; 3256 17384 POLICY incident correlation_subjects tenant_isolation schema_owner
+4816; 3256 16927 POLICY incident finding_links tenant_isolation schema_owner
+4883; 3256 18509 POLICY incident followups tenant_isolation schema_owner
+4841; 3256 17385 POLICY incident inbox tenant_isolation schema_owner
+4844; 3256 17388 POLICY incident outbox tenant_isolation schema_owner
+4847; 3256 17442 POLICY incident rca_evidence_refs tenant_isolation schema_owner
+4846; 3256 17441 POLICY incident rca_revisions tenant_isolation schema_owner
+4815; 3256 16926 POLICY incident records tenant_isolation schema_owner
+4843; 3256 17387 POLICY incident timeline tenant_isolation schema_owner
+4755; 0 17353 ROW SECURITY incident timeline schema_owner
+4762; 0 17499 ROW SECURITY investigation admissions schema_owner
+4783; 0 17920 ROW SECURITY investigation assistant_binding_requests schema_owner
+4871; 3256 17933 POLICY investigation assistant_binding_requests assistant_binding_tenant schema_owner
+4874; 3256 17980 POLICY investigation worker_queue assistant_catalog_claim schema_owner
+4775; 0 17721 ROW SECURITY investigation assistant_conversations schema_owner
+4776; 0 17741 ROW SECURITY investigation assistant_creation_keys schema_owner
+4781; 0 17847 ROW SECURITY investigation assistant_events schema_owner
+4872; 3256 17947 POLICY investigation assistant_legal_holds assistant_hold_tenant schema_owner
+4784; 0 17934 ROW SECURITY investigation assistant_legal_holds schema_owner
+4778; 0 17784 ROW SECURITY investigation assistant_messages schema_owner
+4780; 0 17829 ROW SECURITY investigation assistant_query_results schema_owner
+4779; 0 17817 ROW SECURITY investigation assistant_request_keys schema_owner
+4777; 0 17753 ROW SECURITY investigation assistant_turns schema_owner
+4782; 0 17869 ROW SECURITY investigation assistant_worker_capabilities schema_owner
+4765; 0 17549 ROW SECURITY investigation call_allocations schema_owner
+4767; 0 17574 ROW SECURITY investigation contexts schema_owner
+4764; 0 17535 ROW SECURITY investigation events schema_owner
+4729; 0 16750 ROW SECURITY investigation jobs schema_owner
+4801; 0 18451 ROW SECURITY investigation observation_queries schema_owner
+4763; 0 17521 ROW SECURITY investigation replay_ledger schema_owner
+4766; 0 17562 ROW SECURITY investigation request_keys schema_owner
+4761; 0 17481 ROW SECURITY investigation steps schema_owner
+4850; 3256 17587 POLICY investigation admissions tenant_isolation schema_owner
+4863; 3256 17862 POLICY investigation assistant_conversations tenant_isolation schema_owner
+4864; 3256 17863 POLICY investigation assistant_creation_keys tenant_isolation schema_owner
+4869; 3256 17868 POLICY investigation assistant_events tenant_isolation schema_owner
+4866; 3256 17865 POLICY investigation assistant_messages tenant_isolation schema_owner
+4868; 3256 17867 POLICY investigation assistant_query_results tenant_isolation schema_owner
+4867; 3256 17866 POLICY investigation assistant_request_keys tenant_isolation schema_owner
+4865; 3256 17864 POLICY investigation assistant_turns tenant_isolation schema_owner
+4870; 3256 17881 POLICY investigation assistant_worker_capabilities tenant_isolation schema_owner
+4853; 3256 17590 POLICY investigation call_allocations tenant_isolation schema_owner
+4854; 3256 17591 POLICY investigation contexts tenant_isolation schema_owner
+4852; 3256 17589 POLICY investigation events tenant_isolation schema_owner
+4817; 3256 16928 POLICY investigation jobs tenant_isolation schema_owner
+4891; 3256 18474 POLICY investigation observation_queries tenant_isolation schema_owner
+4851; 3256 17588 POLICY investigation replay_ledger tenant_isolation schema_owner
+4855; 3256 17592 POLICY investigation request_keys tenant_isolation schema_owner
+4849; 3256 17586 POLICY investigation steps tenant_isolation schema_owner
+4818; 3256 16929 POLICY investigation worker_queue tenant_isolation schema_owner
+4730; 0 16778 ROW SECURITY investigation worker_queue schema_owner
+4743; 0 17143 ROW SECURITY platform adapter_scope_verifications schema_owner
+4737; 0 16970 ROW SECURITY platform cluster_registration_revisions schema_owner
+4716; 0 16454 ROW SECURITY platform cluster_registrations schema_owner
+4745; 0 17175 ROW SECURITY platform evidence_archive_intents schema_owner
+4746; 0 17192 ROW SECURITY platform evidence_dependencies schema_owner
+4744; 0 17157 ROW SECURITY platform evidence_metadata schema_owner
+4747; 0 17208 ROW SECURITY platform evidence_retention_references schema_owner
+4722; 0 16595 ROW SECURITY platform execution_profile_versions schema_owner
+4742; 0 17129 ROW SECURITY platform graph_ownership schema_owner
+4736; 0 16935 ROW SECURITY platform idempotency_request_ledger schema_owner
+4738; 0 17005 ROW SECURITY platform registry_activation_history schema_owner
+4721; 0 16570 ROW SECURITY platform registry_activations schema_owner
+4719; 0 16526 ROW SECURITY platform registry_drafts schema_owner
+4720; 0 16549 ROW SECURITY platform registry_versions schema_owner
+4741; 0 17112 ROW SECURITY platform resource_aliases schema_owner
+4740; 0 17093 ROW SECURITY platform resource_entities schema_owner
+4786; 0 17982 ROW SECURITY platform resource_observation_coverage schema_owner
+4785; 0 17955 ROW SECURITY platform resource_observations schema_owner
+4715; 0 16427 ROW SECURITY platform role_bindings schema_owner
+4718; 0 16508 ROW SECURITY platform source_registration_revisions schema_owner
+4717; 0 16476 ROW SECURITY platform source_registrations schema_owner
+4748; 0 17231 ROW SECURITY platform sp04_request_ledger schema_owner
+4836; 3256 17248 POLICY platform sp04_request_ledger sp04_request_tenant schema_owner
+4723; 0 16616 ROW SECURITY platform step_up_sessions schema_owner
+4831; 3256 17225 POLICY platform adapter_scope_verifications tenant_isolation schema_owner
+4825; 3256 16992 POLICY platform cluster_registration_revisions tenant_isolation schema_owner
+4804; 3256 16915 POLICY platform cluster_registrations tenant_isolation schema_owner
+4833; 3256 17227 POLICY platform evidence_archive_intents tenant_isolation schema_owner
+4834; 3256 17228 POLICY platform evidence_dependencies tenant_isolation schema_owner
+4832; 3256 17226 POLICY platform evidence_metadata tenant_isolation schema_owner
+4835; 3256 17229 POLICY platform evidence_retention_references tenant_isolation schema_owner
+4810; 3256 16921 POLICY platform execution_profile_versions tenant_isolation schema_owner
+4830; 3256 17224 POLICY platform graph_ownership tenant_isolation schema_owner
+4824; 3256 16966 POLICY platform idempotency_request_ledger tenant_isolation schema_owner
+4826; 3256 17030 POLICY platform registry_activation_history tenant_isolation schema_owner
+4809; 3256 16920 POLICY platform registry_activations tenant_isolation schema_owner
+4807; 3256 16918 POLICY platform registry_drafts tenant_isolation schema_owner
+4808; 3256 16919 POLICY platform registry_versions tenant_isolation schema_owner
+4829; 3256 17223 POLICY platform resource_aliases tenant_isolation schema_owner
+4828; 3256 17222 POLICY platform resource_entities tenant_isolation schema_owner
+4875; 3256 17995 POLICY platform resource_observation_coverage tenant_isolation schema_owner
+4873; 3256 17979 POLICY platform resource_observations tenant_isolation schema_owner
+4803; 3256 16914 POLICY platform role_bindings tenant_isolation schema_owner
+4806; 3256 16917 POLICY platform source_registration_revisions tenant_isolation schema_owner
+4805; 3256 16916 POLICY platform source_registrations tenant_isolation schema_owner
+4811; 3256 16922 POLICY platform step_up_sessions tenant_isolation schema_owner

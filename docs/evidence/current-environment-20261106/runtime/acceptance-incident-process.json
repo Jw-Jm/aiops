@@ -1,0 +1,49 @@
+{
+  "at": "2026-11-06T00:16:25.580Z",
+  "phase": "process",
+  "checks": [
+    {
+      "action": "确认受理",
+      "http": 200
+    },
+    {
+      "action": "开始处置",
+      "http": 200
+    }
+  ],
+  "incidentId": "01a1ae35-7bdd-7af0-93e7-3d5c93f6fea4",
+  "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/PersistentVolumeClaim/74b37d59-141f-494e-8028-57a9535997cb",
+  "reads": [
+    {
+      "path": "/api/v1/incidents/01a1ae35-7bdd-7af0-93e7-3d5c93f6fea4",
+      "http": 200,
+      "state": "mitigating"
+    },
+    {
+      "path": "/api/v1/incidents/01a1ae35-7bdd-7af0-93e7-3d5c93f6fea4/timeline",
+      "http": 200,
+      "count": 3
+    },
+    {
+      "path": "/api/v1/incidents/01a1ae35-7bdd-7af0-93e7-3d5c93f6fea4/evidence",
+      "http": 200,
+      "count": 1
+    },
+    {
+      "path": "/api/v1/incidents/01a1ae35-7bdd-7af0-93e7-3d5c93f6fea4/rca",
+      "http": 200
+    },
+    {
+      "path": "/api/v1/findings?clusterUid=79014400-9453-4cb4-9678-0fae47981d79&resourceCanonicalId=k8s%2Bv1%3A%2F%2F01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3%2F79014400-9453-4cb4-9678-0fae47981d79%2Fcore%2FPersistentVolumeClaim%2F74b37d59-141f-494e-8028-57a9535997cb&limit=50",
+      "http": 200,
+      "count": 2
+    }
+  ],
+  "rcaNodes": [
+    {
+      "kind": "PersistentVolumeClaim",
+      "namespace": "ops-current"
+    }
+  ],
+  "status": "passed"
+}

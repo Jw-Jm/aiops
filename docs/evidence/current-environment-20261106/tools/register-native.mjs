@@ -1,0 +1,10 @@
+import{login,read,write,save,root,account}from'./admin.mjs';import{readFileSync,existsSync}from'node:fs';
+const {browser,page}=await login();try{
+ let cluster;
+ if(existsSync(root+'/evidence/cluster-registration.json'))cluster=JSON.parse(readFileSync(root+'/evidence/cluster-registration.json')).body.data;
+ else{const r=await write(page,'cluster_administration','POST','/api/v1/admin/clusters',JSON.parse(readFileSync(root+'/config/cluster-registration-input.json')));save('cluster-registration.json',r);if(r.status!==201)throw Error('cluster '+r.status+' '+r.body.code);cluster=r.body.data}
+ const session=await read(page,'/api/v1/auth/session');const tenant=session.body.data.tenantId;
+ if(!existsSync(root+'/evidence/source-native.json')){const r=await write(page,'source_administration','POST','/api/v1/admin/source-registrations',{sourceType:'kubernetes',instanceKey:'current-native-cluster',clusterId:cluster.clusterId,authRef:'openbao://secret/data/ops/current/kubernetes',allowedSchemas:['finding-envelope/v1','finding-envelope/v2'],backendLogicalId:'current-native-cluster',dataScopeMapping:{scopes:{cluster:[cluster.clusterUid],namespace:['ops-current']}}});save('source-native.json',r);if(r.status!==201)throw Error('source '+r.status+' '+r.body.code)}
+ if(!existsSync(root+'/evidence/operator-grant.json')){const users=await read(page,'/api/v1/admin/users');const rows=Array.isArray(users.body.data)?users.body.data:users.body.data.items;const user=rows.find(x=>x.userId===account.userId);if(!user)throw Error('admin user missing');const r=await write(page,'user_administration','POST','/api/v1/admin/role-bindings',{userId:user.userId,role:'operator',scope:{clusterUids:[cluster.clusterUid],namespaces:['ops-current']},expectedAuthorizationVersion:user.revocation.authorizationVersion,reason:'Current 独立运行环境：显式授予当前命名空间的运维权限'});save('operator-grant.json',r);if(r.status!==201)throw Error('grant '+r.status+' '+r.body.code)}
+ console.log('Current cluster, native source and explicit operator grant created using password/TOTP-bound APIs');
+}finally{await browser.close()}

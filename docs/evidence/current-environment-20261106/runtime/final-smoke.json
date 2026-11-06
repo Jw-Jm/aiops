@@ -1,0 +1,145 @@
+{
+  "at": "2026-11-06T00:36:44.067Z",
+  "origin": "https://192.168.0.63:30471",
+  "checks": [
+    {
+      "path": "/api/v1/resources?clusterUid=79014400-9453-4cb4-9678-0fae47981d79",
+      "http": 200,
+      "count": 186,
+      "meta": {
+        "collectedAt": "2026-11-06T00:36:44.232249216Z",
+        "degradedSources": [],
+        "freshness": "fresh",
+        "graphRevision": {
+          "ownerEpoch": 7,
+          "graphGeneration": 5
+        },
+        "nextCursor": "",
+        "partial": true,
+        "schemaVersion": "resource-graph/v2",
+        "summary": {
+          "total": 186,
+          "byKind": {
+            "ConfigMap": 6,
+            "DaemonSet": 1,
+            "Deployment": 3,
+            "EndpointSlice": 5,
+            "Event": 136,
+            "PersistentVolumeClaim": 1,
+            "Pod": 8,
+            "ReplicaSet": 19,
+            "Service": 5,
+            "StatefulSet": 2
+          },
+          "byHealth": {
+            "normal": 9,
+            "unknown": 177
+          }
+        },
+        "warnings": [
+          "scope_limited"
+        ]
+      }
+    },
+    {
+      "path": "/api/v1/findings?clusterUid=79014400-9453-4cb4-9678-0fae47981d79",
+      "http": 200,
+      "count": 10,
+      "meta": {}
+    },
+    {
+      "path": "/api/v1/incidents?clusterUid=79014400-9453-4cb4-9678-0fae47981d79",
+      "http": 200,
+      "count": 10,
+      "meta": {}
+    },
+    {
+      "path": "/api/v1/admin/execution-profiles",
+      "http": 200,
+      "count": 1,
+      "meta": {}
+    },
+    {
+      "path": "/api/v1/capabilities?clusterUid=79014400-9453-4cb4-9678-0fae47981d79",
+      "http": 200
+    },
+    {
+      "path": "/api/v1/observability/capabilities?clusterUid=79014400-9453-4cb4-9678-0fae47981d79",
+      "http": 200
+    },
+    {
+      "path": "/api/v1/assistant/capabilities?clusterUid=79014400-9453-4cb4-9678-0fae47981d79",
+      "http": 200
+    },
+    {
+      "page": "/resources",
+      "loaded": true
+    },
+    {
+      "page": "/observe/metrics",
+      "loaded": true
+    },
+    {
+      "page": "/observe/logs",
+      "loaded": true
+    },
+    {
+      "page": "/events/alerts",
+      "loaded": true
+    },
+    {
+      "page": "/events/incidents",
+      "loaded": true
+    },
+    {
+      "page": "/settings/execution",
+      "loaded": true
+    },
+    {
+      "page": "/account/security",
+      "loaded": true
+    }
+  ],
+  "errors": [],
+  "session": {
+    "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+    "roles": [
+      "operator",
+      "platform_admin"
+    ],
+    "loginName": "ops.admin"
+  },
+  "capabilities": {
+    "apiReady": true,
+    "cdi": {
+      "reason": "ADR0008-development-deferred",
+      "status": "disabled",
+      "verification": "unverified"
+    },
+    "commandExecution": {
+      "reason": "SP07-runtime-not-configured",
+      "status": "disabled",
+      "verification": "unverified"
+    },
+    "graphReady": false,
+    "investigation": {
+      "enabled": true,
+      "readOnly": true,
+      "reason": "configured-awaiting-successful-job",
+      "status": "unverified"
+    },
+    "kubevirt": {
+      "reason": "ADR0008-development-deferred",
+      "status": "disabled",
+      "verification": "unverified"
+    },
+    "pyrca": {
+      "reason": "ADR0020-not-admitted",
+      "status": "disabled"
+    },
+    "schemaVersion": "platform-capabilities/v1",
+    "sourceDegraded": true
+  },
+  "foreignClusterDenied": true,
+  "status": "passed"
+}
