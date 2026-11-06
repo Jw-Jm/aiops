@@ -42,6 +42,8 @@ type SP04Cluster struct {
 	// Namespaces is the exact namespace scope of the registered source. It is
 	// validated against the registration before any list/watch is issued, so a
 	// declaration cannot silently become an all-namespaces collection.
+	// ClusterWatch uses a single list/watch per kind with the validated namespace allowlist.
+	ClusterWatch   bool
 	PodLogs        bool
 	Namespaces     []string
 	SourceRevision int64
@@ -472,7 +474,11 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 					namespaces = cluster.Namespaces
 				}
 				for runContext.Err() == nil {
-					err := client.Run(runContext, gvr, namespaces, sink)
+					collect := client.Run
+					if cluster.ClusterWatch && gvr.Namespaced() {
+						collect = client.RunClusterWatch
+					}
+					err := collect(runContext, gvr, namespaces, sink)
 					if err != nil && runContext.Err() == nil {
 						runtime.Metrics.RecordOperation("kubernetes", "query", "unavailable")
 						runtime.Logger.WarnContext(runContext, "Kubernetes collection unavailable", slog.String("gvr", gvr.Path()), slog.Any("namespaces", namespaces), slog.String("errorClass", collectionErrorClass(err)), slog.String("error", err.Error()))

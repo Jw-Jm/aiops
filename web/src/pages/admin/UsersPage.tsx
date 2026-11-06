@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { Alert, Button, Input, Select, Space, Tabs } from "antd";
+import { Alert, Button, Checkbox, Input, Select, Space, Tabs } from "antd";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAuth } from "../../auth/AuthProvider";
 import {
@@ -63,12 +63,18 @@ function UserOperation({
   close: (uncertain?: boolean) => void;
   changed: () => void;
 }) {
-  const user = edit.user;
+  const [user, setUser] = useState(edit.user);
   const [name, setName] = useState(user?.displayName ?? "");
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [role, setRole] = useState<"operator" | "platform_admin">("operator");
+  const [preset, setPreset] = useState<
+    "operator" | "platform_admin" | "combined"
+  >("operator");
+  const [adminStep, setAdminStep] = useState(false);
+  const role =
+    preset === "platform_admin" || adminStep ? "platform_admin" : "operator";
+  const [restrictNamespaces, setRestrictNamespaces] = useState(false);
   const [clusters, setClusters] = useState<string[]>([]);
   const [namespaces, setNamespaces] = useState("");
   const [reason, setReason] = useState("");
@@ -89,7 +95,7 @@ function UserOperation({
     endpoint = path,
     body: Record<string, unknown> = {},
     valid = true;
-  const namespaceList = namespaces
+  const namespaceList = (restrictNamespaces ? namespaces : "")
     .split(",")
     .map((x) => x.trim())
     .filter(Boolean);
@@ -172,7 +178,8 @@ function UserOperation({
         reason.trim().length >= 5 &&
         (role !== "operator" ||
           (clusters.length > 0 &&
-            (!namespaceList.length || clusters.length === 1)));
+            (!restrictNamespaces ||
+              (namespaceList.length > 0 && clusters.length === 1))));
       break;
     case "revoke":
       method = "PATCH";
@@ -228,7 +235,27 @@ function UserOperation({
           );
       }
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
+      if (
+        edit.operation === "grant" &&
+        preset === "combined" &&
+        !adminStep &&
+        !user?.roleGrants.some(
+          (g) => g.role === "platform_admin" && !g.revokedAt,
+        )
+      ) {
+        // Each independent grant keeps its own operation-bound proof and version.
+        setAdminStep(true);
+        const grant = result.data as Grant;
+        setUser({
+          ...user!,
+          revocation: {
+            ...user!.revocation,
+            authorizationVersion: grant.authorizationVersion,
+          },
+        });
+        return;
+      }
       changed();
       close();
     },
@@ -328,14 +355,22 @@ function UserOperation({
         ) : null}
         {edit.operation === "grant" ? (
           <>
+            {adminStep ? (
+              <Alert
+                type="info"
+                title="运维授权已保存。请完成管理员授权验证；关闭此窗口会保留已完成的运维授权。"
+              />
+            ) : null}
             <Field label="角色">
               <Select
                 aria-label="角色"
-                value={role}
-                onChange={setRole}
+                value={preset}
+                disabled={adminStep}
+                onChange={setPreset}
                 options={[
                   { value: "operator", label: "运维操作员" },
                   { value: "platform_admin", label: "平台管理员" },
+                  { value: "combined", label: "管理员兼运维" },
                 ]}
               />
             </Field>
@@ -353,17 +388,29 @@ function UserOperation({
                     }))}
                   />
                 </Field>
-                <Field
-                  label="命名空间"
-                  htmlFor={id + "namespaces"}
-                  help="使用英文逗号分隔；指定命名空间时只允许一个集群。"
+                <Note>
+                  默认可查看所选集群的全部命名空间及 Node、PV
+                  等集群资源，支持跨命名空间排障。命令执行仍需独立授权与确认。
+                </Note>
+                <Checkbox
+                  checked={restrictNamespaces}
+                  onChange={(e) => setRestrictNamespaces(e.target.checked)}
                 >
-                  <Input
-                    id={id + "namespaces"}
-                    value={namespaces}
-                    onChange={(e) => setNamespaces(e.target.value)}
-                  />
-                </Field>
+                  高级：限制命名空间
+                </Checkbox>
+                {restrictNamespaces ? (
+                  <Field
+                    label="命名空间"
+                    htmlFor={id + "namespaces"}
+                    help="使用英文逗号分隔；指定命名空间时只允许一个集群。"
+                  >
+                    <Input
+                      id={id + "namespaces"}
+                      value={namespaces}
+                      onChange={(e) => setNamespaces(e.target.value)}
+                    />
+                  </Field>
+                ) : null}
               </>
             ) : (
               <Alert
@@ -501,6 +548,7 @@ export function UsersPage() {
                   { value: "all", label: "全部角色（本页）" },
                   { value: "operator", label: "运维操作员" },
                   { value: "platform_admin", label: "平台管理员" },
+                  { value: "combined", label: "管理员兼运维" },
                 ]}
               />
             ) : null}

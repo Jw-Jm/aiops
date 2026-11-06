@@ -288,7 +288,7 @@ func (c *Client) Run(ctx context.Context, gvr GVR, namespaces []string, publish 
 		if len(namespaces) == 1 {
 			path = gvr.PathIn(namespaces[0])
 		}
-		return c.runEndpoint(ctx, gvr, path, publish)
+		return c.runEndpoint(ctx, gvr, path, nil, publish)
 	}
 	// Several namespaces cannot be watched through one namespaced endpoint, so
 	// each namespace keeps its own list/watch and the sink publishes their
@@ -304,7 +304,7 @@ func (c *Client) Run(ctx context.Context, gvr GVR, namespaces []string, publish 
 		group.Add(1)
 		go func() {
 			defer group.Done()
-			err := c.runEndpoint(fanContext, gvr, gvr.PathIn(namespace), collector.sink(namespace))
+			err := c.runEndpoint(fanContext, gvr, gvr.PathIn(namespace), nil, collector.sink(namespace))
 			if err != nil && fanContext.Err() == nil {
 				errMu.Lock()
 				if firstErr == nil {
@@ -324,7 +324,23 @@ func (c *Client) Run(ctx context.Context, gvr GVR, namespaces []string, publish 
 	return ctx.Err()
 }
 
-func (c *Client) runEndpoint(ctx context.Context, gvr GVR, endpoint string, publish func(Snapshot) error) error {
+// RunClusterWatch multiplexes an explicit namespace allowlist over a
+// cluster-wide list/watch. The credential must have cluster-wide read access.
+func (c *Client) RunClusterWatch(ctx context.Context, gvr GVR, namespaces []string, publish func(Snapshot) error) error {
+	if !gvr.Collected() || !gvr.Namespaced() || len(namespaces) == 0 || publish == nil {
+		return errors.New("cluster watch requires a namespaced resource, explicit namespace scope and projection sink")
+	}
+	allowed := make(map[string]bool, len(namespaces))
+	for _, namespace := range namespaces {
+		if namespace == "" || allowed[namespace] {
+			return errors.New("invalid collection namespace scope")
+		}
+		allowed[namespace] = true
+	}
+	return c.runEndpoint(ctx, gvr, gvr.Path(), allowed, publish)
+}
+
+func (c *Client) runEndpoint(ctx context.Context, gvr GVR, endpoint string, allowedNamespaces map[string]bool, publish func(Snapshot) error) error {
 	state := GVRState{}
 	objects := map[string]unstructured.Unstructured{}
 	tombstones := map[string]bool{}
@@ -410,6 +426,9 @@ func (c *Client) runEndpoint(ctx context.Context, gvr GVR, endpoint string, publ
 					if kubejson.Unmarshal(encoded, &raw.Object) != nil {
 						listErr = errors.New("invalid_list_object")
 						break
+					}
+					if allowedNamespaces != nil && !allowedNamespaces[raw.GetNamespace()] {
+						continue
 					}
 					if raw.GetKind() == "" {
 						raw.SetKind(strings.TrimSuffix(list.Kind, "List"))
@@ -609,6 +628,12 @@ func (c *Client) runEndpoint(ctx context.Context, gvr GVR, endpoint string, publ
 				needList = true
 				state.LastError = "invalid_event_identity"
 				break
+			}
+			if allowedNamespaces != nil && !allowedNamespaces[obj.GetNamespace()] {
+				if !initializing {
+					rv = obj.GetResourceVersion()
+				}
+				continue
 			}
 			uid := string(obj.GetUID())
 			if initializing {

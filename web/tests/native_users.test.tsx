@@ -28,7 +28,9 @@ vi.mock("../src/auth/AuthProvider", () => ({
   }),
 }));
 vi.mock("../src/app/ClusterContext", () => ({
-  useClusterScope: () => ({ configCandidates: [] }),
+  useClusterScope: () => ({
+    configCandidates: [{ clusterUid: "cluster-a", displayName: "Cluster A" }],
+  }),
   useConfigDraft: vi.fn(),
 }));
 vi.mock("../src/auth/NativeStepUpControl", () => ({
@@ -276,4 +278,118 @@ it("binds historical mapping to exact reviewed subject, native ID and version; e
     evidenceDigest: "sha256:" + "a".repeat(64),
     expectedUserRevision: 4,
   });
+});
+
+async function openGrant() {
+  vi.mocked(getNativeUsers).mockResolvedValue(
+    response([
+      {
+        userId: "user-id",
+        loginName: "ops.user",
+        displayName: "Operator",
+        status: "active",
+        revision: 1,
+        roleGrants: [],
+        revocation: { authorizationVersion: 3 },
+        mustChangePassword: false,
+      },
+    ]) as never,
+  );
+  render(
+    <QueryClientProvider
+      client={
+        new QueryClient({
+          defaultOptions: {
+            queries: { retry: false },
+            mutations: { retry: false },
+          },
+        })
+      }
+    >
+      <UsersPage />
+    </QueryClientProvider>,
+  );
+  await screen.findByText("Operator");
+  fireEvent.click(screen.getByRole("button", { name: "配置授权" }));
+  const dialog = within(await screen.findByRole("dialog"));
+  fireEvent.mouseDown(dialog.getByRole("combobox", { name: "集群范围" }));
+  fireEvent.click(
+    await screen.findByText("Cluster A", {
+      selector: ".ant-select-item-option-content",
+    }),
+  );
+  fireEvent.change(dialog.getByLabelText("操作原因"), {
+    target: { value: "cluster-wide operations grant" },
+  });
+  return dialog;
+}
+
+it("defaults to a whole selected cluster and hides namespace restriction behind an explicit advanced setting", async () => {
+  const dialog = await openGrant();
+  expect(dialog.queryByLabelText("命名空间")).toBeNull();
+  fireEvent.click(dialog.getByText("fixture verification"));
+  fireEvent.click(dialog.getByRole("button", { name: "确认提交" }));
+  await waitFor(() => expect(createRoleBinding).toHaveBeenCalledOnce());
+  expect(vi.mocked(createRoleBinding).mock.calls[0][0].scope).toEqual({
+    clusterUids: ["cluster-a"],
+    namespaces: [],
+  });
+});
+
+it("requires a nonempty advanced restriction and clears it when returning to whole-cluster access", async () => {
+  const dialog = await openGrant();
+  fireEvent.click(dialog.getByRole("checkbox", { name: "高级：限制命名空间" }));
+  expect(dialog.getByRole("button", { name: "确认提交" })).toBeDisabled();
+  fireEvent.change(dialog.getByLabelText("命名空间"), {
+    target: { value: "apps, monitoring" },
+  });
+  fireEvent.click(dialog.getByText("fixture verification"));
+  fireEvent.click(dialog.getByRole("checkbox", { name: "高级：限制命名空间" }));
+  expect(dialog.getByRole("button", { name: "确认提交" })).toBeDisabled();
+  fireEvent.click(dialog.getByText("fixture verification"));
+  fireEvent.click(dialog.getByRole("button", { name: "确认提交" }));
+  await waitFor(() => expect(createRoleBinding).toHaveBeenCalledOnce());
+  expect(
+    vi.mocked(createRoleBinding).mock.calls[0][0].scope,
+  ).toEqual({ clusterUids: ["cluster-a"], namespaces: [] });
+});
+
+it("the combined preset creates separate grants with a fresh proof and returned authorization version", async () => {
+  vi.mocked(createRoleBinding).mockResolvedValue(
+    response({ authorizationVersion: 4 }, 201) as never,
+  );
+  const dialog = await openGrant();
+  fireEvent.mouseDown(dialog.getByRole("combobox", { name: "角色" }));
+  fireEvent.click(
+    await screen.findByText("管理员兼运维", {
+      selector: ".ant-select-item-option-content",
+    }),
+  );
+  fireEvent.click(dialog.getByText("fixture verification"));
+  fireEvent.click(dialog.getByRole("button", { name: "确认提交" }));
+  await dialog.findByText(/运维授权已保存/);
+  expect(dialog.getByRole("button", { name: "确认提交" })).toBeDisabled();
+  fireEvent.click(dialog.getByText("fixture verification"));
+  fireEvent.click(dialog.getByRole("button", { name: "确认提交" }));
+  await waitFor(() => expect(createRoleBinding).toHaveBeenCalledTimes(2));
+  expect(
+    vi
+      .mocked(createRoleBinding)
+      .mock.calls.map(([body]) => ({
+        role: body.role,
+        scope: body.scope,
+        version: body.expectedAuthorizationVersion,
+      })),
+  ).toEqual([
+    {
+      role: "operator",
+      scope: { clusterUids: ["cluster-a"], namespaces: [] },
+      version: 3,
+    },
+    {
+      role: "platform_admin",
+      scope: { clusterUids: [], namespaces: [] },
+      version: 4,
+    },
+  ]);
 });

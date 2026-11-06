@@ -163,3 +163,56 @@ func TestNamespaceUnionStaysUnreadyUntilEveryNamespaceListed(t *testing.T) {
 		t.Fatalf("complete namespace union did not publish readiness: %#v", published)
 	}
 }
+
+func TestClusterWatchFiltersListAndWatchBeforeProjection(t *testing.T) {
+	pod := func(namespace string) map[string]any {
+		return map[string]any{"apiVersion": "v1", "kind": "Pod", "metadata": map[string]any{
+			"namespace": namespace, "name": "pod", "uid": namespace, "resourceVersion": "1",
+		}}
+	}
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/api/v1/pods" {
+			http.NotFound(w, r)
+			return
+		}
+		enc := json.NewEncoder(w)
+		if r.URL.Query().Get("watch") != "true" {
+			_ = enc.Encode(map[string]any{"metadata": map[string]string{"resourceVersion": "1"}, "items": []any{pod("allowed"), pod("foreign")}})
+			return
+		}
+		for _, ns := range []string{"allowed", "foreign"} {
+			_ = enc.Encode(map[string]any{"type": "ADDED", "object": pod(ns)})
+		}
+		_ = enc.Encode(map[string]any{"type": "BOOKMARK", "object": map[string]any{"apiVersion": "v1", "kind": "Pod", "metadata": map[string]any{
+			"resourceVersion": "2", "annotations": map[string]string{"k8s.io/initial-events-end": "true"},
+		}}})
+		_ = enc.Encode(map[string]any{"type": "MODIFIED", "object": pod("foreign")})
+		_ = enc.Encode(map[string]any{"type": "BOOKMARK", "object": map[string]any{"apiVersion": "v1", "kind": "Pod", "metadata": map[string]string{"resourceVersion": "3"}}})
+		w.(http.Flusher).Flush()
+		<-r.Context().Done()
+	}))
+	defer server.Close()
+	client, err := NewClient(server.URL, server.Client(), 10, 25)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ctx, cancel := context.WithTimeout(t.Context(), time.Second)
+	defer cancel()
+	listed, watched := false, false
+	_ = client.RunClusterWatch(ctx, GVR{Version: "v1", Resource: "pods"}, []string{"allowed"}, func(s Snapshot) error {
+		if !s.ObservationOnly {
+			listed = true
+			if len(s.Objects) != 1 || s.Objects[0].GetNamespace() != "allowed" {
+				t.Errorf("unexpected projected scope: %v", s.Objects)
+			}
+		}
+		if s.State.WatchContinuous && watched {
+			cancel()
+		}
+		watched = watched || s.State.WatchContinuous
+		return nil
+	})
+	if !listed || !watched {
+		t.Fatalf("expected a list and continuous watch, got list=%v watch=%v", listed, watched)
+	}
+}
