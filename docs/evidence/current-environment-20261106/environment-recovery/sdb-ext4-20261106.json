@@ -1,0 +1,58 @@
+{
+  "authorization": "User explicitly approved clearing the entire /dev/sdb disk and reformatting it as ext4.",
+  "sourceBackup": {
+    "completedAt": "2026-11-06T05:44:46Z",
+    "path": "/data/sdb-backup-20261106",
+    "files": 21864,
+    "bytes": 45718413080,
+    "sourceDevice": "/dev/sdb3",
+    "sourceFilesystem": "exFAT",
+    "sourceRemounted": "read-only-before-copy",
+    "verified": "rsync-checksum-and-sha256-manifest"
+  },
+  "formattedDevice": {
+    "completedAt": "2026-11-06T05:47:05Z",
+    "disk": "/dev/sdb",
+    "serial": "YMD11T9JA2127402ZA",
+    "partitionTable": "GPT",
+    "partition": "/dev/sdb1",
+    "filesystem": "ext4",
+    "label": "OPS-SDB",
+    "uuid": "43598b77-4d08-4dbe-be52-331005a03ff1",
+    "temporaryMount": "/mnt/ops-sdb",
+    "mountOptions": "rw,noatime"
+  },
+  "sustainedDirectIo": {
+    "completedAt": "2026-11-06T05:58:11Z",
+    "mode": "random 4KiB pwrite O_DIRECT+O_DSYNC",
+    "testFileBytes": 4294967296,
+    "durationSeconds": 600,
+    "operations": 1387026,
+    "errors": 0,
+    "iops": 2311.71,
+    "latencyMs": {
+      "p50": 0.582,
+      "p95": 0.604,
+      "p99": 0.664,
+      "max": 12.431
+    }
+  },
+  "sequentialDirectIo": {
+    "completedAt": "2026-11-06T05:58:51Z",
+    "fileBytes": 1073741824,
+    "writeMiBs": 408.15,
+    "writeFsyncMiBs": 407.96,
+    "readMiBs": 163.37,
+    "readVerified": true
+  },
+  "postTestFilesystemCheck": {
+    "completedAt": "2026-11-06T05:59:32Z",
+    "mode": "e2fsck -fn after unmount",
+    "result": "clean",
+    "remounted": true,
+    "mountCount": 2
+  },
+  "migrationStatus": "not-started",
+  "powerLossTest": "not-performed",
+  "nextRequiredApproval": "Stop the current stack, copy /data/ops-current to the ext4 volume, switch through a rollback-capable path, and rerun health gates."
+}

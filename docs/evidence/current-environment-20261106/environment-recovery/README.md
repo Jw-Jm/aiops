@@ -9,9 +9,10 @@ This record covers the 2026-11-06 metrics APIService migration, scheduler/route/
 - The locked amd64 K8sGPT live gate passes in 24.26 seconds with the admitted `e6ce7073…` binary.
 - Historical Bundle r11 verifies completely, but neither r11 nor damaged r12 matches current `b3d7208b…`; installing one would roll back current, so no installation was performed.
 - `/dev/sda1` is a Seagate ST2000DM008 with poor random-sync latency (8.93 IOPS; p95 185.5 ms). The USB/exFAT `sdb3` benchmark is faster on average but has 0.2–1.4 second long tails and no POSIX/data-integrity semantics for the live stack.
+- After explicit approval, `/dev/sdb` was backed up, cleared, rebuilt as one GPT ext4 partition, and stress-tested. A ten-minute random direct-sync test completed 1,387,026 operations with no errors at 2311.71 IOPS, p99 0.664 ms, and max 12.431 ms; post-test `e2fsck -fn` was clean. Business-data migration remains explicitly not started.
 
 ## Boundary
 
 The scheduler network mitigation does not claim that all control-plane restart causes are fixed. At 04:05Z, API-server, scheduler, controller-manager, metrics-server, and API probes timed out together and the API-server container exited 137 after about four hours. This is consistent with the retained shared-storage latency hypothesis and remains a live environment risk.
 
-Do not place live databases, Bao, SeaweedFS, Victoria data, or container runtime state on the existing exFAT USB volume. Destructive migration requires explicit approval, a verified backup of the existing 45 GiB on `sdb3`, reformat to a Linux filesystem, sustained direct-I/O and power-loss tests, and a service-by-service rollback plan.
+The original exFAT volume was replaced after backup and verification. Live-data migration still requires an approved maintenance window, a rollback-capable cutover, and post-cutover health checks. A physical power-loss test was not performed, so the USB device must not be described as power-loss safe.
