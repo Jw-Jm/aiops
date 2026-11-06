@@ -102,4 +102,5 @@ it("binds the exact request and retains the verified password when retrying TOTP
     path: "/api/v1/admin/source-registrations/source",
     bodyDigest: expect.stringMatching(/^sha256:[a-f0-9]{64}$/),
   });
+  await new Promise((resolve) => setTimeout(resolve, 500));
 });

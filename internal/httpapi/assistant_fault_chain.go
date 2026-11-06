@@ -11,6 +11,7 @@ import (
 	"ops-platform/internal/investigation"
 	"ops-platform/internal/persistence"
 	"ops-platform/internal/resource"
+	"slices"
 )
 
 // faultChainEvaluationRequest uses only the API-frozen turn context. Models
@@ -84,7 +85,7 @@ func (a AssistantTools) evaluateFaultChain(ctx context.Context, j investigation.
 func faultChainRelationScope(input assistant.TurnInput, j investigation.Job, target string, window *analytics.QueryTimeRange, namespace string) (graph.Scope, error) {
 	request, err := faultChainEvaluationRequest(input, j)
 	id, parseErr := resource.ParseCanonicalID(target)
-	if err != nil || parseErr != nil || id.Domain != "k8s" || id.Kind != "Pod" || target != request.TargetCanonicalID || window == nil || !window.From.Equal(request.Fault.From) || !window.To.Equal(request.Fault.To) || namespace == "" || !j.Scope.Allows(target, namespace) {
+	if err != nil || parseErr != nil || id.Domain != "k8s" || id.Kind != "Pod" || target != request.TargetCanonicalID || window == nil || !window.From.Equal(request.Fault.From) || !window.To.Equal(request.Fault.To) || namespace == "" || !slices.Contains(j.Scope.Namespaces, namespace) || !j.Scope.Allows(target, namespace) {
 		return graph.Scope{}, investigation.ErrDenied
 	}
 	scope := analytics.CloneScope(j.Scope)

@@ -1,0 +1,21 @@
+{
+  "at": "2026-11-06T02:31:35.268805Z",
+  "release": "dd9da1cca0f87d5bd943faee74f883648c916413",
+  "observationMinutes": 30,
+  "workloads": {
+    "ops-api": {},
+    "ops-worker": {
+      "warn": 408,
+      "graph_lease_renewal_slow": 402,
+      "sp05_fixed_analyzer_unavailable": 3
+    },
+    "ops-investigator": {}
+  },
+  "podRestarts": {
+    "ops-api-58985559d5-nwrrc": 0,
+    "ops-investigator-6fc4595975-kmw42": 0,
+    "ops-worker-5647c7669d-bgswx": 0
+  },
+  "finalSmoke": "passed",
+  "conclusion": "Service remained available; worker warnings are the known slow graph-lease renewal class, with no API or investigator errors and no application restarts."
+}

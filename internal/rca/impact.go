@@ -24,6 +24,10 @@ func QueryImpact(ctx context.Context, g *graph.Graph, r Recipe, q graph.Query) (
 	defer cancel()
 	q.QueryKind, q.MaxDepth, q.MaxNodes, q.MaxEdges = "impact", r.GraphDepth, r.Budget.MaxNodes, r.Budget.MaxEdges
 	q.ExpectedOwnerEpoch = g.OwnerEpoch()
+	if q.Scope.ClusterScoped {
+		q.Scope.ClusterScoped = false
+		q.Scope.Namespaces = append(slices.Clone(q.Scope.Namespaces), "")
+	}
 	out, err := g.Query(bounded, q)
 	if err != nil || r.GraphPlan == "single-query/v1" || out.Partial || out.Freshness != "fresh" {
 		return out, err
