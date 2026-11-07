@@ -13,6 +13,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"io"
 	"log/slog"
+	"strings"
 	"net"
 	"net/http"
 	"net/url"
@@ -296,12 +297,18 @@ func StartSP06API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Han
 	if taskKinds, ok := assistantTaskKinds(c.Assistant); ok {
 		repo := assistant.Repository{Pool: pool, Jobs: handlers.Repository, FaultChainEnabled: c.Assistant.FaultChainEnabled}
 		repo.Admit = func(ctx context.Context, conversation assistant.Conversation, task string) (assistant.Admission, error) {
-			if !c.Assistant.Enabled {
+			deny := func(reason string, err error) (assistant.Admission, error) {
+				// Denials stay FORBIDDEN on the wire; the reason is for the
+				// operator, because every gate here is otherwise silent.
+				slog.Warn("assistant admission denied", "reason", reason, "task", task, "domain", conversation.AuthorizationDomain, "subject", func() string { actor, _ := auth.RequestContextFromContext(ctx); return actor.Subject }(), "error", func() string { if err != nil { return err.Error() }; return "" }())
 				return assistant.Admission{}, investigation.ErrDenied
+			}
+			if !c.Assistant.Enabled {
+				return deny("assistant_disabled", nil)
 			}
 			actor, ok := auth.RequestContextFromContext(ctx)
 			if !ok || actor.Subject != conversation.OwnerSubject || actor.TenantID != conversation.TenantID {
-				return assistant.Admission{}, investigation.ErrDenied
+				return deny("owner_mismatch", nil)
 			}
 			scope, err := resolveScope(ctx, actor.TenantID, conversation.ClusterUID)
 			principal := policy.PrincipalOperator
@@ -311,25 +318,25 @@ func StartSP06API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Han
 				err = nil
 			}
 			if err != nil {
-				return assistant.Admission{}, err
+				return deny("cluster_scope_unavailable", err)
 			}
 			defs, err := tools.CatalogFor("investigation-job/v3", task, conversation.AuthorizationDomain, "assistant-tools/v2")
 			if err != nil {
-				return assistant.Admission{}, err
+				return deny("tool_catalog_unavailable", err)
 			}
 			decision, err := evaluator.Evaluate(ctx, policy.PolicyInput{Request: actor, PrincipalType: principal, RequestType: policy.RequestTool, Scope: scope, ToolName: "get_assistant_context", AllowedTools: tools.Names(defs), ToolReadOnly: true, Risk: policy.RiskLow, AssistantTaskKind: task, AuthorizationDomain: conversation.AuthorizationDomain})
 			if err != nil || !decision.Allow {
-				return assistant.Admission{}, investigation.ErrDenied
+				return deny("policy_denied:"+strings.Join(decision.Reasons, ","), err)
 			}
 			active, err := registry.ResolveActive(ctx, actor.TenantID, configregistry.KindPolicy, c.PolicyName, scope, time.Now())
 			if err != nil || active.VersionID.String() != decision.PolicyVersion {
-				return assistant.Admission{}, investigation.ErrDenied
+				return deny("policy_version_mismatch", err)
 			}
 			var content struct {
 				Budget *investigation.Budget `json:"investigationBudget"`
 			}
 			if json.Unmarshal(active.Content, &content) != nil {
-				return assistant.Admission{}, investigation.ErrDenied
+				return deny("policy_budget_unreadable", nil)
 			}
 			cap := investigation.DefaultBudget()
 			if content.Budget != nil {
