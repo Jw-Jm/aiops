@@ -1,0 +1,8 @@
+    sp05_container_probe_rollout_test.go:241: crash sufficient: candidate=pod_crash_loop status=confirmed missing=[]
+    sp05_container_probe_rollout_test.go:243: oom sufficient: candidate=pod_oom_killed status=probable missing=[]
+    sp05_container_probe_rollout_test.go:245: probe sufficient: candidate=pod_probe_failure status=probable missing=[]
+    sp05_container_probe_rollout_test.go:247: port-conflict scheduling sufficient: candidate=pod_scheduling_failure status=confirmed missing=[]
+    sp05_container_probe_rollout_test.go:249: rollout sufficient: candidate=deployment_rollout_stuck status=confirmed missing=[]
+    sp05_container_probe_rollout_test.go:275: actual cluster batch-1 follow-up acceptance: crash loop, OOM, probe failure, stuck rollout and host-port conflict diagnosed on real kubelet/scheduler evidence; recovery via repair, rollout completion and subject deletion settlement
+--- PASS: TestSP05ActualContainerProbeRolloutAndSchedulingDiagnosis (541.13s)
+PASS

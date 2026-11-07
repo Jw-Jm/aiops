@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "recipe-registry/v2",
+  "name": "deployment-rollout-stuck",
+  "version": "v1",
+  "candidateType": "deployment_rollout_stuck",
+  "entry": [
+    "Deployment",
+    "Pod"
+  ],
+  "graphDepth": 2,
+  "graphPlan": "single-query/v1",
+  "requiredEvidence": [
+    {
+      "key": "rollout-stuck",
+      "predicate": "rollout-stuck/v1",
+      "maxAgeSeconds": 300,
+      "required": true
+    },
+    {
+      "key": "blocking-pod",
+      "predicate": "blocking-pod/v1",
+      "maxAgeSeconds": 300,
+      "required": true
+    },
+    {
+      "key": "rollout-path",
+      "predicate": "rollout-path/v1",
+      "maxAgeSeconds": 300,
+      "required": true
+    }
+  ],
+  "optionalEvidence": [
+    "metric-context",
+    "recent-change"
+  ],
+  "confirm": [
+    "rollout-stuck",
+    "blocking-pod",
+    "rollout-path"
+  ],
+  "exclude": [
+    "healthy-primary",
+    "conflicting-required-facts",
+    "invalid-path",
+    "unreliable-clock"
+  ],
+  "toolAllowlist": [
+    "read_evidence",
+    "diagnostic_graph",
+    "impact_scope"
+  ],
+  "budget": {
+    "maxEvidence": 64,
+    "maxNodes": 200,
+    "maxEdges": 400,
+    "timeoutMs": 3000
+  },
+  "postCheck": "native-related-health/v1"
+}

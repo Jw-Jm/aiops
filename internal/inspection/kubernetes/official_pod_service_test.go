@@ -1,6 +1,7 @@
 package kubernetes
 
 import (
+	"strings"
 	"testing"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -96,5 +97,103 @@ func TestEndpointSliceServiceSignal(t *testing.T) {
 		if c.ResourceKind != "Service" || c.ResourceUID != "svc-1" {
 			t.Fatalf("signal must target the owning Service, got %s/%s", c.ResourceKind, c.ResourceUID)
 		}
+	}
+}
+
+func TestContainerFaultSignals(t *testing.T) {
+	metadata := map[string]any{"uid": "pod-1", "name": "app", "namespace": "apps", "resourceVersion": "9", "creationTimestamp": "2026-11-07T00:00:00Z"}
+	status := func(state, lastState map[string]any, ready bool) map[string]any {
+		return map[string]any{"containerStatuses": []any{map[string]any{"state": state, "lastState": lastState, "ready": ready, "restartCount": int64(3)}}}
+	}
+	waiting := func(reason string) map[string]any { return map[string]any{"waiting": map[string]any{"reason": reason}} }
+	terminated := func(reason string, code int64) map[string]any { return map[string]any{"terminated": map[string]any{"reason": reason, "exitCode": code}} }
+	running := map[string]any{"running": map[string]any{"startedAt": "2026-11-07T00:01:00Z"}}
+
+	if got := symptoms(projected("Pod", map[string]any{"metadata": metadata, "status": status(waiting("CrashLoopBackOff"), terminated("Error", 1), false)})); got["CrashLoopBackOff"] != "firing" {
+		t.Fatalf("app crash backoff not firing: %v", got)
+	}
+	oom := symptoms(projected("Pod", map[string]any{"metadata": metadata, "status": status(waiting("CrashLoopBackOff"), terminated("OOMKilled", 137), false)}))
+	if oom["OOMKilled"] != "firing" {
+		t.Fatalf("OOM not attributed: %v", oom)
+	}
+	if _, present := oom["CrashLoopBackOff"]; present {
+		t.Fatalf("OOM must not double-report crashloop: %v", oom)
+	}
+	current := symptoms(projected("Pod", map[string]any{"metadata": metadata, "status": status(terminated("OOMKilled", 137), nil, false)}))
+	if current["OOMKilled"] != "firing" {
+		t.Fatalf("current terminated OOM not firing: %v", current)
+	}
+	healthy := symptoms(projected("Pod", map[string]any{"metadata": metadata, "status": status(running, nil, true)}))
+	for _, symptom := range []string{"CrashLoopBackOff", "OOMKilled", "ProbeFailure", "ContainerBackOffError"} {
+		if healthy[symptom] != "resolved" {
+			t.Fatalf("healthy pod must settle %s: %v", symptom, healthy)
+		}
+	}
+}
+
+func TestKubeletContainerAndProbeEventSignals(t *testing.T) {
+	event := func(reason, message string) unstructured.Unstructured {
+		return projected("Event", map[string]any{
+			"metadata":           map[string]any{"uid": "event-1", "name": "app.1", "namespace": "apps", "resourceVersion": "3", "creationTimestamp": "2026-11-07T00:00:00Z"},
+			"type":               "Warning",
+			"reason":             reason,
+			"message":            message,
+			"reportingComponent": "kubelet",
+			"involvedObject":     map[string]any{"kind": "Pod", "uid": "pod-1", "name": "app", "namespace": "apps"},
+			"firstTimestamp":     "2026-11-07T00:00:01Z",
+		})
+	}
+	if got := symptoms(event("BackOff", "Back-off restarting failed container app in pod apps/pod-1")); got["ContainerBackOffError"] != "firing" {
+		t.Fatalf("backoff event not firing: %v", got)
+	}
+	if got := symptoms(event("Unhealthy", "Readiness probe failed: HTTP probe failed with statuscode: 500")); got["ProbeFailure"] != "firing" {
+		t.Fatalf("readiness probe event not firing: %v", got)
+	}
+	if got := symptoms(event("Unhealthy", "Liveness probe failed: HTTP probe failed with statuscode: 503")); got["ProbeFailure"] != "firing" {
+		t.Fatalf("liveness probe event not firing: %v", got)
+	}
+	got := symptoms(event("BackOff", "Back-off pulling image registry.example.invalid/frontend:v1"))
+	if got["ImagePullError"] != "firing" {
+		t.Fatalf("image backoff belongs to the pull family: %v", got)
+	}
+	if _, present := got["ContainerBackOffError"]; present {
+		t.Fatalf("image backoff is not a container crash: %v", got)
+	}
+}
+
+func TestDeploymentRolloutSignals(t *testing.T) {
+	deployment := func(status, reason string) unstructured.Unstructured {
+		return projected("Deployment", map[string]any{
+			"metadata": map[string]any{"uid": "deploy-1", "name": "web", "namespace": "apps", "resourceVersion": "11", "creationTimestamp": "2026-11-07T00:00:00Z"},
+			"status": map[string]any{"conditions": []any{map[string]any{
+				"type": "Progressing", "status": status, "reason": reason, "lastTransitionTime": "2026-11-07T00:02:00Z"}}},
+		})
+	}
+	if got := symptoms(deployment("False", "ProgressDeadlineExceeded")); got["RolloutStuck"] != "firing" {
+		t.Fatalf("deadline exceeded not firing: %v", got)
+	}
+	if got := symptoms(deployment("True", "NewReplicaSetAvailable")); got["RolloutStuck"] != "resolved" {
+		t.Fatalf("available rollout must settle: %v", got)
+	}
+	if got := symptoms(deployment("True", "ReplicaSetUpdated")); len(got) != 0 {
+		t.Fatalf("in-progress rollout must be silent: %v", got)
+	}
+}
+
+func TestCanonicalGroupForKinds(t *testing.T) {
+	cases := map[string]string{
+		"Pod": "core", "Service": "core", "Event": "core", "PersistentVolumeClaim": "core",
+		"Deployment": "apps", "ReplicaSet": "apps", "StatefulSet": "apps", "DaemonSet": "apps", "Job": "apps",
+		"StorageClass": "storage.k8s.io", "CSIDriver": "storage.k8s.io",
+		"EndpointSlice": "discovery.k8s.io",
+	}
+	for kind, group := range cases {
+		if got := CanonicalGroupFor(kind); got != group {
+			t.Fatalf("CanonicalGroupFor(%s)=%s want %s", kind, got, group)
+		}
+	}
+	c := Candidate{ResourceKind: "Deployment", ResourceUID: "deploy-uid"}
+	if id := c.CanonicalID("tenant", "cluster"); !strings.Contains(id, "/apps/Deployment/deploy-uid") {
+		t.Fatalf("deployment canonical must carry the apps group: %s", id)
 	}
 }

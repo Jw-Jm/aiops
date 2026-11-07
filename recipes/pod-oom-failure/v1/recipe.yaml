@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "recipe-registry/v2",
+  "name": "pod-oom-failure",
+  "version": "v1",
+  "candidateType": "pod_oom_killed",
+  "entry": [
+    "Pod"
+  ],
+  "graphDepth": 2,
+  "graphPlan": "single-query/v1",
+  "requiredEvidence": [
+    {
+      "key": "oom-killed",
+      "predicate": "oom-killed/v1",
+      "maxAgeSeconds": 300,
+      "required": true
+    },
+    {
+      "key": "oom-exit-observed",
+      "predicate": "oom-exit-observed/v1",
+      "maxAgeSeconds": 300,
+      "required": true
+    },
+    {
+      "key": "pod-path",
+      "predicate": "pod-path/v1",
+      "maxAgeSeconds": 300,
+      "required": true
+    }
+  ],
+  "optionalEvidence": [
+    "metric-context",
+    "recent-change"
+  ],
+  "confirm": [
+    "oom-killed",
+    "oom-exit-observed",
+    "pod-path"
+  ],
+  "exclude": [
+    "healthy-primary",
+    "conflicting-required-facts",
+    "invalid-path",
+    "unreliable-clock"
+  ],
+  "toolAllowlist": [
+    "read_evidence",
+    "diagnostic_graph",
+    "impact_scope"
+  ],
+  "budget": {
+    "maxEvidence": 64,
+    "maxNodes": 200,
+    "maxEdges": 400,
+    "timeoutMs": 3000
+  },
+  "postCheck": "native-related-health/v1"
+}

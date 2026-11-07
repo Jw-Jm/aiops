@@ -173,15 +173,39 @@ func sp05RCAIncident(ctx context.Context, pool persistence.TxBeginner, archive *
 			recipeName = "pvc-csi-failure"
 		case "DIMM", "PhysicalServer":
 			recipeName = "dimm-failure"
+		case "Deployment", "ReplicaSet", "StatefulSet", "DaemonSet", "Job":
+			recipeName = "deployment-rollout-stuck"
 		}
 	}
 	// Symptoms name the fault class more precisely than the target kind: a Pod
-	// may fail scheduling, pulling or probing, each with its own recipe.
+	// may fail scheduling, pulling, crashing, OOM or probing, each with its
+	// own recipe.
 	if symptoms, err := incidentSymptoms(ctx, pool, tenant, i.IncidentID); err == nil {
-		if slices.ContainsFunc(symptoms, func(s string) bool { return s == "ImagePullFailure" || s == "ImagePullError" }) {
+		symptom := func(want ...string) bool {
+			for _, s := range symptoms {
+				for _, w := range want {
+					if s == w {
+						return true
+					}
+				}
+			}
+			return false
+		}
+		switch {
+		case symptom("ImagePullFailure", "ImagePullError"):
 			recipeName = "pod-image-pull-failure"
-		} else if slices.Contains(symptoms, "ServiceNoEndpoints") {
+		case symptom("OOMKilled"):
+			recipeName = "pod-oom-failure"
+		case symptom("CrashLoopBackOff", "ContainerBackOffError"):
+			recipeName = "pod-crashloop-failure"
+		case symptom("ProbeFailure"):
+			recipeName = "pod-probe-failure"
+		case symptom("ServiceNoEndpoints"):
 			recipeName = "service-no-endpoints"
+		case symptom("RolloutStuck"):
+			recipeName = "deployment-rollout-stuck"
+		case symptom("Unschedulable", "FailedScheduling"):
+			recipeName = "pod-scheduling-failure"
 		}
 	}
 	clusterID, err := clusterContextID(ctx, pool, tenant, cluster.ClusterUID)
@@ -335,10 +359,14 @@ func resourceKind(raw string) (string, error) {
 	return id.Kind, err
 }
 
+// The fault subject carries one incident per symptom fingerprint. Recipe
+// selection reads every symptom on the subject: the kubelet backoff event
+// fires for OOM-restarting containers too, and the container-state symptom
+// names the fault class precisely.
 func incidentSymptoms(ctx context.Context, pool persistence.TxBeginner, tenant uuid.UUID, incidentID string) ([]string, error) {
 	out := []string{}
 	err := persistence.WithTenantTx(ctx, pool, tenant, func(tx pgx.Tx) error {
-		rows, err := tx.Query(ctx, `SELECT DISTINCT f.payload->>'normalizedSymptom' FROM incident.finding_links l JOIN finding.records f USING(tenant_id,finding_id) WHERE l.tenant_id=$1 AND l.incident_id=$2`, tenant, incidentID)
+		rows, err := tx.Query(ctx, `SELECT DISTINCT f.payload->>'normalizedSymptom' FROM finding.records f WHERE f.tenant_id=$1 AND f.resource_canonical_id=(SELECT resource_canonical_id FROM incident.records WHERE tenant_id=$1 AND incident_id=$2)`, tenant, incidentID)
 		if err != nil {
 			return err
 		}

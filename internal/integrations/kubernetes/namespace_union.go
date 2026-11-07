@@ -18,6 +18,9 @@ type namespaceUnion struct {
 	objects   map[string][]unstructured.Unstructured
 	states    map[string]GVRState
 	published bool
+	// deleted forwards per-namespace deletion deltas exactly once on the next
+	// union publication.
+	deleted []unstructured.Unstructured
 }
 
 func newNamespaceUnion(gvr GVR, namespaces []string, publish func(Snapshot) error) *namespaceUnion {
@@ -41,6 +44,7 @@ func (u *namespaceUnion) sink(namespace string) func(Snapshot) error {
 		if !snapshot.ObservationOnly {
 			u.objects[namespace] = snapshot.Objects
 			u.published = true
+			u.deleted = append(u.deleted, snapshot.Deleted...)
 		}
 		state := u.mergedState()
 		if snapshot.ObservationOnly {
@@ -50,9 +54,10 @@ func (u *namespaceUnion) sink(namespace string) func(Snapshot) error {
 		for _, ns := range u.order {
 			all = append(all, u.objects[ns]...)
 		}
-		if err := u.publish(Snapshot{GVR: u.gvr, Objects: all, State: state}); err != nil {
+		if err := u.publish(Snapshot{GVR: u.gvr, Objects: all, Deleted: u.deleted, State: state}); err != nil {
 			return err
 		}
+		u.deleted = nil
 		return u.publish(Snapshot{GVR: u.gvr, State: state, ObservationOnly: true})
 	}
 }

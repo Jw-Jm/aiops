@@ -9,7 +9,7 @@ import (
 // Every admitted builtin declaration must stay identical to the reviewed
 // schema consts, including native post-check-only sets.
 func TestBuiltinRecipesMatchSchemaContract(t *testing.T) {
-	for _, name := range []string{"dimm-failure", "pvc-csi-failure", "node-failure", "pod-health", "deployment-health", "service-endpoints-health", "pod-image-pull-failure", "service-no-endpoints"} {
+	for _, name := range []string{"dimm-failure", "pvc-csi-failure", "node-failure", "pod-health", "deployment-health", "service-endpoints-health", "pod-image-pull-failure", "service-no-endpoints", "pod-crashloop-failure", "pod-oom-failure", "pod-probe-failure", "deployment-rollout-stuck", "pod-scheduling-failure"} {
 		r, err := Builtin(name)
 		if err != nil {
 			t.Fatalf("builtin %s: %v", name, err)

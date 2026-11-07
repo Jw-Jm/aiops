@@ -110,6 +110,11 @@ export function RCAPanel({
                       node_runtime_failure: "节点运行环境异常",
                       pod_image_pull_failure: "镜像拉取失败",
                       service_no_ready_endpoints: "服务无可用后端",
+                      pod_crash_loop: "容器崩溃循环",
+                      pod_oom_killed: "内存超限被终止（OOMKilled）",
+                      pod_probe_failure: "容器探针失败",
+                      deployment_rollout_stuck: "发布卡住（进度超时）",
+                      pod_scheduling_failure: "调度失败",
                     } as Record<string, string>
                   )[c.candidateType] ?? c.candidateType}
                   {revision.result.status !== "confirmed" ? "（待验证假设）" : ""}

@@ -78,7 +78,8 @@ python3 scripts/current/release.py backup
 - 全局能力接口仍可报告 Graph partial/degraded；不能将 Pod Ready 或部分页面 200 称为全局健康。当前 namespace 的指标、日志、资源和故障链路分别验收。
 - 命令配置可发布；真实命令执行仍为 configuration-only/disabled。KubeVirt/CDI、Trace、生产、高可用和空缓存离线交付未恢复验收。
 - b3d Web 构建使用全局 pnpm 10.18.3，仓库声明为 12.7.0；构建与验收通过，但工具链差异保留为风险。
-- Worker Graph Lease 慢告警在存储迁移前与共享 `/data` 同步排队吻合；迁移后 PostgreSQL checkpoint sync 已降至 0.020s 内、sdb 写延迟约 0.1–0.3ms，但 `lease_cas` 仍有约 201–303ms 周期告警。该告警未消失，不能继续简单归因于 `/data`，后续应观察 Kubernetes API/Lease 路径。
+- Worker Graph Lease 慢告警在存储迁移前与共享 `/data` 同步排队吻合；迁移后 PostgreSQL checkpoint sync 已降至 0.020s 内、sdb 写延迟约 0.1–0.3ms，但 `lease_cas` 仍有约 201–303ms 周期告警。2026-11-07 排查结论：`lease_cas` 阶段计时包含共享限速预算（默认 QPS 10，槽位 100ms）的排队等待，采集队列压力下控制类（Lease PUT）按让位规则等约 2 个槽位 ≈ 200ms，实测分布 p50=202ms/p90=204ms 紧贴告警阈值且恒定，与该机制完全吻合；apiserver 写路径本身健康（宿主 kubectl 对 Lease 真实写实测 27–34ms，etcd 在 NVMe 上 fsync 1–2ms）。该告警为良性的计时归因噪声，Lease 续约预算（8 秒续约期限）余量充足，不需要修复；若要消除告警需把限速等待从阶段计时中分离，属可选优化。
+- 2026-11-07 环境网络变更：主机有线网卡 enp3s0 由 netplan 改配为静态 `10.10.10.2/24`（原地址 `192.168.0.63` 不再由配置提供），kube-apiserver 证书 SAN、kubeconfig、平台采集配置（`sp04-worker.json`/`sp04-api.json`）及文档入口仍引用 `192.168.0.63`。当日已用非持久辅助地址 `ip addr add 192.168.0.63/24 dev enp3s0` 恢复（重启后失效），生产采集与集群访问随之恢复。是否把该地址写入 netplan 或整体迁移到 10.10.10.2（涉及证书 SAN 与全部配置/文档更新）需正式决定；期间另观测到从 Pod 网络访问 ClusterIP 10.96.0.1:6443 明文探测超时（TLS 端口对明文应答 400，节点 IP 路径即时应答），未影响业务，记录备查。
 - 旧数据、历史失败证据和本次初始化期间的失败记录保留。迁移没有把失败改写成成功，也没有直接修复旧库坏页。
 
 实际证据见 [current 验收记录](../evidence/current-environment-20261106/README.md)。

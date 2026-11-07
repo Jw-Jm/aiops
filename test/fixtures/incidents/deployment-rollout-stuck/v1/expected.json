@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "golden-slice/v1",
+  "scenario": "deployment-rollout-stuck",
+  "clock": "2026-11-07T00:00:00Z",
+  "ruleVersion": "v1",
+  "expected": {
+    "entityKinds": [
+      "Deployment",
+      "ReplicaSet",
+      "Pod"
+    ],
+    "relationKinds": [
+      "managed_by"
+    ],
+    "findingState": "firing",
+    "incidentState": "open",
+    "candidateType": "deployment_rollout_stuck",
+    "requiredPredicates": [
+      "rollout-stuck",
+      "blocking-pod",
+      "rollout-path"
+    ],
+    "rcaStatus": "confirmed",
+    "missingStatus": "unresolved",
+    "conflictStatus": "unresolved",
+    "degradedStatus": "unresolved",
+    "impactDirect": [],
+    "impactPartial": false
+  },
+  "provenance": "Frozen from the 2026-11-07 batch-1 follow-up scope: real kubelet/scheduler event contracts observed on cluster mssc (busybox crash/OOM/probe probes, hostPort conflict, ProgressDeadlineExceeded)."
+}

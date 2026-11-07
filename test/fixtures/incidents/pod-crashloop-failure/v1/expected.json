@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "golden-slice/v1",
+  "scenario": "pod-crashloop-failure",
+  "clock": "2026-11-07T00:00:00Z",
+  "ruleVersion": "v1",
+  "expected": {
+    "entityKinds": [
+      "Pod",
+      "Node"
+    ],
+    "relationKinds": [
+      "scheduled_on"
+    ],
+    "findingState": "firing",
+    "incidentState": "open",
+    "candidateType": "pod_crash_loop",
+    "requiredPredicates": [
+      "pod-crash-failing",
+      "container-backoff-error",
+      "pod-path"
+    ],
+    "rcaStatus": "confirmed",
+    "missingStatus": "unresolved",
+    "conflictStatus": "confirmed",
+    "degradedStatus": "unresolved",
+    "impactDirect": [],
+    "impactPartial": false
+  },
+  "provenance": "Frozen from the 2026-11-07 batch-1 follow-up scope: real kubelet/scheduler event contracts observed on cluster mssc (busybox crash/OOM/probe probes, hostPort conflict, ProgressDeadlineExceeded)."
+}

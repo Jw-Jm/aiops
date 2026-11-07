@@ -121,11 +121,14 @@ func Evaluate(r Recipe, input Input) (Result, error) {
 		if r.Name == "pvc-csi-failure" && slices.Contains(matched, "csi-error") && !csiSourceMatches(input, e) {
 			matched = nil
 		}
-		// A Service outage is judged with its selected backends: their own
-		// bounded facts are an independent cause vote, gated by the same graph
-		// that proves the selector relation.
-		if len(matched) == 0 && r.Name == "service-no-endpoints" && serviceSelectsPod(input, e.ResourceCanonicalID) {
-			matched, contradicts = backendUnreadyFact(e)
+		// A Service outage is judged with its selected backends and a stuck
+		// rollout with its owned pods: their own bounded facts are independent
+		// cause votes, gated by the same graph that proves the relation.
+		if len(matched) == 0 && (r.Name == "service-no-endpoints" || r.Name == "deployment-rollout-stuck") {
+			related := (r.Name == "service-no-endpoints" && serviceSelectsPod(input, e.ResourceCanonicalID)) || (r.Name == "deployment-rollout-stuck" && ownedByWorkload(input, e.ResourceCanonicalID))
+			if related {
+				matched, contradicts = podFaultFact(e)
+			}
 		}
 		if contradicts {
 			out.Bundle.Contradicting = append(out.Bundle.Contradicting, e.EvidenceID)
@@ -154,8 +157,8 @@ func Evaluate(r Recipe, input Input) (Result, error) {
 		out.Bundle.Supporting = append(out.Bundle.Supporting, e.EvidenceID)
 		nodes = append(nodes, api.DiagnosticNode{CanonicalID: e.EvidenceID, Kind: api.NodeKindEvent, Attributes: map[string]any{"reason": "FailureEvidence", "message": r.CandidateType, "lastTimestamp": e.ObservedTo.Format(time.RFC3339Nano)}})
 	}
-	pathKey := map[string]string{"dimm-failure": "hardware-path", "pvc-csi-failure": "storage-path", "node-failure": "node-path", "pod-image-pull-failure": "pod-path", "service-no-endpoints": "service-selection"}[r.Name]
-	if recipePath(r.Name, input) {
+	pathKey := map[string]string{"dimm-failure": "hardware-path", "pvc-csi-failure": "storage-path", "node-failure": "node-path", "pod-image-pull-failure": "pod-path", "service-no-endpoints": "service-selection", "pod-crashloop-failure": "pod-path", "pod-oom-failure": "pod-path", "pod-probe-failure": "pod-path", "deployment-rollout-stuck": "rollout-path"}[r.Name]
+	if recipePath(r.Name, input) && pathKey != "" {
 		keys[pathKey] = append([]string{}, out.Bundle.Supporting...)
 	}
 	for _, req := range r.RequiredEvidence {
@@ -280,6 +283,70 @@ func recipeFacts(name string, e evidence.Evidence, target string, evaluatedAt ti
 		if raw["nativeKind"] == "Event" && raw["reason"] == "ImagePullError" && raw["reportingController"] == "kubelet" {
 			return []string{"image-pull-error"}, false
 		}
+	case "pod-crashloop-failure":
+		if raw["nativeKind"] == "Pod" && raw["reason"] == "CrashLoopBackOff" {
+			if raw["crashLoopFailing"] == true {
+				return []string{"pod-crash-failing"}, false
+			}
+			// A restart inside the backoff cycle is the fault itself, not a
+			// refutation: healthy windows alternate with the crashloop.
+			return nil, false
+		}
+		if raw["nativeKind"] == "Event" && raw["reason"] == "ContainerBackOffError" && raw["reportingController"] == "kubelet" {
+			return []string{"container-backoff-error"}, false
+		}
+	case "pod-oom-failure":
+		if raw["nativeKind"] == "Pod" && raw["reason"] == "OOMKilled" {
+			if raw["oomKilled"] == false {
+				// The post-OOM restart alternates with the kill; it settles
+				// the lifecycle without refuting the OOM condition.
+				return nil, false
+			}
+			if raw["oomKilled"] == true {
+				// The kernel OOM kill is its own exit observation: exit code
+				// 137 on the terminated container is the same authoritative
+				// object, never a second independent vote.
+				if raw["lastExitCode"] == float64(137) {
+					return []string{"oom-killed", "oom-exit-observed"}, false
+				}
+				return []string{"oom-killed"}, false
+			}
+		}
+	case "pod-probe-failure":
+		if raw["nativeKind"] == "Pod" && raw["reason"] == "ProbeFailure" && raw["probeFailing"] == false {
+			// Probes legitimately alternate; a passing window is lifecycle
+			// settlement, not a refutation of the failing condition.
+			return nil, false
+		}
+		if raw["nativeKind"] == "Event" && raw["reason"] == "ProbeFailure" && raw["reportingController"] == "kubelet" {
+			// The bounded kubelet message names the failing probe kind; the
+			// diagnosis requires that identification, from the same event.
+			if message, _ := raw["message"].(string); strings.Contains(message, "probe failed") {
+				return []string{"probe-failing", "probe-kind-observed"}, false
+			}
+			return []string{"probe-failing"}, false
+		}
+	case "deployment-rollout-stuck":
+		if raw["nativeKind"] == "Deployment" && raw["reason"] == "RolloutStuck" {
+			if raw["rolloutStuck"] == false {
+				return nil, true
+			}
+			if raw["rolloutStuck"] == true {
+				return []string{"rollout-stuck"}, false
+			}
+		}
+	case "pod-scheduling-failure":
+		if raw["nativeKind"] == "Pod" && raw["reason"] == "Unschedulable" {
+			if raw["unschedulable"] == false {
+				return nil, true
+			}
+			return []string{"pod-unschedulable"}, false
+		}
+		if raw["nativeKind"] == "Event" && raw["reason"] == "FailedScheduling" && raw["reportingController"] == "default-scheduler" {
+			// The scheduler message is the cause detail: free ports, resource
+			// pressure or taints. One event object, two required predicates.
+			return []string{"scheduling-blocked", "scheduling-cause-detail"}, false
+		}
 	case "service-no-endpoints":
 		if raw["nativeKind"] == "EndpointSlice" && raw["reason"] == "ServiceNoEndpoints" {
 			ready, _ := raw["readyEndpoints"].(float64)
@@ -344,25 +411,28 @@ func recipePath(name string, input Input) bool {
 			}
 		}
 		return mounted && storage && driver
-	case "pod-image-pull-failure":
-		if kinds[target] != "Pod" {
+	case "pod-image-pull-failure", "pod-crashloop-failure", "pod-oom-failure", "pod-probe-failure":
+		return podAnchored(edges, kinds, target)
+	case "deployment-rollout-stuck":
+		if kinds[target] != "Deployment" {
 			return false
 		}
-		// Namespace-scoped collection never observes cluster-scoped kinds, so
-		// the anchoring edge is whichever real topology the source can see:
-		// the node (cluster grant), the owning workload, or an inbound
-		// service selection.
-		for _, e := range edges {
-			if e.Kind == "scheduled_on" && e.From == target && kinds[e.To] == "Node" {
-				return true
+		// Pod -> ReplicaSet -> Deployment, both hops controller owner edges.
+		for _, hop := range edges {
+			if hop.Kind != "managed_by" || hop.To != target {
+				continue
 			}
-			if e.Kind == "managed_by" && e.From == target && (kinds[e.To] == "Workload" || kinds[e.To] == "ReplicaSet" || kinds[e.To] == "Deployment" || kinds[e.To] == "StatefulSet" || kinds[e.To] == "DaemonSet" || kinds[e.To] == "Job") {
-				return true
-			}
-			if e.Kind == "selects_pod" && e.To == target && kinds[e.From] == "Service" {
-				return true
+			for _, leaf := range edges {
+				if leaf.Kind == "managed_by" && leaf.To == hop.From && kinds[leaf.From] == "Pod" {
+					return true
+				}
 			}
 		}
+		return false
+	case "pod-scheduling-failure":
+		// An unscheduled pod has no node, owner or service yet; no topology
+		// anchor exists, so the recipe is proven by its facts alone.
+		return true
 	case "service-no-endpoints":
 		if kinds[target] != "Service" {
 			return false
@@ -435,9 +505,27 @@ func serviceSelectsPod(input Input, pod string) bool {
 	return false
 }
 
-// A selected backend that cannot become ready is the independent cause vote
-// for an endpoint-less Service. Only bounded native pod facts participate.
-func backendUnreadyFact(e evidence.Evidence) ([]string, bool) {
+// Pods owned (through their ReplicaSet) by the target Deployment may
+// contribute blocking facts to a stuck rollout.
+func ownedByWorkload(input Input, pod string) bool {
+	for _, leaf := range input.Graph.Edges {
+		if leaf.Kind != "managed_by" || leaf.From != pod {
+			continue
+		}
+		for _, hop := range input.Graph.Edges {
+			if hop.Kind == "managed_by" && hop.From == leaf.To && hop.To == input.ResourceCanonicalID {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// A selected or owned pod that cannot become ready is the independent cause
+// vote for a Service outage (backend-unready) or a stuck rollout
+// (blocking-pod); each recipe reads its own key. Only bounded native pod
+// facts participate.
+func podFaultFact(e evidence.Evidence) ([]string, bool) {
 	if e.QueryTemplateVersion != "sp05-signal/v1" {
 		return nil, false
 	}
@@ -445,8 +533,29 @@ func backendUnreadyFact(e evidence.Evidence) ([]string, bool) {
 	if json.Unmarshal(e.Data, &raw) != nil || raw["nativeKind"] != "Pod" {
 		return nil, false
 	}
-	if raw["reason"] == "Unschedulable" || raw["imagePullFailing"] == true {
-		return []string{"backend-unready"}, false
+	if raw["reason"] == "Unschedulable" || raw["imagePullFailing"] == true || raw["crashLoopFailing"] == true || raw["oomKilled"] == true {
+		return []string{"backend-unready", "blocking-pod"}, false
 	}
 	return nil, false
+}
+
+// Namespace-scoped collection never observes cluster-scoped kinds, so the
+// anchoring edge is whichever real topology the source can see: the node
+// (cluster grant), the owning workload, or an inbound service selection.
+func podAnchored(edges []resource.Relation, kinds map[string]string, target string) bool {
+	if kinds[target] != "Pod" {
+		return false
+	}
+	for _, e := range edges {
+		if e.Kind == "scheduled_on" && e.From == target && kinds[e.To] == "Node" {
+			return true
+		}
+		if e.Kind == "managed_by" && e.From == target && (kinds[e.To] == "Workload" || kinds[e.To] == "ReplicaSet" || kinds[e.To] == "Deployment" || kinds[e.To] == "StatefulSet" || kinds[e.To] == "DaemonSet" || kinds[e.To] == "Job") {
+			return true
+		}
+		if e.Kind == "selects_pod" && e.To == target && kinds[e.From] == "Service" {
+			return true
+		}
+	}
+	return false
 }

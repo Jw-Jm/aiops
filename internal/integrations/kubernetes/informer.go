@@ -97,7 +97,11 @@ type Snapshot struct {
 	ObservationOnly bool
 	GVR             GVR
 	Objects         []unstructured.Unstructured
-	State           GVRState
+	// Deleted carries the projected objects removed since the previous
+	// non-observation snapshot: watch tombstones plus the authoritative
+	// relist diff, both after the namespace filter.
+	Deleted []unstructured.Unstructured
+	State   GVRState
 }
 type watchEvent struct {
 	Type   string          `json:"type"`
@@ -344,24 +348,28 @@ func (c *Client) runEndpoint(ctx context.Context, gvr GVR, endpoint string, allo
 	state := GVRState{}
 	objects := map[string]unstructured.Unstructured{}
 	tombstones := map[string]bool{}
+	var deletedBuffer []unstructured.Unstructured
 	rv := ""
 	needList := true
 	listPending := false
 	var projectionReceivedAt time.Time
 	emit := func(observationOnly bool) error {
 		var all []unstructured.Unstructured
+		var deleted []unstructured.Unstructured
 		if !observationOnly {
 			all = make([]unstructured.Unstructured, 0, len(objects))
 			for _, o := range objects {
 				all = append(all, *o.DeepCopy())
 			}
+			deleted = deletedBuffer
 		}
 		if !projectionReceivedAt.IsZero() {
 			state.ProjectionQueueLag = time.Since(projectionReceivedAt)
 		}
-		if err := publish(Snapshot{GVR: gvr, Objects: all, State: state, ObservationOnly: observationOnly}); err != nil {
+		if err := publish(Snapshot{GVR: gvr, Objects: all, Deleted: deleted, State: state, ObservationOnly: observationOnly}); err != nil {
 			return err
 		}
+		deletedBuffer = nil
 		if !projectionReceivedAt.IsZero() && !observationOnly {
 			state.ProjectionQueueLag = time.Since(projectionReceivedAt)
 			// Health publication records the full receive→persist→atomic graph
@@ -472,6 +480,18 @@ func (c *Client) runEndpoint(ctx context.Context, gvr GVR, endpoint string, allo
 					break
 				}
 				continue
+			}
+			// A completed relist is authoritative: objects present before and
+			// absent now were deleted while no watch observed it. Only
+			// namespaces the collector still reads may resolve.
+			for uid, old := range objects {
+				if _, present := replacement[uid]; present {
+					continue
+				}
+				if allowedNamespaces != nil && !allowedNamespaces[old.GetNamespace()] {
+					continue
+				}
+				deletedBuffer = append(deletedBuffer, old)
 			}
 			objects = replacement
 			rv = listRV
@@ -662,6 +682,14 @@ func (c *Client) runEndpoint(ctx context.Context, gvr GVR, endpoint string, allo
 				continue
 			}
 			if event.Type == "DELETED" {
+				if old, ok := objects[uid]; ok {
+					deletedBuffer = append(deletedBuffer, old)
+				} else {
+					projected, err := Project(obj, now)
+					if err == nil {
+						deletedBuffer = append(deletedBuffer, projected)
+					}
+				}
 				delete(objects, uid)
 				if len(tombstones) >= 100000 {
 					state.LastError = "tombstone_budget_exhausted"

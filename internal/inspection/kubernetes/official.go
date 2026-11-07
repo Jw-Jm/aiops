@@ -86,7 +86,10 @@ func Signals(o unstructured.Unstructured) []Candidate {
 			if status == "False" && reason == "Unschedulable" {
 				add("scheduling", "Unschedulable", "Pod", string(o.GetUID()), o.GetNamespace(), "firing", start)
 			} else if status == "True" {
+				// Scheduling also settles the scheduler's FailedScheduling
+				// occurrence for the same pod.
 				add("scheduling", "Unschedulable", "Pod", string(o.GetUID()), o.GetNamespace(), "resolved", start)
+				add("scheduling", "FailedScheduling", "Pod", string(o.GetUID()), o.GetNamespace(), "resolved", start)
 			}
 		}
 	}
@@ -99,30 +102,69 @@ func Signals(o unstructured.Unstructured) []Candidate {
 		}
 	}
 	if o.GetKind() == "Pod" {
-		pulling, running := false, false
+		pulling, crashLoop, oomKilled, runningReady := false, false, false, false
 		for _, raw := range containerStates(o) {
 			state, _ := raw["state"].(map[string]any)
-			if wait, _ := state["waiting"].(map[string]any); wait != nil {
-				reason, _ := wait["reason"].(string)
-				if reason == "ErrImagePull" || reason == "ImagePullBackOff" || reason == "ErrImageNeverPull" {
-					pulling = true
+			lastState, _ := raw["lastState"].(map[string]any)
+			waitReason, _ := nestedReason(state, "waiting")
+			termReason, _ := nestedReason(state, "terminated")
+			lastTermReason, _ := nestedReason(lastState, "terminated")
+			switch waitReason {
+			case "ErrImagePull", "ImagePullBackOff", "ErrImageNeverPull":
+				pulling = true
+			case "CrashLoopBackOff":
+				// kubelet restarts an OOM-killed container into the same
+				// backoff; the terminated reason is the discriminator.
+				if lastTermReason == "OOMKilled" || termReason == "OOMKilled" {
+					oomKilled = true
+				} else {
+					crashLoop = true
 				}
 			}
+			if termReason == "OOMKilled" || lastTermReason == "OOMKilled" {
+				oomKilled = true
+			}
 			if _, ok := state["running"].(map[string]any); ok && raw["ready"] == true {
-				running = true
+				runningReady = true
 			}
 		}
+		healthy := runningReady && !pulling && !crashLoop && !oomKilled
 		if pulling {
 			add("image", "ImagePullFailure", "Pod", string(o.GetUID()), o.GetNamespace(), "firing", o.GetCreationTimestamp().Time)
-		} else if running {
-			// The running container also settles the kubelet pull-error
-			// occurrence: both symptoms describe the same pull condition.
-			add("image", "ImagePullFailure", "Pod", string(o.GetUID()), o.GetNamespace(), "resolved", o.GetCreationTimestamp().Time)
-			add("image", "ImagePullError", "Pod", string(o.GetUID()), o.GetNamespace(), "resolved", o.GetCreationTimestamp().Time)
+		}
+		if crashLoop {
+			add("container", "CrashLoopBackOff", "Pod", string(o.GetUID()), o.GetNamespace(), "firing", o.GetCreationTimestamp().Time)
+		}
+		if oomKilled {
+			add("container", "OOMKilled", "Pod", string(o.GetUID()), o.GetNamespace(), "firing", o.GetCreationTimestamp().Time)
+		}
+		if healthy {
+			// A running, ready container settles every pod-condition occurrence:
+			// pull, crash, OOM, probe and the kubelet error events all describe
+			// conditions that have ended.
+			for symptom, family := range map[string]string{"ImagePullFailure": "image", "ImagePullError": "image", "CrashLoopBackOff": "container", "ContainerBackOffError": "container", "OOMKilled": "container", "ProbeFailure": "probe"} {
+				add(family, symptom, "Pod", string(o.GetUID()), o.GetNamespace(), "resolved", o.GetCreationTimestamp().Time)
+			}
+		}
+	}
+	if o.GetKind() == "Deployment" {
+		for _, item := range conditions {
+			c, ok := item.(map[string]any)
+			if !ok || c["type"] != "Progressing" {
+				continue
+			}
+			ts, _ := c["lastTransitionTime"].(string)
+			start, _ := time.Parse(time.RFC3339Nano, ts)
+			switch {
+			case c["status"] == "False" && c["reason"] == "ProgressDeadlineExceeded":
+				add("workload", "RolloutStuck", "Deployment", string(o.GetUID()), o.GetNamespace(), "firing", start)
+			case c["status"] == "True" && c["reason"] == "NewReplicaSetAvailable":
+				add("workload", "RolloutStuck", "Deployment", string(o.GetUID()), o.GetNamespace(), "resolved", start)
+			}
 		}
 	}
 	if o.GetKind() == "EndpointSlice" {
-		if service := owningServiceUID(o); service != "" {
+		if service := OwningServiceUID(o); service != "" {
 			ready := 0
 			endpoints, _, _ := unstructured.NestedSlice(o.Object, "endpoints")
 			for _, raw := range endpoints {
@@ -175,8 +217,15 @@ func Signals(o unstructured.Unstructured) []Candidate {
 				reporter, _, _ = unstructured.NestedString(o.Object, "source", "component")
 			}
 			message, _, _ := unstructured.NestedString(o.Object, "message")
-			if reporter == "kubelet" && (strings.Contains(message, "pull image") || strings.Contains(message, "ErrImagePull") || strings.Contains(message, "ImagePullBackOff") || strings.Contains(message, "pulling image")) {
-				add("image", "ImagePullError", "Pod", uid, ns, "firing", start)
+			if reporter == "kubelet" {
+				switch {
+				case strings.Contains(message, "pull image") || strings.Contains(message, "ErrImagePull") || strings.Contains(message, "ImagePullBackOff") || strings.Contains(message, "pulling image"):
+					add("image", "ImagePullError", "Pod", uid, ns, "firing", start)
+				case reason == "BackOff" && strings.Contains(message, "restarting failed container"):
+					add("container", "ContainerBackOffError", "Pod", uid, ns, "firing", start)
+				case reason == "Unhealthy" && strings.Contains(message, "probe failed"):
+					add("probe", "ProbeFailure", "Pod", uid, ns, "firing", start)
+				}
 			}
 		}
 	}
@@ -194,7 +243,15 @@ func containerStates(o unstructured.Unstructured) []map[string]any {
 	}
 	return states
 }
-func owningServiceUID(o unstructured.Unstructured) string {
+func nestedReason(state map[string]any, phase string) (string, bool) {
+	inner, ok := state[phase].(map[string]any)
+	if !ok {
+		return "", false
+	}
+	reason, ok := inner["reason"].(string)
+	return reason, ok
+}
+func OwningServiceUID(o unstructured.Unstructured) string {
 	for _, owner := range o.GetOwnerReferences() {
 		if owner.Kind == "Service" && owner.UID != "" {
 			return string(owner.UID)
@@ -203,7 +260,24 @@ func owningServiceUID(o unstructured.Unstructured) string {
 	return ""
 }
 func (c Candidate) CanonicalID(tenant, cluster string) string {
-	return resource.CanonicalID{Domain: "k8s", Tenant: tenant, Scope: cluster, APIGroup: "core", Kind: c.ResourceKind, StableID: c.ResourceUID}.String()
+	return resource.CanonicalID{Domain: "k8s", Tenant: tenant, Scope: cluster, APIGroup: CanonicalGroupFor(c.ResourceKind), Kind: c.ResourceKind, StableID: c.ResourceUID}.String()
+}
+
+// CanonicalGroupFor mirrors the collector's identity resolution: the API group
+// of the native object, never a hardcoded core guess.
+func CanonicalGroupFor(kind string) string {
+	switch kind {
+	case "Deployment", "ReplicaSet", "StatefulSet", "DaemonSet", "Job":
+		return "apps"
+	case "StorageClass", "CSIDriver", "CSINode", "VolumeAttachment":
+		return "storage.k8s.io"
+	case "EndpointSlice":
+		return "discovery.k8s.io"
+	case "Ingress", "NetworkPolicy":
+		return "networking.k8s.io"
+	default:
+		return "core"
+	}
 }
 func (c Candidate) SignalKey() string {
 	return finding.Hash([]string{c.ResourceKind, c.ResourceUID, c.RuleID})

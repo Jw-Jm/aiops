@@ -25,6 +25,11 @@
         "node_runtime_failure",
         "pod_image_pull_failure",
         "service_no_ready_endpoints",
+        "pod_crash_loop",
+        "pod_oom_killed",
+        "pod_probe_failure",
+        "deployment_rollout_stuck",
+        "pod_scheduling_failure",
         "native_post_check"
       ]
     },
@@ -751,6 +756,310 @@
               "service-no-ready-endpoints",
               "backend-unready",
               "service-selection"
+            ],
+            "exclude": [
+              "healthy-primary",
+              "conflicting-required-facts",
+              "invalid-path",
+              "unreliable-clock"
+            ],
+            "toolAllowlist": [
+              "read_evidence",
+              "diagnostic_graph",
+              "impact_scope"
+            ],
+            "budget": {
+              "maxEvidence": 64,
+              "maxNodes": 200,
+              "maxEdges": 400,
+              "timeoutMs": 3000
+            },
+            "postCheck": "native-related-health/v1"
+          }
+        },
+        {
+          "const": {
+            "schemaVersion": "recipe-registry/v2",
+            "name": "pod-crashloop-failure",
+            "version": "v1",
+            "candidateType": "pod_crash_loop",
+            "entry": [
+              "Pod",
+              "Event"
+            ],
+            "graphDepth": 2,
+            "graphPlan": "single-query/v1",
+            "requiredEvidence": [
+              {
+                "key": "pod-crash-failing",
+                "predicate": "pod-crash-failing/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "container-backoff-error",
+                "predicate": "container-backoff-error/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "pod-path",
+                "predicate": "pod-path/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              }
+            ],
+            "optionalEvidence": [
+              "metric-context",
+              "recent-change"
+            ],
+            "confirm": [
+              "pod-crash-failing",
+              "container-backoff-error",
+              "pod-path"
+            ],
+            "exclude": [
+              "healthy-primary",
+              "conflicting-required-facts",
+              "invalid-path",
+              "unreliable-clock"
+            ],
+            "toolAllowlist": [
+              "read_evidence",
+              "diagnostic_graph",
+              "impact_scope"
+            ],
+            "budget": {
+              "maxEvidence": 64,
+              "maxNodes": 200,
+              "maxEdges": 400,
+              "timeoutMs": 3000
+            },
+            "postCheck": "native-related-health/v1"
+          }
+        },
+        {
+          "const": {
+            "schemaVersion": "recipe-registry/v2",
+            "name": "pod-oom-failure",
+            "version": "v1",
+            "candidateType": "pod_oom_killed",
+            "entry": [
+              "Pod"
+            ],
+            "graphDepth": 2,
+            "graphPlan": "single-query/v1",
+            "requiredEvidence": [
+              {
+                "key": "oom-killed",
+                "predicate": "oom-killed/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "oom-exit-observed",
+                "predicate": "oom-exit-observed/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "pod-path",
+                "predicate": "pod-path/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              }
+            ],
+            "optionalEvidence": [
+              "metric-context",
+              "recent-change"
+            ],
+            "confirm": [
+              "oom-killed",
+              "oom-exit-observed",
+              "pod-path"
+            ],
+            "exclude": [
+              "healthy-primary",
+              "conflicting-required-facts",
+              "invalid-path",
+              "unreliable-clock"
+            ],
+            "toolAllowlist": [
+              "read_evidence",
+              "diagnostic_graph",
+              "impact_scope"
+            ],
+            "budget": {
+              "maxEvidence": 64,
+              "maxNodes": 200,
+              "maxEdges": 400,
+              "timeoutMs": 3000
+            },
+            "postCheck": "native-related-health/v1"
+          }
+        },
+        {
+          "const": {
+            "schemaVersion": "recipe-registry/v2",
+            "name": "pod-probe-failure",
+            "version": "v1",
+            "candidateType": "pod_probe_failure",
+            "entry": [
+              "Pod",
+              "Event"
+            ],
+            "graphDepth": 2,
+            "graphPlan": "single-query/v1",
+            "requiredEvidence": [
+              {
+                "key": "probe-failing",
+                "predicate": "probe-failing/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "probe-kind-observed",
+                "predicate": "probe-kind-observed/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "pod-path",
+                "predicate": "pod-path/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              }
+            ],
+            "optionalEvidence": [
+              "metric-context",
+              "recent-change"
+            ],
+            "confirm": [
+              "probe-failing",
+              "probe-kind-observed",
+              "pod-path"
+            ],
+            "exclude": [
+              "healthy-primary",
+              "conflicting-required-facts",
+              "invalid-path",
+              "unreliable-clock"
+            ],
+            "toolAllowlist": [
+              "read_evidence",
+              "diagnostic_graph",
+              "impact_scope"
+            ],
+            "budget": {
+              "maxEvidence": 64,
+              "maxNodes": 200,
+              "maxEdges": 400,
+              "timeoutMs": 3000
+            },
+            "postCheck": "native-related-health/v1"
+          }
+        },
+        {
+          "const": {
+            "schemaVersion": "recipe-registry/v2",
+            "name": "deployment-rollout-stuck",
+            "version": "v1",
+            "candidateType": "deployment_rollout_stuck",
+            "entry": [
+              "Deployment",
+              "Pod"
+            ],
+            "graphDepth": 2,
+            "graphPlan": "single-query/v1",
+            "requiredEvidence": [
+              {
+                "key": "rollout-stuck",
+                "predicate": "rollout-stuck/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "blocking-pod",
+                "predicate": "blocking-pod/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "rollout-path",
+                "predicate": "rollout-path/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              }
+            ],
+            "optionalEvidence": [
+              "metric-context",
+              "recent-change"
+            ],
+            "confirm": [
+              "rollout-stuck",
+              "blocking-pod",
+              "rollout-path"
+            ],
+            "exclude": [
+              "healthy-primary",
+              "conflicting-required-facts",
+              "invalid-path",
+              "unreliable-clock"
+            ],
+            "toolAllowlist": [
+              "read_evidence",
+              "diagnostic_graph",
+              "impact_scope"
+            ],
+            "budget": {
+              "maxEvidence": 64,
+              "maxNodes": 200,
+              "maxEdges": 400,
+              "timeoutMs": 3000
+            },
+            "postCheck": "native-related-health/v1"
+          }
+        },
+        {
+          "const": {
+            "schemaVersion": "recipe-registry/v2",
+            "name": "pod-scheduling-failure",
+            "version": "v1",
+            "candidateType": "pod_scheduling_failure",
+            "entry": [
+              "Pod",
+              "Event"
+            ],
+            "graphDepth": 2,
+            "graphPlan": "single-query/v1",
+            "requiredEvidence": [
+              {
+                "key": "pod-unschedulable",
+                "predicate": "pod-unschedulable/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "scheduling-blocked",
+                "predicate": "scheduling-blocked/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              },
+              {
+                "key": "scheduling-cause-detail",
+                "predicate": "scheduling-cause-detail/v1",
+                "maxAgeSeconds": 300,
+                "required": true
+              }
+            ],
+            "optionalEvidence": [
+              "metric-context",
+              "recent-change"
+            ],
+            "confirm": [
+              "pod-unschedulable",
+              "scheduling-blocked",
+              "scheduling-cause-detail"
             ],
             "exclude": [
               "healthy-primary",

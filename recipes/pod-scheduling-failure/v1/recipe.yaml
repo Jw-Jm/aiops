@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "recipe-registry/v2",
+  "name": "pod-scheduling-failure",
+  "version": "v1",
+  "candidateType": "pod_scheduling_failure",
+  "entry": [
+    "Pod",
+    "Event"
+  ],
+  "graphDepth": 2,
+  "graphPlan": "single-query/v1",
+  "requiredEvidence": [
+    {
+      "key": "pod-unschedulable",
+      "predicate": "pod-unschedulable/v1",
+      "maxAgeSeconds": 300,
+      "required": true
+    },
+    {
+      "key": "scheduling-blocked",
+      "predicate": "scheduling-blocked/v1",
+      "maxAgeSeconds": 300,
+      "required": true
+    },
+    {
+      "key": "scheduling-cause-detail",
+      "predicate": "scheduling-cause-detail/v1",
+      "maxAgeSeconds": 300,
+      "required": true
+    }
+  ],
+  "optionalEvidence": [
+    "metric-context",
+    "recent-change"
+  ],
+  "confirm": [
+    "pod-unschedulable",
+    "scheduling-blocked",
+    "scheduling-cause-detail"
+  ],
+  "exclude": [
+    "healthy-primary",
+    "conflicting-required-facts",
+    "invalid-path",
+    "unreliable-clock"
+  ],
+  "toolAllowlist": [
+    "read_evidence",
+    "diagnostic_graph",
+    "impact_scope"
+  ],
+  "budget": {
+    "maxEvidence": 64,
+    "maxNodes": 200,
+    "maxEdges": 400,
+    "timeoutMs": 3000
+  },
+  "postCheck": "native-related-health/v1"
+}

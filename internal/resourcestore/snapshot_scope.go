@@ -17,6 +17,7 @@ import (
 func (r Repository) FilterSnapshot(ctx context.Context, tenant, source, cluster string, s kubernetes.Snapshot) (kubernetes.Snapshot, error) {
 	out := s
 	out.Objects = nil
+	out.Deleted = nil
 	tid, err := uuid.Parse(tenant)
 	if err != nil {
 		return out, resource.ErrIdentity
@@ -56,6 +57,14 @@ func (r Repository) FilterSnapshot(ctx context.Context, tenant, source, cluster 
 		if allowed {
 			out.Objects = append(out.Objects, o)
 		}
+	}
+	// Deletion settlement follows the same boundary as live objects: a scope
+	// change that hides an object must never be read as its deletion.
+	for _, o := range s.Deleted {
+		if ns := o.GetNamespace(); ns != "" && !slices.Contains(mapping.Scopes["namespace"], ns) {
+			continue
+		}
+		out.Deleted = append(out.Deleted, o)
 	}
 	return out, nil
 }
