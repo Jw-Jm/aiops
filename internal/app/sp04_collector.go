@@ -159,10 +159,10 @@ func prepareProjection(ctx context.Context, cluster SP04Cluster, o unstructured.
 	identity, _ := json.Marshal(struct {
 		ID, RV, ProjectionVersion string
 		SourceRevision            int64
-	}{id, o.GetResourceVersion(), "kubernetes-projection/v3", cluster.SourceRevision})
+	}{id, o.GetResourceVersion(), "kubernetes-projection/v4", cluster.SourceRevision})
 	objectID := uuid.NewSHA1(uuid.NameSpaceOID, append([]byte(cluster.SourceID), identity...))
 	scope := graph.Scope{Tenant: cluster.Tenant, Cluster: cluster.ClusterUID, Namespaces: []string{o.GetNamespace()}, ClusterScoped: true, AuthorizationRevision: "collector/" + cluster.SourceID + "/" + strconv.FormatInt(cluster.SourceRevision, 10)}
-	metadata := evidence.Evidence{SourceScopeDigest: cluster.SourceScopeDigest, SchemaVersion: "evidence/v2", EvidenceID: objectID.String(), TenantID: cluster.Tenant, ResourceCanonicalID: id, Type: "resource_state", DataClass: "D0", SourceRegistrationID: cluster.SourceID, SourceRevision: cluster.SourceRevision, SourceSystem: "kubernetes", BackendLogicalID: cluster.BackendLogicalID, QueryTemplateVersion: "kubernetes-projection/v3", QueryHash: evidence.Digest(identity), EffectiveScope: scope, EvaluatedAt: observed, ObservedFrom: observed, ObservedTo: observed, SourceRetentionUntil: observed, TimeReliable: true, ReplayState: "archive_pending", ContentDigest: evidence.Digest(data), DerivationEvidenceRefs: []string{}, IndependenceGroup: cluster.SourceID, Data: data}
+	metadata := evidence.Evidence{SourceScopeDigest: cluster.SourceScopeDigest, SchemaVersion: "evidence/v2", EvidenceID: objectID.String(), TenantID: cluster.Tenant, ResourceCanonicalID: id, Type: "resource_state", DataClass: "D0", SourceRegistrationID: cluster.SourceID, SourceRevision: cluster.SourceRevision, SourceSystem: "kubernetes", BackendLogicalID: cluster.BackendLogicalID, QueryTemplateVersion: "kubernetes-projection/v4", QueryHash: evidence.Digest(identity), EffectiveScope: scope, EvaluatedAt: observed, ObservedFrom: observed, ObservedTo: observed, SourceRetentionUntil: observed, TimeReliable: true, ReplayState: "archive_pending", ContentDigest: evidence.Digest(data), DerivationEvidenceRefs: []string{}, IndependenceGroup: cluster.SourceID, Data: data}
 	// Re-listing or a second Worker may observe the same immutable UID/RV at a
 	// later wall clock. Reuse the first durable observation; the new observation
 	// cannot rebind its archive identity or renew history retention.

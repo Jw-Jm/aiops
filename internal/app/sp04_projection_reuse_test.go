@@ -64,11 +64,11 @@ func TestProjectionRelistReusesOnlyVerifiedMatchingArchive(t *testing.T) {
 	identity, _ := json.Marshal(struct {
 		ID, RV, ProjectionVersion string
 		SourceRevision            int64
-	}{id, "123", "kubernetes-projection/v3", 1})
+	}{id, "123", "kubernetes-projection/v4", 1})
 	objectID := uuid.NewSHA1(uuid.NameSpaceOID, append([]byte(source), identity...))
 	at := time.Now().Add(-time.Hour)
 	o.SetAnnotations(map[string]string{"ops.internal/observed-at": at.Format(time.RFC3339Nano)})
-	original := evidence.Evidence{TenantID: tenant, EvidenceID: objectID.String(), SourceSystem: "kubernetes", SourceRegistrationID: source, SourceRevision: 1, SourceScopeDigest: cluster.SourceScopeDigest, ResourceCanonicalID: id, ContentDigest: evidence.Digest(raw), QueryHash: evidence.Digest(identity), QueryTemplateVersion: "kubernetes-projection/v3", BackendLogicalID: "native", EffectiveScope: graph.Scope{Tenant: tenant, Cluster: "cluster", Namespaces: []string{"apps"}, ClusterScoped: true}, ReplayState: "archived_verified", ArchiveRef: &evidence.ArchiveRef{BackendLogicalID: "archive"}, EvaluatedAt: at}
+	original := evidence.Evidence{TenantID: tenant, EvidenceID: objectID.String(), SourceSystem: "kubernetes", SourceRegistrationID: source, SourceRevision: 1, SourceScopeDigest: cluster.SourceScopeDigest, ResourceCanonicalID: id, ContentDigest: evidence.Digest(raw), QueryHash: evidence.Digest(identity), QueryTemplateVersion: "kubernetes-projection/v4", BackendLogicalID: "native", EffectiveScope: graph.Scope{Tenant: tenant, Cluster: "cluster", Namespaces: []string{"apps"}, ClusterScoped: true}, ReplayState: "archived_verified", ArchiveRef: &evidence.ArchiveRef{BackendLogicalID: "archive"}, EvaluatedAt: at}
 	for _, tc := range []string{"verified", "pending", "wrong-store", "conflicting-content"} {
 		t.Run(tc, func(t *testing.T) {
 			previous := original

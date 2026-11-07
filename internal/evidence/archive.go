@@ -157,7 +157,7 @@ func (s *ArchiveService) prepare(ctx context.Context, e Evidence, namespace stri
 		// Kubernetes UID/RV simultaneously. Only the fixed collector template
 		// may reuse the winning durable observation; all identity/content/scope
 		// checks below still apply, and caller queries are never normalized.
-		if q == nil && e.Type == "resource_state" && previous.Type == "resource_state" && e.SourceSystem == "kubernetes" && previous.SourceSystem == "kubernetes" && (e.QueryTemplateVersion == "kubernetes-projection/v1" || e.QueryTemplateVersion == "kubernetes-projection/v2" || e.QueryTemplateVersion == "kubernetes-projection/v3") && previous.QueryTemplateVersion == e.QueryTemplateVersion {
+		if q == nil && e.Type == "resource_state" && previous.Type == "resource_state" && e.SourceSystem == "kubernetes" && previous.SourceSystem == "kubernetes" && (e.QueryTemplateVersion == "kubernetes-projection/v1" || e.QueryTemplateVersion == "kubernetes-projection/v2" || e.QueryTemplateVersion == "kubernetes-projection/v3" || e.QueryTemplateVersion == "kubernetes-projection/v4") && previous.QueryTemplateVersion == e.QueryTemplateVersion {
 			e.EvaluatedAt = previous.EvaluatedAt
 			e.ObservedFrom = previous.ObservedFrom
 			e.ObservedTo = previous.ObservedTo
