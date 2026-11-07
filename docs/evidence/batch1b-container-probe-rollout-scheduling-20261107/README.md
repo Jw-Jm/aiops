@@ -59,3 +59,11 @@
 - 删除结算探针 `TestSP05DeletionSettlesFindings`：PASS（20-24s）
 - informer 删除转发单测 `TestWatchDeletionSettlesThroughNamespaceUnion`：PASS
 - 第一批两场景活链路验收、金样垂直链（12/12）、r55 PVC 活门禁：随本批最终代码重跑，结果见本目录与各自记录
+
+## 生产部署与激活（2026-11-07）
+
+- 候选版本 `6f3cf535f2f4b48e0e49fbd6cb1c22d47ea383b9`（batch1b + 投影 v4 升级）按迭代流程部署：预部署备份（schema 74 无迁移）→ 摘要钉扎镜像滚动 ops-api/ops-worker → Web 切换 → `release.py record` 原子更新 current 指针。
+- 中间版本 a0764bae6 暴露**投影归档身份冲突**：事件投影新增字段（reportingComponent/有界 message）改变了内容但身份版本未升，与不可变 v3 历史归档冲突使采集源持续降级。修复为投影身份升级 `kubernetes-projection/v4`（提交 6f3cf535f），历史 v3 归档原样保留；降级清除后实测 `degraded=[]`。
+- 10 个 recipe 经管理员会话（密码+TOTP step-up，逐请求挑战绑定）用 current-registry 密钥签名发布并在租户范围激活；辅助工具 `cmd/activate-recipes`（仅签名）入库。
+- **生产实际入口端到端验收**：注入 registry 不可达 Pod（acceptance-pull）→ 两个故障（ImagePullFailure/ImagePullError）→ 当前 RCA **confirmed / pod_image_pull_failure/v1 / missing=[]** → 修复镜像后双故障跨 settle 窗口 **resolved**；未认证 API 访问 401；resources/incidents/overview/capabilities/audit-records 200；回执见部署主机 `evidence/acceptance.json`。
+- 部署后已知事项：Web 容器挂载改用解析路径 `/mnt/ops-sdb/ops-current/...`（record 工具 root.resolve() 与 sdb 符号链接一致）；192.168.0.63 辅助地址仍为非持久（见 current-environment.md 网络决策项）。

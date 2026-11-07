@@ -35,7 +35,7 @@
 
 自 2026-11-06 存储迁移起，`/data/ops-current` 是指向 `/mnt/ops-sdb/ops-current` 的符号链接；后者位于 GPT/ext4 `/dev/sdb1`（UUID `43598b77-4d08-4dbe-be52-331005a03ff1`），`/etc/fstab` 使用 `noatime,nofail,x-systemd.device-timeout=10s` 挂载。原内部盘数据保留在 `/data/ops-current.sda-rollback-20261106`，仅代表停机时点，切换后不再同步；回滚必须再次停栈并反向切换。未做 USB 断电安全验收，重启后 OpenBao 仍需按既有私有流程手工解封。
 
-当前应用源码版本为 `b3d7208b5410f72bc4adc22a0e0423e3f6e0ab3f`；上一已验收版本 `dd9da1cca0f87d5bd943faee74f883648c916413` 和初始版本 `9372674a87201a4ccaab6737a1019808ea41ffd5` 保留为回滚发布。运维工具后续可单独提交更新，不能因此声称应用二进制也已升级。实际版本以部署主机的 `current/manifest.json` 为准。
+当前应用源码版本为 `6f3cf535f2f4b48e0e49fbd6cb1c22d47ea383b9`（2026-11-07 部署并记录；含 7 个 Pod 故障专项 recipe、对象删除结算与投影 v4 身份升级；10 个 recipe 已用 current-registry 密钥签名并在租户范围激活）。上一已验收版本 `b3d7208b5410f72bc4adc22a0e0423e3f6e0ab3f` 等保留为回滚发布。实际版本以部署主机的 `current/manifest.json` 为准。
 
 应用、Bao、归档、KSM、指标和采集器归属 `ops-current`；PostgreSQL、VictoriaLogs 和 Web 是同一环境下的独立 Docker 容器。它们的数据和配置全部位于 `/data/ops-current`，不能依赖旧 namespace 或旧代际 hostPath。共享 Kubernetes 控制面、CNI 和独立观测目标不是第二套 OPS 业务栈，不随业务升级重建。
 
