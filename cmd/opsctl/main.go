@@ -36,6 +36,9 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) error {
 	if len(args) >= 2 && args[0] == "identity" && args[1] == "import-subject-inventory" {
 		return runImportSubjectInventory(ctx, args[2:], stdout, stderr)
 	}
+	if len(args) > 0 && args[0] == "reconcile-deleted" {
+		return runReconcileDeleted(ctx, args[1:], stdout, stderr)
+	}
 	if len(args) > 0 && args[0] == "cleanup" {
 		return runCurrentCleanup(ctx, args[1:], stdout, stderr)
 	}
