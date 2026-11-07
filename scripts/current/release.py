@@ -118,7 +118,9 @@ def main():
     if len(selected) != len(required):
         parser.error("complete current application deployments required")
     web = json.loads(command(["docker", "inspect", "ops-current-web"]))[0]
-    if not web["State"]["Running"] or not any(m["Destination"] == "/preview/web" and Path(m["Source"]) == release / "web" for m in web["Mounts"]):
+    # Compare resolved paths: the mount source may use any prefix of the same
+    # backing directory (for example /data before a storage symlink).
+    if not web["State"]["Running"] or not any(m["Destination"] == "/preview/web" and Path(m["Source"]).resolve() == (release / "web").resolve() for m in web["Mounts"]):
         parser.error("current Web does not serve the selected immutable release")
     cm = kube(ns, "configmap/ops-runtime")
     config_bytes = json.dumps(cm["data"], sort_keys=True, separators=(",", ":")).encode()
