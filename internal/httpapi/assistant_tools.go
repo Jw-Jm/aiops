@@ -183,7 +183,7 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 			if err := tx.QueryRow(ctx, `SELECT input FROM investigation.assistant_turns WHERE tenant_id=$1 AND turn_id=$2 AND input_digest=$3`, j.TenantID, j.Assistant.TurnID, j.Assistant.InputDigest).Scan(&raw); err != nil {
 				return err
 			}
-			if investigation.ValidateAssistantHistoryTx(ctx, tx, j, raw) != nil || json.Unmarshal(raw, &input) != nil || graph.ScopeDigest(input) != j.Assistant.InputDigest {
+			if investigation.ValidateAssistantHistoryTx(ctx, tx, j, raw) != nil || json.Unmarshal(raw, &input) != nil || !assistant.InputDigestMatches(input, j.Assistant.InputDigest) {
 				return investigation.ErrDenied
 			}
 			if (input.FaultChainRequest != nil) != (j.Assistant.ExecutionMode == "evidence_only") || input.FaultChainRequest != nil && graph.ScopeDigest(*input.FaultChainRequest) != j.Assistant.FaultChainRequestDigest {

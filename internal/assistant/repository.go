@@ -584,6 +584,10 @@ func (r Repository) Submit(ctx context.Context, tenant, id uuid.UUID, subject, k
 			}
 		}
 		inputRaw := raw(input)
+		inputDigest, err := InputDigest(input)
+		if err != nil {
+			return investigation.ErrInvalid
+		}
 		if len(inputRaw) > 48<<10 {
 			return investigation.ErrBudget
 		}
@@ -602,7 +606,7 @@ func (r Repository) Submit(ctx context.Context, tenant, id uuid.UUID, subject, k
 		if err != nil {
 			return err
 		}
-		j.Assistant = &investigation.AssistantTask{DatasetCatalogVersion: datasetCatalog.Version, DatasetCatalogDigest: graph.ScopeDigest(datasetCatalog), TaskKind: taskKind(c), AuthorizationDomain: c.AuthorizationDomain, ConversationID: id, TurnID: out.TurnID, InputDigest: graph.ScopeDigest(input), ContextDigest: graph.ScopeDigest(c.Binding), GrantSnapshot: grant, GrantSnapshotDigest: graph.ScopeDigest(grant), CatalogVersion: "assistant-tools/v2", PromptVersion: "assistant/v1", ModelProfileVersion: admission.ModelProfileVersion, ResultSchemaVersion: "assistant-answer/v1"}
+		j.Assistant = &investigation.AssistantTask{DatasetCatalogVersion: datasetCatalog.Version, DatasetCatalogDigest: graph.ScopeDigest(datasetCatalog), TaskKind: taskKind(c), AuthorizationDomain: c.AuthorizationDomain, ConversationID: id, TurnID: out.TurnID, InputDigest: inputDigest, ContextDigest: graph.ScopeDigest(c.Binding), GrantSnapshot: grant, GrantSnapshotDigest: graph.ScopeDigest(grant), CatalogVersion: "assistant-tools/v2", PromptVersion: "assistant/v1", ModelProfileVersion: admission.ModelProfileVersion, ResultSchemaVersion: "assistant-answer/v1"}
 		// Freeze the exact identity source and version the grant digest was
 		// computed from, for audit and business jobs alike. The Worker re-proves
 		// this source later without a browser session and cannot silently switch
