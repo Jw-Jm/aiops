@@ -1,3 +1,11 @@
+## 2026-11-08 当前接续：调查与受控只读命令闭环
+
+当前实际环境以 `mssc-direct` 的 `/data/ops-current`、namespace `ops-current`、`ops_current` schema 74 为准，页面仍为 `https://192.168.0.63:30471`。应用接受版本为 `0d19b045f979af1fb47155e450dc8d2145ef27a7`，具体不可变镜像和复用来源见 [受控命令验收材料](../../evidence/controlled-command-20261108/README.md)。下方旧预览端口、数据库及运行版本仅是历史记录，不作为当前部署依据。
+
+统一调查入口、真实故障调查/追问/固定引用/只复盘已通过，见 [调查闭环](../../evidence/investigation-closure-20261108/README.md)。沿用同一故障的本人实际命令、密码/TOTP、风险确认、Runner、输出归档、独立恢复检查和未知结果防重复也已通过。最终成功执行 `01a1bade-200d-7cbd-be53-28455ba39875`；故障注入执行 `01a1bad8-e6c2-7a0d-a2fb-453acf5db8dc` 有意保留结果未知，不能用目标健康补造其最终结果。重启后四条执行均仅一次 attempt/一个 Job，旧调查引用和来源升级前归档仍可读。
+
+后续从 `tasks.csv`、`acceptance.csv` 继续 22 菜单逐项收口及 HTML 1:1，不重复上述已验收机制，也不把它们当作菜单六项/全视觉/完整发行通过。本次命令只读，未证明修改业务资源的处置；虚拟化、Trace、生产发布仍未恢复。原始未提交指导文件及 20261106 集群账号证据目录保留，不得覆盖或混入提交。
+
 ## 2026-10-28 r35 最新接续（GPT直接执行）
 
 本轮按用户两项授权补齐legacy v2调查映射只读入口/列表/步骤/SSE逐事件复检及前端只读取消禁用；真实PG/HTTP同时验证旧执行输出、审计独立授权、证据引用、流中撤权和旧归属不变。来源revision变更复用旧UID/RV归档ID的问题已修为投影v3，旧证据保留。真实无效采集凭据→拒绝503→恢复原投射身份→漏采更新/新更新持久化，以及第二namespace实际只读RBAC、同名资源独立UID、用户范围A+B后收窄A/撤权拒绝通过。完整证据见evidence/gpt-history-recovery-r35/README.md、result.json、source.json、runtime-final.json。

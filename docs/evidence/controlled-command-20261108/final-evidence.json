@@ -1,0 +1,818 @@
+[
+  {
+    "id": "01a1bade-302b-7b12-acfb-34abbb732ea0",
+    "status": 200,
+    "body": {
+      "data": {
+        "sourceScopeDigest": "sha256:67eb23c92a1d76647ca1b3f210cd6cb1f622dc6b7dd496e2cfe343236513d7e9",
+        "schemaVersion": "evidence/v2",
+        "evidenceId": "01a1bade-302b-7b12-acfb-34abbb732ea0",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+        "type": "resource_state",
+        "dataClass": "D0",
+        "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "sourceRevision": 2,
+        "sourceSystem": "kubernetes",
+        "backendLogicalId": "current-native-cluster",
+        "queryTemplateVersion": "command-kubernetes-post-check/v1",
+        "queryHash": "sha256:4d82d2ae38a2f9fd23532ee377357e204b9573c539f531da854fec02a6357129",
+        "effectiveScope": {
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "namespaces": [
+            "default",
+            "kube-flannel",
+            "kube-node-lease",
+            "kube-public",
+            "kube-system",
+            "ops-amd64-core-20261009",
+            "ops-amd64-final-20261010",
+            "ops-amd64-final-targets-20261010",
+            "ops-amd64-unified-r10-20261019",
+            "ops-amd64-unified-r10-targets",
+            "ops-amd64-validation-targets-20261010",
+            "ops-assistant-deepflow-20261013",
+            "ops-assistant-live-20261013",
+            "ops-current",
+            "ops-dev-network",
+            "ops-native-v12-r24-20261026",
+            "ops-native-v12-r34-20261027",
+            "ops-native-v12-r35-outside",
+            "ops-native-v12-r35-scope",
+            "ops-ui-v12-mfa-20261022-gpt",
+            "sp04-chain-2284bf2e",
+            "sp04-chain-230836e8",
+            "sp04-chain-28945919",
+            "sp04-chain-45829ac4",
+            "sp04-chain-620f6bcb",
+            "sp04-chain-9f8f21b7",
+            "sp04-chain-a27d6e34",
+            "sp04-chain-c0dbfe18",
+            "sp04-chain-c6d904dc",
+            "sp04-chain-e0b92b58",
+            "sp04-chain-f327e4fc"
+          ],
+          "resources": [],
+          "clusterScoped": true,
+          "authorizationRevision": "sha256:b211ef88c24563d5ea1a87ff782a7b54495570a2e8327fd4f3a877da719d3912"
+        },
+        "evaluatedAt": "2026-11-08T11:14:45.931702285Z",
+        "observedFrom": "2026-11-08T11:14:45.931702285Z",
+        "observedTo": "2026-11-08T11:14:45.931702285Z",
+        "sourceRetentionUntil": "2026-11-08T11:14:45.931702285Z",
+        "timeReliable": true,
+        "replayState": "archived_verified",
+        "contentDigest": "sha256:2d6af40c6285d3f214a5ca08c039b63b94107f77f610d85d3005cf59a5b278a0",
+        "derivationEvidenceRefs": [],
+        "independenceGroup": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "archiveRef": {
+          "backendLogicalId": "current-archive",
+          "object": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "objectId": "01a1bade-302b-7b12-acfb-34abbb732ea0",
+            "category": "evidence",
+            "key": "tenants/c784249324387d29b3d8174c7dfd97393ba6f1b5496943136d90e83e33f35832/evidence/01a1bade-302b-7b12-acfb-34abbb732ea0",
+            "digest": "sha256:c6871a9707b3461e2d3575f4751a3d4d9edffee39d94f384779a5a8d4f1bde07",
+            "size": 2404,
+            "contentType": "application/vnd.ops.transit-envelope+json",
+            "versionId": "6719f25f2c21ff00aa7387e1b868e6ab",
+            "etag": "\"eb13a3f47369bb9e0a009e667ba9812d\"",
+            "retainUntil": "2027-11-09T11:14:46Z"
+          },
+          "encryptionKeyVersion": "1",
+          "plaintextDigest": "sha256:2d6af40c6285d3f214a5ca08c039b63b94107f77f610d85d3005cf59a5b278a0",
+          "ciphertextDigest": "sha256:c6871a9707b3461e2d3575f4751a3d4d9edffee39d94f384779a5a8d4f1bde07"
+        },
+        "factSlice": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "generation": 1,
+            "labels": {
+              "app.kubernetes.io/instance": "ops-metrics-server",
+              "app.kubernetes.io/name": "ops-metrics-server-metrics",
+              "ops.platform.io/release": "ops-metrics-server",
+              "pod-template-hash": "6d46c4f8f5"
+            },
+            "name": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn",
+            "namespace": "ops-current",
+            "ownerReferences": [
+              {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "ReplicaSet",
+                "name": "ops-metrics-server-metrics-6d46c4f8f5",
+                "uid": "63a47dad-93c7-4a68-b7c5-814fce02ec60"
+              }
+            ],
+            "uid": "9d925158-f0c9-4ce5-84b8-830959e148dc"
+          },
+          "spec": {
+            "containers": [
+              {
+                "image": "registry.k8s.io/metrics-server/metrics-server@sha256:89258156d0e9af60403eafd44da9676fd66f600c7934d468ccc17e42b199aee2",
+                "name": "metrics-server",
+                "ports": [
+                  {
+                    "containerPort": 10250,
+                    "name": "https",
+                    "protocol": "TCP"
+                  }
+                ],
+                "restartPolicy": null,
+                "volumeDevices": null,
+                "volumeMounts": [
+                  {
+                    "mountPath": "/etc/metrics-serving",
+                    "name": "serving",
+                    "readOnly": true
+                  },
+                  {
+                    "mountPath": "/etc/kubelet-ca",
+                    "name": "kubelet-ca",
+                    "readOnly": true
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-pn8rb",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "nodeName": "mssc",
+            "volumes": []
+          },
+          "status": {
+            "conditions": [
+              {
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "name": "metrics-server",
+                "ready": true,
+                "state": {
+                  "running": {}
+                }
+              }
+            ],
+            "phase": "Running",
+            "podIP": "10.244.0.112",
+            "podIPs": [
+              {
+                "ip": "10.244.0.112"
+              }
+            ]
+          }
+        }
+      },
+      "meta": {
+        "degradedSources": [],
+        "freshness": "archived",
+        "partial": false,
+        "warnings": []
+      },
+      "requestId": "01a1bae0-1b08-7ae1-8ed5-2abe52427d60"
+    }
+  },
+  {
+    "id": "01a1bade-304e-7c3f-b0c9-ff08e21b9a0c",
+    "status": 200,
+    "body": {
+      "data": {
+        "sourceScopeDigest": "sha256:67eb23c92a1d76647ca1b3f210cd6cb1f622dc6b7dd496e2cfe343236513d7e9",
+        "schemaVersion": "evidence/v2",
+        "evidenceId": "01a1bade-304e-7c3f-b0c9-ff08e21b9a0c",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+        "type": "resource_state",
+        "dataClass": "D0",
+        "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "sourceRevision": 2,
+        "sourceSystem": "kubernetes",
+        "backendLogicalId": "current-native-cluster",
+        "queryTemplateVersion": "command-kubernetes-post-check/v1",
+        "queryHash": "sha256:04ad8c5e23cf2a1537f39675980b6fd7f97f33c7228004f55f54fe2361e14067",
+        "effectiveScope": {
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "namespaces": [
+            "default",
+            "kube-flannel",
+            "kube-node-lease",
+            "kube-public",
+            "kube-system",
+            "ops-amd64-core-20261009",
+            "ops-amd64-final-20261010",
+            "ops-amd64-final-targets-20261010",
+            "ops-amd64-unified-r10-20261019",
+            "ops-amd64-unified-r10-targets",
+            "ops-amd64-validation-targets-20261010",
+            "ops-assistant-deepflow-20261013",
+            "ops-assistant-live-20261013",
+            "ops-current",
+            "ops-dev-network",
+            "ops-native-v12-r24-20261026",
+            "ops-native-v12-r34-20261027",
+            "ops-native-v12-r35-outside",
+            "ops-native-v12-r35-scope",
+            "ops-ui-v12-mfa-20261022-gpt",
+            "sp04-chain-2284bf2e",
+            "sp04-chain-230836e8",
+            "sp04-chain-28945919",
+            "sp04-chain-45829ac4",
+            "sp04-chain-620f6bcb",
+            "sp04-chain-9f8f21b7",
+            "sp04-chain-a27d6e34",
+            "sp04-chain-c0dbfe18",
+            "sp04-chain-c6d904dc",
+            "sp04-chain-e0b92b58",
+            "sp04-chain-f327e4fc"
+          ],
+          "resources": [],
+          "clusterScoped": true,
+          "authorizationRevision": "sha256:b211ef88c24563d5ea1a87ff782a7b54495570a2e8327fd4f3a877da719d3912"
+        },
+        "evaluatedAt": "2026-11-08T11:14:45.966790457Z",
+        "observedFrom": "2026-11-08T11:14:45.966790457Z",
+        "observedTo": "2026-11-08T11:14:45.966790457Z",
+        "sourceRetentionUntil": "2026-11-08T11:14:45.966790457Z",
+        "timeReliable": true,
+        "replayState": "archived_verified",
+        "contentDigest": "sha256:088056bdd0a886bbc8dccbd09a56b131aa180464d1ef0c29206fbd63d6fe56dd",
+        "derivationEvidenceRefs": [],
+        "independenceGroup": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "archiveRef": {
+          "backendLogicalId": "current-archive",
+          "object": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "objectId": "01a1bade-304e-7c3f-b0c9-ff08e21b9a0c",
+            "category": "evidence",
+            "key": "tenants/c784249324387d29b3d8174c7dfd97393ba6f1b5496943136d90e83e33f35832/evidence/01a1bade-304e-7c3f-b0c9-ff08e21b9a0c",
+            "digest": "sha256:05c3d293e681cf3102d604875b0a53e87cb46e29519294f4e5e4a7bc10e8a84b",
+            "size": 1116,
+            "contentType": "application/vnd.ops.transit-envelope+json",
+            "versionId": "6719f25f2a3ca105480c88eb8bd51169",
+            "etag": "\"65f18e58b7c233df6fa7c134c7c04290\"",
+            "retainUntil": "2027-11-09T11:14:46Z"
+          },
+          "encryptionKeyVersion": "1",
+          "plaintextDigest": "sha256:088056bdd0a886bbc8dccbd09a56b131aa180464d1ef0c29206fbd63d6fe56dd",
+          "ciphertextDigest": "sha256:05c3d293e681cf3102d604875b0a53e87cb46e29519294f4e5e4a7bc10e8a84b"
+        },
+        "factSlice": {
+          "apiVersion": "apps/v1",
+          "kind": "ReplicaSet",
+          "metadata": {
+            "generation": 3,
+            "labels": {
+              "app.kubernetes.io/instance": "ops-metrics-server",
+              "app.kubernetes.io/name": "ops-metrics-server-metrics",
+              "ops.platform.io/release": "ops-metrics-server",
+              "pod-template-hash": "6d46c4f8f5"
+            },
+            "name": "ops-metrics-server-metrics-6d46c4f8f5",
+            "namespace": "ops-current",
+            "ownerReferences": [
+              {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "Deployment",
+                "name": "ops-metrics-server-metrics",
+                "uid": "b9f15e6a-a59f-4293-ace7-bb3d26bbee3b"
+              }
+            ],
+            "uid": "63a47dad-93c7-4a68-b7c5-814fce02ec60"
+          },
+          "spec": {}
+        }
+      },
+      "meta": {
+        "degradedSources": [],
+        "freshness": "archived",
+        "partial": false,
+        "warnings": []
+      },
+      "requestId": "01a1bae0-1b1e-7acf-8621-75611f5e3089"
+    }
+  },
+  {
+    "id": "01a1bade-3074-761e-be90-2ede0f4720c6",
+    "status": 200,
+    "body": {
+      "data": {
+        "sourceScopeDigest": "sha256:67eb23c92a1d76647ca1b3f210cd6cb1f622dc6b7dd496e2cfe343236513d7e9",
+        "schemaVersion": "evidence/v2",
+        "evidenceId": "01a1bade-3074-761e-be90-2ede0f4720c6",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+        "type": "resource_state",
+        "dataClass": "D0",
+        "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "sourceRevision": 2,
+        "sourceSystem": "kubernetes",
+        "backendLogicalId": "current-native-cluster",
+        "queryTemplateVersion": "command-kubernetes-post-check/v1",
+        "queryHash": "sha256:eb11e16142a166264fe3c0409356c67f0be5edc341fc51c0da040f1c71609f4a",
+        "effectiveScope": {
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "namespaces": [
+            "default",
+            "kube-flannel",
+            "kube-node-lease",
+            "kube-public",
+            "kube-system",
+            "ops-amd64-core-20261009",
+            "ops-amd64-final-20261010",
+            "ops-amd64-final-targets-20261010",
+            "ops-amd64-unified-r10-20261019",
+            "ops-amd64-unified-r10-targets",
+            "ops-amd64-validation-targets-20261010",
+            "ops-assistant-deepflow-20261013",
+            "ops-assistant-live-20261013",
+            "ops-current",
+            "ops-dev-network",
+            "ops-native-v12-r24-20261026",
+            "ops-native-v12-r34-20261027",
+            "ops-native-v12-r35-outside",
+            "ops-native-v12-r35-scope",
+            "ops-ui-v12-mfa-20261022-gpt",
+            "sp04-chain-2284bf2e",
+            "sp04-chain-230836e8",
+            "sp04-chain-28945919",
+            "sp04-chain-45829ac4",
+            "sp04-chain-620f6bcb",
+            "sp04-chain-9f8f21b7",
+            "sp04-chain-a27d6e34",
+            "sp04-chain-c0dbfe18",
+            "sp04-chain-c6d904dc",
+            "sp04-chain-e0b92b58",
+            "sp04-chain-f327e4fc"
+          ],
+          "resources": [],
+          "clusterScoped": true,
+          "authorizationRevision": "sha256:b211ef88c24563d5ea1a87ff782a7b54495570a2e8327fd4f3a877da719d3912"
+        },
+        "evaluatedAt": "2026-11-08T11:14:46.004382069Z",
+        "observedFrom": "2026-11-08T11:14:46.004382069Z",
+        "observedTo": "2026-11-08T11:14:46.004382069Z",
+        "sourceRetentionUntil": "2026-11-08T11:14:46.004382069Z",
+        "timeReliable": true,
+        "replayState": "archived_verified",
+        "contentDigest": "sha256:a20f3515007aa00a5f16cb87e1f859e8a83123a8899d3ba5916549b09b0454ca",
+        "derivationEvidenceRefs": [],
+        "independenceGroup": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "archiveRef": {
+          "backendLogicalId": "current-archive",
+          "object": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "objectId": "01a1bade-3074-761e-be90-2ede0f4720c6",
+            "category": "evidence",
+            "key": "tenants/c784249324387d29b3d8174c7dfd97393ba6f1b5496943136d90e83e33f35832/evidence/01a1bade-3074-761e-be90-2ede0f4720c6",
+            "digest": "sha256:73bfb814f897297bebb57397887dfe801fae15d42e245cb337d8596a29e12cca",
+            "size": 1668,
+            "contentType": "application/vnd.ops.transit-envelope+json",
+            "versionId": "6719f25f279e2949052ed8da5d894a18",
+            "etag": "\"f7695e03b94f37daee88d1b25264b02e\"",
+            "retainUntil": "2027-11-09T11:14:47Z"
+          },
+          "encryptionKeyVersion": "1",
+          "plaintextDigest": "sha256:a20f3515007aa00a5f16cb87e1f859e8a83123a8899d3ba5916549b09b0454ca",
+          "ciphertextDigest": "sha256:73bfb814f897297bebb57397887dfe801fae15d42e245cb337d8596a29e12cca"
+        },
+        "factSlice": {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "metadata": {
+            "generation": 3,
+            "labels": {
+              "app.kubernetes.io/instance": "ops-metrics-server",
+              "app.kubernetes.io/managed-by": "Helm",
+              "ops.platform.io/release": "ops-metrics-server"
+            },
+            "name": "ops-metrics-server-metrics",
+            "namespace": "ops-current",
+            "uid": "b9f15e6a-a59f-4293-ace7-bb3d26bbee3b"
+          },
+          "spec": {
+            "replicas": 1,
+            "template": {
+              "spec": {
+                "containers": [
+                  {
+                    "image": "registry.k8s.io/metrics-server/metrics-server@sha256:89258156d0e9af60403eafd44da9676fd66f600c7934d468ccc17e42b199aee2",
+                    "name": "metrics-server",
+                    "ports": [
+                      {
+                        "containerPort": 10250,
+                        "name": "https",
+                        "protocol": "TCP"
+                      }
+                    ],
+                    "restartPolicy": null,
+                    "volumeDevices": null,
+                    "volumeMounts": [
+                      {
+                        "mountPath": "/etc/metrics-serving",
+                        "name": "serving",
+                        "readOnly": true
+                      },
+                      {
+                        "mountPath": "/etc/kubelet-ca",
+                        "name": "kubelet-ca",
+                        "readOnly": true
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          "status": {
+            "availableReplicas": 1,
+            "conditions": [
+              {
+                "status": "True",
+                "type": "Progressing"
+              },
+              {
+                "status": "True",
+                "type": "Available"
+              }
+            ],
+            "observedGeneration": 3,
+            "readyReplicas": 1,
+            "replicas": 1,
+            "updatedReplicas": 1
+          }
+        }
+      },
+      "meta": {
+        "degradedSources": [],
+        "freshness": "archived",
+        "partial": false,
+        "warnings": []
+      },
+      "requestId": "01a1bae0-1b2c-7b60-b8db-417194f64ec9"
+    }
+  },
+  {
+    "id": "01a1bade-30a2-71c1-9053-a7c524941484",
+    "status": 200,
+    "body": {
+      "data": {
+        "sourceScopeDigest": "sha256:67eb23c92a1d76647ca1b3f210cd6cb1f622dc6b7dd496e2cfe343236513d7e9",
+        "schemaVersion": "evidence/v2",
+        "evidenceId": "01a1bade-30a2-71c1-9053-a7c524941484",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Event/5a312856-e8b4-4f98-b22a-81ebfafa002e",
+        "type": "resource_state",
+        "dataClass": "D0",
+        "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "sourceRevision": 2,
+        "sourceSystem": "kubernetes",
+        "backendLogicalId": "current-native-cluster",
+        "queryTemplateVersion": "command-kubernetes-post-check/v1",
+        "queryHash": "sha256:90677d90d83522405e78ba2c1626189a47fbc7b06313b6b6d40bb5a0ad622b1b",
+        "effectiveScope": {
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "namespaces": [
+            "default",
+            "kube-flannel",
+            "kube-node-lease",
+            "kube-public",
+            "kube-system",
+            "ops-amd64-core-20261009",
+            "ops-amd64-final-20261010",
+            "ops-amd64-final-targets-20261010",
+            "ops-amd64-unified-r10-20261019",
+            "ops-amd64-unified-r10-targets",
+            "ops-amd64-validation-targets-20261010",
+            "ops-assistant-deepflow-20261013",
+            "ops-assistant-live-20261013",
+            "ops-current",
+            "ops-dev-network",
+            "ops-native-v12-r24-20261026",
+            "ops-native-v12-r34-20261027",
+            "ops-native-v12-r35-outside",
+            "ops-native-v12-r35-scope",
+            "ops-ui-v12-mfa-20261022-gpt",
+            "sp04-chain-2284bf2e",
+            "sp04-chain-230836e8",
+            "sp04-chain-28945919",
+            "sp04-chain-45829ac4",
+            "sp04-chain-620f6bcb",
+            "sp04-chain-9f8f21b7",
+            "sp04-chain-a27d6e34",
+            "sp04-chain-c0dbfe18",
+            "sp04-chain-c6d904dc",
+            "sp04-chain-e0b92b58",
+            "sp04-chain-f327e4fc"
+          ],
+          "resources": [],
+          "clusterScoped": true,
+          "authorizationRevision": "sha256:b211ef88c24563d5ea1a87ff782a7b54495570a2e8327fd4f3a877da719d3912"
+        },
+        "evaluatedAt": "2026-11-08T11:14:46.050099056Z",
+        "observedFrom": "2026-11-08T11:14:46.050099056Z",
+        "observedTo": "2026-11-08T11:14:46.050099056Z",
+        "sourceRetentionUntil": "2026-11-08T11:14:46.050099056Z",
+        "timeReliable": true,
+        "replayState": "archived_verified",
+        "contentDigest": "sha256:7eee160750bc93870cfe7b77d9c9c9236a4dec01699f0c721b0ea3dcb8e2499b",
+        "derivationEvidenceRefs": [],
+        "independenceGroup": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "archiveRef": {
+          "backendLogicalId": "current-archive",
+          "object": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "objectId": "01a1bade-30a2-71c1-9053-a7c524941484",
+            "category": "evidence",
+            "key": "tenants/c784249324387d29b3d8174c7dfd97393ba6f1b5496943136d90e83e33f35832/evidence/01a1bade-30a2-71c1-9053-a7c524941484",
+            "digest": "sha256:660e3f0a6140f3d506d6a738e288c9e357c1766617e5fd1a695e5c73836cb51f",
+            "size": 816,
+            "contentType": "application/vnd.ops.transit-envelope+json",
+            "versionId": "6719f25f2509762b98efb2f0663bca86",
+            "etag": "\"16dac91d1cbfebd7626884d1ad187b3c\"",
+            "retainUntil": "2027-11-09T11:14:47Z"
+          },
+          "encryptionKeyVersion": "1",
+          "plaintextDigest": "sha256:7eee160750bc93870cfe7b77d9c9c9236a4dec01699f0c721b0ea3dcb8e2499b",
+          "ciphertextDigest": "sha256:660e3f0a6140f3d506d6a738e288c9e357c1766617e5fd1a695e5c73836cb51f"
+        },
+        "factSlice": {
+          "apiVersion": "v1",
+          "eventTime": null,
+          "involvedObject": {
+            "uid": "9d925158-f0c9-4ce5-84b8-830959e148dc"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-11-08T11:04:22Z",
+          "metadata": {
+            "generation": 0,
+            "name": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn.18e5f8c2c11eab70",
+            "namespace": "ops-current",
+            "uid": "5a312856-e8b4-4f98-b22a-81ebfafa002e"
+          },
+          "reason": "Unhealthy",
+          "type": "Warning"
+        }
+      },
+      "meta": {
+        "degradedSources": [],
+        "freshness": "archived",
+        "partial": false,
+        "warnings": []
+      },
+      "requestId": "01a1bae0-1b39-7cfc-8459-df44aa5908eb"
+    }
+  },
+  {
+    "id": "01a1bade-30cb-7ddd-9315-58c6be1ff284",
+    "status": 200,
+    "body": {
+      "data": {
+        "sourceScopeDigest": "sha256:67eb23c92a1d76647ca1b3f210cd6cb1f622dc6b7dd496e2cfe343236513d7e9",
+        "schemaVersion": "evidence/v2",
+        "evidenceId": "01a1bade-30cb-7ddd-9315-58c6be1ff284",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Event/96b78bdf-e2c7-4f09-b9cf-8de429dbd224",
+        "type": "resource_state",
+        "dataClass": "D0",
+        "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "sourceRevision": 2,
+        "sourceSystem": "kubernetes",
+        "backendLogicalId": "current-native-cluster",
+        "queryTemplateVersion": "command-kubernetes-post-check/v1",
+        "queryHash": "sha256:5cce0538b43ad109f9311ef3a3b00aa3483dedbf2e3cacd83244b6b36824e027",
+        "effectiveScope": {
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "namespaces": [
+            "default",
+            "kube-flannel",
+            "kube-node-lease",
+            "kube-public",
+            "kube-system",
+            "ops-amd64-core-20261009",
+            "ops-amd64-final-20261010",
+            "ops-amd64-final-targets-20261010",
+            "ops-amd64-unified-r10-20261019",
+            "ops-amd64-unified-r10-targets",
+            "ops-amd64-validation-targets-20261010",
+            "ops-assistant-deepflow-20261013",
+            "ops-assistant-live-20261013",
+            "ops-current",
+            "ops-dev-network",
+            "ops-native-v12-r24-20261026",
+            "ops-native-v12-r34-20261027",
+            "ops-native-v12-r35-outside",
+            "ops-native-v12-r35-scope",
+            "ops-ui-v12-mfa-20261022-gpt",
+            "sp04-chain-2284bf2e",
+            "sp04-chain-230836e8",
+            "sp04-chain-28945919",
+            "sp04-chain-45829ac4",
+            "sp04-chain-620f6bcb",
+            "sp04-chain-9f8f21b7",
+            "sp04-chain-a27d6e34",
+            "sp04-chain-c0dbfe18",
+            "sp04-chain-c6d904dc",
+            "sp04-chain-e0b92b58",
+            "sp04-chain-f327e4fc"
+          ],
+          "resources": [],
+          "clusterScoped": true,
+          "authorizationRevision": "sha256:b211ef88c24563d5ea1a87ff782a7b54495570a2e8327fd4f3a877da719d3912"
+        },
+        "evaluatedAt": "2026-11-08T11:14:46.091894299Z",
+        "observedFrom": "2026-11-08T11:14:46.091894299Z",
+        "observedTo": "2026-11-08T11:14:46.091894299Z",
+        "sourceRetentionUntil": "2026-11-08T11:14:46.091894299Z",
+        "timeReliable": true,
+        "replayState": "archived_verified",
+        "contentDigest": "sha256:921ab15125d017c05f3016c80b27954e996f24535bde9bc412cef0f5407b49cd",
+        "derivationEvidenceRefs": [],
+        "independenceGroup": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "archiveRef": {
+          "backendLogicalId": "current-archive",
+          "object": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "objectId": "01a1bade-30cb-7ddd-9315-58c6be1ff284",
+            "category": "evidence",
+            "key": "tenants/c784249324387d29b3d8174c7dfd97393ba6f1b5496943136d90e83e33f35832/evidence/01a1bade-30cb-7ddd-9315-58c6be1ff284",
+            "digest": "sha256:cfb4036a2dbc1d52b1e694f6951b902d7b6e54817c0835497d97227431d263ed",
+            "size": 816,
+            "contentType": "application/vnd.ops.transit-envelope+json",
+            "versionId": "6719f25f221b4a01b28e837b8172059b",
+            "etag": "\"56127eabbea553d0d6aa5b9047805f5b\"",
+            "retainUntil": "2027-11-09T11:14:47Z"
+          },
+          "encryptionKeyVersion": "1",
+          "plaintextDigest": "sha256:921ab15125d017c05f3016c80b27954e996f24535bde9bc412cef0f5407b49cd",
+          "ciphertextDigest": "sha256:cfb4036a2dbc1d52b1e694f6951b902d7b6e54817c0835497d97227431d263ed"
+        },
+        "factSlice": {
+          "apiVersion": "v1",
+          "eventTime": null,
+          "involvedObject": {
+            "uid": "9d925158-f0c9-4ce5-84b8-830959e148dc"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-11-08T11:04:12Z",
+          "metadata": {
+            "generation": 0,
+            "name": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn.18e60d0d6231823d",
+            "namespace": "ops-current",
+            "uid": "96b78bdf-e2c7-4f09-b9cf-8de429dbd224"
+          },
+          "reason": "Unhealthy",
+          "type": "Warning"
+        }
+      },
+      "meta": {
+        "degradedSources": [],
+        "freshness": "archived",
+        "partial": false,
+        "warnings": []
+      },
+      "requestId": "01a1bae0-1b46-7516-b20b-55fa9771d919"
+    }
+  },
+  {
+    "id": "01a1bade-311d-7dff-b081-c9456b7cbff6",
+    "status": 200,
+    "body": {
+      "data": {
+        "sourceScopeDigest": "sha256:67eb23c92a1d76647ca1b3f210cd6cb1f622dc6b7dd496e2cfe343236513d7e9",
+        "schemaVersion": "evidence/v2",
+        "evidenceId": "01a1bade-311d-7dff-b081-c9456b7cbff6",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Event/2c2f1a4a-fae3-40c7-bba7-4e168c32e312",
+        "type": "resource_state",
+        "dataClass": "D0",
+        "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "sourceRevision": 2,
+        "sourceSystem": "kubernetes",
+        "backendLogicalId": "current-native-cluster",
+        "queryTemplateVersion": "command-kubernetes-post-check/v1",
+        "queryHash": "sha256:d1ceeeaf7534d2b61aa57f1b48638d7ec4edcd14bc22499833f794e38eb9f040",
+        "effectiveScope": {
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "namespaces": [
+            "default",
+            "kube-flannel",
+            "kube-node-lease",
+            "kube-public",
+            "kube-system",
+            "ops-amd64-core-20261009",
+            "ops-amd64-final-20261010",
+            "ops-amd64-final-targets-20261010",
+            "ops-amd64-unified-r10-20261019",
+            "ops-amd64-unified-r10-targets",
+            "ops-amd64-validation-targets-20261010",
+            "ops-assistant-deepflow-20261013",
+            "ops-assistant-live-20261013",
+            "ops-current",
+            "ops-dev-network",
+            "ops-native-v12-r24-20261026",
+            "ops-native-v12-r34-20261027",
+            "ops-native-v12-r35-outside",
+            "ops-native-v12-r35-scope",
+            "ops-ui-v12-mfa-20261022-gpt",
+            "sp04-chain-2284bf2e",
+            "sp04-chain-230836e8",
+            "sp04-chain-28945919",
+            "sp04-chain-45829ac4",
+            "sp04-chain-620f6bcb",
+            "sp04-chain-9f8f21b7",
+            "sp04-chain-a27d6e34",
+            "sp04-chain-c0dbfe18",
+            "sp04-chain-c6d904dc",
+            "sp04-chain-e0b92b58",
+            "sp04-chain-f327e4fc"
+          ],
+          "resources": [],
+          "clusterScoped": true,
+          "authorizationRevision": "sha256:b211ef88c24563d5ea1a87ff782a7b54495570a2e8327fd4f3a877da719d3912"
+        },
+        "evaluatedAt": "2026-11-08T11:14:46.173902542Z",
+        "observedFrom": "2026-11-08T11:14:46.173902542Z",
+        "observedTo": "2026-11-08T11:14:46.173902542Z",
+        "sourceRetentionUntil": "2026-11-08T11:14:46.173902542Z",
+        "timeReliable": true,
+        "replayState": "archived_verified",
+        "contentDigest": "sha256:8ca5b04eab1fb8ff0ad60a26d01f7ecdf9686e3628c71e666f24339519c5b51e",
+        "derivationEvidenceRefs": [],
+        "independenceGroup": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "archiveRef": {
+          "backendLogicalId": "current-archive",
+          "object": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "objectId": "01a1bade-311d-7dff-b081-c9456b7cbff6",
+            "category": "evidence",
+            "key": "tenants/c784249324387d29b3d8174c7dfd97393ba6f1b5496943136d90e83e33f35832/evidence/01a1bade-311d-7dff-b081-c9456b7cbff6",
+            "digest": "sha256:0ad4f6787297857595c4aedba361ea97d243224c8add3a5d3ee1344b8705d19e",
+            "size": 816,
+            "contentType": "application/vnd.ops.transit-envelope+json",
+            "versionId": "6719f25f1db07e949da05b3622b011f1",
+            "etag": "\"4e74d58aa9c526469bea29f8d50a3eeb\"",
+            "retainUntil": "2027-11-09T11:14:47Z"
+          },
+          "encryptionKeyVersion": "1",
+          "plaintextDigest": "sha256:8ca5b04eab1fb8ff0ad60a26d01f7ecdf9686e3628c71e666f24339519c5b51e",
+          "ciphertextDigest": "sha256:0ad4f6787297857595c4aedba361ea97d243224c8add3a5d3ee1344b8705d19e"
+        },
+        "factSlice": {
+          "apiVersion": "v1",
+          "eventTime": null,
+          "involvedObject": {
+            "uid": "9d925158-f0c9-4ce5-84b8-830959e148dc"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-11-08T11:04:21Z",
+          "metadata": {
+            "generation": 0,
+            "name": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn.18e60d0f7ac15d4d",
+            "namespace": "ops-current",
+            "uid": "2c2f1a4a-fae3-40c7-bba7-4e168c32e312"
+          },
+          "reason": "Unhealthy",
+          "type": "Warning"
+        }
+      },
+      "meta": {
+        "degradedSources": [],
+        "freshness": "archived",
+        "partial": false,
+        "warnings": []
+      },
+      "requestId": "01a1bae0-1b52-7241-851b-173d808ad15f"
+    }
+  }
+]

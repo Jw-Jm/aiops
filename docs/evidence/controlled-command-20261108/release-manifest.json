@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "ops-current-release/v1",
+  "commit": "0d19b045f979af1fb47155e450dc8d2145ef27a7",
+  "namespace": "ops-current",
+  "namespaceUID": "c4dc825f-0897-417b-a876-f151e7783629",
+  "database": "ops_current",
+  "databaseSchema": 74,
+  "images": {
+    "api": {
+      "tag": "ops.local/current/platform-api:0d19b04-fixed",
+      "image": "ops.local/current/platform-api@sha256:5893dd8ef9da2a2a6d81ed375be89dade21737801d5869dc77e89a3acb7398ba",
+      "manifestDigest": "sha256:5893dd8ef9da2a2a6d81ed375be89dade21737801d5869dc77e89a3acb7398ba",
+      "imageID": "sha256:172bfa1252d43dc2a1943cb204475685426be419fe405f05e0163b9beebf4e24",
+      "binarySHA256": "ec5e7dc01ae54bbd60dabfc90599832471a92ee3f4fc0ea57e918e53d936f692",
+      "sourceCommit": "0d19b045f979af1fb47155e450dc8d2145ef27a7",
+      "entrypoint": "/ops-api",
+      "entrypointSHA256": "ec5e7dc01ae54bbd60dabfc90599832471a92ee3f4fc0ea57e918e53d936f692"
+    },
+    "worker": {
+      "tag": "ops.local/current/platform-worker:0d19b04-fixed",
+      "image": "ops.local/current/platform-worker@sha256:97a6b3f44d428bc1e16069d7a9585371727fc0fd2c0e1d56df7f4dfe203ad4f7",
+      "manifestDigest": "sha256:97a6b3f44d428bc1e16069d7a9585371727fc0fd2c0e1d56df7f4dfe203ad4f7",
+      "imageID": "sha256:4e6fce6cd5eccec04b9477b98f38f8b0e3b31ad88a7f44930e4ca7d29c3aab8e",
+      "binarySHA256": "2fb74199cfb08f1bc1b378e30a2111a69859a092e8ecee9785a511948573ac13",
+      "sourceCommit": "0d19b045f979af1fb47155e450dc8d2145ef27a7",
+      "entrypoint": "/ops-worker",
+      "entrypointSHA256": "2fb74199cfb08f1bc1b378e30a2111a69859a092e8ecee9785a511948573ac13"
+    },
+    "investigator": {
+      "tag": "ops.local/current/investigator:archive-b878891",
+      "image": "ops.local/current/investigator@sha256:7aab4e095d41d520d62918af3be0926e7910ec6c9eae75bbcb8df1cbfb858310",
+      "manifestDigest": "sha256:7aab4e095d41d520d62918af3be0926e7910ec6c9eae75bbcb8df1cbfb858310",
+      "sourceCommit": "b878891c62102fca49ec006e3b651a523368d177",
+      "imageID": "sha256:ca36cf90409f0ec8b0c8a70648257dc6a00128b0e3803968db7b127d49551bd3",
+      "baseImageConfigDigest": "sha256:d7816156a7ffc45204484f4c651171e3bb2a72834e3d0360233b15cb948acf57",
+      "reusedUnchangedFromCommit": "b878891c62102fca49ec006e3b651a523368d177"
+    }
+  },
+  "runtimeConfigSHA256": "61fb7ee0893cd1da8b19754c52e446905bad7317a217b913728cc6bb99d57d8e",
+  "webIndexSHA256": "5fe9b42331588a09dc6accb18c38dce18323e5b5e123d14641c3403e57912eab",
+  "webRuntimeConfigSHA256": "d2f17846a71e89e71fce255fdb1855a207e3215f3665d23bf8cfa8fd4e2688d9",
+  "acceptedAt": "2026-11-08T11:17:56.007386+00:00",
+  "knownLimitations": [
+    "read-only command mechanism acceptance; no claim that the command repaired the already recovered incident or established its historical cause",
+    "fault-injection execution intentionally remains execution_unknown; healthy target state does not prove its missing final result",
+    "source coverage remains explicitly partial; inherited old incident may have no ranked Evidence",
+    "22-menu closure, HTML 1:1 parity, offline/upgrade/rollback release drills, Trace, virtualization and production release are outside this receipt"
+  ]
+}

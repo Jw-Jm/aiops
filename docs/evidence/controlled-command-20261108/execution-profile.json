@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "execution-profile/v2",
+  "executionProfileId": "4ce9b2d0-7260-4e84-9bd6-bc9bd5a174bc",
+  "version": 1,
+  "name": "current-metrics-pod-read",
+  "type": "k8s_namespace",
+  "allowedTargets": [
+    "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc"
+  ],
+  "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+  "namespace": "ops-current",
+  "toolImageDigest": "ops.local/current/command-runner@sha256:bef1188002556accd30604c18a0e57c27bd0afe8b0168bc216421d3b8486f310",
+  "tools": [
+    "kubectl"
+  ],
+  "networkPolicyRef": "ops-command-read-metrics",
+  "credentialRef": "serviceaccount:/ops-current/ops-command-read-metrics",
+  "timeoutSeconds": 60,
+  "maxOutputBytes": 65536,
+  "principal": "",
+  "hostOnboardingRef": "",
+  "developmentFallback": false
+}

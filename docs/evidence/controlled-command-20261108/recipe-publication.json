@@ -1,0 +1,146 @@
+{
+  "draft": {
+    "status": 201,
+    "body": {
+      "data": {
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "draftId": "01a1bacf-24d1-70fd-81c1-d1125c4c91b7",
+        "kind": "recipe",
+        "logicalName": "pod-health",
+        "revision": 1,
+        "content": {
+          "name": "pod-health",
+          "entry": [
+            "Pod"
+          ],
+          "budget": {
+            "maxEdges": 40,
+            "maxNodes": 40,
+            "timeoutMs": 3000,
+            "maxEvidence": 40
+          },
+          "confirm": [
+            "target-state",
+            "related-state",
+            "recent-warnings"
+          ],
+          "exclude": [
+            "incomplete-snapshot",
+            "identity-changed",
+            "unreliable-clock"
+          ],
+          "version": "v1",
+          "graphPlan": "single-query/v1",
+          "postCheck": "native-related-health/v1",
+          "graphDepth": 1,
+          "candidateType": "native_post_check",
+          "schemaVersion": "recipe-registry/v2",
+          "toolAllowlist": [
+            "read_evidence"
+          ],
+          "optionalEvidence": [],
+          "requiredEvidence": [
+            {
+              "key": "target-state",
+              "required": true,
+              "predicate": "native-target/v1",
+              "maxAgeSeconds": 300
+            },
+            {
+              "key": "related-state",
+              "required": true,
+              "predicate": "native-relations/v1",
+              "maxAgeSeconds": 300
+            },
+            {
+              "key": "recent-warnings",
+              "required": true,
+              "predicate": "native-warnings/v1",
+              "maxAgeSeconds": 300
+            }
+          ]
+        },
+        "status": "draft",
+        "updatedBy": "user:01a1ab0b-3e7a-7160-926d-891871ad3d1e",
+        "createdAt": "2026-11-08T10:58:19.985621Z",
+        "updatedAt": "2026-11-08T10:58:19.985621Z"
+      },
+      "requestId": "01a1bacf-24ab-7a37-99b0-d375a5f5cb22"
+    }
+  },
+  "publication": {
+    "status": 201,
+    "body": {
+      "data": {
+        "referenceCount": 0,
+        "referenceCountScope": "",
+        "signatureVerified": false,
+        "digestVerified": false,
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "versionId": "01a1bacf-e4e6-7088-88b1-94b39e4c15ff",
+        "draftId": "01a1bacf-24d1-70fd-81c1-d1125c4c91b7",
+        "kind": "recipe",
+        "logicalName": "pod-health",
+        "versionNumber": 1,
+        "content": {
+          "name": "pod-health",
+          "entry": [
+            "Pod"
+          ],
+          "budget": {
+            "maxEdges": 40,
+            "maxNodes": 40,
+            "timeoutMs": 3000,
+            "maxEvidence": 40
+          },
+          "confirm": [
+            "target-state",
+            "related-state",
+            "recent-warnings"
+          ],
+          "exclude": [
+            "incomplete-snapshot",
+            "identity-changed",
+            "unreliable-clock"
+          ],
+          "version": "v1",
+          "graphPlan": "single-query/v1",
+          "postCheck": "native-related-health/v1",
+          "graphDepth": 1,
+          "candidateType": "native_post_check",
+          "schemaVersion": "recipe-registry/v2",
+          "toolAllowlist": [
+            "read_evidence"
+          ],
+          "optionalEvidence": [],
+          "requiredEvidence": [
+            {
+              "key": "target-state",
+              "required": true,
+              "predicate": "native-target/v1",
+              "maxAgeSeconds": 300
+            },
+            {
+              "key": "related-state",
+              "required": true,
+              "predicate": "native-relations/v1",
+              "maxAgeSeconds": 300
+            },
+            {
+              "key": "recent-warnings",
+              "required": true,
+              "predicate": "native-warnings/v1",
+              "maxAgeSeconds": 300
+            }
+          ]
+        },
+        "digest": "sha256:7d4e2c952bff9c98a8256effd9ec9aee6f38e7f1145577abfa412eff3748c600",
+        "signature": "UmS5trXPYz6/agDUXDy5RRd5MtUGeOQ3v6qLUiQk9NNmaPE2ex+414v/2hVXDx1aUKxphh7Y97m9FJqnpyB9Dg==",
+        "signerKeyId": "current-registry",
+        "publishedBy": "user:01a1ab0b-3e7a-7160-926d-891871ad3d1e",
+        "publishedAt": "2026-11-08T10:59:09.158214Z"
+      },
+      "requestId": "01a1bacf-e4dc-7dcf-a5f8-baa9d35522d5"
+    }
+  }
+}
