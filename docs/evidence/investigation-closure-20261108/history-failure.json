@@ -1,0 +1,25 @@
+{
+  "candidate": "cd769050879efa898ee1d02e0773152a094e1fe2",
+  "request": "补读同一 Pod 在 2026-11-08T03:03:00Z 至 2026-11-08T03:08:00Z（Asia/Shanghai）的日志样本，检查恢复启动时实际记录了什么。请实际调用只读查询并引用返回样本；不要执行命令，也不要将启动日志当成历史重启根因。",
+  "turn": {
+    "turnId": "01a1b968-22ef-7358-bd1a-dff07e79bc42",
+    "conversationId": "01a1b94d-1319-7857-a2cb-e93cef0b1c99",
+    "jobId": "01a1b968-22ef-7359-b3a1-dc03b59c112e",
+    "parentTurnId": "01a1b967-2be6-767a-a373-55bd5657a87f",
+    "state": "failed",
+    "errorCode": "INVESTIGATOR_FAILURE",
+    "createdAt": "2026-11-08T04:26:12.083657Z",
+    "conversationRevision": 7
+  },
+  "steps": [
+    {
+      "argsSummary": {},
+      "stepId": "01a1b968-23a4-7f21-9feb-7dc322e29cf5",
+      "toolName": "get_assistant_context",
+      "argsDigest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "state": "failed",
+      "errorCode": "INVESTIGATION_NOT_AUTHORIZED"
+    }
+  ],
+  "diagnosis": "Compacted AssistantAnswer raw JSON key order changed during JSONB persistence; reference and native authority checks separately passed, typed input digest mismatched."
+}

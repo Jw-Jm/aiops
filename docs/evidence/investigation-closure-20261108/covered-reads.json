@@ -1,0 +1,3781 @@
+{
+  "candidate": "cd769050879efa898ee1d02e0773152a094e1fe2",
+  "request": "继续读取该 Pod 最近5分钟的真实 CPU、内存和重启次数趋势，以及同期日志。说明这是当前恢复检查，不要把当前正常状态当成历史故障根因。请实际调用只读工具，只引用已成功读取的结果。",
+  "turn": {
+    "turnId": "01a1b967-2be6-767a-a373-55bd5657a87f",
+    "conversationId": "01a1b94d-1319-7857-a2cb-e93cef0b1c99",
+    "jobId": "01a1b967-2be6-767b-b872-d0b18ac7a41b",
+    "parentTurnId": "01a1b95d-e962-7d82-aa18-c2dbbdd4c281",
+    "state": "partial",
+    "answer": {
+      "asOf": "2026-11-08T04:25:32.565154018Z",
+      "partial": true,
+      "summary": "本次为当前恢复检查：对 Pod ops-current/ops-metrics-server-metrics-6d46c4f8f5-7ztrn 的只读查询已成功返回数据，覆盖 2026-11-08T04:20:08Z–04:24:08Z（Asia/Shanghai），CPU 约 0.00131–0.00135 cores、工作集内存约 34.4–39.7 MB、每个 60 秒步长的重启增量均为 0；同期日志 samples 返回 no_data（无观测样例），因此不能据此断言日志侧正常。这些只是当前窗口的观测，不能当作历史故障根因，也不能证明历史重启原因。",
+      "factRefs": [
+        {
+          "factId": "sha256:ceeacac35c51bb38d618d71bad74a036ef7ad834806bbe8ed14cf44e094f18f2",
+          "queryResultId": "01a1b967-532e-7dd4-acdb-50d943cc6fb1"
+        },
+        {
+          "factId": "sha256:3607c3c8a09e5377331ba11334211f4db3a4d77424fddb914f4b3e2434196ba7",
+          "queryResultId": "01a1b967-532e-7dd4-acdb-50d943cc6fb1"
+        },
+        {
+          "factId": "sha256:152a473a41b123d759b846713924169f3e8a3b5140656b38d29b766df1ef0afc",
+          "queryResultId": "01a1b967-532e-7dd4-acdb-50d943cc6fb1"
+        },
+        {
+          "factId": "sha256:3862cbd6cd86252cef0f8f54a797b6d1a8d315dff0658030d83e79dd6ee6ad92",
+          "queryResultId": "01a1b967-532e-7dd4-acdb-50d943cc6fb1"
+        },
+        {
+          "factId": "sha256:221c6d0b9098843e3c7222c6e7829e0eea17039a6a3e809c37fb1374a109e0e9",
+          "queryResultId": "01a1b967-532e-7dd4-acdb-50d943cc6fb1"
+        },
+        {
+          "factId": "sha256:b6e08cd7769d50053b255f32973c53d1ec63be5203bc8b31ad2b1a443265df14",
+          "queryResultId": "01a1b967-55ed-702f-b291-c1d4e6ef8b76"
+        },
+        {
+          "factId": "sha256:f03fbf1d3447d1b7bf8509e1261fcb18ec34ac81c1c2da0a6401e74838765acf",
+          "queryResultId": "01a1b967-55ed-702f-b291-c1d4e6ef8b76"
+        },
+        {
+          "factId": "sha256:025459eb7765ad1bbabb718ca282e5371d7d228d6b1cfbf1ef10ed2948abf95d",
+          "queryResultId": "01a1b967-55ed-702f-b291-c1d4e6ef8b76"
+        },
+        {
+          "factId": "sha256:ecb55cbf0f8bc21c5210ed89476a5bc10182b05b7af7da84b5f98465ab900742",
+          "queryResultId": "01a1b967-55ed-702f-b291-c1d4e6ef8b76"
+        },
+        {
+          "factId": "sha256:00f44794f4777c47329eea1221c2a8b6ee94ec4be11bbeee73025303f7e846ce",
+          "queryResultId": "01a1b967-55ed-702f-b291-c1d4e6ef8b76"
+        },
+        {
+          "factId": "sha256:3c5048055337a598a426055e486a864294fa98b3211ccc7d5ff2a8fdee7278df",
+          "queryResultId": "01a1b967-5717-7ba3-a09f-77b05a7b4ac3"
+        },
+        {
+          "factId": "sha256:a5bf36927759a675c890cab9e1b78725e0c8b29375e2b7c5ae24b0b7cdcaa3a8",
+          "queryResultId": "01a1b967-5717-7ba3-a09f-77b05a7b4ac3"
+        },
+        {
+          "factId": "sha256:8f3188fd6b16515c4132bf0b09369c665f6855bfbe19abe693468248e8e1a972",
+          "queryResultId": "01a1b967-5717-7ba3-a09f-77b05a7b4ac3"
+        },
+        {
+          "factId": "sha256:9e99e31899e17fdb8fba6ee124db7e3ea6ca138bcd328532771db5c84d603818",
+          "queryResultId": "01a1b967-5717-7ba3-a09f-77b05a7b4ac3"
+        },
+        {
+          "factId": "sha256:40f52345c0a59bdd51fab9c621673a42e6115002dd855db4844bb510145b03a3",
+          "queryResultId": "01a1b967-5717-7ba3-a09f-77b05a7b4ac3"
+        }
+      ],
+      "warnings": [
+        "本次为当前恢复检查，只反映 2026-11-08T04:20:08Z–04:24:08Z 的观测，不能当作历史故障根因。",
+        "三个指标趋势查询 status=partial，warnings=collection_coverage_unknown，且 coverageGap=true；缺失点不补零。",
+        "日志 samples 的 value 仅表示返回样例数，不是日志总数；no_data 不等于日志侧正常。",
+        "Pod 的 Running/Ready 与 restartCount=114 来自 2026-11-08T04:07:34Z 的上下文快照，不是本窗口的时序观测。",
+        "未执行任何命令或变更，仅调用只读工具。",
+        "source_read_partial:execute_analysis_query",
+        "query_result_incomplete",
+        "query_result_incomplete",
+        "query_result_incomplete",
+        "query_result_incomplete"
+      ],
+      "answerKind": "diagnosis",
+      "entityRefs": [],
+      "formalRefs": [
+        {
+          "kind": "rca",
+          "revision": 771,
+          "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad",
+          "contentDigest": "sha256:bf3dfec93f7c87810d6ed2175d0176e7861904002e9600badf10ebfb0af0b3de"
+        }
+      ],
+      "hypotheses": [
+        {
+          "key": "容器反复重启导致 PodRuntimeFault（历史观察，未确认）",
+          "summary": "上下文快照显示 restartCount=114，且 2026-11-08T02:53:09Z–03:05:22Z 一次终止为 Completed/exitCode=0，随后 03:05:23Z 重启并 Ready；本次当前窗口 04:20:08Z–04:24:08Z 的重启增量均为 0，说明该窗口内未观察到新增重启，但不能解释历史 114 次重启的原因。",
+          "supports": [
+            "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb",
+            "6bb52038-5afa-5d0e-99c7-4514986b55db"
+          ],
+          "conflicts": [],
+          "nextChecks": [
+            "读取 resource_history/resource_changes 对齐历史重启时间线"
+          ],
+          "missingEvidence": [
+            "历史重启时间分布与累计 restartCount 来源",
+            "崩溃/退避日志（本窗口 samples 为 no_data）"
+          ]
+        },
+        {
+          "key": "节点或依赖侧因素间接影响该 Pod（未验证）",
+          "summary": "Pod 调度在节点 mssc（192.168.0.63），该节点 Ready=True 且无内存/磁盘/PID 压力；Service 与 EndpointSlice 为受影响对象，但网络能力为空，无法验证调用路径。",
+          "supports": [],
+          "conflicts": [],
+          "nextChecks": [
+            "在具备网络能力时查询 Service→Pod 路径"
+          ],
+          "missingEvidence": [
+            "pod-path 调用路径与网络侧观测（networkCapabilities 为空）",
+            "节点侧与 Pod 重启时间对齐的指标"
+          ]
+        }
+      ],
+      "nextChecks": [
+        "在日志源覆盖范围内重试 logs.records 的 aggregate/trend（namespace=ops-current，窗口 2026-11-08T04:20:08Z–04:25:02Z），确认是否确实无日志还是采集缺失。",
+        "读取该 Pod 的 resource_history/resource_changes（fault 与 baseline 窗口），核对镜像、探针、资源限制是否变化，以补齐重启根因证据。",
+        "在具备网络能力时查询 Service ops-metrics-server-metrics → Pod 的调用路径，补齐 pod-path 证据。"
+      ],
+      "evidenceRefs": [
+        "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb",
+        "6bb52038-5afa-5d0e-99c7-4514986b55db"
+      ],
+      "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+      "schemaVersion": "assistant-answer/v1",
+      "degradedSources": [],
+      "missingEvidence": [
+        "请求窗口 2026-11-08T04:20:08Z–04:25:08Z 中，指标仅覆盖到 04:24:08Z、日志仅覆盖到 04:25:02Z，末尾约 60 秒（指标）与约 6 秒（日志）未被覆盖，查询结果标记 coverageGap=true 且 warning=collection_coverage_unknown。",
+        "logs.records samples 返回 no_data（warnings: no_observations、bounded_sanitized_samples_not_total_count），同期容器日志无可用样例，pod-crash-failing 与 container-backoff-error 仍无直接证据。",
+        "重启趋势为每个 step 的增量（5 个点均为 0），不能替代 restartCount=114 的累计值来源与历史重启时间分布。",
+        "RCA revision 771 仍为 unresolved/partial，evidenceBundle.missing 含 pod-crash-failing、container-backoff-error、pod-path，networkCapabilities 为空，无法验证 Service→Pod 调用路径。"
+      ],
+      "queryResultRefs": [
+        "01a1b967-532e-7dd4-acdb-50d943cc6fb1",
+        "01a1b967-55ed-702f-b291-c1d4e6ef8b76",
+        "01a1b967-5717-7ba3-a09f-77b05a7b4ac3",
+        "01a1b967-5456-7d8f-b76e-54038a61eabb"
+      ]
+    },
+    "createdAt": "2026-11-08T04:25:08.846646Z",
+    "conversationRevision": 6
+  },
+  "steps": [
+    {
+      "argsSummary": {},
+      "stepId": "01a1b967-2e62-7e71-b804-748c3f769547",
+      "toolName": "get_assistant_context",
+      "argsDigest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "state": "succeeded",
+      "result": {
+        "data": {
+          "binding": {
+            "timezone": "Asia/Shanghai",
+            "selection": {
+              "Namespaces": [],
+              "CanonicalIDs": null,
+              "IncludeClusterScoped": true
+            },
+            "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad",
+            "grantSnapshot": {
+              "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+              "resources": [],
+              "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+              "namespaces": [
+                "default",
+                "kube-flannel",
+                "kube-node-lease",
+                "kube-public",
+                "kube-system",
+                "ops-amd64-core-20261009",
+                "ops-amd64-final-20261010",
+                "ops-amd64-final-targets-20261010",
+                "ops-amd64-unified-r10-20261019",
+                "ops-amd64-unified-r10-targets",
+                "ops-amd64-validation-targets-20261010",
+                "ops-assistant-deepflow-20261013",
+                "ops-assistant-live-20261013",
+                "ops-current",
+                "ops-dev-network",
+                "ops-native-v12-r24-20261026",
+                "ops-native-v12-r34-20261027",
+                "ops-native-v12-r35-outside",
+                "ops-native-v12-r35-scope",
+                "ops-ui-v12-mfa-20261022-gpt",
+                "sp04-chain-2284bf2e",
+                "sp04-chain-230836e8",
+                "sp04-chain-28945919",
+                "sp04-chain-45829ac4",
+                "sp04-chain-620f6bcb",
+                "sp04-chain-9f8f21b7",
+                "sp04-chain-a27d6e34",
+                "sp04-chain-c0dbfe18",
+                "sp04-chain-c6d904dc",
+                "sp04-chain-e0b92b58",
+                "sp04-chain-f327e4fc"
+              ],
+              "clusterScoped": true,
+              "authorizationRevision": "sha256:b211ef88c24563d5ea1a87ff782a7b54495570a2e8327fd4f3a877da719d3912"
+            },
+            "executionScope": {
+              "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+              "resources": [],
+              "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+              "namespaces": [
+                "default",
+                "kube-flannel",
+                "kube-node-lease",
+                "kube-public",
+                "kube-system",
+                "ops-amd64-core-20261009",
+                "ops-amd64-final-20261010",
+                "ops-amd64-final-targets-20261010",
+                "ops-amd64-unified-r10-20261019",
+                "ops-amd64-unified-r10-targets",
+                "ops-amd64-validation-targets-20261010",
+                "ops-assistant-deepflow-20261013",
+                "ops-assistant-live-20261013",
+                "ops-current",
+                "ops-dev-network",
+                "ops-native-v12-r24-20261026",
+                "ops-native-v12-r34-20261027",
+                "ops-native-v12-r35-outside",
+                "ops-native-v12-r35-scope",
+                "ops-ui-v12-mfa-20261022-gpt",
+                "sp04-chain-2284bf2e",
+                "sp04-chain-230836e8",
+                "sp04-chain-28945919",
+                "sp04-chain-45829ac4",
+                "sp04-chain-620f6bcb",
+                "sp04-chain-9f8f21b7",
+                "sp04-chain-a27d6e34",
+                "sp04-chain-c0dbfe18",
+                "sp04-chain-c6d904dc",
+                "sp04-chain-e0b92b58",
+                "sp04-chain-f327e4fc"
+              ],
+              "clusterScoped": true,
+              "authorizationRevision": "sha256:b211ef88c24563d5ea1a87ff782a7b54495570a2e8327fd4f3a877da719d3912"
+            }
+          },
+          "history": [
+            {
+              "role": "user",
+              "turnId": "01a1b94d-4c15-7125-a68e-d452d9d206db",
+              "content": {
+                "text": "请调查这次故障，读取当前故障上下文、已有证据和正式根因分析，解释发生时的事实、已恢复状态及仍缺少的证据。仅引用已读取的内容，不执行命令。"
+              },
+              "sequence": 1,
+              "createdAt": "2026-11-08T03:56:53.149454Z",
+              "messageId": "01a1b94d-4c18-74bc-96a2-a7657c5ee1d8"
+            },
+            {
+              "role": "assistant",
+              "turnId": "01a1b94d-4c15-7125-a68e-d452d9d206db",
+              "content": {
+                "asOf": "2026-11-08T03:57:09.079200183Z",
+                "partial": true,
+                "summary": "本次故障是 ops-current 命名空间中 Pod ops-metrics-server-metrics-6d46c4f8f5-7ztrn 的 PodRuntimeFault（k8sgpt 分析器，warning 级），Incident 01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad 已于 2026-11-08T03:33:00Z 标记 resolved，Pod 当前 Running/Ready、容器 restartCount=114，最近一次终止原因为 Completed、exitCode=0。正式 RCA revision 730 状态为 unresolved/partial，候选根因为空，缺少 pod-crash-failing、container-backoff-error、pod-path 三类证据，因此只能说明已观察到的现象与恢复状态，不能确认因果。",
+                "factRefs": [],
+                "warnings": [
+                  "RCA revision 730 的 status 为 unresolved、partial=true，candidates 为空，不能作为已确认根因引用。",
+                  "Pod 的 restartCount=114 与 lastState 为 Completed/exitCode=0 并存，说明重启原因不能由该终止状态单独解释。",
+                  "本次未执行任何命令或变更，仅引用已读取的上下文与正式引用。",
+                  "model_answer_incomplete"
+                ],
+                "answerKind": "diagnosis",
+                "entityRefs": [],
+                "formalRefs": [
+                  {
+                    "kind": "rca",
+                    "revision": 730,
+                    "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad",
+                    "contentDigest": "sha256:2fb83898477298320bdbaa4586a07b9a577c063526ce01e736c608a728783308"
+                  }
+                ],
+                "hypotheses": [
+                  {
+                    "key": "metrics-server 容器反复重启导致 PodRuntimeFault",
+                    "summary": "Pod 容器 restartCount=114，且 2026-11-08T02:53:09Z–03:05:22Z 一次终止为 Completed/exitCode=0，随后 03:05:23Z 重新启动并 Ready；这与进程被正常终止后重启的模式一致，但缺少崩溃/退避与日志证据，不能确认因果。",
+                    "supports": [
+                      "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb"
+                    ],
+                    "conflicts": [],
+                    "nextChecks": [
+                      "查询 metrics.pod-restarts 趋势确认重启是否持续",
+                      "查询 logs.records 检索崩溃与退避错误"
+                    ],
+                    "missingEvidence": [
+                      "pod-crash-failing 证据（非零退出码或 OOMKilled 记录）",
+                      "container-backoff-error 事件/日志",
+                      "故障窗口内重启计数与日志时序"
+                    ]
+                  },
+                  {
+                    "key": "节点或依赖侧因素间接影响该 Pod",
+                    "summary": "Pod 调度在节点 mssc（192.168.0.63），该节点 Ready=True 且无内存/磁盘/PID 压力；Service ops-metrics-server-metrics 与 EndpointSlice 被列为直接/间接受影响对象，但网络能力不可用，无法验证流量路径。",
+                    "supports": [],
+                    "conflicts": [],
+                    "nextChecks": [
+                      "读取节点与 Pod 的 resource_history 对齐时间线",
+                      "在具备网络能力时查询 Service→Pod 路径"
+                    ],
+                    "missingEvidence": [
+                      "pod-path 调用路径与网络侧观测（networkCapabilities 为空）",
+                      "节点侧与 Pod 重启时间对齐的指标"
+                    ]
+                  }
+                ],
+                "nextChecks": [
+                  "在故障窗口内查询该 Pod 的 metrics.pod-restarts 与 metrics.pod-phase 趋势，确认重启发生的时间分布与是否仍在增长。",
+                  "查询该 Pod 在故障窗口的 logs.records，检索崩溃/退避相关错误，以补齐 pod-crash-failing 与 container-backoff-error。",
+                  "读取该 Pod 的 resource_history/resource_changes（fault 与 baseline 窗口），核对镜像、探针、资源限制等字段是否发生变化。"
+                ],
+                "evidenceRefs": [
+                  "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb"
+                ],
+                "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+                "schemaVersion": "assistant-answer/v1",
+                "degradedSources": [],
+                "missingEvidence": [
+                  "RCA 证据包缺少 pod-crash-failing：没有崩溃/失败退出（非零 exitCode 或 OOMKilled 等）的直接记录，现有 lastState 为 Completed/exitCode=0。",
+                  "RCA 证据包缺少 container-backoff-error：没有容器重启退避或启动失败的错误事件/日志证据。",
+                  "RCA 证据包缺少 pod-path：缺少从 Service/EndpointSlice 到 Pod 的完整调用路径与流量侧观测，网络能力列表为空（networkCapabilities=[]）。",
+                  "缺少故障窗口（2026-11-07T01:54:02Z 起）内该 Pod 的重启计数、CPU/内存与日志的时序对比，本次仅读取了上下文与正式引用，未执行新的指标/日志查询。",
+                  "缺少重启根因的变更证据（如镜像、配置、探针或节点侧变更），RCA 输入中 evidence 为空。"
+                ],
+                "queryResultRefs": []
+              },
+              "sequence": 2,
+              "createdAt": "2026-11-08T03:57:09.081192Z",
+              "messageId": "01a1b94d-4c15-7125-a68e-d452d9d206db"
+            },
+            {
+              "role": "user",
+              "turnId": "01a1b94e-08ea-7414-822c-e4f359be5503",
+              "content": {
+                "text": "继续读取该 Pod 最近5分钟的真实 CPU、内存和重启次数趋势，以及同期日志。说明这是当前恢复检查，不要把当前正常状态当成历史故障根因。请实际调用只读工具，只引用已成功读取的结果。"
+              },
+              "sequence": 3,
+              "createdAt": "2026-11-08T03:57:41.488991Z",
+              "messageId": "01a1b94e-08ed-75c6-b102-94fc62b09bf0"
+            },
+            {
+              "role": "assistant",
+              "turnId": "01a1b94e-08ea-7414-822c-e4f359be5503",
+              "content": {
+                "asOf": "2026-11-08T03:57:55.715959877Z",
+                "partial": true,
+                "summary": "本次恢复检查的只读查询全部失败：metrics.pod-cpu、metrics.pod-memory、metrics.pod-restarts 三个趋势查询均返回 SOURCE_DEGRADED，query_logs 返回 INVALID_ARGUMENT，因此最近5分钟（2026-11-08T03:52:41Z–03:57:41Z）没有取得任何 CPU、内存、重启次数或日志数据，无法据此判断当前是否正常。已读取的上下文只显示 Pod 在 2026-11-08T03:05:23Z 重启后处于 Running/Ready、restartCount=114，这属于历史观测，不能当作当前恢复证据，也不能当作历史故障根因。",
+                "factRefs": [],
+                "warnings": [
+                  "本次为当前恢复检查，未取得任何新的指标或日志结果；查询失败不等于指标正常或为零。",
+                  "Pod 的 Running/Ready 与 restartCount=114 来自 2026-11-08T03:05:43Z 的上下文快照，不是最近5分钟的观测。",
+                  "RCA revision 732 status=unresolved、partial=true、candidates 为空，不能作为已确认根因引用。",
+                  "未执行任何命令或变更，仅调用只读工具。",
+                  "source_read_failed:execute_analysis_query:SOURCE_DEGRADED",
+                  "source_read_partial:query_logs"
+                ],
+                "answerKind": "diagnosis",
+                "entityRefs": [],
+                "formalRefs": [
+                  {
+                    "kind": "rca",
+                    "revision": 732,
+                    "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad",
+                    "contentDigest": "sha256:556cb15fd20fbdced119a42e087aeeb8cc2f0fa5815b0f00bba9fcb4a514bc32"
+                  }
+                ],
+                "hypotheses": [
+                  {
+                    "key": "容器反复重启导致 PodRuntimeFault（历史观察，未确认）",
+                    "summary": "上下文快照显示 restartCount=114，且 2026-11-08T02:53:09Z–03:05:22Z 一次终止为 Completed/exitCode=0，随后 03:05:23Z 重启并 Ready；但本次重启趋势与日志查询均失败，无法确认重启是否持续或已停止。",
+                    "supports": [
+                      "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb"
+                    ],
+                    "conflicts": [],
+                    "nextChecks": [
+                      "指标源恢复后重试 metrics.pod-restarts trend 查询"
+                    ],
+                    "missingEvidence": [
+                      "最近5分钟重启计数趋势（metrics.pod-restarts 查询失败）",
+                      "崩溃/退避日志（query_logs 返回 INVALID_ARGUMENT）"
+                    ]
+                  },
+                  {
+                    "key": "节点或依赖侧因素间接影响该 Pod（未验证）",
+                    "summary": "Pod 调度在节点 mssc（192.168.0.63），该节点 Ready=True 且无内存/磁盘/PID 压力；Service 与 EndpointSlice 为受影响对象，但网络能力为空，无法验证调用路径。",
+                    "supports": [],
+                    "conflicts": [],
+                    "nextChecks": [
+                      "在具备网络能力时查询 Service→Pod 路径"
+                    ],
+                    "missingEvidence": [
+                      "pod-path 调用路径与网络侧观测（networkCapabilities 为空）",
+                      "节点侧与 Pod 重启时间对齐的指标"
+                    ]
+                  }
+                ],
+                "nextChecks": [
+                  "在指标源恢复后重试 metrics.pod-restarts 与 metrics.pod-cpu、metrics.pod-memory 的 trend 查询（stepSeconds=60，窗口 2026-11-08T03:52:41Z–03:57:41Z），确认 restartCount 是否仍增长。",
+                  "修正 query_logs 的模板/参数（当前返回 INVALID_ARGUMENT）后重试该 Pod 同期日志，检索崩溃与退避错误。",
+                  "读取该 Pod 的 resource_history/resource_changes（fault 与 baseline 窗口），核对镜像、探针与资源限制是否变化。"
+                ],
+                "evidenceRefs": [
+                  "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb"
+                ],
+                "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+                "schemaVersion": "assistant-answer/v1",
+                "degradedSources": [
+                  "execute_analysis_query(metrics.pod-cpu): SOURCE_DEGRADED",
+                  "execute_analysis_query(metrics.pod-memory): SOURCE_DEGRADED",
+                  "execute_analysis_query(metrics.pod-restarts): SOURCE_DEGRADED",
+                  "query_logs: INVALID_ARGUMENT"
+                ],
+                "missingEvidence": [
+                  "metrics.pod-cpu 趋势查询失败（execute_analysis_query 返回 SOURCE_DEGRADED），缺少 2026-11-08T03:52:41Z–03:57:41Z 的 CPU 时序数据。",
+                  "metrics.pod-memory 趋势查询失败（execute_analysis_query 返回 SOURCE_DEGRADED），缺少同期内存 working set 时序数据。",
+                  "metrics.pod-restarts 趋势查询失败（execute_analysis_query 返回 SOURCE_DEGRADED），缺少同期重启计数趋势，无法判断 restartCount=114 是否仍在增长。",
+                  "query_logs 返回 INVALID_ARGUMENT（degradedSources=query_logs），同期容器日志未取得，pod-crash-failing 与 container-backoff-error 仍缺失。",
+                  "RCA revision 732 仍为 unresolved/partial，evidenceBundle.missing 含 pod-crash-failing、container-backoff-error、pod-path，网络能力列表为空。"
+                ],
+                "queryResultRefs": []
+              },
+              "sequence": 4,
+              "createdAt": "2026-11-08T03:57:55.717251Z",
+              "messageId": "01a1b94e-08ea-7414-822c-e4f359be5503"
+            },
+            {
+              "role": "user",
+              "turnId": "01a1b957-f42a-7666-8233-e0dc7f4881fd",
+              "content": {
+                "text": "继续实际查询同一 Pod 最近5分钟的 CPU、内存、重启趋势和同期日志，确认当前恢复状态。请使用上下文中已给出的正式数据集字段，不能把先前失败查询当成读到的数据，也不执行命令。"
+              },
+              "sequence": 5,
+              "createdAt": "2026-11-08T04:08:31.538512Z",
+              "messageId": "01a1b957-f42d-75a8-a461-6da5de263925"
+            },
+            {
+              "role": "assistant",
+              "turnId": "01a1b957-f42a-7666-8233-e0dc7f4881fd",
+              "content": {
+                "asOf": "2026-11-08T04:08:41.543777557Z",
+                "partial": true,
+                "summary": "本次对同一 Pod（ops-current/ops-metrics-server-metrics-6d46c4f8f5-7ztrn）最近5分钟（2026-11-08T04:03:31Z–04:08:31Z，Asia/Shanghai）的 CPU、内存、重启趋势与同期日志查询均未取得任何数据：三个指标趋势查询返回 SOURCE_DEGRADED，日志查询返回 INVALID_ARGUMENT，因此无法确认当前恢复状态。已读取的上下文仅显示该 Pod 在 2026-11-08T03:05:23Z 重启后 Running/Ready、restartCount=114，这属于历史观测，不能当作最近5分钟的恢复证据，也不能当作历史故障根因。",
+                "factRefs": [],
+                "warnings": [
+                  "本次为当前恢复检查，未取得任何新的指标或日志结果；查询失败不等于指标正常或为零。",
+                  "Pod 的 Running/Ready 与 restartCount=114 来自 2026-11-08T04:07:34Z 的上下文快照，不是最近5分钟的时序观测。",
+                  "RCA revision 747 status=unresolved、partial=true、candidates 为空，不能作为已确认根因引用。",
+                  "未执行任何命令或变更，仅调用只读工具。",
+                  "model_answer_incomplete"
+                ],
+                "answerKind": "diagnosis",
+                "entityRefs": [],
+                "formalRefs": [
+                  {
+                    "kind": "rca",
+                    "revision": 747,
+                    "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad",
+                    "contentDigest": "sha256:284ec0f34c2f79336a0ece256d5c83300462d2391041cb5411dcac0887eb5ced"
+                  }
+                ],
+                "hypotheses": [
+                  {
+                    "key": "容器反复重启导致 PodRuntimeFault（历史观察，未确认）",
+                    "summary": "上下文快照显示 restartCount=114，且 2026-11-08T02:53:09Z–03:05:22Z 一次终止为 Completed/exitCode=0，随后 03:05:23Z 重启并 Ready；但本次重启趋势与日志查询均失败，无法确认重启是否持续或已停止。",
+                    "supports": [
+                      "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb",
+                      "6bb52038-5afa-5d0e-99c7-4514986b55db"
+                    ],
+                    "conflicts": [],
+                    "nextChecks": [
+                      "指标源恢复后重试 metrics.pod-restarts trend 查询"
+                    ],
+                    "missingEvidence": [
+                      "最近5分钟重启增量趋势（metrics.pod-restarts 查询失败）",
+                      "崩溃/退避日志（query_logs 返回 INVALID_ARGUMENT）"
+                    ]
+                  },
+                  {
+                    "key": "节点或依赖侧因素间接影响该 Pod（未验证）",
+                    "summary": "Pod 调度在节点 mssc（192.168.0.63），该节点 Ready=True 且无内存/磁盘/PID 压力；Service 与 EndpointSlice 为受影响对象，但网络能力为空，无法验证调用路径。",
+                    "supports": [],
+                    "conflicts": [],
+                    "nextChecks": [
+                      "在具备网络能力时查询 Service→Pod 路径"
+                    ],
+                    "missingEvidence": [
+                      "pod-path 调用路径与网络侧观测（networkCapabilities 为空）",
+                      "节点侧与 Pod 重启时间对齐的指标"
+                    ]
+                  }
+                ],
+                "nextChecks": [
+                  "在指标源恢复后重试 metrics.pod-restarts、metrics.pod-cpu、metrics.pod-memory 的 trend 查询（stepSeconds=60，窗口 2026-11-08T04:03:31Z–04:08:31Z），确认 restartCount 是否仍增长。",
+                  "修正 query_logs 的模板/参数（当前返回 INVALID_ARGUMENT）后重试该 Pod 同期日志，检索崩溃与退避错误。",
+                  "读取该 Pod 的 resource_history/resource_changes（fault 与 baseline 窗口），核对镜像、探针与资源限制是否变化。"
+                ],
+                "evidenceRefs": [
+                  "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb",
+                  "6bb52038-5afa-5d0e-99c7-4514986b55db"
+                ],
+                "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+                "schemaVersion": "assistant-answer/v1",
+                "degradedSources": [
+                  "execute_analysis_query(metrics.pod-cpu): SOURCE_DEGRADED",
+                  "execute_analysis_query(metrics.pod-memory): SOURCE_DEGRADED",
+                  "execute_analysis_query(metrics.pod-restarts): SOURCE_DEGRADED",
+                  "query_logs: INVALID_ARGUMENT"
+                ],
+                "missingEvidence": [
+                  "metrics.pod-cpu 趋势查询失败（execute_analysis_query 返回 SOURCE_DEGRADED），缺少 2026-11-08T04:03:31Z–04:08:31Z 的 CPU 时序数据。",
+                  "metrics.pod-memory 趋势查询失败（execute_analysis_query 返回 SOURCE_DEGRADED），缺少同期工作集内存时序数据。",
+                  "metrics.pod-restarts 趋势查询失败（execute_analysis_query 返回 SOURCE_DEGRADED），缺少同期重启增量趋势，无法判断 restartCount=114 是否仍在增长。",
+                  "query_logs 返回 INVALID_ARGUMENT，同期容器日志未取得，pod-crash-failing 与 container-backoff-error 仍缺失。",
+                  "RCA revision 747 仍为 unresolved/partial，evidenceBundle.missing 含 pod-crash-failing、container-backoff-error、pod-path，networkCapabilities 为空。"
+                ],
+                "queryResultRefs": []
+              },
+              "sequence": 6,
+              "createdAt": "2026-11-08T04:08:41.545079Z",
+              "messageId": "01a1b957-f42a-7666-8233-e0dc7f4881fd"
+            },
+            {
+              "role": "user",
+              "turnId": "01a1b95d-e962-7d82-aa18-c2dbbdd4c281",
+              "content": {
+                "text": "继续读取该 Pod 最近5分钟的真实 CPU、内存和重启次数趋势，以及同期日志。说明这是当前恢复检查，不要把当前正常状态当成历史故障根因。请实际调用只读工具，只引用已成功读取的结果。"
+              },
+              "sequence": 7,
+              "createdAt": "2026-11-08T04:15:01.995674Z",
+              "messageId": "01a1b95d-e965-7e6c-a5e0-f1f7bd6fdd1a"
+            },
+            {
+              "role": "assistant",
+              "turnId": "01a1b95d-e962-7d82-aa18-c2dbbdd4c281",
+              "content": {
+                "asOf": "2026-11-08T04:15:19.050259479Z",
+                "partial": true,
+                "summary": "本次为当前恢复检查：对 Pod ops-current/ops-metrics-server-metrics-6d46c4f8f5-7ztrn 在 2026-11-08T04:10:01Z–04:15:01Z（Asia/Shanghai）的 CPU、内存、重启趋势与同期日志查询全部失败（execute_analysis_query 返回 SOURCE_DEGRADED），因此最近5分钟没有任何可引用的数值，无法确认当前恢复状态。已读取的上下文仅显示该 Pod 在 2026-11-08T03:05:23Z 重启后 Running/Ready、restartCount=114，属历史观测，不能当作当前恢复证据，也不能当作历史故障根因。",
+                "factRefs": [],
+                "warnings": [
+                  "本次为当前恢复检查，未取得任何新的指标或日志结果；查询失败不等于指标正常或为零。",
+                  "Pod 的 Running/Ready 与 restartCount=114 来自 2026-11-08T04:07:34Z 的上下文快照，不是最近5分钟的时序观测。",
+                  "RCA revision 756 status=unresolved、partial=true、candidates 为空，不能作为已确认根因引用。",
+                  "未执行任何命令或变更，仅调用只读工具。",
+                  "source_read_failed:execute_analysis_query:SOURCE_DEGRADED"
+                ],
+                "answerKind": "diagnosis",
+                "entityRefs": [],
+                "formalRefs": [
+                  {
+                    "kind": "rca",
+                    "revision": 756,
+                    "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad",
+                    "contentDigest": "sha256:47a1fb85f0bde4f68d0ef584667ce2b62b18fcd270dd38391d866215dac7978b"
+                  }
+                ],
+                "hypotheses": [
+                  {
+                    "key": "容器反复重启导致 PodRuntimeFault（历史观察，未确认）",
+                    "summary": "上下文快照显示 restartCount=114，且 2026-11-08T02:53:09Z–03:05:22Z 一次终止为 Completed/exitCode=0，随后 03:05:23Z 重启并 Ready；但本次重启趋势与日志查询均失败，无法确认重启是否持续或已停止。",
+                    "supports": [
+                      "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb",
+                      "6bb52038-5afa-5d0e-99c7-4514986b55db"
+                    ],
+                    "conflicts": [],
+                    "nextChecks": [
+                      "指标源恢复后重试 metrics.pod-restarts trend 查询"
+                    ],
+                    "missingEvidence": [
+                      "最近5分钟重启增量趋势（metrics.pod-restarts 查询失败）",
+                      "崩溃/退避日志（logs.records 查询失败）"
+                    ]
+                  },
+                  {
+                    "key": "节点或依赖侧因素间接影响该 Pod（未验证）",
+                    "summary": "Pod 调度在节点 mssc（192.168.0.63），该节点 Ready=True 且无内存/磁盘/PID 压力；Service 与 EndpointSlice 为受影响对象，但网络能力为空，无法验证调用路径。",
+                    "supports": [],
+                    "conflicts": [],
+                    "nextChecks": [
+                      "在具备网络能力时查询 Service→Pod 路径"
+                    ],
+                    "missingEvidence": [
+                      "pod-path 调用路径与网络侧观测（networkCapabilities 为空）",
+                      "节点侧与 Pod 重启时间对齐的指标"
+                    ]
+                  }
+                ],
+                "nextChecks": [
+                  "指标源恢复后重试 metrics.pod-restarts、metrics.pod-cpu、metrics.pod-memory 的 trend 查询（stepSeconds=60，窗口 2026-11-08T04:10:01Z–04:15:01Z），确认 restartCount 是否仍增长。",
+                  "指标/日志源恢复后重试 logs.records 的 trend 与 samples 查询（namespace=ops-current），检索崩溃与退避错误。",
+                  "读取该 Pod 的 resource_history/resource_changes（fault 与 baseline 窗口），核对镜像、探针与资源限制是否变化。"
+                ],
+                "evidenceRefs": [
+                  "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb",
+                  "6bb52038-5afa-5d0e-99c7-4514986b55db"
+                ],
+                "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+                "schemaVersion": "assistant-answer/v1",
+                "degradedSources": [
+                  "execute_analysis_query(metrics.pod-cpu): SOURCE_DEGRADED",
+                  "execute_analysis_query(metrics.pod-memory): SOURCE_DEGRADED",
+                  "execute_analysis_query(metrics.pod-restarts): SOURCE_DEGRADED",
+                  "execute_analysis_query(logs.records): SOURCE_DEGRADED"
+                ],
+                "missingEvidence": [
+                  "metrics.pod-cpu 趋势查询失败（execute_analysis_query 返回 SOURCE_DEGRADED），缺少 2026-11-08T04:10:01Z–04:15:01Z 的 CPU 时序数据。",
+                  "metrics.pod-memory 趋势查询失败（execute_analysis_query 返回 SOURCE_DEGRADED），缺少同期工作集内存时序数据。",
+                  "metrics.pod-restarts 趋势查询失败（execute_analysis_query 返回 SOURCE_DEGRADED），缺少同期重启增量趋势，无法判断 restartCount=114 是否仍在增长。",
+                  "logs.records 趋势查询失败（execute_analysis_query 返回 SOURCE_DEGRADED），同期日志计数与样例未取得，pod-crash-failing 与 container-backoff-error 仍缺失。",
+                  "RCA revision 756 仍为 unresolved/partial，evidenceBundle.missing 含 pod-crash-failing、container-backoff-error、pod-path，networkCapabilities 为空。"
+                ],
+                "queryResultRefs": []
+              },
+              "sequence": 8,
+              "createdAt": "2026-11-08T04:15:19.052102Z",
+              "messageId": "01a1b95d-e962-7d82-aa18-c2dbbdd4c281"
+            }
+          ],
+          "message": "继续读取该 Pod 最近5分钟的真实 CPU、内存和重启次数趋势，以及同期日志。说明这是当前恢复检查，不要把当前正常状态当成历史故障根因。请实际调用只读工具，只引用已成功读取的结果。",
+          "requestedAt": "2026-11-08T04:25:08.837483395Z",
+          "parentTurnId": "01a1b95d-e962-7d82-aa18-c2dbbdd4c281",
+          "schemaVersion": "assistant-input/v1",
+          "analysisCatalog": {
+            "version": "analysis-catalog/v1",
+            "datasets": [
+              {
+                "id": "resources.current",
+                "name": "当前资源统计",
+                "unit": "resources",
+                "kinds": [
+                  "Pod",
+                  "Node",
+                  "Deployment",
+                  "StatefulSet",
+                  "DaemonSet",
+                  "Service",
+                  "PersistentVolumeClaim",
+                  "PersistentVolume",
+                  "Namespace",
+                  "Job",
+                  "CronJob",
+                  "ReplicaSet",
+                  "ConfigMap",
+                  "Secret",
+                  "ServiceAccount",
+                  "Ingress",
+                  "EndpointSlice",
+                  "Endpoints",
+                  "Event"
+                ],
+                "metric": "resource_count",
+                "source": "graph",
+                "filters": [
+                  "kind",
+                  "namespace",
+                  "name",
+                  "health"
+                ],
+                "maxGroups": 50,
+                "dimensions": [
+                  "kind",
+                  "health"
+                ],
+                "operations": [
+                  "aggregate"
+                ],
+                "calculation": "按真实 Canonical ID 统计；复用 Graph 完整授权范围 summary，先授权再筛选和聚合。",
+                "description": "指定非虚拟化 Kubernetes 资源类型的当前授权快照统计；不提供历史资源数量。",
+                "zeroMeaning": "只有 fresh、完整且来源无降级的成功快照才可以报告精确零。",
+                "healthValues": [
+                  "normal",
+                  "abnormal",
+                  "unknown",
+                  "degraded"
+                ],
+                "requiredFilters": [
+                  "kind"
+                ],
+                "templateVersion": "resources-current-summary/v1",
+                "historySupported": false,
+                "clusterScopedKinds": [
+                  "Node",
+                  "PersistentVolume",
+                  "Namespace"
+                ],
+                "authorizationDomain": "operational"
+              },
+              {
+                "id": "findings.occurrences",
+                "name": "告警 occurrence 统计",
+                "unit": "findings",
+                "kinds": [],
+                "metric": "occurrence_count",
+                "source": "postgresql",
+                "filters": [
+                  "namespace",
+                  "state",
+                  "severity"
+                ],
+                "maxGroups": 50,
+                "dimensions": [
+                  "namespace",
+                  "state",
+                  "severity",
+                  "day"
+                ],
+                "operations": [
+                  "aggregate"
+                ],
+                "calculation": "每个已校验 occurrence 只统计一次；使用可靠 startsAt，排除旧 Schema 和不可靠时间。",
+                "description": "每个已校验 occurrence 只统计一次；使用可靠 startsAt，排除旧 Schema 和不可靠时间。",
+                "zeroMeaning": "授权过滤后的成功控制面快照为零；不能推断物理环境不存在故障。",
+                "healthValues": [],
+                "requiredFilters": [],
+                "templateVersion": "findings.occurrences/v1",
+                "historySupported": true,
+                "clusterScopedKinds": [],
+                "authorizationDomain": "operational"
+              },
+              {
+                "id": "incidents.records",
+                "name": "Incident 记录统计",
+                "unit": "incidents",
+                "kinds": [],
+                "metric": "incident_count",
+                "source": "postgresql",
+                "filters": [
+                  "namespace",
+                  "state"
+                ],
+                "maxGroups": 50,
+                "dimensions": [
+                  "namespace",
+                  "state",
+                  "day"
+                ],
+                "operations": [
+                  "aggregate"
+                ],
+                "calculation": "按 Incident ID 去重；全部关联 Finding 必须在授权范围。",
+                "description": "按 Incident ID 去重；全部关联 Finding 必须在授权范围。",
+                "zeroMeaning": "授权过滤后的成功控制面快照为零；不能推断物理环境不存在故障。",
+                "healthValues": [],
+                "requiredFilters": [],
+                "templateVersion": "incidents.records/v1",
+                "historySupported": true,
+                "clusterScopedKinds": [],
+                "authorizationDomain": "operational"
+              },
+              {
+                "id": "executions.records",
+                "name": "本人执行记录统计",
+                "unit": "executions",
+                "kinds": [],
+                "metric": "execution_count",
+                "source": "postgresql",
+                "filters": [
+                  "state"
+                ],
+                "maxGroups": 50,
+                "dimensions": [
+                  "state",
+                  "day"
+                ],
+                "operations": [
+                  "aggregate"
+                ],
+                "calculation": "仅本人及当前授权目标；不读取命令或输出。",
+                "description": "仅本人及当前授权目标；不读取命令或输出。",
+                "zeroMeaning": "授权过滤后的成功控制面快照为零；不能推断物理环境不存在故障。",
+                "healthValues": [],
+                "requiredFilters": [],
+                "templateVersion": "executions.records/v1",
+                "historySupported": true,
+                "clusterScopedKinds": [],
+                "authorizationDomain": "operational"
+              },
+              {
+                "id": "metrics.pod-restarts",
+                "name": "Pod 重启增量",
+                "unit": "restarts",
+                "kinds": [],
+                "metric": "restart_increase",
+                "source": "victoriametrics",
+                "filters": [
+                  "namespace"
+                ],
+                "maxGroups": 50,
+                "dimensions": [
+                  "namespace",
+                  "uid",
+                  "time",
+                  "comparison"
+                ],
+                "operations": [
+                  "aggregate",
+                  "trend",
+                  "compare",
+                  "compare_percent"
+                ],
+                "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。",
+                "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
+                "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+                "healthValues": [],
+                "requiredFilters": [],
+                "templateVersion": "metrics.pod-restarts/v1",
+                "historySupported": true,
+                "clusterScopedKinds": [],
+                "authorizationDomain": "operational"
+              },
+              {
+                "id": "metrics.pod-cpu",
+                "name": "Pod CPU 平均使用",
+                "unit": "cores",
+                "kinds": [],
+                "metric": "cpu_cores",
+                "source": "victoriametrics",
+                "filters": [
+                  "namespace"
+                ],
+                "maxGroups": 50,
+                "dimensions": [
+                  "namespace",
+                  "uid",
+                  "time",
+                  "comparison"
+                ],
+                "operations": [
+                  "aggregate",
+                  "trend",
+                  "compare",
+                  "compare_percent"
+                ],
+                "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。",
+                "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
+                "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+                "healthValues": [],
+                "requiredFilters": [],
+                "templateVersion": "metrics.pod-cpu/v1",
+                "historySupported": true,
+                "clusterScopedKinds": [],
+                "authorizationDomain": "operational"
+              },
+              {
+                "id": "metrics.pod-memory",
+                "name": "Pod 工作集内存",
+                "unit": "bytes",
+                "kinds": [],
+                "metric": "memory_bytes",
+                "source": "victoriametrics",
+                "filters": [
+                  "namespace"
+                ],
+                "maxGroups": 50,
+                "dimensions": [
+                  "namespace",
+                  "uid",
+                  "time",
+                  "comparison"
+                ],
+                "operations": [
+                  "aggregate",
+                  "trend",
+                  "compare",
+                  "compare_percent",
+                  "average"
+                ],
+                "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 trend 不按资源分组，固定时间步长，最多 50 点，缺失点不补零；aggregate 仍为窗口末端求值。 趋势窗口开始前额外 5 分钟也须在已验证覆盖内；状态计数使用 bool 比较，仅有观测时才可返回零。 compare 比较两个等长、不重叠窗口末端的授权 gauge 快照；服务端计算增加/减少的绝对变化量，仅双方完整时发布变化，不计算百分比。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。 average 按每条授权序列窗口内的实际采样求平均后求和；不补缺失采样、不等同于完整墙钟时间平均。",
+                "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。 趋势仅返回固定时间网格上的历史求值，使用显式 5 分钟 last_over_time 回看，须单独验证趋势来源。",
+                "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+                "healthValues": [],
+                "requiredFilters": [],
+                "templateVersion": "metrics.pod-memory/v1",
+                "historySupported": true,
+                "clusterScopedKinds": [],
+                "authorizationDomain": "operational"
+              },
+              {
+                "id": "metrics.pod-phase",
+                "name": "Pod phase 数量",
+                "unit": "resources",
+                "kinds": [],
+                "metric": "phase_count",
+                "source": "victoriametrics",
+                "filters": [
+                  "namespace"
+                ],
+                "maxGroups": 50,
+                "dimensions": [
+                  "namespace",
+                  "phase",
+                  "time",
+                  "comparison"
+                ],
+                "operations": [
+                  "aggregate",
+                  "trend",
+                  "compare",
+                  "compare_percent",
+                  "average"
+                ],
+                "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 trend 不按资源分组，固定时间步长，最多 50 点，缺失点不补零；aggregate 仍为窗口末端求值。 趋势窗口开始前额外 5 分钟也须在已验证覆盖内；状态计数使用 bool 比较，仅有观测时才可返回零。 compare 比较两个等长、不重叠窗口末端的授权 gauge 快照；服务端计算增加/减少的绝对变化量，仅双方完整时发布变化，不计算百分比。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。 average 按每条授权序列窗口内的实际采样求平均后求和；不补缺失采样、不等同于完整墙钟时间平均。",
+                "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。 趋势仅返回固定时间网格上的历史求值，使用显式 5 分钟 last_over_time 回看，须单独验证趋势来源。",
+                "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+                "healthValues": [],
+                "requiredFilters": [],
+                "templateVersion": "metrics.pod-phase/v1",
+                "historySupported": true,
+                "clusterScopedKinds": [],
+                "authorizationDomain": "operational"
+              },
+              {
+                "id": "metrics.node-ready",
+                "name": "Node Ready 数量",
+                "unit": "resources",
+                "kinds": [],
+                "metric": "ready_count",
+                "source": "victoriametrics",
+                "filters": [
+                  "namespace"
+                ],
+                "maxGroups": 50,
+                "dimensions": [
+                  "time",
+                  "comparison"
+                ],
+                "operations": [
+                  "aggregate",
+                  "trend",
+                  "compare",
+                  "compare_percent",
+                  "average"
+                ],
+                "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 trend 不按资源分组，固定时间步长，最多 50 点，缺失点不补零；aggregate 仍为窗口末端求值。 趋势窗口开始前额外 5 分钟也须在已验证覆盖内；状态计数使用 bool 比较，仅有观测时才可返回零。 compare 比较两个等长、不重叠窗口末端的授权 gauge 快照；服务端计算增加/减少的绝对变化量，仅双方完整时发布变化，不计算百分比。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。 average 按每条授权序列窗口内的实际采样求平均后求和；不补缺失采样、不等同于完整墙钟时间平均。",
+                "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。 趋势仅返回固定时间网格上的历史求值，使用显式 5 分钟 last_over_time 回看，须单独验证趋势来源。",
+                "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+                "healthValues": [],
+                "requiredFilters": [],
+                "templateVersion": "metrics.node-ready/v1",
+                "historySupported": true,
+                "clusterScopedKinds": [],
+                "authorizationDomain": "operational"
+              },
+              {
+                "id": "logs.records",
+                "name": "日志完整聚合",
+                "unit": "logs",
+                "kinds": [],
+                "metric": "log_count",
+                "source": "victorialogs",
+                "filters": [
+                  "namespace",
+                  "level"
+                ],
+                "maxGroups": 50,
+                "dimensions": [
+                  "namespace",
+                  "level",
+                  "time",
+                  "comparison"
+                ],
+                "operations": [
+                  "aggregate",
+                  "trend",
+                  "compare",
+                  "compare_percent",
+                  "samples"
+                ],
+                "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。 samples 最多返回20条脱敏样例；value仅表示本次返回样例数，不是日志总数；样例始终partial。",
+                "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
+                "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+                "healthValues": [],
+                "requiredFilters": [],
+                "templateVersion": "logs.records/v1",
+                "historySupported": true,
+                "clusterScopedKinds": [],
+                "authorizationDomain": "operational"
+              },
+              {
+                "id": "incidents.recovery-duration",
+                "name": "Incident 平均恢复时长",
+                "unit": "milliseconds",
+                "kinds": [],
+                "metric": "mean_recovery_ms",
+                "source": "postgresql",
+                "filters": [
+                  "namespace"
+                ],
+                "maxGroups": 50,
+                "dimensions": [
+                  "namespace",
+                  "day"
+                ],
+                "operations": [
+                  "aggregate"
+                ],
+                "calculation": "按 resolved_at 窗口，resolved/closed 且 started_at 与 resolved_at 可靠且顺序有效；平均恢复毫秒，不使用 created_at 替代。",
+                "description": "按 resolved_at 窗口，resolved/closed 且 started_at 与 resolved_at 可靠且顺序有效；平均恢复毫秒，不使用 created_at 替代。",
+                "zeroMeaning": "只有有效样本的计算结果可为零；无有效样本返回 no_data。",
+                "healthValues": [],
+                "requiredFilters": [],
+                "templateVersion": "incidents.recovery-duration/v1",
+                "historySupported": true,
+                "clusterScopedKinds": [],
+                "authorizationDomain": "operational"
+              },
+              {
+                "id": "executions.success-rate",
+                "name": "本人执行成功率",
+                "unit": "percent",
+                "kinds": [],
+                "metric": "success_percent",
+                "source": "postgresql",
+                "filters": [],
+                "maxGroups": 50,
+                "dimensions": [
+                  "day"
+                ],
+                "operations": [
+                  "aggregate"
+                ],
+                "calculation": "窗口内本人当前授权目标的 succeeded/(succeeded+failed)*100；queued/running/cancelled/execution_unknown 不纳入分母；无分母返回 no_data。",
+                "description": "窗口内本人当前授权目标的 succeeded/(succeeded+failed)*100；queued/running/cancelled/execution_unknown 不纳入分母；无分母返回 no_data。",
+                "zeroMeaning": "只有有效样本的计算结果可为零；无有效样本返回 no_data。",
+                "healthValues": [],
+                "requiredFilters": [],
+                "templateVersion": "executions.success-rate/v1",
+                "historySupported": true,
+                "clusterScopedKinds": [],
+                "authorizationDomain": "operational"
+              },
+              {
+                "id": "network.http-responses",
+                "name": "HTTP 完成响应观测数",
+                "unit": "responses",
+                "kinds": [
+                  "Pod"
+                ],
+                "metric": "response_count",
+                "source": "deepflow",
+                "filters": [],
+                "maxGroups": 50,
+                "dimensions": [
+                  "time",
+                  "comparison"
+                ],
+                "operations": [
+                  "aggregate",
+                  "trend",
+                  "compare",
+                  "compare_percent"
+                ],
+                "calculation": "固定 Querier 聚合；HTTP 仅 type=2 且 200<=code<600 完成会话；比率使用同窗分母，平均耗时以微秒总量/会话数转换为毫秒。TCP 仅按已证明计数口径开放。",
+                "description": "同一授权 namespace 内明确双端身份和单一已验证采集点的固定网络统计；不代表所有用户请求。",
+                "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。",
+                "healthValues": [],
+                "requiredFilters": [],
+                "templateVersion": "deepflow-network-summary/v1",
+                "historySupported": true,
+                "clusterScopedKinds": [],
+                "authorizationDomain": "operational"
+              },
+              {
+                "id": "network.http-5xx",
+                "name": "HTTP 5xx 响应观测数",
+                "unit": "responses",
+                "kinds": [
+                  "Pod"
+                ],
+                "metric": "http_5xx_count",
+                "source": "deepflow",
+                "filters": [],
+                "maxGroups": 50,
+                "dimensions": [
+                  "time",
+                  "comparison"
+                ],
+                "operations": [
+                  "aggregate",
+                  "trend",
+                  "compare",
+                  "compare_percent"
+                ],
+                "calculation": "固定 Querier 聚合；HTTP 仅 type=2 且 200<=code<600 完成会话；比率使用同窗分母，平均耗时以微秒总量/会话数转换为毫秒。TCP 仅按已证明计数口径开放。",
+                "description": "同一授权 namespace 内明确双端身份和单一已验证采集点的固定网络统计；不代表所有用户请求。",
+                "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。",
+                "healthValues": [],
+                "requiredFilters": [],
+                "templateVersion": "deepflow-network-summary/v1",
+                "historySupported": true,
+                "clusterScopedKinds": [],
+                "authorizationDomain": "operational"
+              },
+              {
+                "id": "network.http-5xx-rate",
+                "name": "HTTP 5xx 观测比例",
+                "unit": "percent",
+                "kinds": [
+                  "Pod"
+                ],
+                "metric": "http_5xx_percent",
+                "source": "deepflow",
+                "filters": [],
+                "maxGroups": 50,
+                "dimensions": [
+                  "time",
+                  "comparison"
+                ],
+                "operations": [
+                  "aggregate",
+                  "trend",
+                  "compare"
+                ],
+                "calculation": "固定 Querier 聚合；HTTP 仅 type=2 且 200<=code<600 完成会话；比率使用同窗分母，平均耗时以微秒总量/会话数转换为毫秒。TCP 仅按已证明计数口径开放。",
+                "description": "同一授权 namespace 内明确双端身份和单一已验证采集点的固定网络统计；不代表所有用户请求。",
+                "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。",
+                "healthValues": [],
+                "requiredFilters": [],
+                "templateVersion": "deepflow-network-summary/v1",
+                "historySupported": true,
+                "clusterScopedKinds": [],
+                "authorizationDomain": "operational"
+              },
+              {
+                "id": "network.http-response-time",
+                "name": "HTTP 完成响应平均耗时",
+                "unit": "milliseconds",
+                "kinds": [
+                  "Pod"
+                ],
+                "metric": "mean_http_response_ms",
+                "source": "deepflow",
+                "filters": [],
+                "maxGroups": 50,
+                "dimensions": [
+                  "time",
+                  "comparison"
+                ],
+                "operations": [
+                  "aggregate",
+                  "trend",
+                  "compare",
+                  "compare_percent"
+                ],
+                "calculation": "固定 Querier 聚合；HTTP 仅 type=2 且 200<=code<600 完成会话；比率使用同窗分母，平均耗时以微秒总量/会话数转换为毫秒。TCP 仅按已证明计数口径开放。",
+                "description": "同一授权 namespace 内明确双端身份和单一已验证采集点的固定网络统计；不代表所有用户请求。",
+                "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。",
+                "healthValues": [],
+                "requiredFilters": [],
+                "templateVersion": "deepflow-network-summary/v1",
+                "historySupported": true,
+                "clusterScopedKinds": [],
+                "authorizationDomain": "operational"
+              },
+              {
+                "id": "network.tcp-retransmissions",
+                "name": "TCP 重传观测数",
+                "unit": "retransmissions",
+                "kinds": [
+                  "Pod"
+                ],
+                "metric": "retransmission_count",
+                "source": "deepflow",
+                "filters": [],
+                "maxGroups": 50,
+                "dimensions": [
+                  "time",
+                  "comparison"
+                ],
+                "operations": [
+                  "aggregate",
+                  "trend",
+                  "compare",
+                  "compare_percent"
+                ],
+                "calculation": "固定 Querier 聚合；HTTP 仅 type=2 且 200<=code<600 完成会话；比率使用同窗分母，平均耗时以微秒总量/会话数转换为毫秒。TCP 仅按已证明计数口径开放。",
+                "description": "同一授权 namespace 内明确双端身份和单一已验证采集点的固定网络统计；不代表所有用户请求。",
+                "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。",
+                "healthValues": [],
+                "requiredFilters": [],
+                "templateVersion": "deepflow-network-summary/v1",
+                "historySupported": true,
+                "clusterScopedKinds": [],
+                "authorizationDomain": "operational"
+              },
+              {
+                "id": "network.connection-failure-observations",
+                "name": "TCP 客户端/服务端错误观测数",
+                "unit": "observations",
+                "kinds": [
+                  "Pod"
+                ],
+                "metric": "connection_failure_observation_count",
+                "source": "deepflow",
+                "filters": [],
+                "maxGroups": 50,
+                "dimensions": [
+                  "time",
+                  "comparison"
+                ],
+                "operations": [
+                  "aggregate",
+                  "trend",
+                  "compare",
+                  "compare_percent"
+                ],
+                "calculation": "protocol=6、单一合格采集点中 status=3/4 的记录数，含建连、重置、超时等错误分类；不是独立失败连接数，不代表失败请求数。",
+                "description": "同一授权 namespace 内明确双端身份和单一已验证采集点的固定网络统计；不代表所有用户请求。",
+                "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。",
+                "healthValues": [],
+                "requiredFilters": [],
+                "templateVersion": "deepflow-network-summary/v1",
+                "historySupported": true,
+                "clusterScopedKinds": [],
+                "authorizationDomain": "operational"
+              },
+              {
+                "id": "network.http-summary",
+                "name": "HTTP 完成响应统计",
+                "unit": "percent",
+                "kinds": [
+                  "Pod"
+                ],
+                "metric": "http_5xx_percent",
+                "source": "deepflow",
+                "filters": [],
+                "maxGroups": 50,
+                "dimensions": [
+                  "time",
+                  "comparison"
+                ],
+                "operations": [
+                  "aggregate",
+                  "trend",
+                  "compare",
+                  "compare_percent"
+                ],
+                "calculation": "HTTP：完成会话的响应数、5xx 数、比例及样本加权平均耗时；TCP：status=3/4 的客户端/服务端错误观测记录及周期重传计数。不是独立失败连接数或丢包率。",
+                "description": "单一合格采集点的固定统计快照；数值按独立单位 Fact 引用，避免重复读取同一总体。",
+                "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。",
+                "healthValues": [],
+                "requiredFilters": [],
+                "templateVersion": "deepflow-network-summary/v1",
+                "historySupported": true,
+                "clusterScopedKinds": [],
+                "authorizationDomain": "operational"
+              },
+              {
+                "id": "network.tcp-summary",
+                "name": "TCP 观测记录统计",
+                "unit": "observations",
+                "kinds": [
+                  "Pod"
+                ],
+                "metric": "connection_failure_observation_count",
+                "source": "deepflow",
+                "filters": [],
+                "maxGroups": 50,
+                "dimensions": [
+                  "time",
+                  "comparison"
+                ],
+                "operations": [
+                  "aggregate",
+                  "trend",
+                  "compare",
+                  "compare_percent"
+                ],
+                "calculation": "HTTP：完成会话的响应数、5xx 数、比例及样本加权平均耗时；TCP：status=3/4 的客户端/服务端错误观测记录及周期重传计数。不是独立失败连接数或丢包率。",
+                "description": "单一合格采集点的固定统计快照；数值按独立单位 Fact 引用，避免重复读取同一总体。",
+                "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。",
+                "healthValues": [],
+                "requiredFilters": [],
+                "templateVersion": "deepflow-network-summary/v1",
+                "historySupported": true,
+                "clusterScopedKinds": [],
+                "authorizationDomain": "operational"
+              }
+            ],
+            "schemaVersion": "analysis-catalog/v1"
+          },
+          "requestedTimeRange": {
+            "to": "2026-11-08T04:25:08Z",
+            "from": "2026-11-08T04:20:08Z",
+            "timezone": "Asia/Shanghai"
+          },
+          "sourceCapabilities": [
+            {
+              "status": "continuous_verified",
+              "revision": 2,
+              "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+              "datasetId": "metrics.pod-cpu",
+              "operation": "aggregate",
+              "coverageTo": "2026-11-08T04:24:50.411Z",
+              "sourceType": "victoriametrics",
+              "proofDigest": "sha256:db91d3f14cd062ef2862d7a6a0eefb8e7487faab32a4650a769aeab267e0df6e",
+              "coverageFrom": "2026-11-06T01:03:53.190949Z",
+              "verifiedUntil": "2026-11-08T04:25:34.102603628Z",
+              "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+              "maxWindowSeconds": 1800
+            },
+            {
+              "status": "continuous_verified",
+              "revision": 2,
+              "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+              "datasetId": "metrics.pod-cpu",
+              "operation": "trend",
+              "coverageTo": "2026-11-08T04:24:50.411Z",
+              "sourceType": "victoriametrics",
+              "proofDigest": "sha256:f7cea064a741679a63a86c1204f5e335a3bf2ac2ca30b0c74bd18fe1c57fcec5",
+              "coverageFrom": "2026-11-06T01:03:53.190949Z",
+              "verifiedUntil": "2026-11-08T04:25:34.102603628Z",
+              "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+              "maxWindowSeconds": 1800
+            },
+            {
+              "status": "continuous_verified",
+              "revision": 2,
+              "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+              "datasetId": "metrics.pod-memory",
+              "operation": "aggregate",
+              "coverageTo": "2026-11-08T04:24:50.411Z",
+              "sourceType": "victoriametrics",
+              "proofDigest": "sha256:4fc45e22bd4fad4e58f4f97cf78833fec5b0146cfd4a9fcb67cd8229c88c3bad",
+              "coverageFrom": "2026-11-06T01:03:53.190949Z",
+              "verifiedUntil": "2026-11-08T04:25:34.102603628Z",
+              "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+              "maxWindowSeconds": 1800
+            },
+            {
+              "status": "continuous_verified",
+              "revision": 2,
+              "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+              "datasetId": "metrics.pod-memory",
+              "operation": "trend",
+              "coverageTo": "2026-11-08T04:24:50.411Z",
+              "sourceType": "victoriametrics",
+              "proofDigest": "sha256:8a51cbca316d47f74ebf3ca02864a6a3f39281d07c72a3526547a19cad2b3946",
+              "coverageFrom": "2026-11-06T01:03:53.190949Z",
+              "verifiedUntil": "2026-11-08T04:25:34.102603628Z",
+              "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+              "maxWindowSeconds": 1800
+            },
+            {
+              "status": "continuous_verified",
+              "revision": 2,
+              "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+              "datasetId": "metrics.pod-phase",
+              "operation": "aggregate",
+              "coverageTo": "2026-11-08T04:24:50.411Z",
+              "sourceType": "victoriametrics",
+              "proofDigest": "sha256:08288b0067d9982d8745fc999981972625344470bee0bea1d89c1c2c4a5d5dbe",
+              "coverageFrom": "2026-11-06T01:03:53.190949Z",
+              "verifiedUntil": "2026-11-08T04:25:34.102603628Z",
+              "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+              "maxWindowSeconds": 1800
+            },
+            {
+              "status": "continuous_verified",
+              "revision": 2,
+              "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+              "datasetId": "metrics.pod-phase",
+              "operation": "trend",
+              "coverageTo": "2026-11-08T04:24:50.411Z",
+              "sourceType": "victoriametrics",
+              "proofDigest": "sha256:8104cf490c6849da0062c78f558c56e673fcdb00cf4d57841c6c9958d68871b5",
+              "coverageFrom": "2026-11-06T01:03:53.190949Z",
+              "verifiedUntil": "2026-11-08T04:25:34.102603628Z",
+              "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+              "maxWindowSeconds": 1800
+            },
+            {
+              "status": "continuous_verified",
+              "revision": 2,
+              "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+              "datasetId": "metrics.pod-restarts",
+              "operation": "aggregate",
+              "coverageTo": "2026-11-08T04:24:50.411Z",
+              "sourceType": "victoriametrics",
+              "proofDigest": "sha256:f1faed05a142ea662ba6959b4232cd78b5428cec1d0bf016027f57ccd6824b35",
+              "coverageFrom": "2026-11-06T01:03:53.190949Z",
+              "verifiedUntil": "2026-11-08T04:25:34.102603628Z",
+              "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+              "maxWindowSeconds": 1800
+            },
+            {
+              "status": "continuous_verified",
+              "revision": 2,
+              "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+              "datasetId": "metrics.pod-restarts",
+              "operation": "trend",
+              "coverageTo": "2026-11-08T04:24:50.411Z",
+              "sourceType": "victoriametrics",
+              "proofDigest": "sha256:d62e56c015f1d02bd660a12161a7746218524eef2f373ddcefb831469bf7f332",
+              "coverageFrom": "2026-11-06T01:03:53.190949Z",
+              "verifiedUntil": "2026-11-08T04:25:34.102603628Z",
+              "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+              "maxWindowSeconds": 1800
+            },
+            {
+              "status": "continuous_verified",
+              "revision": 2,
+              "sourceId": "01a1ae32-b7a2-7987-bc83-9a7d8855093d",
+              "datasetId": "logs.records",
+              "operation": "aggregate",
+              "coverageTo": "2026-11-08T04:25:02.551239217Z",
+              "sourceType": "victorialogs",
+              "proofDigest": "sha256:87a49165aa9de6cb7a50a923da53aa9a5525ca86300ded8b1c4625876f54a3e6",
+              "coverageFrom": "2026-11-06T01:03:53.190949Z",
+              "verifiedUntil": "2026-11-08T04:25:34.098328787Z",
+              "collectorVersion": "v1.52.0-ops1",
+              "maxWindowSeconds": 1800
+            },
+            {
+              "status": "continuous_verified",
+              "revision": 2,
+              "sourceId": "01a1ae32-b7a2-7987-bc83-9a7d8855093d",
+              "datasetId": "logs.records",
+              "operation": "samples",
+              "coverageTo": "2026-11-08T04:25:02.551239217Z",
+              "sourceType": "victorialogs",
+              "proofDigest": "sha256:37daf6e5f4b1715c5e0a76603f4d099898fff7fa0760350539944e55b9a0c091",
+              "coverageFrom": "2026-11-06T01:03:53.190949Z",
+              "verifiedUntil": "2026-11-08T04:25:34.098328787Z",
+              "collectorVersion": "v1.52.0-ops1",
+              "maxWindowSeconds": 1800
+            }
+          ],
+          "networkCapabilities": [],
+          "historyManifestDigest": "sha256:7723b807eee8bd663f39fee4885819feac587c987966c501613ed6c4b7db85c6",
+          "sourceCapabilityStatus": "available"
+        },
+        "tool": "get_assistant_context",
+        "state": "succeeded",
+        "budget": {
+          "consumed": {
+            "toolCalls": 1,
+            "graphNodes": 0,
+            "rawQueries": 0,
+            "inputTokens": 0,
+            "resultBytes": 48678,
+            "outputTokens": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "modelCostMicros": 0
+          },
+          "remaining": {
+            "toolCalls": 39,
+            "graphNodes": 8000,
+            "rawQueries": 10,
+            "inputTokens": 524288,
+            "resultBytes": 41894360,
+            "outputTokens": 32768,
+            "evidenceItems": 4000,
+            "modelRequests": 8,
+            "modelCostMicros": 0
+          }
+        },
+        "partial": false,
+        "evidenceRefs": [],
+        "schemaVersion": "tool-response/v3",
+        "degradedSources": []
+      }
+    },
+    {
+      "argsSummary": {
+        "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad"
+      },
+      "stepId": "01a1b967-3105-7d4b-9615-77a7af491d23",
+      "toolName": "get_incident_context",
+      "argsDigest": "sha256:30528428298d692b5b46a5f76c25e23bdce17af2698f87421f9ce25cea76cd4b",
+      "state": "succeeded",
+      "result": {
+        "data": {
+          "findings": {
+            "items": [
+              {
+                "digest": "sha256:911c410324b93af93044c8b5fa0bb8f2e496643093acc7567611cd049e719b30",
+                "ruleId": "k8sgpt/PodRuntimeFault/v1",
+                "eventId": "sha256:26a6c8721e1aa38f04063b96b840d1f070d4108e315ba8e88c8a4f6cd631d821",
+                "payload": {
+                  "fault": false,
+                  "symptom": "PodRuntimeFault",
+                  "analyzer": "k8sgpt/v0.3.41/f071b32aa85d77b197cd2d0f9868294f7b55c5eb",
+                  "nativeUID": "9d925158-f0c9-4ce5-84b8-830959e148dc",
+                  "nativeKind": "Pod"
+                },
+                "severity": "warning",
+                "startsAt": "2026-11-07T01:54:02.299706Z",
+                "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                "findingId": "01a1b3b6-77d9-7382-b225-a9a4f8126977",
+                "namespace": "ops-current",
+                "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+                "observedAt": "2026-11-08T03:27:56.689648928Z",
+                "receivedAt": "2026-11-08T03:27:56.726806Z",
+                "ruleFamily": "kubernetes-analyzer",
+                "evidenceRefs": [
+                  "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb"
+                ],
+                "occurrenceId": "01a1b3b6-77d0-7084-b003-793072a49241",
+                "timeReliable": true,
+                "schemaVersion": "finding-envelope/v2",
+                "idempotencyKey": "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb",
+                "lifecycleState": "resolved",
+                "sourceRevision": 2,
+                "sourceSequence": 0,
+                "firstReceivedAt": "2026-11-07T01:54:02.329204Z",
+                "aggregateRevision": 32,
+                "normalizedSymptom": "PodRuntimeFault",
+                "sourceFingerprint": "sha256:a93b95fa8f66b5ab0c4412e03edf5bba8c5c79fe3b131dffcf543fa40130bd1d",
+                "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+              }
+            ]
+          },
+          "incident": {
+            "state": "resolved",
+            "revision": 34,
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "createdAt": "2026-11-07T01:54:03.186907Z",
+            "namespace": "ops-current",
+            "startedAt": "2026-11-07T01:54:02.299706Z",
+            "updatedAt": "2026-11-08T03:33:00.177163Z",
+            "assignedAt": null,
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad",
+            "resolvedAt": "2026-11-08T03:33:00.176845Z",
+            "fingerprint": "sha256:94eabb2acaa7ca2823bf73655416cd702c64b2a4e2eaa2f21c04549464d086dc",
+            "policyVersion": "correlation/nonvirtual/v1",
+            "schemaVersion": "incident/v2",
+            "lastObservedAt": "2026-11-08T03:27:56.689648Z",
+            "assigneeSubject": "",
+            "recoveryKnownAt": "2026-11-08T03:27:58.200163Z",
+            "suppressedUntil": null,
+            "currentRcaRevision": 771,
+            "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc"
+          }
+        },
+        "tool": "get_incident_context",
+        "state": "succeeded",
+        "budget": {
+          "consumed": {
+            "toolCalls": 1,
+            "graphNodes": 0,
+            "rawQueries": 0,
+            "inputTokens": 0,
+            "resultBytes": 2938,
+            "outputTokens": 0,
+            "evidenceItems": 1,
+            "modelRequests": 0,
+            "modelCostMicros": 0
+          },
+          "remaining": {
+            "toolCalls": 38,
+            "graphNodes": 8000,
+            "rawQueries": 10,
+            "inputTokens": 524288,
+            "resultBytes": 41842524,
+            "outputTokens": 32768,
+            "evidenceItems": 3999,
+            "modelRequests": 8,
+            "modelCostMicros": 0
+          }
+        },
+        "partial": false,
+        "evidenceRefs": [
+          "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb"
+        ],
+        "schemaVersion": "tool-response/v3",
+        "degradedSources": []
+      }
+    },
+    {
+      "argsSummary": {},
+      "stepId": "01a1b967-318b-7632-ae14-1d4efa4c99d2",
+      "toolName": "get_formal_references",
+      "argsDigest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "state": "succeeded",
+      "result": {
+        "data": {
+          "rca": {
+            "actor": "deterministic-worker",
+            "result": {
+              "impact": {
+                "edges": [
+                  {
+                    "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                    "ttl": 0,
+                    "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd",
+                    "kind": "selects_pod",
+                    "validFrom": "2026-11-08T04:07:35.904847919Z",
+                    "confidence": 0.95,
+                    "observedAt": "2026-11-08T04:07:35.904847919Z",
+                    "provenance": {
+                      "observedAt": "2026-11-08T04:07:35.904847919Z",
+                      "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/selector/identity-projection-v1",
+                      "sourceValues": null,
+                      "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    }
+                  },
+                  {
+                    "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd",
+                    "ttl": 0,
+                    "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/discovery.k8s.io/EndpointSlice/588ac39c-2832-44b4-8517-fc22a51634e4",
+                    "kind": "managed_by",
+                    "validFrom": "2026-11-08T04:07:35.707476442Z",
+                    "confidence": 1,
+                    "observedAt": "2026-11-08T04:07:35.707476442Z",
+                    "provenance": {
+                      "observedAt": "2026-11-08T04:07:35.707476442Z",
+                      "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                      "sourceValues": null,
+                      "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    }
+                  },
+                  {
+                    "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Node/c874affc-6a0b-492f-b217-14ad989c0d89",
+                    "ttl": 0,
+                    "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                    "kind": "scheduled_on",
+                    "validFrom": "2026-11-08T04:07:34.808827482Z",
+                    "confidence": 1,
+                    "observedAt": "2026-11-08T04:07:34.808827482Z",
+                    "provenance": {
+                      "observedAt": "2026-11-08T04:07:34.808827482Z",
+                      "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                      "sourceValues": null,
+                      "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    }
+                  },
+                  {
+                    "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                    "ttl": 0,
+                    "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                    "kind": "managed_by",
+                    "validFrom": "2026-11-08T04:07:34.808827482Z",
+                    "confidence": 1,
+                    "observedAt": "2026-11-08T04:07:34.808827482Z",
+                    "provenance": {
+                      "observedAt": "2026-11-08T04:07:34.808827482Z",
+                      "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                      "sourceValues": null,
+                      "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    }
+                  },
+                  {
+                    "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/ConfigMap/70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                    "ttl": 0,
+                    "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                    "kind": "related_to",
+                    "validFrom": "2026-11-08T04:07:34.808827482Z",
+                    "confidence": 1,
+                    "observedAt": "2026-11-08T04:07:34.808827482Z",
+                    "provenance": {
+                      "observedAt": "2026-11-08T04:07:34.808827482Z",
+                      "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                      "sourceValues": null,
+                      "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    }
+                  },
+                  {
+                    "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                    "ttl": 0,
+                    "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                    "kind": "managed_by",
+                    "validFrom": "2026-11-08T04:07:34.524526238Z",
+                    "confidence": 1,
+                    "observedAt": "2026-11-08T04:07:34.524526238Z",
+                    "provenance": {
+                      "observedAt": "2026-11-08T04:07:34.524526238Z",
+                      "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                      "sourceValues": null,
+                      "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    }
+                  }
+                ],
+                "nodes": [
+                  {
+                    "kind": "Pod",
+                    "name": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn",
+                    "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                    "domain": "k8s",
+                    "labels": {
+                      "pod-template-hash": "6d46c4f8f5",
+                      "app.kubernetes.io/name": "ops-metrics-server-metrics",
+                      "ops.platform.io/release": "ops-metrics-server",
+                      "app.kubernetes.io/instance": "ops-metrics-server"
+                    },
+                    "apiGroup": "core",
+                    "stableId": "9d925158-f0c9-4ce5-84b8-830959e148dc",
+                    "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                    "namespace": "ops-current",
+                    "updatedAt": "2026-11-08T04:07:34.808827482Z",
+                    "attributes": {
+                      "health": "normal",
+                      "status": {
+                        "phase": "Running",
+                        "conditions": [
+                          {
+                            "type": "PodReadyToStartContainers",
+                            "status": "True",
+                            "lastTransitionTime": "2026-11-08T03:05:22Z"
+                          },
+                          {
+                            "type": "Initialized",
+                            "status": "True",
+                            "lastTransitionTime": "2026-11-06T06:16:42Z"
+                          },
+                          {
+                            "type": "Ready",
+                            "status": "True",
+                            "lastTransitionTime": "2026-11-08T03:05:43Z"
+                          },
+                          {
+                            "type": "ContainersReady",
+                            "status": "True",
+                            "lastTransitionTime": "2026-11-08T03:05:43Z"
+                          },
+                          {
+                            "type": "PodScheduled",
+                            "status": "True",
+                            "lastTransitionTime": "2026-11-06T06:16:42Z"
+                          }
+                        ],
+                        "containerStatuses": [
+                          {
+                            "name": "metrics-server",
+                            "ready": true,
+                            "state": {
+                              "running": {
+                                "startedAt": "2026-11-08T03:05:23Z"
+                              }
+                            },
+                            "imageID": "registry.k8s.io/metrics-server/metrics-server@sha256:89258156d0e9af60403eafd44da9676fd66f600c7934d468ccc17e42b199aee2",
+                            "lastState": {
+                              "terminated": {
+                                "reason": "Completed",
+                                "exitCode": 0,
+                                "startedAt": "2026-11-08T02:53:09Z",
+                                "finishedAt": "2026-11-08T03:05:22Z",
+                                "containerID": "containerd://b4a7d397aa8b745e167ec66b029572d65134857aa89a3474e348abc5261fda73"
+                              }
+                            },
+                            "containerID": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                            "restartCount": 114
+                          }
+                        ]
+                      },
+                      "resourceDomain": "kubernetes"
+                    },
+                    "sourceRefs": [
+                      "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    ],
+                    "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                    "lastObservedAt": "2026-11-08T04:07:34.808827482Z",
+                    "firstObservedAt": "2026-11-08T04:07:34.808827482Z"
+                  },
+                  {
+                    "kind": "Service",
+                    "name": "ops-metrics-server-metrics",
+                    "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                    "domain": "k8s",
+                    "labels": {
+                      "ops.platform.io/release": "ops-metrics-server",
+                      "app.kubernetes.io/instance": "ops-metrics-server",
+                      "app.kubernetes.io/managed-by": "Helm"
+                    },
+                    "apiGroup": "core",
+                    "stableId": "682f3394-2ebd-4ee9-b797-1815b57351dd",
+                    "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                    "namespace": "ops-current",
+                    "updatedAt": "2026-11-08T04:07:35.904847919Z",
+                    "attributes": {
+                      "health": "unknown",
+                      "resourceDomain": "network"
+                    },
+                    "sourceRefs": [
+                      "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    ],
+                    "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd",
+                    "lastObservedAt": "2026-11-08T04:07:35.904847919Z",
+                    "firstObservedAt": "2026-11-08T04:07:35.904847919Z"
+                  },
+                  {
+                    "kind": "EndpointSlice",
+                    "name": "ops-metrics-server-metrics-rv68l",
+                    "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                    "domain": "k8s",
+                    "labels": {
+                      "ops.platform.io/release": "ops-metrics-server",
+                      "app.kubernetes.io/instance": "ops-metrics-server",
+                      "kubernetes.io/service-name": "ops-metrics-server-metrics",
+                      "app.kubernetes.io/managed-by": "Helm",
+                      "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io"
+                    },
+                    "apiGroup": "discovery.k8s.io",
+                    "stableId": "588ac39c-2832-44b4-8517-fc22a51634e4",
+                    "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                    "namespace": "ops-current",
+                    "updatedAt": "2026-11-08T04:07:35.707476442Z",
+                    "attributes": {
+                      "health": "unknown",
+                      "resourceDomain": "network"
+                    },
+                    "sourceRefs": [
+                      "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    ],
+                    "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/discovery.k8s.io/EndpointSlice/588ac39c-2832-44b4-8517-fc22a51634e4",
+                    "lastObservedAt": "2026-11-08T04:07:35.707476442Z",
+                    "firstObservedAt": "2026-11-08T04:07:35.707476442Z"
+                  },
+                  {
+                    "kind": "Node",
+                    "name": "mssc",
+                    "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                    "domain": "k8s",
+                    "labels": {
+                      "kubernetes.io/os": "linux",
+                      "kubernetes.io/arch": "amd64",
+                      "beta.kubernetes.io/os": "linux",
+                      "kubernetes.io/hostname": "mssc",
+                      "beta.kubernetes.io/arch": "amd64",
+                      "node-role.kubernetes.io/control-plane": "",
+                      "node.kubernetes.io/exclude-from-external-load-balancers": ""
+                    },
+                    "apiGroup": "core",
+                    "stableId": "c874affc-6a0b-492f-b217-14ad989c0d89",
+                    "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                    "namespace": null,
+                    "updatedAt": "2026-11-08T04:24:19.562176106Z",
+                    "attributes": {
+                      "health": "normal",
+                      "status": {
+                        "nodeInfo": {
+                          "machineID": "137c892cd7144768955fdb7f59cf51fd",
+                          "systemUUID": "ffefce86-0c67-11eb-adfd-6787a9916300"
+                        },
+                        "addresses": [
+                          {
+                            "type": "InternalIP",
+                            "address": "192.168.0.63"
+                          },
+                          {
+                            "type": "Hostname",
+                            "address": "mssc"
+                          }
+                        ],
+                        "conditions": [
+                          {
+                            "type": "NetworkUnavailable",
+                            "reason": "FlannelIsUp",
+                            "status": "False",
+                            "lastTransitionTime": "2026-11-08T03:04:02Z"
+                          },
+                          {
+                            "type": "MemoryPressure",
+                            "reason": "KubeletHasSufficientMemory",
+                            "status": "False",
+                            "lastTransitionTime": "2026-10-08T09:12:17Z"
+                          },
+                          {
+                            "type": "DiskPressure",
+                            "reason": "KubeletHasNoDiskPressure",
+                            "status": "False",
+                            "lastTransitionTime": "2026-10-08T09:12:17Z"
+                          },
+                          {
+                            "type": "PIDPressure",
+                            "reason": "KubeletHasSufficientPID",
+                            "status": "False",
+                            "lastTransitionTime": "2026-10-08T09:12:17Z"
+                          },
+                          {
+                            "type": "Ready",
+                            "reason": "KubeletReady",
+                            "status": "True",
+                            "lastTransitionTime": "2026-10-08T10:02:54Z"
+                          }
+                        ]
+                      },
+                      "resourceDomain": "kubernetes"
+                    },
+                    "sourceRefs": [
+                      "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    ],
+                    "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Node/c874affc-6a0b-492f-b217-14ad989c0d89",
+                    "lastObservedAt": "2026-11-08T04:24:19.562176106Z",
+                    "firstObservedAt": "2026-11-08T04:07:34.899075849Z"
+                  },
+                  {
+                    "kind": "ReplicaSet",
+                    "name": "ops-metrics-server-metrics-6d46c4f8f5",
+                    "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                    "domain": "k8s",
+                    "labels": {
+                      "pod-template-hash": "6d46c4f8f5",
+                      "app.kubernetes.io/name": "ops-metrics-server-metrics",
+                      "ops.platform.io/release": "ops-metrics-server",
+                      "app.kubernetes.io/instance": "ops-metrics-server"
+                    },
+                    "apiGroup": "apps",
+                    "stableId": "63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                    "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                    "namespace": "ops-current",
+                    "updatedAt": "2026-11-08T04:07:34.524526238Z",
+                    "attributes": {
+                      "health": "unknown",
+                      "resourceDomain": "kubernetes"
+                    },
+                    "sourceRefs": [
+                      "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    ],
+                    "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                    "lastObservedAt": "2026-11-08T04:07:34.524526238Z",
+                    "firstObservedAt": "2026-11-08T04:07:34.524526238Z"
+                  },
+                  {
+                    "kind": "ConfigMap",
+                    "name": "ops-metrics-kubelet-ca",
+                    "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                    "domain": "k8s",
+                    "labels": {
+                      "ops.platform.io/managed-by": "opsctl-bootstrap",
+                      "ops.platform.io/installation-id": "4f62b5d6-1244-42ce-85c6-3150a7837915"
+                    },
+                    "apiGroup": "core",
+                    "stableId": "70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                    "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                    "namespace": "ops-current",
+                    "updatedAt": "2026-11-08T04:07:34.407420893Z",
+                    "attributes": {
+                      "health": "unknown",
+                      "resourceDomain": "kubernetes"
+                    },
+                    "sourceRefs": [
+                      "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    ],
+                    "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/ConfigMap/70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                    "lastObservedAt": "2026-11-08T04:07:34.407420893Z",
+                    "firstObservedAt": "2026-11-08T04:07:34.407420893Z"
+                  },
+                  {
+                    "kind": "Deployment",
+                    "name": "ops-metrics-server-metrics",
+                    "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                    "domain": "k8s",
+                    "labels": {
+                      "ops.platform.io/release": "ops-metrics-server",
+                      "app.kubernetes.io/instance": "ops-metrics-server",
+                      "app.kubernetes.io/managed-by": "Helm"
+                    },
+                    "apiGroup": "apps",
+                    "stableId": "b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                    "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                    "namespace": "ops-current",
+                    "updatedAt": "2026-11-08T04:07:35.310097159Z",
+                    "attributes": {
+                      "health": "unknown",
+                      "status": {
+                        "conditions": [
+                          {
+                            "type": "Progressing",
+                            "reason": "NewReplicaSetAvailable",
+                            "status": "True",
+                            "lastTransitionTime": "2026-11-06T03:34:04Z"
+                          },
+                          {
+                            "type": "Available",
+                            "reason": "MinimumReplicasAvailable",
+                            "status": "True",
+                            "lastTransitionTime": "2026-11-08T03:05:43Z"
+                          }
+                        ]
+                      },
+                      "resourceDomain": "kubernetes"
+                    },
+                    "sourceRefs": [
+                      "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    ],
+                    "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                    "lastObservedAt": "2026-11-08T04:07:35.310097159Z",
+                    "firstObservedAt": "2026-11-08T04:07:35.310097159Z"
+                  }
+                ],
+                "budgets": {
+                  "maxDepth": 2,
+                  "maxEdges": 400,
+                  "maxNodes": 200,
+                  "edgeCount": 6,
+                  "nodeCount": 7,
+                  "truncated": false,
+                  "storageMaxDepth": 2
+                },
+                "partial": false,
+                "warnings": [],
+                "conflicts": null,
+                "freshness": "fresh",
+                "collectedAt": "2026-11-08T04:24:40.115234127Z",
+                "graphRevision": {
+                  "ownerEpoch": 21,
+                  "graphGeneration": 637
+                },
+                "ownerInstance": "e7d22137-cdb0-42f2-b8fa-268978909dc6",
+                "schemaVersion": "resource-graph/v2",
+                "dependencyOnly": [
+                  "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                  "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                  "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/ConfigMap/70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                  "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Node/c874affc-6a0b-492f-b217-14ad989c0d89"
+                ],
+                "rankedEvidence": [],
+                "degradedSources": [],
+                "directlyAffected": [
+                  "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd"
+                ],
+                "indirectlyAffected": [
+                  "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/discovery.k8s.io/EndpointSlice/588ac39c-2832-44b4-8517-fc22a51634e4"
+                ]
+              },
+              "status": "unresolved",
+              "partial": true,
+              "graphPlan": "single-query/v1",
+              "candidates": [],
+              "recipeDigest": "sha256:7c592c952c97e9963fa6dacb787864b161a9e0ce0a6bfa6005a57beeeee233ac",
+              "recipeVersion": "v1",
+              "schemaVersion": "rca-evaluation/v2",
+              "evidenceBundle": {
+                "ranked": [],
+                "missing": [
+                  "pod-crash-failing",
+                  "container-backoff-error",
+                  "pod-path"
+                ],
+                "conflicts": [],
+                "supporting": [],
+                "contradicting": [],
+                "degradedSources": []
+              }
+            },
+            "source": "deterministic",
+            "revision": 771,
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "createdAt": "2026-11-08T04:24:40.12322953Z",
+            "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad",
+            "superseded": false,
+            "inputDigest": "sha256:a309785330d172f1a556fc3cbf1382f142d5460497ac61fa174574512c258654",
+            "inputManifest": {
+              "to": "2026-11-08T04:24:40.113365532Z",
+              "from": "2026-11-08T04:19:40.113365532Z",
+              "graph": {
+                "edges": [
+                  {
+                    "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                    "ttl": 0,
+                    "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd",
+                    "kind": "selects_pod",
+                    "validFrom": "2026-11-08T04:07:35.904847919Z",
+                    "confidence": 0.95,
+                    "observedAt": "2026-11-08T04:07:35.904847919Z",
+                    "provenance": {
+                      "observedAt": "2026-11-08T04:07:35.904847919Z",
+                      "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/selector/identity-projection-v1",
+                      "sourceValues": null,
+                      "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    }
+                  },
+                  {
+                    "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd",
+                    "ttl": 0,
+                    "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/discovery.k8s.io/EndpointSlice/588ac39c-2832-44b4-8517-fc22a51634e4",
+                    "kind": "managed_by",
+                    "validFrom": "2026-11-08T04:07:35.707476442Z",
+                    "confidence": 1,
+                    "observedAt": "2026-11-08T04:07:35.707476442Z",
+                    "provenance": {
+                      "observedAt": "2026-11-08T04:07:35.707476442Z",
+                      "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                      "sourceValues": null,
+                      "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    }
+                  },
+                  {
+                    "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Node/c874affc-6a0b-492f-b217-14ad989c0d89",
+                    "ttl": 0,
+                    "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                    "kind": "scheduled_on",
+                    "validFrom": "2026-11-08T04:07:34.808827482Z",
+                    "confidence": 1,
+                    "observedAt": "2026-11-08T04:07:34.808827482Z",
+                    "provenance": {
+                      "observedAt": "2026-11-08T04:07:34.808827482Z",
+                      "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                      "sourceValues": null,
+                      "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    }
+                  },
+                  {
+                    "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                    "ttl": 0,
+                    "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                    "kind": "managed_by",
+                    "validFrom": "2026-11-08T04:07:34.808827482Z",
+                    "confidence": 1,
+                    "observedAt": "2026-11-08T04:07:34.808827482Z",
+                    "provenance": {
+                      "observedAt": "2026-11-08T04:07:34.808827482Z",
+                      "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                      "sourceValues": null,
+                      "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    }
+                  },
+                  {
+                    "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/ConfigMap/70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                    "ttl": 0,
+                    "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                    "kind": "related_to",
+                    "validFrom": "2026-11-08T04:07:34.808827482Z",
+                    "confidence": 1,
+                    "observedAt": "2026-11-08T04:07:34.808827482Z",
+                    "provenance": {
+                      "observedAt": "2026-11-08T04:07:34.808827482Z",
+                      "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                      "sourceValues": null,
+                      "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    }
+                  },
+                  {
+                    "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                    "ttl": 0,
+                    "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                    "kind": "managed_by",
+                    "validFrom": "2026-11-08T04:07:34.524526238Z",
+                    "confidence": 1,
+                    "observedAt": "2026-11-08T04:07:34.524526238Z",
+                    "provenance": {
+                      "observedAt": "2026-11-08T04:07:34.524526238Z",
+                      "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                      "sourceValues": null,
+                      "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    }
+                  }
+                ],
+                "nodes": [
+                  {
+                    "kind": "Pod",
+                    "name": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn",
+                    "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                    "domain": "k8s",
+                    "labels": {
+                      "pod-template-hash": "6d46c4f8f5",
+                      "app.kubernetes.io/name": "ops-metrics-server-metrics",
+                      "ops.platform.io/release": "ops-metrics-server",
+                      "app.kubernetes.io/instance": "ops-metrics-server"
+                    },
+                    "apiGroup": "core",
+                    "stableId": "9d925158-f0c9-4ce5-84b8-830959e148dc",
+                    "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                    "namespace": "ops-current",
+                    "updatedAt": "2026-11-08T04:07:34.808827482Z",
+                    "attributes": {
+                      "health": "normal",
+                      "status": {
+                        "phase": "Running",
+                        "conditions": [
+                          {
+                            "type": "PodReadyToStartContainers",
+                            "status": "True",
+                            "lastTransitionTime": "2026-11-08T03:05:22Z"
+                          },
+                          {
+                            "type": "Initialized",
+                            "status": "True",
+                            "lastTransitionTime": "2026-11-06T06:16:42Z"
+                          },
+                          {
+                            "type": "Ready",
+                            "status": "True",
+                            "lastTransitionTime": "2026-11-08T03:05:43Z"
+                          },
+                          {
+                            "type": "ContainersReady",
+                            "status": "True",
+                            "lastTransitionTime": "2026-11-08T03:05:43Z"
+                          },
+                          {
+                            "type": "PodScheduled",
+                            "status": "True",
+                            "lastTransitionTime": "2026-11-06T06:16:42Z"
+                          }
+                        ],
+                        "containerStatuses": [
+                          {
+                            "name": "metrics-server",
+                            "ready": true,
+                            "state": {
+                              "running": {
+                                "startedAt": "2026-11-08T03:05:23Z"
+                              }
+                            },
+                            "imageID": "registry.k8s.io/metrics-server/metrics-server@sha256:89258156d0e9af60403eafd44da9676fd66f600c7934d468ccc17e42b199aee2",
+                            "lastState": {
+                              "terminated": {
+                                "reason": "Completed",
+                                "exitCode": 0,
+                                "startedAt": "2026-11-08T02:53:09Z",
+                                "finishedAt": "2026-11-08T03:05:22Z",
+                                "containerID": "containerd://b4a7d397aa8b745e167ec66b029572d65134857aa89a3474e348abc5261fda73"
+                              }
+                            },
+                            "containerID": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                            "restartCount": 114
+                          }
+                        ]
+                      },
+                      "resourceDomain": "kubernetes"
+                    },
+                    "sourceRefs": [
+                      "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    ],
+                    "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                    "lastObservedAt": "2026-11-08T04:07:34.808827482Z",
+                    "firstObservedAt": "2026-11-08T04:07:34.808827482Z"
+                  },
+                  {
+                    "kind": "Service",
+                    "name": "ops-metrics-server-metrics",
+                    "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                    "domain": "k8s",
+                    "labels": {
+                      "ops.platform.io/release": "ops-metrics-server",
+                      "app.kubernetes.io/instance": "ops-metrics-server",
+                      "app.kubernetes.io/managed-by": "Helm"
+                    },
+                    "apiGroup": "core",
+                    "stableId": "682f3394-2ebd-4ee9-b797-1815b57351dd",
+                    "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                    "namespace": "ops-current",
+                    "updatedAt": "2026-11-08T04:07:35.904847919Z",
+                    "attributes": {
+                      "health": "unknown",
+                      "resourceDomain": "network"
+                    },
+                    "sourceRefs": [
+                      "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    ],
+                    "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd",
+                    "lastObservedAt": "2026-11-08T04:07:35.904847919Z",
+                    "firstObservedAt": "2026-11-08T04:07:35.904847919Z"
+                  },
+                  {
+                    "kind": "EndpointSlice",
+                    "name": "ops-metrics-server-metrics-rv68l",
+                    "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                    "domain": "k8s",
+                    "labels": {
+                      "ops.platform.io/release": "ops-metrics-server",
+                      "app.kubernetes.io/instance": "ops-metrics-server",
+                      "kubernetes.io/service-name": "ops-metrics-server-metrics",
+                      "app.kubernetes.io/managed-by": "Helm",
+                      "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io"
+                    },
+                    "apiGroup": "discovery.k8s.io",
+                    "stableId": "588ac39c-2832-44b4-8517-fc22a51634e4",
+                    "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                    "namespace": "ops-current",
+                    "updatedAt": "2026-11-08T04:07:35.707476442Z",
+                    "attributes": {
+                      "health": "unknown",
+                      "resourceDomain": "network"
+                    },
+                    "sourceRefs": [
+                      "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    ],
+                    "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/discovery.k8s.io/EndpointSlice/588ac39c-2832-44b4-8517-fc22a51634e4",
+                    "lastObservedAt": "2026-11-08T04:07:35.707476442Z",
+                    "firstObservedAt": "2026-11-08T04:07:35.707476442Z"
+                  },
+                  {
+                    "kind": "Node",
+                    "name": "mssc",
+                    "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                    "domain": "k8s",
+                    "labels": {
+                      "kubernetes.io/os": "linux",
+                      "kubernetes.io/arch": "amd64",
+                      "beta.kubernetes.io/os": "linux",
+                      "kubernetes.io/hostname": "mssc",
+                      "beta.kubernetes.io/arch": "amd64",
+                      "node-role.kubernetes.io/control-plane": "",
+                      "node.kubernetes.io/exclude-from-external-load-balancers": ""
+                    },
+                    "apiGroup": "core",
+                    "stableId": "c874affc-6a0b-492f-b217-14ad989c0d89",
+                    "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                    "namespace": null,
+                    "updatedAt": "2026-11-08T04:24:19.562176106Z",
+                    "attributes": {
+                      "health": "normal",
+                      "status": {
+                        "nodeInfo": {
+                          "machineID": "137c892cd7144768955fdb7f59cf51fd",
+                          "systemUUID": "ffefce86-0c67-11eb-adfd-6787a9916300"
+                        },
+                        "addresses": [
+                          {
+                            "type": "InternalIP",
+                            "address": "192.168.0.63"
+                          },
+                          {
+                            "type": "Hostname",
+                            "address": "mssc"
+                          }
+                        ],
+                        "conditions": [
+                          {
+                            "type": "NetworkUnavailable",
+                            "reason": "FlannelIsUp",
+                            "status": "False",
+                            "lastTransitionTime": "2026-11-08T03:04:02Z"
+                          },
+                          {
+                            "type": "MemoryPressure",
+                            "reason": "KubeletHasSufficientMemory",
+                            "status": "False",
+                            "lastTransitionTime": "2026-10-08T09:12:17Z"
+                          },
+                          {
+                            "type": "DiskPressure",
+                            "reason": "KubeletHasNoDiskPressure",
+                            "status": "False",
+                            "lastTransitionTime": "2026-10-08T09:12:17Z"
+                          },
+                          {
+                            "type": "PIDPressure",
+                            "reason": "KubeletHasSufficientPID",
+                            "status": "False",
+                            "lastTransitionTime": "2026-10-08T09:12:17Z"
+                          },
+                          {
+                            "type": "Ready",
+                            "reason": "KubeletReady",
+                            "status": "True",
+                            "lastTransitionTime": "2026-10-08T10:02:54Z"
+                          }
+                        ]
+                      },
+                      "resourceDomain": "kubernetes"
+                    },
+                    "sourceRefs": [
+                      "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    ],
+                    "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Node/c874affc-6a0b-492f-b217-14ad989c0d89",
+                    "lastObservedAt": "2026-11-08T04:24:19.562176106Z",
+                    "firstObservedAt": "2026-11-08T04:07:34.899075849Z"
+                  },
+                  {
+                    "kind": "ReplicaSet",
+                    "name": "ops-metrics-server-metrics-6d46c4f8f5",
+                    "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                    "domain": "k8s",
+                    "labels": {
+                      "pod-template-hash": "6d46c4f8f5",
+                      "app.kubernetes.io/name": "ops-metrics-server-metrics",
+                      "ops.platform.io/release": "ops-metrics-server",
+                      "app.kubernetes.io/instance": "ops-metrics-server"
+                    },
+                    "apiGroup": "apps",
+                    "stableId": "63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                    "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                    "namespace": "ops-current",
+                    "updatedAt": "2026-11-08T04:07:34.524526238Z",
+                    "attributes": {
+                      "health": "unknown",
+                      "resourceDomain": "kubernetes"
+                    },
+                    "sourceRefs": [
+                      "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    ],
+                    "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                    "lastObservedAt": "2026-11-08T04:07:34.524526238Z",
+                    "firstObservedAt": "2026-11-08T04:07:34.524526238Z"
+                  },
+                  {
+                    "kind": "ConfigMap",
+                    "name": "ops-metrics-kubelet-ca",
+                    "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                    "domain": "k8s",
+                    "labels": {
+                      "ops.platform.io/managed-by": "opsctl-bootstrap",
+                      "ops.platform.io/installation-id": "4f62b5d6-1244-42ce-85c6-3150a7837915"
+                    },
+                    "apiGroup": "core",
+                    "stableId": "70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                    "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                    "namespace": "ops-current",
+                    "updatedAt": "2026-11-08T04:07:34.407420893Z",
+                    "attributes": {
+                      "health": "unknown",
+                      "resourceDomain": "kubernetes"
+                    },
+                    "sourceRefs": [
+                      "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    ],
+                    "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/ConfigMap/70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                    "lastObservedAt": "2026-11-08T04:07:34.407420893Z",
+                    "firstObservedAt": "2026-11-08T04:07:34.407420893Z"
+                  },
+                  {
+                    "kind": "Deployment",
+                    "name": "ops-metrics-server-metrics",
+                    "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                    "domain": "k8s",
+                    "labels": {
+                      "ops.platform.io/release": "ops-metrics-server",
+                      "app.kubernetes.io/instance": "ops-metrics-server",
+                      "app.kubernetes.io/managed-by": "Helm"
+                    },
+                    "apiGroup": "apps",
+                    "stableId": "b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                    "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                    "namespace": "ops-current",
+                    "updatedAt": "2026-11-08T04:07:35.310097159Z",
+                    "attributes": {
+                      "health": "unknown",
+                      "status": {
+                        "conditions": [
+                          {
+                            "type": "Progressing",
+                            "reason": "NewReplicaSetAvailable",
+                            "status": "True",
+                            "lastTransitionTime": "2026-11-06T03:34:04Z"
+                          },
+                          {
+                            "type": "Available",
+                            "reason": "MinimumReplicasAvailable",
+                            "status": "True",
+                            "lastTransitionTime": "2026-11-08T03:05:43Z"
+                          }
+                        ]
+                      },
+                      "resourceDomain": "kubernetes"
+                    },
+                    "sourceRefs": [
+                      "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    ],
+                    "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                    "lastObservedAt": "2026-11-08T04:07:35.310097159Z",
+                    "firstObservedAt": "2026-11-08T04:07:35.310097159Z"
+                  }
+                ],
+                "budgets": {
+                  "maxDepth": 2,
+                  "maxEdges": 400,
+                  "maxNodes": 200,
+                  "edgeCount": 6,
+                  "nodeCount": 7,
+                  "truncated": false,
+                  "storageMaxDepth": 2
+                },
+                "partial": false,
+                "warnings": [],
+                "conflicts": null,
+                "freshness": "fresh",
+                "collectedAt": "2026-11-08T04:24:40.115234127Z",
+                "graphRevision": {
+                  "ownerEpoch": 21,
+                  "graphGeneration": 637
+                },
+                "ownerInstance": "e7d22137-cdb0-42f2-b8fa-268978909dc6",
+                "schemaVersion": "resource-graph/v2",
+                "dependencyOnly": [
+                  "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                  "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                  "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/ConfigMap/70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                  "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Node/c874affc-6a0b-492f-b217-14ad989c0d89"
+                ],
+                "rankedEvidence": [],
+                "degradedSources": [],
+                "directlyAffected": [
+                  "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd"
+                ],
+                "indirectlyAffected": [
+                  "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/discovery.k8s.io/EndpointSlice/588ac39c-2832-44b4-8517-fc22a51634e4"
+                ]
+              },
+              "evidence": [],
+              "evaluatedAt": "2026-11-08T04:24:40.113365532Z",
+              "graphSources": [
+                {
+                  "revision": 2,
+                  "scopeDigest": "sha256:67eb23c92a1d76647ca1b3f210cd6cb1f622dc6b7dd496e2cfe343236513d7e9",
+                  "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                }
+              ],
+              "schemaVersion": "rca-input/v2",
+              "findingRevisions": [
+                {
+                  "digest": "sha256:911c410324b93af93044c8b5fa0bb8f2e496643093acc7567611cd049e719b30",
+                  "findingId": "01a1b3b6-77d9-7382-b225-a9a4f8126977",
+                  "namespace": "ops-current",
+                  "observedAt": "2026-11-08T03:27:56.689648928Z",
+                  "occurrenceId": "01a1b3b6-77d0-7084-b003-793072a49241",
+                  "lifecycleState": "resolved",
+                  "sourceRevision": 2,
+                  "aggregateRevision": 32,
+                  "sourceFingerprint": "sha256:a93b95fa8f66b5ab0c4412e03edf5bba8c5c79fe3b131dffcf543fa40130bd1d",
+                  "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                  "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                }
+              ],
+              "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc"
+            },
+            "schemaVersion": "rca-revision/v2",
+            "baseIncidentRevision": 34
+          },
+          "plans": [],
+          "historical": false,
+          "formalReferences": [
+            {
+              "kind": "rca",
+              "revision": 771,
+              "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad",
+              "contentDigest": "sha256:bf3dfec93f7c87810d6ed2175d0176e7861904002e9600badf10ebfb0af0b3de"
+            }
+          ],
+          "currentRcaRevision": 771
+        },
+        "tool": "get_formal_references",
+        "state": "succeeded",
+        "budget": {
+          "consumed": {
+            "toolCalls": 1,
+            "graphNodes": 0,
+            "rawQueries": 0,
+            "inputTokens": 0,
+            "resultBytes": 29890,
+            "outputTokens": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "modelCostMicros": 0
+          },
+          "remaining": {
+            "toolCalls": 37,
+            "graphNodes": 8000,
+            "rawQueries": 10,
+            "inputTokens": 524288,
+            "resultBytes": 41812634,
+            "outputTokens": 32768,
+            "evidenceItems": 3999,
+            "modelRequests": 8,
+            "modelCostMicros": 0
+          }
+        },
+        "partial": false,
+        "evidenceRefs": [],
+        "schemaVersion": "tool-response/v3",
+        "degradedSources": []
+      }
+    },
+    {
+      "argsSummary": {
+        "context": "已授权故障上下文与持久工具结果",
+        "rawPromptOmitted": true
+      },
+      "stepId": "01a1b967-354f-765e-bed2-6cc65a492d25",
+      "toolName": "model",
+      "argsDigest": "sha256:1d3215698d534d214a41f3440d3e20c0e562ab86ff8a2e3733e4f5d78029238d",
+      "state": "succeeded",
+      "result": {
+        "provider": "openai-compatible",
+        "response": {
+          "id": "a44ec0cc-9b23-4603-81f3-f50f6fa6c7b3",
+          "model": "deepseek-flash",
+          "usage": {
+            "total_tokens": 32576,
+            "prompt_tokens": 32438,
+            "completion_tokens": 138,
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 128,
+              "cache_write_tokens": null
+            },
+            "prompt_cache_hit_tokens": 128,
+            "prompt_cache_miss_tokens": 32310,
+            "completion_tokens_details": null
+          },
+          "object": "chat.completion",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "",
+                "tool_calls": [
+                  {
+                    "id": "call_00_xhWBuqEIPTj2ELB4Ycxf1256",
+                    "type": "function",
+                    "index": 0,
+                    "function": {
+                      "name": "describe_analysis_dataset",
+                      "arguments": "{\"datasetId\":\"metrics.pod-restarts\"}"
+                    }
+                  },
+                  {
+                    "id": "call_01_6DiF6QaXZI5kIm9wJF9Z4567",
+                    "type": "function",
+                    "index": 1,
+                    "function": {
+                      "name": "describe_analysis_dataset",
+                      "arguments": "{\"datasetId\":\"metrics.pod-cpu\"}"
+                    }
+                  },
+                  {
+                    "id": "call_02_1nUp9eebaPjbB2T5tt6O6303",
+                    "type": "function",
+                    "index": 2,
+                    "function": {
+                      "name": "describe_analysis_dataset",
+                      "arguments": "{\"datasetId\":\"metrics.pod-memory\"}"
+                    }
+                  },
+                  {
+                    "id": "call_03_DmslheeXfuMUWXmj6qlI1004",
+                    "type": "function",
+                    "index": 3,
+                    "function": {
+                      "name": "describe_analysis_dataset",
+                      "arguments": "{\"datasetId\":\"logs.records\"}"
+                    }
+                  }
+                ],
+                "function_call": null,
+                "provider_specific_fields": {
+                  "refusal": null
+                }
+              },
+              "finish_reason": "tool_calls",
+              "provider_specific_fields": {}
+            }
+          ],
+          "created": 1794111912,
+          "moderation": null,
+          "service_tier": null,
+          "system_fingerprint": "bc19ba97cbe016479903222bb1578db6"
+        },
+        "usageKnown": true
+      }
+    },
+    {
+      "argsSummary": {},
+      "stepId": "01a1b967-3ec6-7c54-bc4e-d49abbaf49e9",
+      "toolName": "describe_analysis_dataset",
+      "argsDigest": "sha256:27792a0c82018695d5bb071191ef1e04bfda94e80a7976a57164fe2c7f6bcefb",
+      "state": "succeeded",
+      "result": {
+        "data": {
+          "version": "analysis-catalog/v1",
+          "datasets": [
+            {
+              "id": "metrics.pod-memory",
+              "name": "Pod 工作集内存",
+              "unit": "bytes",
+              "kinds": [],
+              "metric": "memory_bytes",
+              "source": "victoriametrics",
+              "filters": [
+                "namespace"
+              ],
+              "maxGroups": 50,
+              "dimensions": [
+                "namespace",
+                "uid",
+                "time",
+                "comparison"
+              ],
+              "operations": [
+                "aggregate",
+                "trend",
+                "compare",
+                "compare_percent",
+                "average"
+              ],
+              "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 trend 不按资源分组，固定时间步长，最多 50 点，缺失点不补零；aggregate 仍为窗口末端求值。 趋势窗口开始前额外 5 分钟也须在已验证覆盖内；状态计数使用 bool 比较，仅有观测时才可返回零。 compare 比较两个等长、不重叠窗口末端的授权 gauge 快照；服务端计算增加/减少的绝对变化量，仅双方完整时发布变化，不计算百分比。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。 average 按每条授权序列窗口内的实际采样求平均后求和；不补缺失采样、不等同于完整墙钟时间平均。",
+              "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。 趋势仅返回固定时间网格上的历史求值，使用显式 5 分钟 last_over_time 回看，须单独验证趋势来源。",
+              "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+              "healthValues": [],
+              "requiredFilters": [],
+              "templateVersion": "metrics.pod-memory/v1",
+              "historySupported": true,
+              "clusterScopedKinds": [],
+              "authorizationDomain": "operational"
+            }
+          ],
+          "schemaVersion": "analysis-catalog/v1"
+        },
+        "tool": "describe_analysis_dataset",
+        "state": "succeeded",
+        "budget": {
+          "consumed": {
+            "toolCalls": 1,
+            "graphNodes": 0,
+            "rawQueries": 0,
+            "inputTokens": 0,
+            "resultBytes": 2341,
+            "outputTokens": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "modelCostMicros": 0
+          },
+          "remaining": {
+            "toolCalls": 36,
+            "graphNodes": 8000,
+            "rawQueries": 10,
+            "inputTokens": 491850,
+            "resultBytes": 41498115,
+            "outputTokens": 32630,
+            "evidenceItems": 3999,
+            "modelRequests": 7,
+            "modelCostMicros": 0
+          }
+        },
+        "partial": false,
+        "evidenceRefs": [],
+        "schemaVersion": "tool-response/v3",
+        "degradedSources": []
+      }
+    },
+    {
+      "argsSummary": {},
+      "stepId": "01a1b967-3ecc-741d-afa6-663663f6fe76",
+      "toolName": "describe_analysis_dataset",
+      "argsDigest": "sha256:d2ac591d7e6ce004ec211fa909bd0529cf9112e1c505bdbe736781def5b02762",
+      "state": "succeeded",
+      "result": {
+        "data": {
+          "version": "analysis-catalog/v1",
+          "datasets": [
+            {
+              "id": "logs.records",
+              "name": "日志完整聚合",
+              "unit": "logs",
+              "kinds": [],
+              "metric": "log_count",
+              "source": "victorialogs",
+              "filters": [
+                "namespace",
+                "level"
+              ],
+              "maxGroups": 50,
+              "dimensions": [
+                "namespace",
+                "level",
+                "time",
+                "comparison"
+              ],
+              "operations": [
+                "aggregate",
+                "trend",
+                "compare",
+                "compare_percent",
+                "samples"
+              ],
+              "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。 samples 最多返回20条脱敏样例；value仅表示本次返回样例数，不是日志总数；样例始终partial。",
+              "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
+              "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+              "healthValues": [],
+              "requiredFilters": [],
+              "templateVersion": "logs.records/v1",
+              "historySupported": true,
+              "clusterScopedKinds": [],
+              "authorizationDomain": "operational"
+            }
+          ],
+          "schemaVersion": "analysis-catalog/v1"
+        },
+        "tool": "describe_analysis_dataset",
+        "state": "succeeded",
+        "budget": {
+          "consumed": {
+            "toolCalls": 1,
+            "graphNodes": 0,
+            "rawQueries": 0,
+            "inputTokens": 0,
+            "resultBytes": 1752,
+            "outputTokens": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "modelCostMicros": 0
+          },
+          "remaining": {
+            "toolCalls": 35,
+            "graphNodes": 8000,
+            "rawQueries": 10,
+            "inputTokens": 491850,
+            "resultBytes": 41496363,
+            "outputTokens": 32630,
+            "evidenceItems": 3999,
+            "modelRequests": 7,
+            "modelCostMicros": 0
+          }
+        },
+        "partial": false,
+        "evidenceRefs": [],
+        "schemaVersion": "tool-response/v3",
+        "degradedSources": []
+      }
+    },
+    {
+      "argsSummary": {},
+      "stepId": "01a1b967-3ed1-72a9-918d-d6b5d371e54e",
+      "toolName": "describe_analysis_dataset",
+      "argsDigest": "sha256:394019c4c2debea1d4dab981af2684f6dca788b97fbc4a8448d0bef02571da39",
+      "state": "succeeded",
+      "result": {
+        "data": {
+          "version": "analysis-catalog/v1",
+          "datasets": [
+            {
+              "id": "metrics.pod-cpu",
+              "name": "Pod CPU 平均使用",
+              "unit": "cores",
+              "kinds": [],
+              "metric": "cpu_cores",
+              "source": "victoriametrics",
+              "filters": [
+                "namespace"
+              ],
+              "maxGroups": 50,
+              "dimensions": [
+                "namespace",
+                "uid",
+                "time",
+                "comparison"
+              ],
+              "operations": [
+                "aggregate",
+                "trend",
+                "compare",
+                "compare_percent"
+              ],
+              "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。",
+              "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
+              "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+              "healthValues": [],
+              "requiredFilters": [],
+              "templateVersion": "metrics.pod-cpu/v1",
+              "historySupported": true,
+              "clusterScopedKinds": [],
+              "authorizationDomain": "operational"
+            }
+          ],
+          "schemaVersion": "analysis-catalog/v1"
+        },
+        "tool": "describe_analysis_dataset",
+        "state": "succeeded",
+        "budget": {
+          "consumed": {
+            "toolCalls": 1,
+            "graphNodes": 0,
+            "rawQueries": 0,
+            "inputTokens": 0,
+            "resultBytes": 1622,
+            "outputTokens": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "modelCostMicros": 0
+          },
+          "remaining": {
+            "toolCalls": 34,
+            "graphNodes": 8000,
+            "rawQueries": 10,
+            "inputTokens": 491850,
+            "resultBytes": 41494741,
+            "outputTokens": 32630,
+            "evidenceItems": 3999,
+            "modelRequests": 7,
+            "modelCostMicros": 0
+          }
+        },
+        "partial": false,
+        "evidenceRefs": [],
+        "schemaVersion": "tool-response/v3",
+        "degradedSources": []
+      }
+    },
+    {
+      "argsSummary": {},
+      "stepId": "01a1b967-3ed5-7b02-b66e-b4c4cb1d4518",
+      "toolName": "describe_analysis_dataset",
+      "argsDigest": "sha256:8800c4653dd44c321ca9758206b80ed4642d30befffa3eb52b2d711c7f91255d",
+      "state": "succeeded",
+      "result": {
+        "data": {
+          "version": "analysis-catalog/v1",
+          "datasets": [
+            {
+              "id": "metrics.pod-restarts",
+              "name": "Pod 重启增量",
+              "unit": "restarts",
+              "kinds": [],
+              "metric": "restart_increase",
+              "source": "victoriametrics",
+              "filters": [
+                "namespace"
+              ],
+              "maxGroups": 50,
+              "dimensions": [
+                "namespace",
+                "uid",
+                "time",
+                "comparison"
+              ],
+              "operations": [
+                "aggregate",
+                "trend",
+                "compare",
+                "compare_percent"
+              ],
+              "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。",
+              "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
+              "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+              "healthValues": [],
+              "requiredFilters": [],
+              "templateVersion": "metrics.pod-restarts/v1",
+              "historySupported": true,
+              "clusterScopedKinds": [],
+              "authorizationDomain": "operational"
+            }
+          ],
+          "schemaVersion": "analysis-catalog/v1"
+        },
+        "tool": "describe_analysis_dataset",
+        "state": "succeeded",
+        "budget": {
+          "consumed": {
+            "toolCalls": 1,
+            "graphNodes": 0,
+            "rawQueries": 0,
+            "inputTokens": 0,
+            "resultBytes": 1638,
+            "outputTokens": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "modelCostMicros": 0
+          },
+          "remaining": {
+            "toolCalls": 33,
+            "graphNodes": 8000,
+            "rawQueries": 10,
+            "inputTokens": 491850,
+            "resultBytes": 41493103,
+            "outputTokens": 32630,
+            "evidenceItems": 3999,
+            "modelRequests": 7,
+            "modelCostMicros": 0
+          }
+        },
+        "partial": false,
+        "evidenceRefs": [],
+        "schemaVersion": "tool-response/v3",
+        "degradedSources": []
+      }
+    },
+    {
+      "argsSummary": {
+        "context": "已授权故障上下文与持久工具结果",
+        "rawPromptOmitted": true
+      },
+      "stepId": "01a1b967-40ab-7750-9902-ab09455a0877",
+      "toolName": "model",
+      "argsDigest": "sha256:fce15b61eadcb7e0a8d181a07a55fbeeddeee561c0f7831d5da94b3dc31ba0eb",
+      "state": "succeeded",
+      "result": {
+        "provider": "openai-compatible",
+        "response": {
+          "id": "f54a3841-9093-4582-b929-822d911e8590",
+          "model": "deepseek-flash",
+          "usage": {
+            "total_tokens": 36886,
+            "prompt_tokens": 35925,
+            "completion_tokens": 961,
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 1280,
+              "cache_write_tokens": null
+            },
+            "prompt_cache_hit_tokens": 1280,
+            "prompt_cache_miss_tokens": 34645,
+            "completion_tokens_details": null
+          },
+          "object": "chat.completion",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "",
+                "tool_calls": [
+                  {
+                    "id": "call_00_J8BYZpowoJpzj9JqoYVi5271",
+                    "type": "function",
+                    "index": 0,
+                    "function": {
+                      "name": "execute_analysis_query",
+                      "arguments": "{\"canonicalId\":\"k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc\",\"intent\":{\"datasetId\":\"metrics.pod-cpu\",\"dimensions\":[\"time\"],\"filters\":[],\"limit\":10,\"metrics\":[\"cpu_cores\"],\"operation\":\"trend\",\"schemaVersion\":\"query-intent/v1\",\"sort\":[],\"stepSeconds\":60,\"timeRange\":{\"from\":\"2026-11-08T04:20:08Z\",\"timezone\":\"Asia/Shanghai\",\"to\":\"2026-11-08T04:24:08Z\"}}}"
+                    }
+                  },
+                  {
+                    "id": "call_01_Tz9001FoLWGv8LE1wXKF8645",
+                    "type": "function",
+                    "index": 1,
+                    "function": {
+                      "name": "execute_analysis_query",
+                      "arguments": "{\"canonicalId\":\"k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc\",\"intent\":{\"datasetId\":\"metrics.pod-memory\",\"dimensions\":[\"time\"],\"filters\":[],\"limit\":10,\"metrics\":[\"memory_bytes\"],\"operation\":\"trend\",\"schemaVersion\":\"query-intent/v1\",\"sort\":[],\"stepSeconds\":60,\"timeRange\":{\"from\":\"2026-11-08T04:20:08Z\",\"timezone\":\"Asia/Shanghai\",\"to\":\"2026-11-08T04:24:08Z\"}}}"
+                    }
+                  },
+                  {
+                    "id": "call_02_FuWfWH7DPbMpVCNxl0ho5173",
+                    "type": "function",
+                    "index": 2,
+                    "function": {
+                      "name": "execute_analysis_query",
+                      "arguments": "{\"canonicalId\":\"k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc\",\"intent\":{\"datasetId\":\"metrics.pod-restarts\",\"dimensions\":[\"time\"],\"filters\":[],\"limit\":10,\"metrics\":[\"restart_increase\"],\"operation\":\"trend\",\"schemaVersion\":\"query-intent/v1\",\"sort\":[],\"stepSeconds\":60,\"timeRange\":{\"from\":\"2026-11-08T04:20:08Z\",\"timezone\":\"Asia/Shanghai\",\"to\":\"2026-11-08T04:24:08Z\"}}}"
+                    }
+                  },
+                  {
+                    "id": "call_03_s6IVTp8QGnxfQCC48v6j6680",
+                    "type": "function",
+                    "index": 3,
+                    "function": {
+                      "name": "execute_analysis_query",
+                      "arguments": "{\"canonicalId\":\"k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc\",\"intent\":{\"datasetId\":\"logs.records\",\"dimensions\":[],\"filters\":[],\"limit\":20,\"metrics\":[\"log_count\"],\"operation\":\"samples\",\"schemaVersion\":\"query-intent/v1\",\"sort\":[],\"timeRange\":{\"from\":\"2026-11-08T04:20:08Z\",\"timezone\":\"Asia/Shanghai\",\"to\":\"2026-11-08T04:25:02Z\"}}}"
+                    }
+                  }
+                ],
+                "function_call": null,
+                "provider_specific_fields": {
+                  "refusal": null
+                }
+              },
+              "finish_reason": "tool_calls",
+              "provider_specific_fields": {}
+            }
+          ],
+          "created": 1794111914,
+          "moderation": null,
+          "service_tier": null,
+          "system_fingerprint": "bc19ba97cbe016479903222bb1578db6"
+        },
+        "usageKnown": true
+      }
+    },
+    {
+      "argsSummary": {},
+      "stepId": "01a1b967-524f-74fb-b6cf-7608c92558e3",
+      "toolName": "execute_analysis_query",
+      "argsDigest": "sha256:9c2e78ea9be8c82f05fba31aa9e82497a594626d13ed6810b1c492ee2ee8b685",
+      "state": "succeeded",
+      "result": {
+        "data": {
+          "scope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "resources": [
+              "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc"
+            ],
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:b211ef88c24563d5ea1a87ff782a7b54495570a2e8327fd4f3a877da719d3912"
+          },
+          "filters": [],
+          "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+          "coverageGap": true,
+          "queryResultRefs": [
+            "01a1b967-532e-7dd4-acdb-50d943cc6fb1"
+          ],
+          "storedQueryResult": {
+            "facts": [
+              {
+                "row": 0,
+                "unit": "cores",
+                "exact": false,
+                "value": 0.001328906666666665,
+                "column": "value",
+                "factId": "sha256:ceeacac35c51bb38d618d71bad74a036ef7ad834806bbe8ed14cf44e094f18f2",
+                "schemaVersion": "query-fact/v1"
+              },
+              {
+                "row": 1,
+                "unit": "cores",
+                "exact": false,
+                "value": 0.0013503800000000006,
+                "column": "value",
+                "factId": "sha256:3607c3c8a09e5377331ba11334211f4db3a4d77424fddb914f4b3e2434196ba7",
+                "schemaVersion": "query-fact/v1"
+              },
+              {
+                "row": 2,
+                "unit": "cores",
+                "exact": false,
+                "value": 0.0013226200000000018,
+                "column": "value",
+                "factId": "sha256:152a473a41b123d759b846713924169f3e8a3b5140656b38d29b766df1ef0afc",
+                "schemaVersion": "query-fact/v1"
+              },
+              {
+                "row": 3,
+                "unit": "cores",
+                "exact": false,
+                "value": 0.0013130466666666685,
+                "column": "value",
+                "factId": "sha256:3862cbd6cd86252cef0f8f54a797b6d1a8d315dff0658030d83e79dd6ee6ad92",
+                "schemaVersion": "query-fact/v1"
+              },
+              {
+                "row": 4,
+                "unit": "cores",
+                "exact": false,
+                "value": 0.0013408733333333314,
+                "column": "value",
+                "factId": "sha256:221c6d0b9098843e3c7222c6e7829e0eea17039a6a3e809c37fb1374a109e0e9",
+                "schemaVersion": "query-fact/v1"
+              }
+            ],
+            "result": {
+              "rows": [
+                {
+                  "value": 0.001328906666666665,
+                  "dimension": "2026-11-08T04:20:08Z"
+                },
+                {
+                  "value": 0.0013503800000000006,
+                  "dimension": "2026-11-08T04:21:08Z"
+                },
+                {
+                  "value": 0.0013226200000000018,
+                  "dimension": "2026-11-08T04:22:08Z"
+                },
+                {
+                  "value": 0.0013130466666666685,
+                  "dimension": "2026-11-08T04:23:08Z"
+                },
+                {
+                  "value": 0.0013408733333333314,
+                  "dimension": "2026-11-08T04:24:08Z"
+                }
+              ],
+              "unit": "cores",
+              "exact": false,
+              "status": "partial",
+              "warnings": [
+                "collection_coverage_unknown"
+              ],
+              "datasetId": "metrics.pod-cpu",
+              "dimension": "time",
+              "freshness": "fresh",
+              "timeRange": {
+                "to": "2026-11-08T04:24:08Z",
+                "from": "2026-11-08T04:20:08Z",
+                "timezone": "Asia/Shanghai"
+              },
+              "truncated": false,
+              "planDigest": "sha256:3a5e6f84fcfff3ae3866d0eabf88648f95c8221bfd142c0ccb3dcf7fd260f439",
+              "scopeDigest": "sha256:3497b1242b1e6a3ae918a92385a065799decde922ab372b8c2159f1d625ff774",
+              "stepSeconds": 60,
+              "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+              "schemaVersion": "query-result/v1",
+              "snapshotReadAt": "2026-11-08T04:25:18.797372998Z",
+              "sourceManifest": {
+                "revision": 2,
+                "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+                "queryHash": "sha256:341c1e8e366680260c205bba317a0c7db3f4fda7e56140eda3ae79fa7d7c16ba",
+                "coverageTo": "2026-11-08T04:24:08Z",
+                "coverageFrom": "2026-11-08T04:20:08Z",
+                "bindingDigest": "sha256:ed271348d80ee0fa94d1a8d97e0019a7709a8cc0613b2c5155ff1b6327c70d7d",
+                "templateVersion": "metrics.pod-cpu-trend/v1",
+                "qualificationDigest": "sha256:f7cea064a741679a63a86c1204f5e335a3bf2ac2ca30b0c74bd18fe1c57fcec5"
+              },
+              "degradedSources": []
+            },
+            "contentDigest": "sha256:357cf293df5f2888c55e18e2dca962c2f06e932b0e6cad92394af1009c40fb09",
+            "queryResultId": "01a1b967-532e-7dd4-acdb-50d943cc6fb1"
+          },
+          "requestedTimeRange": {
+            "to": "2026-11-08T04:25:08Z",
+            "from": "2026-11-08T04:20:08Z",
+            "timezone": "Asia/Shanghai"
+          }
+        },
+        "tool": "execute_analysis_query",
+        "state": "succeeded",
+        "budget": {
+          "consumed": {
+            "toolCalls": 1,
+            "graphNodes": 0,
+            "rawQueries": 1,
+            "inputTokens": 0,
+            "resultBytes": 3935,
+            "outputTokens": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "modelCostMicros": 0
+          },
+          "remaining": {
+            "toolCalls": 32,
+            "graphNodes": 8000,
+            "rawQueries": 9,
+            "inputTokens": 455925,
+            "resultBytes": 41331466,
+            "outputTokens": 31669,
+            "evidenceItems": 3999,
+            "modelRequests": 6,
+            "modelCostMicros": 0
+          }
+        },
+        "partial": true,
+        "evidenceRefs": [],
+        "schemaVersion": "tool-response/v3",
+        "degradedSources": []
+      }
+    },
+    {
+      "argsSummary": {},
+      "stepId": "01a1b967-5256-7975-945c-7cb23732c1e6",
+      "toolName": "execute_analysis_query",
+      "argsDigest": "sha256:d0f83072fff1aef5cb909607349bcdb15ef7c9f314be6225faf4a82163af8e4a",
+      "state": "succeeded",
+      "result": {
+        "data": {
+          "scope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "resources": [
+              "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc"
+            ],
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:b211ef88c24563d5ea1a87ff782a7b54495570a2e8327fd4f3a877da719d3912"
+          },
+          "filters": [],
+          "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+          "coverageGap": true,
+          "queryResultRefs": [
+            "01a1b967-5456-7d8f-b76e-54038a61eabb"
+          ],
+          "storedQueryResult": {
+            "facts": [],
+            "result": {
+              "rows": [],
+              "unit": "logs",
+              "exact": false,
+              "status": "no_data",
+              "warnings": [
+                "bounded_sanitized_samples_not_total_count",
+                "no_observations"
+              ],
+              "datasetId": "logs.records",
+              "dimension": "",
+              "freshness": "fresh",
+              "timeRange": {
+                "to": "2026-11-08T04:25:02Z",
+                "from": "2026-11-08T04:20:08Z",
+                "timezone": "Asia/Shanghai"
+              },
+              "truncated": false,
+              "planDigest": "sha256:591aaa8288d13458ee3b86abe6d09d0998f4616b59852a0ff47dcbf420434725",
+              "scopeDigest": "sha256:3497b1242b1e6a3ae918a92385a065799decde922ab372b8c2159f1d625ff774",
+              "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+              "schemaVersion": "query-result/v1",
+              "snapshotReadAt": "2026-11-08T04:25:19.092985009Z",
+              "sourceManifest": {
+                "revision": 2,
+                "sourceId": "01a1ae32-b7a2-7987-bc83-9a7d8855093d",
+                "queryHash": "sha256:f02713625445faed776f20422300584f8f4717c1876edf5eb123ab87545409c7",
+                "coverageTo": "2026-11-08T04:25:02Z",
+                "coverageFrom": "2026-11-08T04:20:08Z",
+                "bindingDigest": "sha256:48baa9f2207e2bf697063e01a7fb57f34c1072a67386d0c87e53cbac3be03631",
+                "templateVersion": "logs.records-samples/v1",
+                "qualificationDigest": "sha256:37daf6e5f4b1715c5e0a76603f4d099898fff7fa0760350539944e55b9a0c091"
+              },
+              "degradedSources": []
+            },
+            "contentDigest": "sha256:bd8efe4935eef3e5ca1ffc186fcc363b0d947b4dc6716b72f4db13f2fca36a0a",
+            "queryResultId": "01a1b967-5456-7d8f-b76e-54038a61eabb"
+          },
+          "requestedTimeRange": {
+            "to": "2026-11-08T04:25:08Z",
+            "from": "2026-11-08T04:20:08Z",
+            "timezone": "Asia/Shanghai"
+          }
+        },
+        "tool": "execute_analysis_query",
+        "state": "succeeded",
+        "budget": {
+          "consumed": {
+            "toolCalls": 1,
+            "graphNodes": 0,
+            "rawQueries": 1,
+            "inputTokens": 0,
+            "resultBytes": 2605,
+            "outputTokens": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "modelCostMicros": 0
+          },
+          "remaining": {
+            "toolCalls": 31,
+            "graphNodes": 8000,
+            "rawQueries": 8,
+            "inputTokens": 455925,
+            "resultBytes": 41328861,
+            "outputTokens": 31669,
+            "evidenceItems": 3999,
+            "modelRequests": 6,
+            "modelCostMicros": 0
+          }
+        },
+        "partial": true,
+        "evidenceRefs": [],
+        "schemaVersion": "tool-response/v3",
+        "degradedSources": []
+      }
+    },
+    {
+      "argsSummary": {},
+      "stepId": "01a1b967-525b-7d4d-8e1e-004efa7eeb8e",
+      "toolName": "execute_analysis_query",
+      "argsDigest": "sha256:838968186f977358ad265d61a52630828bf8071c821c2e9a444a826ae1cfaf92",
+      "state": "succeeded",
+      "result": {
+        "data": {
+          "scope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "resources": [
+              "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc"
+            ],
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:b211ef88c24563d5ea1a87ff782a7b54495570a2e8327fd4f3a877da719d3912"
+          },
+          "filters": [],
+          "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+          "coverageGap": true,
+          "queryResultRefs": [
+            "01a1b967-55ed-702f-b291-c1d4e6ef8b76"
+          ],
+          "storedQueryResult": {
+            "facts": [
+              {
+                "row": 0,
+                "unit": "bytes",
+                "exact": false,
+                "value": 38502400,
+                "column": "value",
+                "factId": "sha256:b6e08cd7769d50053b255f32973c53d1ec63be5203bc8b31ad2b1a443265df14",
+                "schemaVersion": "query-fact/v1"
+              },
+              {
+                "row": 1,
+                "unit": "bytes",
+                "exact": false,
+                "value": 39706624,
+                "column": "value",
+                "factId": "sha256:f03fbf1d3447d1b7bf8509e1261fcb18ec34ac81c1c2da0a6401e74838765acf",
+                "schemaVersion": "query-fact/v1"
+              },
+              {
+                "row": 2,
+                "unit": "bytes",
+                "exact": false,
+                "value": 34885632,
+                "column": "value",
+                "factId": "sha256:025459eb7765ad1bbabb718ca282e5371d7d228d6b1cfbf1ef10ed2948abf95d",
+                "schemaVersion": "query-fact/v1"
+              },
+              {
+                "row": 3,
+                "unit": "bytes",
+                "exact": false,
+                "value": 34390016,
+                "column": "value",
+                "factId": "sha256:ecb55cbf0f8bc21c5210ed89476a5bc10182b05b7af7da84b5f98465ab900742",
+                "schemaVersion": "query-fact/v1"
+              },
+              {
+                "row": 4,
+                "unit": "bytes",
+                "exact": false,
+                "value": 34639872,
+                "column": "value",
+                "factId": "sha256:00f44794f4777c47329eea1221c2a8b6ee94ec4be11bbeee73025303f7e846ce",
+                "schemaVersion": "query-fact/v1"
+              }
+            ],
+            "result": {
+              "rows": [
+                {
+                  "value": 38502400,
+                  "dimension": "2026-11-08T04:20:08Z"
+                },
+                {
+                  "value": 39706624,
+                  "dimension": "2026-11-08T04:21:08Z"
+                },
+                {
+                  "value": 34885632,
+                  "dimension": "2026-11-08T04:22:08Z"
+                },
+                {
+                  "value": 34390016,
+                  "dimension": "2026-11-08T04:23:08Z"
+                },
+                {
+                  "value": 34639872,
+                  "dimension": "2026-11-08T04:24:08Z"
+                }
+              ],
+              "unit": "bytes",
+              "exact": false,
+              "status": "partial",
+              "warnings": [
+                "collection_coverage_unknown"
+              ],
+              "datasetId": "metrics.pod-memory",
+              "dimension": "time",
+              "freshness": "fresh",
+              "timeRange": {
+                "to": "2026-11-08T04:24:08Z",
+                "from": "2026-11-08T04:20:08Z",
+                "timezone": "Asia/Shanghai"
+              },
+              "truncated": false,
+              "planDigest": "sha256:0373cc53241c1f4bfe5e200a434d6c36d5081819938047070f2abc381b3f61eb",
+              "scopeDigest": "sha256:3497b1242b1e6a3ae918a92385a065799decde922ab372b8c2159f1d625ff774",
+              "stepSeconds": 60,
+              "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+              "schemaVersion": "query-result/v1",
+              "snapshotReadAt": "2026-11-08T04:25:19.393398436Z",
+              "sourceManifest": {
+                "revision": 2,
+                "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+                "queryHash": "sha256:1a56ca9d305c84d187bd09dbd02dc8c5703c6204035eb7a437986a00aa9b1029",
+                "coverageTo": "2026-11-08T04:24:08Z",
+                "coverageFrom": "2026-11-08T04:20:08Z",
+                "bindingDigest": "sha256:ed271348d80ee0fa94d1a8d97e0019a7709a8cc0613b2c5155ff1b6327c70d7d",
+                "templateVersion": "metrics.pod-memory-trend/v1",
+                "qualificationDigest": "sha256:8a51cbca316d47f74ebf3ca02864a6a3f39281d07c72a3526547a19cad2b3946"
+              },
+              "degradedSources": []
+            },
+            "contentDigest": "sha256:abf676a6ce8b6fd26e30b768020294913e7d4e6d736a3a406a3a730b2b860b04",
+            "queryResultId": "01a1b967-55ed-702f-b291-c1d4e6ef8b76"
+          },
+          "requestedTimeRange": {
+            "to": "2026-11-08T04:25:08Z",
+            "from": "2026-11-08T04:20:08Z",
+            "timezone": "Asia/Shanghai"
+          }
+        },
+        "tool": "execute_analysis_query",
+        "state": "succeeded",
+        "budget": {
+          "consumed": {
+            "toolCalls": 1,
+            "graphNodes": 0,
+            "rawQueries": 1,
+            "inputTokens": 0,
+            "resultBytes": 3813,
+            "outputTokens": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "modelCostMicros": 0
+          },
+          "remaining": {
+            "toolCalls": 30,
+            "graphNodes": 8000,
+            "rawQueries": 7,
+            "inputTokens": 455925,
+            "resultBytes": 41325048,
+            "outputTokens": 31669,
+            "evidenceItems": 3999,
+            "modelRequests": 6,
+            "modelCostMicros": 0
+          }
+        },
+        "partial": true,
+        "evidenceRefs": [],
+        "schemaVersion": "tool-response/v3",
+        "degradedSources": []
+      }
+    },
+    {
+      "argsSummary": {},
+      "stepId": "01a1b967-526a-7aaf-ab0d-f1eaf190ea21",
+      "toolName": "execute_analysis_query",
+      "argsDigest": "sha256:56fd30db2399c54d0928641e642f7f4f36affa0ab694720427f28ef0a337a3bf",
+      "state": "succeeded",
+      "result": {
+        "data": {
+          "scope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "resources": [
+              "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc"
+            ],
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:b211ef88c24563d5ea1a87ff782a7b54495570a2e8327fd4f3a877da719d3912"
+          },
+          "filters": [],
+          "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+          "coverageGap": true,
+          "queryResultRefs": [
+            "01a1b967-5717-7ba3-a09f-77b05a7b4ac3"
+          ],
+          "storedQueryResult": {
+            "facts": [
+              {
+                "row": 0,
+                "unit": "restarts",
+                "exact": false,
+                "value": 0,
+                "column": "value",
+                "factId": "sha256:3c5048055337a598a426055e486a864294fa98b3211ccc7d5ff2a8fdee7278df",
+                "schemaVersion": "query-fact/v1"
+              },
+              {
+                "row": 1,
+                "unit": "restarts",
+                "exact": false,
+                "value": 0,
+                "column": "value",
+                "factId": "sha256:a5bf36927759a675c890cab9e1b78725e0c8b29375e2b7c5ae24b0b7cdcaa3a8",
+                "schemaVersion": "query-fact/v1"
+              },
+              {
+                "row": 2,
+                "unit": "restarts",
+                "exact": false,
+                "value": 0,
+                "column": "value",
+                "factId": "sha256:8f3188fd6b16515c4132bf0b09369c665f6855bfbe19abe693468248e8e1a972",
+                "schemaVersion": "query-fact/v1"
+              },
+              {
+                "row": 3,
+                "unit": "restarts",
+                "exact": false,
+                "value": 0,
+                "column": "value",
+                "factId": "sha256:9e99e31899e17fdb8fba6ee124db7e3ea6ca138bcd328532771db5c84d603818",
+                "schemaVersion": "query-fact/v1"
+              },
+              {
+                "row": 4,
+                "unit": "restarts",
+                "exact": false,
+                "value": 0,
+                "column": "value",
+                "factId": "sha256:40f52345c0a59bdd51fab9c621673a42e6115002dd855db4844bb510145b03a3",
+                "schemaVersion": "query-fact/v1"
+              }
+            ],
+            "result": {
+              "rows": [
+                {
+                  "value": 0,
+                  "dimension": "2026-11-08T04:20:08Z"
+                },
+                {
+                  "value": 0,
+                  "dimension": "2026-11-08T04:21:08Z"
+                },
+                {
+                  "value": 0,
+                  "dimension": "2026-11-08T04:22:08Z"
+                },
+                {
+                  "value": 0,
+                  "dimension": "2026-11-08T04:23:08Z"
+                },
+                {
+                  "value": 0,
+                  "dimension": "2026-11-08T04:24:08Z"
+                }
+              ],
+              "unit": "restarts",
+              "exact": false,
+              "status": "partial",
+              "warnings": [
+                "collection_coverage_unknown"
+              ],
+              "datasetId": "metrics.pod-restarts",
+              "dimension": "time",
+              "freshness": "fresh",
+              "timeRange": {
+                "to": "2026-11-08T04:24:08Z",
+                "from": "2026-11-08T04:20:08Z",
+                "timezone": "Asia/Shanghai"
+              },
+              "truncated": false,
+              "planDigest": "sha256:aead7ba1a287b1463a8be07efad69dc1d8062da34d2bbe7f6a2f91549fb76521",
+              "scopeDigest": "sha256:3497b1242b1e6a3ae918a92385a065799decde922ab372b8c2159f1d625ff774",
+              "stepSeconds": 60,
+              "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+              "schemaVersion": "query-result/v1",
+              "snapshotReadAt": "2026-11-08T04:25:19.796152109Z",
+              "sourceManifest": {
+                "revision": 2,
+                "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+                "queryHash": "sha256:be3b43ffdbacd475437d0dbb330d4926d52dfaa148bdaaf253af6ee770cedaaa",
+                "coverageTo": "2026-11-08T04:24:08Z",
+                "coverageFrom": "2026-11-08T04:20:08Z",
+                "bindingDigest": "sha256:ed271348d80ee0fa94d1a8d97e0019a7709a8cc0613b2c5155ff1b6327c70d7d",
+                "templateVersion": "metrics.pod-restarts-trend/v1",
+                "qualificationDigest": "sha256:d62e56c015f1d02bd660a12161a7746218524eef2f373ddcefb831469bf7f332"
+              },
+              "degradedSources": []
+            },
+            "contentDigest": "sha256:e2d0050e08b3be7323e32317639096a7e66623143d51aa8406eaf346aeeb9db7",
+            "queryResultId": "01a1b967-5717-7ba3-a09f-77b05a7b4ac3"
+          },
+          "requestedTimeRange": {
+            "to": "2026-11-08T04:25:08Z",
+            "from": "2026-11-08T04:20:08Z",
+            "timezone": "Asia/Shanghai"
+          }
+        },
+        "tool": "execute_analysis_query",
+        "state": "succeeded",
+        "budget": {
+          "consumed": {
+            "toolCalls": 1,
+            "graphNodes": 0,
+            "rawQueries": 1,
+            "inputTokens": 0,
+            "resultBytes": 3765,
+            "outputTokens": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "modelCostMicros": 0
+          },
+          "remaining": {
+            "toolCalls": 29,
+            "graphNodes": 8000,
+            "rawQueries": 6,
+            "inputTokens": 455925,
+            "resultBytes": 41321283,
+            "outputTokens": 31669,
+            "evidenceItems": 3999,
+            "modelRequests": 6,
+            "modelCostMicros": 0
+          }
+        },
+        "partial": true,
+        "evidenceRefs": [],
+        "schemaVersion": "tool-response/v3",
+        "degradedSources": []
+      }
+    },
+    {
+      "argsSummary": {
+        "context": "已授权故障上下文与持久工具结果",
+        "rawPromptOmitted": true
+      },
+      "stepId": "01a1b967-57f6-7267-b02a-22c684bb644b",
+      "toolName": "model",
+      "argsDigest": "sha256:56ea6d602d8db6be869a573877044a20f31d9c5869e5d8fe950b7255884d1826",
+      "state": "succeeded",
+      "result": {
+        "provider": "openai-compatible",
+        "response": {
+          "id": "1672dfce-3061-4142-b70f-48359724aa2f",
+          "model": "deepseek-flash",
+          "usage": {
+            "total_tokens": 53014,
+            "prompt_tokens": 50482,
+            "completion_tokens": 2532,
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 1408,
+              "cache_write_tokens": null
+            },
+            "prompt_cache_hit_tokens": 1408,
+            "prompt_cache_miss_tokens": 49074,
+            "completion_tokens_details": null
+          },
+          "object": "chat.completion",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "{\"answerKind\":\"diagnosis\",\"asOf\":\"2026-11-08T04:25:19.796152109Z\",\"clarification\":null,\"degradedSources\":[],\"entityRefs\":[],\"evidenceRefs\":[\"b96ae5bf-c41f-5243-88ed-dba5edbd3dbb\",\"6bb52038-5afa-5d0e-99c7-4514986b55db\"],\"factRefs\":[{\"factId\":\"sha256:ceeacac35c51bb38d618d71bad74a036ef7ad834806bbe8ed14cf44e094f18f2\",\"queryResultId\":\"01a1b967-532e-7dd4-acdb-50d943cc6fb1\"},{\"factId\":\"sha256:3607c3c8a09e5377331ba11334211f4db3a4d77424fddb914f4b3e2434196ba7\",\"queryResultId\":\"01a1b967-532e-7dd4-acdb-50d943cc6fb1\"},{\"factId\":\"sha256:152a473a41b123d759b846713924169f3e8a3b5140656b38d29b766df1ef0afc\",\"queryResultId\":\"01a1b967-532e-7dd4-acdb-50d943cc6fb1\"},{\"factId\":\"sha256:3862cbd6cd86252cef0f8f54a797b6d1a8d315dff0658030d83e79dd6ee6ad92\",\"queryResultId\":\"01a1b967-532e-7dd4-acdb-50d943cc6fb1\"},{\"factId\":\"sha256:221c6d0b9098843e3c7222c6e7829e0eea17039a6a3e809c37fb1374a109e0e9\",\"queryResultId\":\"01a1b967-532e-7dd4-acdb-50d943cc6fb1\"},{\"factId\":\"sha256:b6e08cd7769d50053b255f32973c53d1ec63be5203bc8b31ad2b1a443265df14\",\"queryResultId\":\"01a1b967-55ed-702f-b291-c1d4e6ef8b76\"},{\"factId\":\"sha256:f03fbf1d3447d1b7bf8509e1261fcb18ec34ac81c1c2da0a6401e74838765acf\",\"queryResultId\":\"01a1b967-55ed-702f-b291-c1d4e6ef8b76\"},{\"factId\":\"sha256:025459eb7765ad1bbabb718ca282e5371d7d228d6b1cfbf1ef10ed2948abf95d\",\"queryResultId\":\"01a1b967-55ed-702f-b291-c1d4e6ef8b76\"},{\"factId\":\"sha256:ecb55cbf0f8bc21c5210ed89476a5bc10182b05b7af7da84b5f98465ab900742\",\"queryResultId\":\"01a1b967-55ed-702f-b291-c1d4e6ef8b76\"},{\"factId\":\"sha256:00f44794f4777c47329eea1221c2a8b6ee94ec4be11bbeee73025303f7e846ce\",\"queryResultId\":\"01a1b967-55ed-702f-b291-c1d4e6ef8b76\"},{\"factId\":\"sha256:3c5048055337a598a426055e486a864294fa98b3211ccc7d5ff2a8fdee7278df\",\"queryResultId\":\"01a1b967-5717-7ba3-a09f-77b05a7b4ac3\"},{\"factId\":\"sha256:a5bf36927759a675c890cab9e1b78725e0c8b29375e2b7c5ae24b0b7cdcaa3a8\",\"queryResultId\":\"01a1b967-5717-7ba3-a09f-77b05a7b4ac3\"},{\"factId\":\"sha256:8f3188fd6b16515c4132bf0b09369c665f6855bfbe19abe693468248e8e1a972\",\"queryResultId\":\"01a1b967-5717-7ba3-a09f-77b05a7b4ac3\"},{\"factId\":\"sha256:9e99e31899e17fdb8fba6ee124db7e3ea6ca138bcd328532771db5c84d603818\",\"queryResultId\":\"01a1b967-5717-7ba3-a09f-77b05a7b4ac3\"},{\"factId\":\"sha256:40f52345c0a59bdd51fab9c621673a42e6115002dd855db4844bb510145b03a3\",\"queryResultId\":\"01a1b967-5717-7ba3-a09f-77b05a7b4ac3\"}],\"faultChain\":[],\"faultChainContextRef\":null,\"formalRefs\":[{\"actionPlanId\":null,\"contentDigest\":\"sha256:bf3dfec93f7c87810d6ed2175d0176e7861904002e9600badf10ebfb0af0b3de\",\"incidentId\":\"01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad\",\"kind\":\"rca\",\"revision\":771}],\"hypotheses\":[{\"conflicts\":[],\"key\":\"容器反复重启导致 PodRuntimeFault（历史观察，未确认）\",\"missingEvidence\":[\"历史重启时间分布与累计 restartCount 来源\",\"崩溃/退避日志（本窗口 samples 为 no_data）\"],\"nextChecks\":[\"读取 resource_history/resource_changes 对齐历史重启时间线\"],\"summary\":\"上下文快照显示 restartCount=114，且 2026-11-08T02:53:09Z–03:05:22Z 一次终止为 Completed/exitCode=0，随后 03:05:23Z 重启并 Ready；本次当前窗口 04:20:08Z–04:24:08Z 的重启增量均为 0，说明该窗口内未观察到新增重启，但不能解释历史 114 次重启的原因。\",\"supports\":[\"b96ae5bf-c41f-5243-88ed-dba5edbd3dbb\",\"6bb52038-5afa-5d0e-99c7-4514986b55db\"]},{\"conflicts\":[],\"key\":\"节点或依赖侧因素间接影响该 Pod（未验证）\",\"missingEvidence\":[\"pod-path 调用路径与网络侧观测（networkCapabilities 为空）\",\"节点侧与 Pod 重启时间对齐的指标\"],\"nextChecks\":[\"在具备网络能力时查询 Service→Pod 路径\"],\"summary\":\"Pod 调度在节点 mssc（192.168.0.63），该节点 Ready=True 且无内存/磁盘/PID 压力；Service 与 EndpointSlice 为受影响对象，但网络能力为空，无法验证调用路径。\",\"supports\":[]}],\"missingEvidence\":[\"请求窗口 2026-11-08T04:20:08Z–04:25:08Z 中，指标仅覆盖到 04:24:08Z、日志仅覆盖到 04:25:02Z，末尾约 60 秒（指标）与约 6 秒（日志）未被覆盖，查询结果标记 coverageGap=true 且 warning=collection_coverage_unknown。\",\"logs.records samples 返回 no_data（warnings: no_observations、bounded_sanitized_samples_not_total_count），同期容器日志无可用样例，pod-crash-failing 与 container-backoff-error 仍无直接证据。\",\"重启趋势为每个 step 的增量（5 个点均为 0），不能替代 restartCount=114 的累计值来源与历史重启时间分布。\",\"RCA revision 771 仍为 unresolved/partial，evidenceBundle.missing 含 pod-crash-failing、container-backoff-error、pod-path，networkCapabilities 为空，无法验证 Service→Pod 调用路径。\"],\"nextChecks\":[\"在日志源覆盖范围内重试 logs.records 的 aggregate/trend（namespace=ops-current，窗口 2026-11-08T04:20:08Z–04:25:02Z），确认是否确实无日志还是采集缺失。\",\"读取该 Pod 的 resource_history/resource_changes（fault 与 baseline 窗口），核对镜像、探针、资源限制是否变化，以补齐重启根因证据。\",\"在具备网络能力时查询 Service ops-metrics-server-metrics → Pod 的调用路径，补齐 pod-path 证据。\"],\"partial\":true,\"queryResultRefs\":[\"01a1b967-532e-7dd4-acdb-50d943cc6fb1\",\"01a1b967-55ed-702f-b291-c1d4e6ef8b76\",\"01a1b967-5717-7ba3-a09f-77b05a7b4ac3\",\"01a1b967-5456-7d8f-b76e-54038a61eabb\"],\"resourceSourceSteps\":[],\"schemaVersion\":\"assistant-answer/v1\",\"scopeSummary\":\"operational:79014400-9453-4cb4-9678-0fae47981d79 / namespace ops-current / Pod 9d925158-f0c9-4ce5-84b8-830959e148dc\",\"summary\":\"本次为当前恢复检查：对 Pod ops-current/ops-metrics-server-metrics-6d46c4f8f5-7ztrn 的只读查询已成功返回数据，覆盖 2026-11-08T04:20:08Z–04:24:08Z（Asia/Shanghai），CPU 约 0.00131–0.00135 cores、工作集内存约 34.4–39.7 MB、每个 60 秒步长的重启增量均为 0；同期日志 samples 返回 no_data（无观测样例），因此不能据此断言日志侧正常。这些只是当前窗口的观测，不能当作历史故障根因，也不能证明历史重启原因。\",\"warnings\":[\"本次为当前恢复检查，只反映 2026-11-08T04:20:08Z–04:24:08Z 的观测，不能当作历史故障根因。\",\"三个指标趋势查询 status=partial，warnings=collection_coverage_unknown，且 coverageGap=true；缺失点不补零。\",\"日志 samples 的 value 仅表示返回样例数，不是日志总数；no_data 不等于日志侧正常。\",\"Pod 的 Running/Ready 与 restartCount=114 来自 2026-11-08T04:07:34Z 的上下文快照，不是本窗口的时序观测。\",\"未执行任何命令或变更，仅调用只读工具。\"]}",
+                "tool_calls": null,
+                "function_call": null,
+                "provider_specific_fields": {
+                  "refusal": null
+                }
+              },
+              "finish_reason": "stop",
+              "provider_specific_fields": {}
+            }
+          ],
+          "created": 1794111920,
+          "moderation": null,
+          "service_tier": null,
+          "system_fingerprint": "bc19ba97cbe016479903222bb1578db6"
+        },
+        "usageKnown": true
+      }
+    }
+  ],
+  "queryReadChecks": [
+    {
+      "id": "01a1b967-532e-7dd4-acdb-50d943cc6fb1",
+      "status": 200,
+      "keys": [
+        "queryResultId",
+        "result",
+        "facts",
+        "contentDigest"
+      ]
+    },
+    {
+      "id": "01a1b967-55ed-702f-b291-c1d4e6ef8b76",
+      "status": 200,
+      "keys": [
+        "queryResultId",
+        "result",
+        "facts",
+        "contentDigest"
+      ]
+    },
+    {
+      "id": "01a1b967-5717-7ba3-a09f-77b05a7b4ac3",
+      "status": 200,
+      "keys": [
+        "queryResultId",
+        "result",
+        "facts",
+        "contentDigest"
+      ]
+    },
+    {
+      "id": "01a1b967-5456-7d8f-b76e-54038a61eabb",
+      "status": 200,
+      "keys": [
+        "queryResultId",
+        "result",
+        "facts",
+        "contentDigest"
+      ]
+    }
+  ]
+}

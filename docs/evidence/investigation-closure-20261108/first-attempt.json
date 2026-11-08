@@ -1,0 +1,3331 @@
+{
+  "candidate": "0e874439b3701886196171cac0eab20d640e9456",
+  "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad",
+  "conversationId": "01a1b94d-1319-7857-a2cb-e93cef0b1c99",
+  "turns": [
+    {
+      "turn": {
+        "turnId": "01a1b94d-4c15-7125-a68e-d452d9d206db",
+        "conversationId": "01a1b94d-1319-7857-a2cb-e93cef0b1c99",
+        "jobId": "01a1b94d-4c15-7127-92ca-5c1ca71d953a",
+        "state": "queued",
+        "createdAt": "2026-11-08T03:56:53.14716Z",
+        "conversationRevision": 2
+      },
+      "result": {
+        "turnId": "01a1b94d-4c15-7125-a68e-d452d9d206db",
+        "conversationId": "01a1b94d-1319-7857-a2cb-e93cef0b1c99",
+        "jobId": "01a1b94d-4c15-7127-92ca-5c1ca71d953a",
+        "state": "partial",
+        "answer": {
+          "asOf": "2026-11-08T03:57:09.079200183Z",
+          "partial": true,
+          "summary": "本次故障是 ops-current 命名空间中 Pod ops-metrics-server-metrics-6d46c4f8f5-7ztrn 的 PodRuntimeFault（k8sgpt 分析器，warning 级），Incident 01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad 已于 2026-11-08T03:33:00Z 标记 resolved，Pod 当前 Running/Ready、容器 restartCount=114，最近一次终止原因为 Completed、exitCode=0。正式 RCA revision 730 状态为 unresolved/partial，候选根因为空，缺少 pod-crash-failing、container-backoff-error、pod-path 三类证据，因此只能说明已观察到的现象与恢复状态，不能确认因果。",
+          "factRefs": [],
+          "warnings": [
+            "RCA revision 730 的 status 为 unresolved、partial=true，candidates 为空，不能作为已确认根因引用。",
+            "Pod 的 restartCount=114 与 lastState 为 Completed/exitCode=0 并存，说明重启原因不能由该终止状态单独解释。",
+            "本次未执行任何命令或变更，仅引用已读取的上下文与正式引用。",
+            "model_answer_incomplete"
+          ],
+          "answerKind": "diagnosis",
+          "entityRefs": [],
+          "formalRefs": [
+            {
+              "kind": "rca",
+              "revision": 730,
+              "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad",
+              "contentDigest": "sha256:2fb83898477298320bdbaa4586a07b9a577c063526ce01e736c608a728783308"
+            }
+          ],
+          "hypotheses": [
+            {
+              "key": "metrics-server 容器反复重启导致 PodRuntimeFault",
+              "summary": "Pod 容器 restartCount=114，且 2026-11-08T02:53:09Z–03:05:22Z 一次终止为 Completed/exitCode=0，随后 03:05:23Z 重新启动并 Ready；这与进程被正常终止后重启的模式一致，但缺少崩溃/退避与日志证据，不能确认因果。",
+              "supports": [
+                "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb"
+              ],
+              "conflicts": [],
+              "nextChecks": [
+                "查询 metrics.pod-restarts 趋势确认重启是否持续",
+                "查询 logs.records 检索崩溃与退避错误"
+              ],
+              "missingEvidence": [
+                "pod-crash-failing 证据（非零退出码或 OOMKilled 记录）",
+                "container-backoff-error 事件/日志",
+                "故障窗口内重启计数与日志时序"
+              ]
+            },
+            {
+              "key": "节点或依赖侧因素间接影响该 Pod",
+              "summary": "Pod 调度在节点 mssc（192.168.0.63），该节点 Ready=True 且无内存/磁盘/PID 压力；Service ops-metrics-server-metrics 与 EndpointSlice 被列为直接/间接受影响对象，但网络能力不可用，无法验证流量路径。",
+              "supports": [],
+              "conflicts": [],
+              "nextChecks": [
+                "读取节点与 Pod 的 resource_history 对齐时间线",
+                "在具备网络能力时查询 Service→Pod 路径"
+              ],
+              "missingEvidence": [
+                "pod-path 调用路径与网络侧观测（networkCapabilities 为空）",
+                "节点侧与 Pod 重启时间对齐的指标"
+              ]
+            }
+          ],
+          "nextChecks": [
+            "在故障窗口内查询该 Pod 的 metrics.pod-restarts 与 metrics.pod-phase 趋势，确认重启发生的时间分布与是否仍在增长。",
+            "查询该 Pod 在故障窗口的 logs.records，检索崩溃/退避相关错误，以补齐 pod-crash-failing 与 container-backoff-error。",
+            "读取该 Pod 的 resource_history/resource_changes（fault 与 baseline 窗口），核对镜像、探针、资源限制等字段是否发生变化。"
+          ],
+          "evidenceRefs": [
+            "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb"
+          ],
+          "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+          "schemaVersion": "assistant-answer/v1",
+          "degradedSources": [],
+          "missingEvidence": [
+            "RCA 证据包缺少 pod-crash-failing：没有崩溃/失败退出（非零 exitCode 或 OOMKilled 等）的直接记录，现有 lastState 为 Completed/exitCode=0。",
+            "RCA 证据包缺少 container-backoff-error：没有容器重启退避或启动失败的错误事件/日志证据。",
+            "RCA 证据包缺少 pod-path：缺少从 Service/EndpointSlice 到 Pod 的完整调用路径与流量侧观测，网络能力列表为空（networkCapabilities=[]）。",
+            "缺少故障窗口（2026-11-07T01:54:02Z 起）内该 Pod 的重启计数、CPU/内存与日志的时序对比，本次仅读取了上下文与正式引用，未执行新的指标/日志查询。",
+            "缺少重启根因的变更证据（如镜像、配置、探针或节点侧变更），RCA 输入中 evidence 为空。"
+          ],
+          "queryResultRefs": []
+        },
+        "createdAt": "2026-11-08T03:56:53.14716Z",
+        "conversationRevision": 2
+      },
+      "steps": [
+        {
+          "argsSummary": {},
+          "stepId": "01a1b94d-4db1-7eba-b223-537fcef4ffd7",
+          "toolName": "get_assistant_context",
+          "argsDigest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "state": "succeeded",
+          "result": {
+            "data": {
+              "binding": {
+                "timezone": "Asia/Shanghai",
+                "selection": {
+                  "Namespaces": [],
+                  "CanonicalIDs": null,
+                  "IncludeClusterScoped": true
+                },
+                "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad",
+                "grantSnapshot": {
+                  "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                  "resources": [],
+                  "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+                  "namespaces": [
+                    "default",
+                    "kube-flannel",
+                    "kube-node-lease",
+                    "kube-public",
+                    "kube-system",
+                    "ops-amd64-core-20261009",
+                    "ops-amd64-final-20261010",
+                    "ops-amd64-final-targets-20261010",
+                    "ops-amd64-unified-r10-20261019",
+                    "ops-amd64-unified-r10-targets",
+                    "ops-amd64-validation-targets-20261010",
+                    "ops-assistant-deepflow-20261013",
+                    "ops-assistant-live-20261013",
+                    "ops-current",
+                    "ops-dev-network",
+                    "ops-native-v12-r24-20261026",
+                    "ops-native-v12-r34-20261027",
+                    "ops-native-v12-r35-outside",
+                    "ops-native-v12-r35-scope",
+                    "ops-ui-v12-mfa-20261022-gpt",
+                    "sp04-chain-2284bf2e",
+                    "sp04-chain-230836e8",
+                    "sp04-chain-28945919",
+                    "sp04-chain-45829ac4",
+                    "sp04-chain-620f6bcb",
+                    "sp04-chain-9f8f21b7",
+                    "sp04-chain-a27d6e34",
+                    "sp04-chain-c0dbfe18",
+                    "sp04-chain-c6d904dc",
+                    "sp04-chain-e0b92b58",
+                    "sp04-chain-f327e4fc"
+                  ],
+                  "clusterScoped": true,
+                  "authorizationRevision": "sha256:b211ef88c24563d5ea1a87ff782a7b54495570a2e8327fd4f3a877da719d3912"
+                },
+                "executionScope": {
+                  "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                  "resources": [],
+                  "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+                  "namespaces": [
+                    "default",
+                    "kube-flannel",
+                    "kube-node-lease",
+                    "kube-public",
+                    "kube-system",
+                    "ops-amd64-core-20261009",
+                    "ops-amd64-final-20261010",
+                    "ops-amd64-final-targets-20261010",
+                    "ops-amd64-unified-r10-20261019",
+                    "ops-amd64-unified-r10-targets",
+                    "ops-amd64-validation-targets-20261010",
+                    "ops-assistant-deepflow-20261013",
+                    "ops-assistant-live-20261013",
+                    "ops-current",
+                    "ops-dev-network",
+                    "ops-native-v12-r24-20261026",
+                    "ops-native-v12-r34-20261027",
+                    "ops-native-v12-r35-outside",
+                    "ops-native-v12-r35-scope",
+                    "ops-ui-v12-mfa-20261022-gpt",
+                    "sp04-chain-2284bf2e",
+                    "sp04-chain-230836e8",
+                    "sp04-chain-28945919",
+                    "sp04-chain-45829ac4",
+                    "sp04-chain-620f6bcb",
+                    "sp04-chain-9f8f21b7",
+                    "sp04-chain-a27d6e34",
+                    "sp04-chain-c0dbfe18",
+                    "sp04-chain-c6d904dc",
+                    "sp04-chain-e0b92b58",
+                    "sp04-chain-f327e4fc"
+                  ],
+                  "clusterScoped": true,
+                  "authorizationRevision": "sha256:b211ef88c24563d5ea1a87ff782a7b54495570a2e8327fd4f3a877da719d3912"
+                }
+              },
+              "history": [],
+              "message": "请调查这次故障，读取当前故障上下文、已有证据和正式根因分析，解释发生时的事实、已恢复状态及仍缺少的证据。仅引用已读取的内容，不执行命令。",
+              "requestedAt": "2026-11-08T03:56:53.141010248Z",
+              "schemaVersion": "assistant-input/v1",
+              "sourceCapabilities": [
+                {
+                  "status": "continuous_verified",
+                  "revision": 2,
+                  "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+                  "datasetId": "metrics.pod-cpu",
+                  "operation": "aggregate",
+                  "coverageTo": "2026-11-08T03:56:35.411Z",
+                  "sourceType": "victoriametrics",
+                  "proofDigest": "sha256:db91d3f14cd062ef2862d7a6a0eefb8e7487faab32a4650a769aeab267e0df6e",
+                  "coverageFrom": "2026-11-06T01:03:53.190949Z",
+                  "verifiedUntil": "2026-11-08T03:57:20.179967963Z",
+                  "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+                  "maxWindowSeconds": 1800
+                },
+                {
+                  "status": "continuous_verified",
+                  "revision": 2,
+                  "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+                  "datasetId": "metrics.pod-cpu",
+                  "operation": "trend",
+                  "coverageTo": "2026-11-08T03:56:35.411Z",
+                  "sourceType": "victoriametrics",
+                  "proofDigest": "sha256:f7cea064a741679a63a86c1204f5e335a3bf2ac2ca30b0c74bd18fe1c57fcec5",
+                  "coverageFrom": "2026-11-06T01:03:53.190949Z",
+                  "verifiedUntil": "2026-11-08T03:57:20.179967963Z",
+                  "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+                  "maxWindowSeconds": 1800
+                },
+                {
+                  "status": "continuous_verified",
+                  "revision": 2,
+                  "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+                  "datasetId": "metrics.pod-memory",
+                  "operation": "aggregate",
+                  "coverageTo": "2026-11-08T03:56:35.411Z",
+                  "sourceType": "victoriametrics",
+                  "proofDigest": "sha256:4fc45e22bd4fad4e58f4f97cf78833fec5b0146cfd4a9fcb67cd8229c88c3bad",
+                  "coverageFrom": "2026-11-06T01:03:53.190949Z",
+                  "verifiedUntil": "2026-11-08T03:57:20.179967963Z",
+                  "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+                  "maxWindowSeconds": 1800
+                },
+                {
+                  "status": "continuous_verified",
+                  "revision": 2,
+                  "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+                  "datasetId": "metrics.pod-memory",
+                  "operation": "trend",
+                  "coverageTo": "2026-11-08T03:56:35.411Z",
+                  "sourceType": "victoriametrics",
+                  "proofDigest": "sha256:8a51cbca316d47f74ebf3ca02864a6a3f39281d07c72a3526547a19cad2b3946",
+                  "coverageFrom": "2026-11-06T01:03:53.190949Z",
+                  "verifiedUntil": "2026-11-08T03:57:20.179967963Z",
+                  "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+                  "maxWindowSeconds": 1800
+                },
+                {
+                  "status": "continuous_verified",
+                  "revision": 2,
+                  "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+                  "datasetId": "metrics.pod-phase",
+                  "operation": "aggregate",
+                  "coverageTo": "2026-11-08T03:56:35.411Z",
+                  "sourceType": "victoriametrics",
+                  "proofDigest": "sha256:08288b0067d9982d8745fc999981972625344470bee0bea1d89c1c2c4a5d5dbe",
+                  "coverageFrom": "2026-11-06T01:03:53.190949Z",
+                  "verifiedUntil": "2026-11-08T03:57:20.179967963Z",
+                  "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+                  "maxWindowSeconds": 1800
+                },
+                {
+                  "status": "continuous_verified",
+                  "revision": 2,
+                  "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+                  "datasetId": "metrics.pod-phase",
+                  "operation": "trend",
+                  "coverageTo": "2026-11-08T03:56:35.411Z",
+                  "sourceType": "victoriametrics",
+                  "proofDigest": "sha256:8104cf490c6849da0062c78f558c56e673fcdb00cf4d57841c6c9958d68871b5",
+                  "coverageFrom": "2026-11-06T01:03:53.190949Z",
+                  "verifiedUntil": "2026-11-08T03:57:20.179967963Z",
+                  "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+                  "maxWindowSeconds": 1800
+                },
+                {
+                  "status": "continuous_verified",
+                  "revision": 2,
+                  "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+                  "datasetId": "metrics.pod-restarts",
+                  "operation": "aggregate",
+                  "coverageTo": "2026-11-08T03:56:35.411Z",
+                  "sourceType": "victoriametrics",
+                  "proofDigest": "sha256:f1faed05a142ea662ba6959b4232cd78b5428cec1d0bf016027f57ccd6824b35",
+                  "coverageFrom": "2026-11-06T01:03:53.190949Z",
+                  "verifiedUntil": "2026-11-08T03:57:20.179967963Z",
+                  "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+                  "maxWindowSeconds": 1800
+                },
+                {
+                  "status": "continuous_verified",
+                  "revision": 2,
+                  "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+                  "datasetId": "metrics.pod-restarts",
+                  "operation": "trend",
+                  "coverageTo": "2026-11-08T03:56:35.411Z",
+                  "sourceType": "victoriametrics",
+                  "proofDigest": "sha256:d62e56c015f1d02bd660a12161a7746218524eef2f373ddcefb831469bf7f332",
+                  "coverageFrom": "2026-11-06T01:03:53.190949Z",
+                  "verifiedUntil": "2026-11-08T03:57:20.179967963Z",
+                  "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+                  "maxWindowSeconds": 1800
+                },
+                {
+                  "status": "continuous_verified",
+                  "revision": 2,
+                  "sourceId": "01a1ae32-b7a2-7987-bc83-9a7d8855093d",
+                  "datasetId": "logs.records",
+                  "operation": "aggregate",
+                  "coverageTo": "2026-11-08T03:56:48.016962718Z",
+                  "sourceType": "victorialogs",
+                  "proofDigest": "sha256:87a49165aa9de6cb7a50a923da53aa9a5525ca86300ded8b1c4625876f54a3e6",
+                  "coverageFrom": "2026-11-06T01:03:53.190949Z",
+                  "verifiedUntil": "2026-11-08T03:57:20.175442732Z",
+                  "collectorVersion": "v1.52.0-ops1",
+                  "maxWindowSeconds": 1800
+                },
+                {
+                  "status": "continuous_verified",
+                  "revision": 2,
+                  "sourceId": "01a1ae32-b7a2-7987-bc83-9a7d8855093d",
+                  "datasetId": "logs.records",
+                  "operation": "samples",
+                  "coverageTo": "2026-11-08T03:56:48.016962718Z",
+                  "sourceType": "victorialogs",
+                  "proofDigest": "sha256:37daf6e5f4b1715c5e0a76603f4d099898fff7fa0760350539944e55b9a0c091",
+                  "coverageFrom": "2026-11-06T01:03:53.190949Z",
+                  "verifiedUntil": "2026-11-08T03:57:20.175442732Z",
+                  "collectorVersion": "v1.52.0-ops1",
+                  "maxWindowSeconds": 1800
+                }
+              ],
+              "networkCapabilities": [],
+              "historyManifestDigest": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "sourceCapabilityStatus": "available"
+            },
+            "tool": "get_assistant_context",
+            "state": "succeeded",
+            "budget": {
+              "consumed": {
+                "toolCalls": 1,
+                "graphNodes": 0,
+                "rawQueries": 0,
+                "inputTokens": 0,
+                "resultBytes": 8115,
+                "outputTokens": 0,
+                "evidenceItems": 0,
+                "modelRequests": 0,
+                "modelCostMicros": 0
+              },
+              "remaining": {
+                "toolCalls": 39,
+                "graphNodes": 8000,
+                "rawQueries": 10,
+                "inputTokens": 524288,
+                "resultBytes": 41934923,
+                "outputTokens": 32768,
+                "evidenceItems": 4000,
+                "modelRequests": 8,
+                "modelCostMicros": 0
+              }
+            },
+            "partial": false,
+            "evidenceRefs": [],
+            "schemaVersion": "tool-response/v3",
+            "degradedSources": []
+          }
+        },
+        {
+          "argsSummary": {
+            "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad"
+          },
+          "stepId": "01a1b94d-4f7c-748b-a30d-845cc72aa18d",
+          "toolName": "get_incident_context",
+          "argsDigest": "sha256:30528428298d692b5b46a5f76c25e23bdce17af2698f87421f9ce25cea76cd4b",
+          "state": "succeeded",
+          "result": {
+            "data": {
+              "findings": {
+                "items": [
+                  {
+                    "digest": "sha256:911c410324b93af93044c8b5fa0bb8f2e496643093acc7567611cd049e719b30",
+                    "ruleId": "k8sgpt/PodRuntimeFault/v1",
+                    "eventId": "sha256:26a6c8721e1aa38f04063b96b840d1f070d4108e315ba8e88c8a4f6cd631d821",
+                    "payload": {
+                      "fault": false,
+                      "symptom": "PodRuntimeFault",
+                      "analyzer": "k8sgpt/v0.3.41/f071b32aa85d77b197cd2d0f9868294f7b55c5eb",
+                      "nativeUID": "9d925158-f0c9-4ce5-84b8-830959e148dc",
+                      "nativeKind": "Pod"
+                    },
+                    "severity": "warning",
+                    "startsAt": "2026-11-07T01:54:02.299706Z",
+                    "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                    "findingId": "01a1b3b6-77d9-7382-b225-a9a4f8126977",
+                    "namespace": "ops-current",
+                    "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+                    "observedAt": "2026-11-08T03:27:56.689648928Z",
+                    "receivedAt": "2026-11-08T03:27:56.726806Z",
+                    "ruleFamily": "kubernetes-analyzer",
+                    "evidenceRefs": [
+                      "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb"
+                    ],
+                    "occurrenceId": "01a1b3b6-77d0-7084-b003-793072a49241",
+                    "timeReliable": true,
+                    "schemaVersion": "finding-envelope/v2",
+                    "idempotencyKey": "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb",
+                    "lifecycleState": "resolved",
+                    "sourceRevision": 2,
+                    "sourceSequence": 0,
+                    "firstReceivedAt": "2026-11-07T01:54:02.329204Z",
+                    "aggregateRevision": 32,
+                    "normalizedSymptom": "PodRuntimeFault",
+                    "sourceFingerprint": "sha256:a93b95fa8f66b5ab0c4412e03edf5bba8c5c79fe3b131dffcf543fa40130bd1d",
+                    "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                    "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                  }
+                ]
+              },
+              "incident": {
+                "state": "resolved",
+                "revision": 34,
+                "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                "createdAt": "2026-11-07T01:54:03.186907Z",
+                "namespace": "ops-current",
+                "startedAt": "2026-11-07T01:54:02.299706Z",
+                "updatedAt": "2026-11-08T03:33:00.177163Z",
+                "assignedAt": null,
+                "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+                "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad",
+                "resolvedAt": "2026-11-08T03:33:00.176845Z",
+                "fingerprint": "sha256:94eabb2acaa7ca2823bf73655416cd702c64b2a4e2eaa2f21c04549464d086dc",
+                "policyVersion": "correlation/nonvirtual/v1",
+                "schemaVersion": "incident/v2",
+                "lastObservedAt": "2026-11-08T03:27:56.689648Z",
+                "assigneeSubject": "",
+                "recoveryKnownAt": "2026-11-08T03:27:58.200163Z",
+                "suppressedUntil": null,
+                "currentRcaRevision": 730,
+                "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc"
+              }
+            },
+            "tool": "get_incident_context",
+            "state": "succeeded",
+            "budget": {
+              "consumed": {
+                "toolCalls": 1,
+                "graphNodes": 0,
+                "rawQueries": 0,
+                "inputTokens": 0,
+                "resultBytes": 2938,
+                "outputTokens": 0,
+                "evidenceItems": 1,
+                "modelRequests": 0,
+                "modelCostMicros": 0
+              },
+              "remaining": {
+                "toolCalls": 38,
+                "graphNodes": 8000,
+                "rawQueries": 10,
+                "inputTokens": 524288,
+                "resultBytes": 41923650,
+                "outputTokens": 32768,
+                "evidenceItems": 3999,
+                "modelRequests": 8,
+                "modelCostMicros": 0
+              }
+            },
+            "partial": false,
+            "evidenceRefs": [
+              "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb"
+            ],
+            "schemaVersion": "tool-response/v3",
+            "degradedSources": []
+          }
+        },
+        {
+          "argsSummary": {},
+          "stepId": "01a1b94d-4ff8-73a2-a2b4-48935307c0f9",
+          "toolName": "get_formal_references",
+          "argsDigest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "state": "succeeded",
+          "result": {
+            "data": {
+              "rca": {
+                "actor": "deterministic-worker",
+                "result": {
+                  "impact": {
+                    "edges": [
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd",
+                        "kind": "selects_pod",
+                        "validFrom": "2026-11-08T03:05:20.484572932Z",
+                        "confidence": 0.95,
+                        "observedAt": "2026-11-08T03:05:20.484572932Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:05:20.484572932Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/selector/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      },
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/discovery.k8s.io/EndpointSlice/588ac39c-2832-44b4-8517-fc22a51634e4",
+                        "kind": "managed_by",
+                        "validFrom": "2026-11-08T03:44:34.383139654Z",
+                        "confidence": 1,
+                        "observedAt": "2026-11-08T03:44:34.383139654Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:44:34.383139654Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      },
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/ConfigMap/70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "kind": "related_to",
+                        "validFrom": "2026-11-08T03:05:43.704657678Z",
+                        "confidence": 1,
+                        "observedAt": "2026-11-08T03:05:43.704657678Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:05:43.704657678Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      },
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Node/c874affc-6a0b-492f-b217-14ad989c0d89",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "kind": "scheduled_on",
+                        "validFrom": "2026-11-08T03:05:43.704657678Z",
+                        "confidence": 1,
+                        "observedAt": "2026-11-08T03:05:43.704657678Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:05:43.704657678Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      },
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "kind": "managed_by",
+                        "validFrom": "2026-11-08T03:05:43.704657678Z",
+                        "confidence": 1,
+                        "observedAt": "2026-11-08T03:05:43.704657678Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:05:43.704657678Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      },
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                        "kind": "managed_by",
+                        "validFrom": "2026-11-08T03:05:43.708304494Z",
+                        "confidence": 1,
+                        "observedAt": "2026-11-08T03:05:43.708304494Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:05:43.708304494Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      }
+                    ],
+                    "nodes": [
+                      {
+                        "kind": "Pod",
+                        "name": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "pod-template-hash": "6d46c4f8f5",
+                          "app.kubernetes.io/name": "ops-metrics-server-metrics",
+                          "ops.platform.io/release": "ops-metrics-server",
+                          "app.kubernetes.io/instance": "ops-metrics-server"
+                        },
+                        "apiGroup": "core",
+                        "stableId": "9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:05:43.704657678Z",
+                        "attributes": {
+                          "health": "normal",
+                          "status": {
+                            "phase": "Running",
+                            "conditions": [
+                              {
+                                "type": "PodReadyToStartContainers",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-08T03:05:22Z"
+                              },
+                              {
+                                "type": "Initialized",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-06T06:16:42Z"
+                              },
+                              {
+                                "type": "Ready",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-08T03:05:43Z"
+                              },
+                              {
+                                "type": "ContainersReady",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-08T03:05:43Z"
+                              },
+                              {
+                                "type": "PodScheduled",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-06T06:16:42Z"
+                              }
+                            ],
+                            "containerStatuses": [
+                              {
+                                "name": "metrics-server",
+                                "ready": true,
+                                "state": {
+                                  "running": {
+                                    "startedAt": "2026-11-08T03:05:23Z"
+                                  }
+                                },
+                                "imageID": "registry.k8s.io/metrics-server/metrics-server@sha256:89258156d0e9af60403eafd44da9676fd66f600c7934d468ccc17e42b199aee2",
+                                "lastState": {
+                                  "terminated": {
+                                    "reason": "Completed",
+                                    "exitCode": 0,
+                                    "startedAt": "2026-11-08T02:53:09Z",
+                                    "finishedAt": "2026-11-08T03:05:22Z",
+                                    "containerID": "containerd://b4a7d397aa8b745e167ec66b029572d65134857aa89a3474e348abc5261fda73"
+                                  }
+                                },
+                                "containerID": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                                "restartCount": 114
+                              }
+                            ]
+                          },
+                          "resourceDomain": "kubernetes"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "lastObservedAt": "2026-11-08T03:05:43.704657678Z",
+                        "firstObservedAt": "2026-11-08T03:05:20.990135445Z"
+                      },
+                      {
+                        "kind": "Service",
+                        "name": "ops-metrics-server-metrics",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "ops.platform.io/release": "ops-metrics-server",
+                          "app.kubernetes.io/instance": "ops-metrics-server",
+                          "app.kubernetes.io/managed-by": "Helm"
+                        },
+                        "apiGroup": "core",
+                        "stableId": "682f3394-2ebd-4ee9-b797-1815b57351dd",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:05:20.484572932Z",
+                        "attributes": {
+                          "health": "unknown",
+                          "resourceDomain": "network"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd",
+                        "lastObservedAt": "2026-11-08T03:05:20.484572932Z",
+                        "firstObservedAt": "2026-11-08T03:05:20.484572932Z"
+                      },
+                      {
+                        "kind": "EndpointSlice",
+                        "name": "ops-metrics-server-metrics-rv68l",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "ops.platform.io/release": "ops-metrics-server",
+                          "app.kubernetes.io/instance": "ops-metrics-server",
+                          "kubernetes.io/service-name": "ops-metrics-server-metrics",
+                          "app.kubernetes.io/managed-by": "Helm",
+                          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io"
+                        },
+                        "apiGroup": "discovery.k8s.io",
+                        "stableId": "588ac39c-2832-44b4-8517-fc22a51634e4",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:44:34.383139654Z",
+                        "attributes": {
+                          "health": "unknown",
+                          "resourceDomain": "network"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/discovery.k8s.io/EndpointSlice/588ac39c-2832-44b4-8517-fc22a51634e4",
+                        "lastObservedAt": "2026-11-08T03:44:34.383139654Z",
+                        "firstObservedAt": "2026-11-08T03:05:21.58628421Z"
+                      },
+                      {
+                        "kind": "ConfigMap",
+                        "name": "ops-metrics-kubelet-ca",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "ops.platform.io/managed-by": "opsctl-bootstrap",
+                          "ops.platform.io/installation-id": "4f62b5d6-1244-42ce-85c6-3150a7837915"
+                        },
+                        "apiGroup": "core",
+                        "stableId": "70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:05:20.892571663Z",
+                        "attributes": {
+                          "health": "unknown",
+                          "resourceDomain": "kubernetes"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/ConfigMap/70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                        "lastObservedAt": "2026-11-08T03:05:20.892571663Z",
+                        "firstObservedAt": "2026-11-08T03:05:20.892571663Z"
+                      },
+                      {
+                        "kind": "Node",
+                        "name": "mssc",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "kubernetes.io/os": "linux",
+                          "kubernetes.io/arch": "amd64",
+                          "beta.kubernetes.io/os": "linux",
+                          "kubernetes.io/hostname": "mssc",
+                          "beta.kubernetes.io/arch": "amd64",
+                          "node-role.kubernetes.io/control-plane": "",
+                          "node.kubernetes.io/exclude-from-external-load-balancers": ""
+                        },
+                        "apiGroup": "core",
+                        "stableId": "c874affc-6a0b-492f-b217-14ad989c0d89",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": null,
+                        "updatedAt": "2026-11-08T03:53:49.465137623Z",
+                        "attributes": {
+                          "health": "normal",
+                          "status": {
+                            "nodeInfo": {
+                              "machineID": "137c892cd7144768955fdb7f59cf51fd",
+                              "systemUUID": "ffefce86-0c67-11eb-adfd-6787a9916300"
+                            },
+                            "addresses": [
+                              {
+                                "type": "InternalIP",
+                                "address": "192.168.0.63"
+                              },
+                              {
+                                "type": "Hostname",
+                                "address": "mssc"
+                              }
+                            ],
+                            "conditions": [
+                              {
+                                "type": "NetworkUnavailable",
+                                "reason": "FlannelIsUp",
+                                "status": "False",
+                                "lastTransitionTime": "2026-11-08T03:04:02Z"
+                              },
+                              {
+                                "type": "MemoryPressure",
+                                "reason": "KubeletHasSufficientMemory",
+                                "status": "False",
+                                "lastTransitionTime": "2026-10-08T09:12:17Z"
+                              },
+                              {
+                                "type": "DiskPressure",
+                                "reason": "KubeletHasNoDiskPressure",
+                                "status": "False",
+                                "lastTransitionTime": "2026-10-08T09:12:17Z"
+                              },
+                              {
+                                "type": "PIDPressure",
+                                "reason": "KubeletHasSufficientPID",
+                                "status": "False",
+                                "lastTransitionTime": "2026-10-08T09:12:17Z"
+                              },
+                              {
+                                "type": "Ready",
+                                "reason": "KubeletReady",
+                                "status": "True",
+                                "lastTransitionTime": "2026-10-08T10:02:54Z"
+                              }
+                            ]
+                          },
+                          "resourceDomain": "kubernetes"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Node/c874affc-6a0b-492f-b217-14ad989c0d89",
+                        "lastObservedAt": "2026-11-08T03:53:49.465137623Z",
+                        "firstObservedAt": "2026-11-08T03:05:20.582133113Z"
+                      },
+                      {
+                        "kind": "ReplicaSet",
+                        "name": "ops-metrics-server-metrics-6d46c4f8f5",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "pod-template-hash": "6d46c4f8f5",
+                          "app.kubernetes.io/name": "ops-metrics-server-metrics",
+                          "ops.platform.io/release": "ops-metrics-server",
+                          "app.kubernetes.io/instance": "ops-metrics-server"
+                        },
+                        "apiGroup": "apps",
+                        "stableId": "63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:05:43.708304494Z",
+                        "attributes": {
+                          "health": "unknown",
+                          "resourceDomain": "kubernetes"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                        "lastObservedAt": "2026-11-08T03:05:43.708304494Z",
+                        "firstObservedAt": "2026-11-08T03:05:21.909091272Z"
+                      },
+                      {
+                        "kind": "Deployment",
+                        "name": "ops-metrics-server-metrics",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "ops.platform.io/release": "ops-metrics-server",
+                          "app.kubernetes.io/instance": "ops-metrics-server",
+                          "app.kubernetes.io/managed-by": "Helm"
+                        },
+                        "apiGroup": "apps",
+                        "stableId": "b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:05:43.71249025Z",
+                        "attributes": {
+                          "health": "unknown",
+                          "status": {
+                            "conditions": [
+                              {
+                                "type": "Progressing",
+                                "reason": "NewReplicaSetAvailable",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-06T03:34:04Z"
+                              },
+                              {
+                                "type": "Available",
+                                "reason": "MinimumReplicasAvailable",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-08T03:05:43Z"
+                              }
+                            ]
+                          },
+                          "resourceDomain": "kubernetes"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                        "lastObservedAt": "2026-11-08T03:05:43.71249025Z",
+                        "firstObservedAt": "2026-11-08T03:05:21.092718217Z"
+                      }
+                    ],
+                    "budgets": {
+                      "maxDepth": 2,
+                      "maxEdges": 400,
+                      "maxNodes": 200,
+                      "edgeCount": 6,
+                      "nodeCount": 7,
+                      "truncated": false,
+                      "storageMaxDepth": 2
+                    },
+                    "partial": false,
+                    "warnings": [],
+                    "conflicts": null,
+                    "freshness": "fresh",
+                    "collectedAt": "2026-11-08T03:56:28.197906331Z",
+                    "graphRevision": {
+                      "ownerEpoch": 20,
+                      "graphGeneration": 2528
+                    },
+                    "ownerInstance": "bb47b73a-593e-4963-b8b2-00d9dd410edf",
+                    "schemaVersion": "resource-graph/v2",
+                    "dependencyOnly": [
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/ConfigMap/70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Node/c874affc-6a0b-492f-b217-14ad989c0d89"
+                    ],
+                    "rankedEvidence": [],
+                    "degradedSources": [],
+                    "directlyAffected": [
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd"
+                    ],
+                    "indirectlyAffected": [
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/discovery.k8s.io/EndpointSlice/588ac39c-2832-44b4-8517-fc22a51634e4"
+                    ]
+                  },
+                  "status": "unresolved",
+                  "partial": true,
+                  "graphPlan": "single-query/v1",
+                  "candidates": [],
+                  "recipeDigest": "sha256:7c592c952c97e9963fa6dacb787864b161a9e0ce0a6bfa6005a57beeeee233ac",
+                  "recipeVersion": "v1",
+                  "schemaVersion": "rca-evaluation/v2",
+                  "evidenceBundle": {
+                    "ranked": [],
+                    "missing": [
+                      "pod-crash-failing",
+                      "container-backoff-error",
+                      "pod-path"
+                    ],
+                    "conflicts": [],
+                    "supporting": [],
+                    "contradicting": [],
+                    "degradedSources": []
+                  }
+                },
+                "source": "deterministic",
+                "revision": 730,
+                "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                "createdAt": "2026-11-08T03:56:28.205304648Z",
+                "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad",
+                "superseded": false,
+                "inputDigest": "sha256:3450147dd83f6ac25e418f8c3a5c76297d18733d15a9e84d7c2eb74583a72aff",
+                "inputManifest": {
+                  "to": "2026-11-08T03:56:28.196051281Z",
+                  "from": "2026-11-08T03:51:28.196051281Z",
+                  "graph": {
+                    "edges": [
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd",
+                        "kind": "selects_pod",
+                        "validFrom": "2026-11-08T03:05:20.484572932Z",
+                        "confidence": 0.95,
+                        "observedAt": "2026-11-08T03:05:20.484572932Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:05:20.484572932Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/selector/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      },
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/discovery.k8s.io/EndpointSlice/588ac39c-2832-44b4-8517-fc22a51634e4",
+                        "kind": "managed_by",
+                        "validFrom": "2026-11-08T03:44:34.383139654Z",
+                        "confidence": 1,
+                        "observedAt": "2026-11-08T03:44:34.383139654Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:44:34.383139654Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      },
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/ConfigMap/70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "kind": "related_to",
+                        "validFrom": "2026-11-08T03:05:43.704657678Z",
+                        "confidence": 1,
+                        "observedAt": "2026-11-08T03:05:43.704657678Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:05:43.704657678Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      },
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Node/c874affc-6a0b-492f-b217-14ad989c0d89",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "kind": "scheduled_on",
+                        "validFrom": "2026-11-08T03:05:43.704657678Z",
+                        "confidence": 1,
+                        "observedAt": "2026-11-08T03:05:43.704657678Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:05:43.704657678Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      },
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "kind": "managed_by",
+                        "validFrom": "2026-11-08T03:05:43.704657678Z",
+                        "confidence": 1,
+                        "observedAt": "2026-11-08T03:05:43.704657678Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:05:43.704657678Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      },
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                        "kind": "managed_by",
+                        "validFrom": "2026-11-08T03:05:43.708304494Z",
+                        "confidence": 1,
+                        "observedAt": "2026-11-08T03:05:43.708304494Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:05:43.708304494Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      }
+                    ],
+                    "nodes": [
+                      {
+                        "kind": "Pod",
+                        "name": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "pod-template-hash": "6d46c4f8f5",
+                          "app.kubernetes.io/name": "ops-metrics-server-metrics",
+                          "ops.platform.io/release": "ops-metrics-server",
+                          "app.kubernetes.io/instance": "ops-metrics-server"
+                        },
+                        "apiGroup": "core",
+                        "stableId": "9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:05:43.704657678Z",
+                        "attributes": {
+                          "health": "normal",
+                          "status": {
+                            "phase": "Running",
+                            "conditions": [
+                              {
+                                "type": "PodReadyToStartContainers",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-08T03:05:22Z"
+                              },
+                              {
+                                "type": "Initialized",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-06T06:16:42Z"
+                              },
+                              {
+                                "type": "Ready",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-08T03:05:43Z"
+                              },
+                              {
+                                "type": "ContainersReady",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-08T03:05:43Z"
+                              },
+                              {
+                                "type": "PodScheduled",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-06T06:16:42Z"
+                              }
+                            ],
+                            "containerStatuses": [
+                              {
+                                "name": "metrics-server",
+                                "ready": true,
+                                "state": {
+                                  "running": {
+                                    "startedAt": "2026-11-08T03:05:23Z"
+                                  }
+                                },
+                                "imageID": "registry.k8s.io/metrics-server/metrics-server@sha256:89258156d0e9af60403eafd44da9676fd66f600c7934d468ccc17e42b199aee2",
+                                "lastState": {
+                                  "terminated": {
+                                    "reason": "Completed",
+                                    "exitCode": 0,
+                                    "startedAt": "2026-11-08T02:53:09Z",
+                                    "finishedAt": "2026-11-08T03:05:22Z",
+                                    "containerID": "containerd://b4a7d397aa8b745e167ec66b029572d65134857aa89a3474e348abc5261fda73"
+                                  }
+                                },
+                                "containerID": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                                "restartCount": 114
+                              }
+                            ]
+                          },
+                          "resourceDomain": "kubernetes"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "lastObservedAt": "2026-11-08T03:05:43.704657678Z",
+                        "firstObservedAt": "2026-11-08T03:05:20.990135445Z"
+                      },
+                      {
+                        "kind": "Service",
+                        "name": "ops-metrics-server-metrics",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "ops.platform.io/release": "ops-metrics-server",
+                          "app.kubernetes.io/instance": "ops-metrics-server",
+                          "app.kubernetes.io/managed-by": "Helm"
+                        },
+                        "apiGroup": "core",
+                        "stableId": "682f3394-2ebd-4ee9-b797-1815b57351dd",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:05:20.484572932Z",
+                        "attributes": {
+                          "health": "unknown",
+                          "resourceDomain": "network"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd",
+                        "lastObservedAt": "2026-11-08T03:05:20.484572932Z",
+                        "firstObservedAt": "2026-11-08T03:05:20.484572932Z"
+                      },
+                      {
+                        "kind": "EndpointSlice",
+                        "name": "ops-metrics-server-metrics-rv68l",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "ops.platform.io/release": "ops-metrics-server",
+                          "app.kubernetes.io/instance": "ops-metrics-server",
+                          "kubernetes.io/service-name": "ops-metrics-server-metrics",
+                          "app.kubernetes.io/managed-by": "Helm",
+                          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io"
+                        },
+                        "apiGroup": "discovery.k8s.io",
+                        "stableId": "588ac39c-2832-44b4-8517-fc22a51634e4",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:44:34.383139654Z",
+                        "attributes": {
+                          "health": "unknown",
+                          "resourceDomain": "network"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/discovery.k8s.io/EndpointSlice/588ac39c-2832-44b4-8517-fc22a51634e4",
+                        "lastObservedAt": "2026-11-08T03:44:34.383139654Z",
+                        "firstObservedAt": "2026-11-08T03:05:21.58628421Z"
+                      },
+                      {
+                        "kind": "ConfigMap",
+                        "name": "ops-metrics-kubelet-ca",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "ops.platform.io/managed-by": "opsctl-bootstrap",
+                          "ops.platform.io/installation-id": "4f62b5d6-1244-42ce-85c6-3150a7837915"
+                        },
+                        "apiGroup": "core",
+                        "stableId": "70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:05:20.892571663Z",
+                        "attributes": {
+                          "health": "unknown",
+                          "resourceDomain": "kubernetes"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/ConfigMap/70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                        "lastObservedAt": "2026-11-08T03:05:20.892571663Z",
+                        "firstObservedAt": "2026-11-08T03:05:20.892571663Z"
+                      },
+                      {
+                        "kind": "Node",
+                        "name": "mssc",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "kubernetes.io/os": "linux",
+                          "kubernetes.io/arch": "amd64",
+                          "beta.kubernetes.io/os": "linux",
+                          "kubernetes.io/hostname": "mssc",
+                          "beta.kubernetes.io/arch": "amd64",
+                          "node-role.kubernetes.io/control-plane": "",
+                          "node.kubernetes.io/exclude-from-external-load-balancers": ""
+                        },
+                        "apiGroup": "core",
+                        "stableId": "c874affc-6a0b-492f-b217-14ad989c0d89",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": null,
+                        "updatedAt": "2026-11-08T03:53:49.465137623Z",
+                        "attributes": {
+                          "health": "normal",
+                          "status": {
+                            "nodeInfo": {
+                              "machineID": "137c892cd7144768955fdb7f59cf51fd",
+                              "systemUUID": "ffefce86-0c67-11eb-adfd-6787a9916300"
+                            },
+                            "addresses": [
+                              {
+                                "type": "InternalIP",
+                                "address": "192.168.0.63"
+                              },
+                              {
+                                "type": "Hostname",
+                                "address": "mssc"
+                              }
+                            ],
+                            "conditions": [
+                              {
+                                "type": "NetworkUnavailable",
+                                "reason": "FlannelIsUp",
+                                "status": "False",
+                                "lastTransitionTime": "2026-11-08T03:04:02Z"
+                              },
+                              {
+                                "type": "MemoryPressure",
+                                "reason": "KubeletHasSufficientMemory",
+                                "status": "False",
+                                "lastTransitionTime": "2026-10-08T09:12:17Z"
+                              },
+                              {
+                                "type": "DiskPressure",
+                                "reason": "KubeletHasNoDiskPressure",
+                                "status": "False",
+                                "lastTransitionTime": "2026-10-08T09:12:17Z"
+                              },
+                              {
+                                "type": "PIDPressure",
+                                "reason": "KubeletHasSufficientPID",
+                                "status": "False",
+                                "lastTransitionTime": "2026-10-08T09:12:17Z"
+                              },
+                              {
+                                "type": "Ready",
+                                "reason": "KubeletReady",
+                                "status": "True",
+                                "lastTransitionTime": "2026-10-08T10:02:54Z"
+                              }
+                            ]
+                          },
+                          "resourceDomain": "kubernetes"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Node/c874affc-6a0b-492f-b217-14ad989c0d89",
+                        "lastObservedAt": "2026-11-08T03:53:49.465137623Z",
+                        "firstObservedAt": "2026-11-08T03:05:20.582133113Z"
+                      },
+                      {
+                        "kind": "ReplicaSet",
+                        "name": "ops-metrics-server-metrics-6d46c4f8f5",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "pod-template-hash": "6d46c4f8f5",
+                          "app.kubernetes.io/name": "ops-metrics-server-metrics",
+                          "ops.platform.io/release": "ops-metrics-server",
+                          "app.kubernetes.io/instance": "ops-metrics-server"
+                        },
+                        "apiGroup": "apps",
+                        "stableId": "63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:05:43.708304494Z",
+                        "attributes": {
+                          "health": "unknown",
+                          "resourceDomain": "kubernetes"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                        "lastObservedAt": "2026-11-08T03:05:43.708304494Z",
+                        "firstObservedAt": "2026-11-08T03:05:21.909091272Z"
+                      },
+                      {
+                        "kind": "Deployment",
+                        "name": "ops-metrics-server-metrics",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "ops.platform.io/release": "ops-metrics-server",
+                          "app.kubernetes.io/instance": "ops-metrics-server",
+                          "app.kubernetes.io/managed-by": "Helm"
+                        },
+                        "apiGroup": "apps",
+                        "stableId": "b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:05:43.71249025Z",
+                        "attributes": {
+                          "health": "unknown",
+                          "status": {
+                            "conditions": [
+                              {
+                                "type": "Progressing",
+                                "reason": "NewReplicaSetAvailable",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-06T03:34:04Z"
+                              },
+                              {
+                                "type": "Available",
+                                "reason": "MinimumReplicasAvailable",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-08T03:05:43Z"
+                              }
+                            ]
+                          },
+                          "resourceDomain": "kubernetes"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                        "lastObservedAt": "2026-11-08T03:05:43.71249025Z",
+                        "firstObservedAt": "2026-11-08T03:05:21.092718217Z"
+                      }
+                    ],
+                    "budgets": {
+                      "maxDepth": 2,
+                      "maxEdges": 400,
+                      "maxNodes": 200,
+                      "edgeCount": 6,
+                      "nodeCount": 7,
+                      "truncated": false,
+                      "storageMaxDepth": 2
+                    },
+                    "partial": false,
+                    "warnings": [],
+                    "conflicts": null,
+                    "freshness": "fresh",
+                    "collectedAt": "2026-11-08T03:56:28.197906331Z",
+                    "graphRevision": {
+                      "ownerEpoch": 20,
+                      "graphGeneration": 2528
+                    },
+                    "ownerInstance": "bb47b73a-593e-4963-b8b2-00d9dd410edf",
+                    "schemaVersion": "resource-graph/v2",
+                    "dependencyOnly": [
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/ConfigMap/70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Node/c874affc-6a0b-492f-b217-14ad989c0d89"
+                    ],
+                    "rankedEvidence": [],
+                    "degradedSources": [],
+                    "directlyAffected": [
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd"
+                    ],
+                    "indirectlyAffected": [
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/discovery.k8s.io/EndpointSlice/588ac39c-2832-44b4-8517-fc22a51634e4"
+                    ]
+                  },
+                  "evidence": [],
+                  "evaluatedAt": "2026-11-08T03:56:28.196051281Z",
+                  "graphSources": [
+                    {
+                      "revision": 2,
+                      "scopeDigest": "sha256:67eb23c92a1d76647ca1b3f210cd6cb1f622dc6b7dd496e2cfe343236513d7e9",
+                      "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    }
+                  ],
+                  "schemaVersion": "rca-input/v2",
+                  "findingRevisions": [
+                    {
+                      "digest": "sha256:911c410324b93af93044c8b5fa0bb8f2e496643093acc7567611cd049e719b30",
+                      "findingId": "01a1b3b6-77d9-7382-b225-a9a4f8126977",
+                      "namespace": "ops-current",
+                      "observedAt": "2026-11-08T03:27:56.689648928Z",
+                      "occurrenceId": "01a1b3b6-77d0-7084-b003-793072a49241",
+                      "lifecycleState": "resolved",
+                      "sourceRevision": 2,
+                      "aggregateRevision": 32,
+                      "sourceFingerprint": "sha256:a93b95fa8f66b5ab0c4412e03edf5bba8c5c79fe3b131dffcf543fa40130bd1d",
+                      "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                      "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    }
+                  ],
+                  "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc"
+                },
+                "schemaVersion": "rca-revision/v2",
+                "baseIncidentRevision": 34
+              },
+              "plans": [],
+              "historical": false,
+              "formalReferences": [
+                {
+                  "kind": "rca",
+                  "revision": 730,
+                  "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad",
+                  "contentDigest": "sha256:2fb83898477298320bdbaa4586a07b9a577c063526ce01e736c608a728783308"
+                }
+              ],
+              "currentRcaRevision": 730
+            },
+            "tool": "get_formal_references",
+            "state": "succeeded",
+            "budget": {
+              "consumed": {
+                "toolCalls": 1,
+                "graphNodes": 0,
+                "rawQueries": 0,
+                "inputTokens": 0,
+                "resultBytes": 29887,
+                "outputTokens": 0,
+                "evidenceItems": 0,
+                "modelRequests": 0,
+                "modelCostMicros": 0
+              },
+              "remaining": {
+                "toolCalls": 37,
+                "graphNodes": 8000,
+                "rawQueries": 10,
+                "inputTokens": 524288,
+                "resultBytes": 41893763,
+                "outputTokens": 32768,
+                "evidenceItems": 3999,
+                "modelRequests": 8,
+                "modelCostMicros": 0
+              }
+            },
+            "partial": false,
+            "evidenceRefs": [],
+            "schemaVersion": "tool-response/v3",
+            "degradedSources": []
+          }
+        },
+        {
+          "argsSummary": {
+            "context": "已授权故障上下文与持久工具结果",
+            "rawPromptOmitted": true
+          },
+          "stepId": "01a1b94d-5391-7c98-ac8f-93cf1b0f238f",
+          "toolName": "model",
+          "argsDigest": "sha256:c0fef318079f2d81e1456fb3668f88ed17fedf6de23b1d48bd219872df646c29",
+          "state": "succeeded",
+          "result": {
+            "provider": "openai-compatible",
+            "response": {
+              "id": "a77e52b8-3d64-49c9-83b2-0216c95e420a",
+              "model": "deepseek-flash",
+              "usage": {
+                "total_tokens": 29695,
+                "prompt_tokens": 28423,
+                "completion_tokens": 1272,
+                "prompt_tokens_details": {
+                  "audio_tokens": null,
+                  "cached_tokens": 9088,
+                  "cache_write_tokens": null
+                },
+                "prompt_cache_hit_tokens": 9088,
+                "prompt_cache_miss_tokens": 19335,
+                "completion_tokens_details": null
+              },
+              "object": "chat.completion",
+              "choices": [
+                {
+                  "index": 0,
+                  "message": {
+                    "role": "assistant",
+                    "content": "{\"answerKind\":\"diagnosis\",\"asOf\":\"2026-11-08T03:56:53.141010248Z\",\"clarification\":null,\"degradedSources\":[],\"entityRefs\":[],\"evidenceRefs\":[\"b96ae5bf-c41f-5243-88ed-dba5edbd3dbb\"],\"factRefs\":[],\"faultChain\":[],\"faultChainContextRef\":null,\"formalRefs\":[{\"actionPlanId\":null,\"contentDigest\":\"sha256:2fb83898477298320bdbaa4586a07b9a577c063526ce01e736c608a728783308\",\"incidentId\":\"01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad\",\"kind\":\"rca\",\"revision\":730}],\"hypotheses\":[{\"conflicts\":[],\"key\":\"metrics-server 容器反复重启导致 PodRuntimeFault\",\"missingEvidence\":[\"pod-crash-failing 证据（非零退出码或 OOMKilled 记录）\",\"container-backoff-error 事件/日志\",\"故障窗口内重启计数与日志时序\"],\"nextChecks\":[\"查询 metrics.pod-restarts 趋势确认重启是否持续\",\"查询 logs.records 检索崩溃与退避错误\"],\"summary\":\"Pod 容器 restartCount=114，且 2026-11-08T02:53:09Z–03:05:22Z 一次终止为 Completed/exitCode=0，随后 03:05:23Z 重新启动并 Ready；这与进程被正常终止后重启的模式一致，但缺少崩溃/退避与日志证据，不能确认因果。\",\"supports\":[\"b96ae5bf-c41f-5243-88ed-dba5edbd3dbb\"]},{\"conflicts\":[],\"key\":\"节点或依赖侧因素间接影响该 Pod\",\"missingEvidence\":[\"pod-path 调用路径与网络侧观测（networkCapabilities 为空）\",\"节点侧与 Pod 重启时间对齐的指标\"],\"nextChecks\":[\"读取节点与 Pod 的 resource_history 对齐时间线\",\"在具备网络能力时查询 Service→Pod 路径\"],\"summary\":\"Pod 调度在节点 mssc（192.168.0.63），该节点 Ready=True 且无内存/磁盘/PID 压力；Service ops-metrics-server-metrics 与 EndpointSlice 被列为直接/间接受影响对象，但网络能力不可用，无法验证流量路径。\",\"supports\":[]}],\"missingEvidence\":[\"RCA 证据包缺少 pod-crash-failing：没有崩溃/失败退出（非零 exitCode 或 OOMKilled 等）的直接记录，现有 lastState 为 Completed/exitCode=0。\",\"RCA 证据包缺少 container-backoff-error：没有容器重启退避或启动失败的错误事件/日志证据。\",\"RCA 证据包缺少 pod-path：缺少从 Service/EndpointSlice 到 Pod 的完整调用路径与流量侧观测，网络能力列表为空（networkCapabilities=[]）。\",\"缺少故障窗口（2026-11-07T01:54:02Z 起）内该 Pod 的重启计数、CPU/内存与日志的时序对比，本次仅读取了上下文与正式引用，未执行新的指标/日志查询。\",\"缺少重启根因的变更证据（如镜像、配置、探针或节点侧变更），RCA 输入中 evidence 为空。\"],\"nextChecks\":[\"在故障窗口内查询该 Pod 的 metrics.pod-restarts 与 metrics.pod-phase 趋势，确认重启发生的时间分布与是否仍在增长。\",\"查询该 Pod 在故障窗口的 logs.records，检索崩溃/退避相关错误，以补齐 pod-crash-failing 与 container-backoff-error。\",\"读取该 Pod 的 resource_history/resource_changes（fault 与 baseline 窗口），核对镜像、探针、资源限制等字段是否发生变化。\"],\"partial\":true,\"queryResultRefs\":[],\"resourceSourceSteps\":[],\"schemaVersion\":\"assistant-answer/v1\",\"scopeSummary\":\"租户 01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3，集群 79014400-9453-4cb4-9678-0fae47981d79，命名空间 ops-current，绑定资源 Pod 9d925158-f0c9-4ce5-84b8-830959e148dc（ops-metrics-server-metrics-6d46c4f8f5-7ztrn），时区 Asia/Shanghai。\",\"summary\":\"本次故障是 ops-current 命名空间中 Pod ops-metrics-server-metrics-6d46c4f8f5-7ztrn 的 PodRuntimeFault（k8sgpt 分析器，warning 级），Incident 01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad 已于 2026-11-08T03:33:00Z 标记 resolved，Pod 当前 Running/Ready、容器 restartCount=114，最近一次终止原因为 Completed、exitCode=0。正式 RCA revision 730 状态为 unresolved/partial，候选根因为空，缺少 pod-crash-failing、container-backoff-error、pod-path 三类证据，因此只能说明已观察到的现象与恢复状态，不能确认因果。\",\"warnings\":[\"RCA revision 730 的 status 为 unresolved、partial=true，candidates 为空，不能作为已确认根因引用。\",\"Pod 的 restartCount=114 与 lastState 为 Completed/exitCode=0 并存，说明重启原因不能由该终止状态单独解释。\",\"本次未执行任何命令或变更，仅引用已读取的上下文与正式引用。\"]}",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "provider_specific_fields": {
+                      "refusal": null
+                    }
+                  },
+                  "finish_reason": "stop",
+                  "provider_specific_fields": {}
+                }
+              ],
+              "created": 1794110219,
+              "moderation": null,
+              "service_tier": null,
+              "system_fingerprint": "bc19ba97cbe016479903222bb1578db6"
+            },
+            "usageKnown": true
+          }
+        }
+      ]
+    },
+    {
+      "turn": {
+        "turnId": "01a1b94e-08ea-7414-822c-e4f359be5503",
+        "conversationId": "01a1b94d-1319-7857-a2cb-e93cef0b1c99",
+        "jobId": "01a1b94e-08ea-7415-a7da-d1c0e6ae3f9b",
+        "parentTurnId": "01a1b94d-4c15-7125-a68e-d452d9d206db",
+        "state": "queued",
+        "createdAt": "2026-11-08T03:57:41.486598Z",
+        "conversationRevision": 3
+      },
+      "result": {
+        "turnId": "01a1b94e-08ea-7414-822c-e4f359be5503",
+        "conversationId": "01a1b94d-1319-7857-a2cb-e93cef0b1c99",
+        "jobId": "01a1b94e-08ea-7415-a7da-d1c0e6ae3f9b",
+        "parentTurnId": "01a1b94d-4c15-7125-a68e-d452d9d206db",
+        "state": "partial",
+        "answer": {
+          "asOf": "2026-11-08T03:57:55.715959877Z",
+          "partial": true,
+          "summary": "本次恢复检查的只读查询全部失败：metrics.pod-cpu、metrics.pod-memory、metrics.pod-restarts 三个趋势查询均返回 SOURCE_DEGRADED，query_logs 返回 INVALID_ARGUMENT，因此最近5分钟（2026-11-08T03:52:41Z–03:57:41Z）没有取得任何 CPU、内存、重启次数或日志数据，无法据此判断当前是否正常。已读取的上下文只显示 Pod 在 2026-11-08T03:05:23Z 重启后处于 Running/Ready、restartCount=114，这属于历史观测，不能当作当前恢复证据，也不能当作历史故障根因。",
+          "factRefs": [],
+          "warnings": [
+            "本次为当前恢复检查，未取得任何新的指标或日志结果；查询失败不等于指标正常或为零。",
+            "Pod 的 Running/Ready 与 restartCount=114 来自 2026-11-08T03:05:43Z 的上下文快照，不是最近5分钟的观测。",
+            "RCA revision 732 status=unresolved、partial=true、candidates 为空，不能作为已确认根因引用。",
+            "未执行任何命令或变更，仅调用只读工具。",
+            "source_read_failed:execute_analysis_query:SOURCE_DEGRADED",
+            "source_read_partial:query_logs"
+          ],
+          "answerKind": "diagnosis",
+          "entityRefs": [],
+          "formalRefs": [
+            {
+              "kind": "rca",
+              "revision": 732,
+              "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad",
+              "contentDigest": "sha256:556cb15fd20fbdced119a42e087aeeb8cc2f0fa5815b0f00bba9fcb4a514bc32"
+            }
+          ],
+          "hypotheses": [
+            {
+              "key": "容器反复重启导致 PodRuntimeFault（历史观察，未确认）",
+              "summary": "上下文快照显示 restartCount=114，且 2026-11-08T02:53:09Z–03:05:22Z 一次终止为 Completed/exitCode=0，随后 03:05:23Z 重启并 Ready；但本次重启趋势与日志查询均失败，无法确认重启是否持续或已停止。",
+              "supports": [
+                "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb"
+              ],
+              "conflicts": [],
+              "nextChecks": [
+                "指标源恢复后重试 metrics.pod-restarts trend 查询"
+              ],
+              "missingEvidence": [
+                "最近5分钟重启计数趋势（metrics.pod-restarts 查询失败）",
+                "崩溃/退避日志（query_logs 返回 INVALID_ARGUMENT）"
+              ]
+            },
+            {
+              "key": "节点或依赖侧因素间接影响该 Pod（未验证）",
+              "summary": "Pod 调度在节点 mssc（192.168.0.63），该节点 Ready=True 且无内存/磁盘/PID 压力；Service 与 EndpointSlice 为受影响对象，但网络能力为空，无法验证调用路径。",
+              "supports": [],
+              "conflicts": [],
+              "nextChecks": [
+                "在具备网络能力时查询 Service→Pod 路径"
+              ],
+              "missingEvidence": [
+                "pod-path 调用路径与网络侧观测（networkCapabilities 为空）",
+                "节点侧与 Pod 重启时间对齐的指标"
+              ]
+            }
+          ],
+          "nextChecks": [
+            "在指标源恢复后重试 metrics.pod-restarts 与 metrics.pod-cpu、metrics.pod-memory 的 trend 查询（stepSeconds=60，窗口 2026-11-08T03:52:41Z–03:57:41Z），确认 restartCount 是否仍增长。",
+            "修正 query_logs 的模板/参数（当前返回 INVALID_ARGUMENT）后重试该 Pod 同期日志，检索崩溃与退避错误。",
+            "读取该 Pod 的 resource_history/resource_changes（fault 与 baseline 窗口），核对镜像、探针与资源限制是否变化。"
+          ],
+          "evidenceRefs": [
+            "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb"
+          ],
+          "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+          "schemaVersion": "assistant-answer/v1",
+          "degradedSources": [
+            "execute_analysis_query(metrics.pod-cpu): SOURCE_DEGRADED",
+            "execute_analysis_query(metrics.pod-memory): SOURCE_DEGRADED",
+            "execute_analysis_query(metrics.pod-restarts): SOURCE_DEGRADED",
+            "query_logs: INVALID_ARGUMENT"
+          ],
+          "missingEvidence": [
+            "metrics.pod-cpu 趋势查询失败（execute_analysis_query 返回 SOURCE_DEGRADED），缺少 2026-11-08T03:52:41Z–03:57:41Z 的 CPU 时序数据。",
+            "metrics.pod-memory 趋势查询失败（execute_analysis_query 返回 SOURCE_DEGRADED），缺少同期内存 working set 时序数据。",
+            "metrics.pod-restarts 趋势查询失败（execute_analysis_query 返回 SOURCE_DEGRADED），缺少同期重启计数趋势，无法判断 restartCount=114 是否仍在增长。",
+            "query_logs 返回 INVALID_ARGUMENT（degradedSources=query_logs），同期容器日志未取得，pod-crash-failing 与 container-backoff-error 仍缺失。",
+            "RCA revision 732 仍为 unresolved/partial，evidenceBundle.missing 含 pod-crash-failing、container-backoff-error、pod-path，网络能力列表为空。"
+          ],
+          "queryResultRefs": []
+        },
+        "createdAt": "2026-11-08T03:57:41.486598Z",
+        "conversationRevision": 3
+      },
+      "steps": [
+        {
+          "argsSummary": {},
+          "stepId": "01a1b94e-0c41-7251-8c7c-71262dde6083",
+          "toolName": "get_assistant_context",
+          "argsDigest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "state": "succeeded",
+          "result": {
+            "data": {
+              "binding": {
+                "timezone": "Asia/Shanghai",
+                "selection": {
+                  "Namespaces": [],
+                  "CanonicalIDs": null,
+                  "IncludeClusterScoped": true
+                },
+                "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad",
+                "grantSnapshot": {
+                  "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                  "resources": [],
+                  "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+                  "namespaces": [
+                    "default",
+                    "kube-flannel",
+                    "kube-node-lease",
+                    "kube-public",
+                    "kube-system",
+                    "ops-amd64-core-20261009",
+                    "ops-amd64-final-20261010",
+                    "ops-amd64-final-targets-20261010",
+                    "ops-amd64-unified-r10-20261019",
+                    "ops-amd64-unified-r10-targets",
+                    "ops-amd64-validation-targets-20261010",
+                    "ops-assistant-deepflow-20261013",
+                    "ops-assistant-live-20261013",
+                    "ops-current",
+                    "ops-dev-network",
+                    "ops-native-v12-r24-20261026",
+                    "ops-native-v12-r34-20261027",
+                    "ops-native-v12-r35-outside",
+                    "ops-native-v12-r35-scope",
+                    "ops-ui-v12-mfa-20261022-gpt",
+                    "sp04-chain-2284bf2e",
+                    "sp04-chain-230836e8",
+                    "sp04-chain-28945919",
+                    "sp04-chain-45829ac4",
+                    "sp04-chain-620f6bcb",
+                    "sp04-chain-9f8f21b7",
+                    "sp04-chain-a27d6e34",
+                    "sp04-chain-c0dbfe18",
+                    "sp04-chain-c6d904dc",
+                    "sp04-chain-e0b92b58",
+                    "sp04-chain-f327e4fc"
+                  ],
+                  "clusterScoped": true,
+                  "authorizationRevision": "sha256:b211ef88c24563d5ea1a87ff782a7b54495570a2e8327fd4f3a877da719d3912"
+                },
+                "executionScope": {
+                  "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                  "resources": [],
+                  "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+                  "namespaces": [
+                    "default",
+                    "kube-flannel",
+                    "kube-node-lease",
+                    "kube-public",
+                    "kube-system",
+                    "ops-amd64-core-20261009",
+                    "ops-amd64-final-20261010",
+                    "ops-amd64-final-targets-20261010",
+                    "ops-amd64-unified-r10-20261019",
+                    "ops-amd64-unified-r10-targets",
+                    "ops-amd64-validation-targets-20261010",
+                    "ops-assistant-deepflow-20261013",
+                    "ops-assistant-live-20261013",
+                    "ops-current",
+                    "ops-dev-network",
+                    "ops-native-v12-r24-20261026",
+                    "ops-native-v12-r34-20261027",
+                    "ops-native-v12-r35-outside",
+                    "ops-native-v12-r35-scope",
+                    "ops-ui-v12-mfa-20261022-gpt",
+                    "sp04-chain-2284bf2e",
+                    "sp04-chain-230836e8",
+                    "sp04-chain-28945919",
+                    "sp04-chain-45829ac4",
+                    "sp04-chain-620f6bcb",
+                    "sp04-chain-9f8f21b7",
+                    "sp04-chain-a27d6e34",
+                    "sp04-chain-c0dbfe18",
+                    "sp04-chain-c6d904dc",
+                    "sp04-chain-e0b92b58",
+                    "sp04-chain-f327e4fc"
+                  ],
+                  "clusterScoped": true,
+                  "authorizationRevision": "sha256:b211ef88c24563d5ea1a87ff782a7b54495570a2e8327fd4f3a877da719d3912"
+                }
+              },
+              "history": [
+                {
+                  "role": "user",
+                  "turnId": "01a1b94d-4c15-7125-a68e-d452d9d206db",
+                  "content": {
+                    "text": "请调查这次故障，读取当前故障上下文、已有证据和正式根因分析，解释发生时的事实、已恢复状态及仍缺少的证据。仅引用已读取的内容，不执行命令。"
+                  },
+                  "sequence": 1,
+                  "createdAt": "2026-11-08T03:56:53.149454Z",
+                  "messageId": "01a1b94d-4c18-74bc-96a2-a7657c5ee1d8"
+                },
+                {
+                  "role": "assistant",
+                  "turnId": "01a1b94d-4c15-7125-a68e-d452d9d206db",
+                  "content": {
+                    "asOf": "2026-11-08T03:57:09.079200183Z",
+                    "partial": true,
+                    "summary": "本次故障是 ops-current 命名空间中 Pod ops-metrics-server-metrics-6d46c4f8f5-7ztrn 的 PodRuntimeFault（k8sgpt 分析器，warning 级），Incident 01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad 已于 2026-11-08T03:33:00Z 标记 resolved，Pod 当前 Running/Ready、容器 restartCount=114，最近一次终止原因为 Completed、exitCode=0。正式 RCA revision 730 状态为 unresolved/partial，候选根因为空，缺少 pod-crash-failing、container-backoff-error、pod-path 三类证据，因此只能说明已观察到的现象与恢复状态，不能确认因果。",
+                    "factRefs": [],
+                    "warnings": [
+                      "RCA revision 730 的 status 为 unresolved、partial=true，candidates 为空，不能作为已确认根因引用。",
+                      "Pod 的 restartCount=114 与 lastState 为 Completed/exitCode=0 并存，说明重启原因不能由该终止状态单独解释。",
+                      "本次未执行任何命令或变更，仅引用已读取的上下文与正式引用。",
+                      "model_answer_incomplete"
+                    ],
+                    "answerKind": "diagnosis",
+                    "entityRefs": [],
+                    "formalRefs": [
+                      {
+                        "kind": "rca",
+                        "revision": 730,
+                        "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad",
+                        "contentDigest": "sha256:2fb83898477298320bdbaa4586a07b9a577c063526ce01e736c608a728783308"
+                      }
+                    ],
+                    "hypotheses": [
+                      {
+                        "key": "metrics-server 容器反复重启导致 PodRuntimeFault",
+                        "summary": "Pod 容器 restartCount=114，且 2026-11-08T02:53:09Z–03:05:22Z 一次终止为 Completed/exitCode=0，随后 03:05:23Z 重新启动并 Ready；这与进程被正常终止后重启的模式一致，但缺少崩溃/退避与日志证据，不能确认因果。",
+                        "supports": [
+                          "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb"
+                        ],
+                        "conflicts": [],
+                        "nextChecks": [
+                          "查询 metrics.pod-restarts 趋势确认重启是否持续",
+                          "查询 logs.records 检索崩溃与退避错误"
+                        ],
+                        "missingEvidence": [
+                          "pod-crash-failing 证据（非零退出码或 OOMKilled 记录）",
+                          "container-backoff-error 事件/日志",
+                          "故障窗口内重启计数与日志时序"
+                        ]
+                      },
+                      {
+                        "key": "节点或依赖侧因素间接影响该 Pod",
+                        "summary": "Pod 调度在节点 mssc（192.168.0.63），该节点 Ready=True 且无内存/磁盘/PID 压力；Service ops-metrics-server-metrics 与 EndpointSlice 被列为直接/间接受影响对象，但网络能力不可用，无法验证流量路径。",
+                        "supports": [],
+                        "conflicts": [],
+                        "nextChecks": [
+                          "读取节点与 Pod 的 resource_history 对齐时间线",
+                          "在具备网络能力时查询 Service→Pod 路径"
+                        ],
+                        "missingEvidence": [
+                          "pod-path 调用路径与网络侧观测（networkCapabilities 为空）",
+                          "节点侧与 Pod 重启时间对齐的指标"
+                        ]
+                      }
+                    ],
+                    "nextChecks": [
+                      "在故障窗口内查询该 Pod 的 metrics.pod-restarts 与 metrics.pod-phase 趋势，确认重启发生的时间分布与是否仍在增长。",
+                      "查询该 Pod 在故障窗口的 logs.records，检索崩溃/退避相关错误，以补齐 pod-crash-failing 与 container-backoff-error。",
+                      "读取该 Pod 的 resource_history/resource_changes（fault 与 baseline 窗口），核对镜像、探针、资源限制等字段是否发生变化。"
+                    ],
+                    "evidenceRefs": [
+                      "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb"
+                    ],
+                    "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+                    "schemaVersion": "assistant-answer/v1",
+                    "degradedSources": [],
+                    "missingEvidence": [
+                      "RCA 证据包缺少 pod-crash-failing：没有崩溃/失败退出（非零 exitCode 或 OOMKilled 等）的直接记录，现有 lastState 为 Completed/exitCode=0。",
+                      "RCA 证据包缺少 container-backoff-error：没有容器重启退避或启动失败的错误事件/日志证据。",
+                      "RCA 证据包缺少 pod-path：缺少从 Service/EndpointSlice 到 Pod 的完整调用路径与流量侧观测，网络能力列表为空（networkCapabilities=[]）。",
+                      "缺少故障窗口（2026-11-07T01:54:02Z 起）内该 Pod 的重启计数、CPU/内存与日志的时序对比，本次仅读取了上下文与正式引用，未执行新的指标/日志查询。",
+                      "缺少重启根因的变更证据（如镜像、配置、探针或节点侧变更），RCA 输入中 evidence 为空。"
+                    ],
+                    "queryResultRefs": []
+                  },
+                  "sequence": 2,
+                  "createdAt": "2026-11-08T03:57:09.081192Z",
+                  "messageId": "01a1b94d-4c15-7125-a68e-d452d9d206db"
+                }
+              ],
+              "message": "继续读取该 Pod 最近5分钟的真实 CPU、内存和重启次数趋势，以及同期日志。说明这是当前恢复检查，不要把当前正常状态当成历史故障根因。请实际调用只读工具，只引用已成功读取的结果。",
+              "requestedAt": "2026-11-08T03:57:41.481864991Z",
+              "parentTurnId": "01a1b94d-4c15-7125-a68e-d452d9d206db",
+              "schemaVersion": "assistant-input/v1",
+              "requestedTimeRange": {
+                "to": "2026-11-08T03:57:41Z",
+                "from": "2026-11-08T03:52:41Z",
+                "timezone": "Asia/Shanghai"
+              },
+              "sourceCapabilities": [
+                {
+                  "status": "continuous_verified",
+                  "revision": 2,
+                  "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+                  "datasetId": "metrics.pod-cpu",
+                  "operation": "aggregate",
+                  "coverageTo": "2026-11-08T03:57:27.394Z",
+                  "sourceType": "victoriametrics",
+                  "proofDigest": "sha256:db91d3f14cd062ef2862d7a6a0eefb8e7487faab32a4650a769aeab267e0df6e",
+                  "coverageFrom": "2026-11-06T01:03:53.190949Z",
+                  "verifiedUntil": "2026-11-08T03:58:10.180103331Z",
+                  "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+                  "maxWindowSeconds": 1800
+                },
+                {
+                  "status": "continuous_verified",
+                  "revision": 2,
+                  "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+                  "datasetId": "metrics.pod-cpu",
+                  "operation": "trend",
+                  "coverageTo": "2026-11-08T03:57:27.394Z",
+                  "sourceType": "victoriametrics",
+                  "proofDigest": "sha256:f7cea064a741679a63a86c1204f5e335a3bf2ac2ca30b0c74bd18fe1c57fcec5",
+                  "coverageFrom": "2026-11-06T01:03:53.190949Z",
+                  "verifiedUntil": "2026-11-08T03:58:10.180103331Z",
+                  "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+                  "maxWindowSeconds": 1800
+                },
+                {
+                  "status": "continuous_verified",
+                  "revision": 2,
+                  "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+                  "datasetId": "metrics.pod-memory",
+                  "operation": "aggregate",
+                  "coverageTo": "2026-11-08T03:57:27.394Z",
+                  "sourceType": "victoriametrics",
+                  "proofDigest": "sha256:4fc45e22bd4fad4e58f4f97cf78833fec5b0146cfd4a9fcb67cd8229c88c3bad",
+                  "coverageFrom": "2026-11-06T01:03:53.190949Z",
+                  "verifiedUntil": "2026-11-08T03:58:10.180103331Z",
+                  "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+                  "maxWindowSeconds": 1800
+                },
+                {
+                  "status": "continuous_verified",
+                  "revision": 2,
+                  "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+                  "datasetId": "metrics.pod-memory",
+                  "operation": "trend",
+                  "coverageTo": "2026-11-08T03:57:27.394Z",
+                  "sourceType": "victoriametrics",
+                  "proofDigest": "sha256:8a51cbca316d47f74ebf3ca02864a6a3f39281d07c72a3526547a19cad2b3946",
+                  "coverageFrom": "2026-11-06T01:03:53.190949Z",
+                  "verifiedUntil": "2026-11-08T03:58:10.180103331Z",
+                  "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+                  "maxWindowSeconds": 1800
+                },
+                {
+                  "status": "continuous_verified",
+                  "revision": 2,
+                  "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+                  "datasetId": "metrics.pod-phase",
+                  "operation": "aggregate",
+                  "coverageTo": "2026-11-08T03:57:27.394Z",
+                  "sourceType": "victoriametrics",
+                  "proofDigest": "sha256:08288b0067d9982d8745fc999981972625344470bee0bea1d89c1c2c4a5d5dbe",
+                  "coverageFrom": "2026-11-06T01:03:53.190949Z",
+                  "verifiedUntil": "2026-11-08T03:58:10.180103331Z",
+                  "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+                  "maxWindowSeconds": 1800
+                },
+                {
+                  "status": "continuous_verified",
+                  "revision": 2,
+                  "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+                  "datasetId": "metrics.pod-phase",
+                  "operation": "trend",
+                  "coverageTo": "2026-11-08T03:57:27.394Z",
+                  "sourceType": "victoriametrics",
+                  "proofDigest": "sha256:8104cf490c6849da0062c78f558c56e673fcdb00cf4d57841c6c9958d68871b5",
+                  "coverageFrom": "2026-11-06T01:03:53.190949Z",
+                  "verifiedUntil": "2026-11-08T03:58:10.180103331Z",
+                  "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+                  "maxWindowSeconds": 1800
+                },
+                {
+                  "status": "continuous_verified",
+                  "revision": 2,
+                  "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+                  "datasetId": "metrics.pod-restarts",
+                  "operation": "aggregate",
+                  "coverageTo": "2026-11-08T03:57:27.394Z",
+                  "sourceType": "victoriametrics",
+                  "proofDigest": "sha256:f1faed05a142ea662ba6959b4232cd78b5428cec1d0bf016027f57ccd6824b35",
+                  "coverageFrom": "2026-11-06T01:03:53.190949Z",
+                  "verifiedUntil": "2026-11-08T03:58:10.180103331Z",
+                  "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+                  "maxWindowSeconds": 1800
+                },
+                {
+                  "status": "continuous_verified",
+                  "revision": 2,
+                  "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+                  "datasetId": "metrics.pod-restarts",
+                  "operation": "trend",
+                  "coverageTo": "2026-11-08T03:57:27.394Z",
+                  "sourceType": "victoriametrics",
+                  "proofDigest": "sha256:d62e56c015f1d02bd660a12161a7746218524eef2f373ddcefb831469bf7f332",
+                  "coverageFrom": "2026-11-06T01:03:53.190949Z",
+                  "verifiedUntil": "2026-11-08T03:58:10.180103331Z",
+                  "collectorVersion": "victoriametrics-v1.116.0/ksm-v2.17.0-cadvisor/v1",
+                  "maxWindowSeconds": 1800
+                },
+                {
+                  "status": "continuous_verified",
+                  "revision": 2,
+                  "sourceId": "01a1ae32-b7a2-7987-bc83-9a7d8855093d",
+                  "datasetId": "logs.records",
+                  "operation": "aggregate",
+                  "coverageTo": "2026-11-08T03:57:37.850964725Z",
+                  "sourceType": "victorialogs",
+                  "proofDigest": "sha256:87a49165aa9de6cb7a50a923da53aa9a5525ca86300ded8b1c4625876f54a3e6",
+                  "coverageFrom": "2026-11-06T01:03:53.190949Z",
+                  "verifiedUntil": "2026-11-08T03:58:10.174448425Z",
+                  "collectorVersion": "v1.52.0-ops1",
+                  "maxWindowSeconds": 1800
+                },
+                {
+                  "status": "continuous_verified",
+                  "revision": 2,
+                  "sourceId": "01a1ae32-b7a2-7987-bc83-9a7d8855093d",
+                  "datasetId": "logs.records",
+                  "operation": "samples",
+                  "coverageTo": "2026-11-08T03:57:37.850964725Z",
+                  "sourceType": "victorialogs",
+                  "proofDigest": "sha256:37daf6e5f4b1715c5e0a76603f4d099898fff7fa0760350539944e55b9a0c091",
+                  "coverageFrom": "2026-11-06T01:03:53.190949Z",
+                  "verifiedUntil": "2026-11-08T03:58:10.174448425Z",
+                  "collectorVersion": "v1.52.0-ops1",
+                  "maxWindowSeconds": 1800
+                }
+              ],
+              "networkCapabilities": [],
+              "historyManifestDigest": "sha256:39c251f14f0dec762ba52e94592bd7f4a2fdcd4b890091c4de2cda10b6b90573",
+              "sourceCapabilityStatus": "available"
+            },
+            "tool": "get_assistant_context",
+            "state": "succeeded",
+            "budget": {
+              "consumed": {
+                "toolCalls": 1,
+                "graphNodes": 0,
+                "rawQueries": 0,
+                "inputTokens": 0,
+                "resultBytes": 12974,
+                "outputTokens": 0,
+                "evidenceItems": 0,
+                "modelRequests": 0,
+                "modelCostMicros": 0
+              },
+              "remaining": {
+                "toolCalls": 39,
+                "graphNodes": 8000,
+                "rawQueries": 10,
+                "inputTokens": 524288,
+                "resultBytes": 41930064,
+                "outputTokens": 32768,
+                "evidenceItems": 4000,
+                "modelRequests": 8,
+                "modelCostMicros": 0
+              }
+            },
+            "partial": false,
+            "evidenceRefs": [],
+            "schemaVersion": "tool-response/v3",
+            "degradedSources": []
+          }
+        },
+        {
+          "argsSummary": {
+            "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad"
+          },
+          "stepId": "01a1b94e-0d89-7e90-9576-eca6cc223fd9",
+          "toolName": "get_incident_context",
+          "argsDigest": "sha256:30528428298d692b5b46a5f76c25e23bdce17af2698f87421f9ce25cea76cd4b",
+          "state": "succeeded",
+          "result": {
+            "data": {
+              "findings": {
+                "items": [
+                  {
+                    "digest": "sha256:911c410324b93af93044c8b5fa0bb8f2e496643093acc7567611cd049e719b30",
+                    "ruleId": "k8sgpt/PodRuntimeFault/v1",
+                    "eventId": "sha256:26a6c8721e1aa38f04063b96b840d1f070d4108e315ba8e88c8a4f6cd631d821",
+                    "payload": {
+                      "fault": false,
+                      "symptom": "PodRuntimeFault",
+                      "analyzer": "k8sgpt/v0.3.41/f071b32aa85d77b197cd2d0f9868294f7b55c5eb",
+                      "nativeUID": "9d925158-f0c9-4ce5-84b8-830959e148dc",
+                      "nativeKind": "Pod"
+                    },
+                    "severity": "warning",
+                    "startsAt": "2026-11-07T01:54:02.299706Z",
+                    "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                    "findingId": "01a1b3b6-77d9-7382-b225-a9a4f8126977",
+                    "namespace": "ops-current",
+                    "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+                    "observedAt": "2026-11-08T03:27:56.689648928Z",
+                    "receivedAt": "2026-11-08T03:27:56.726806Z",
+                    "ruleFamily": "kubernetes-analyzer",
+                    "evidenceRefs": [
+                      "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb"
+                    ],
+                    "occurrenceId": "01a1b3b6-77d0-7084-b003-793072a49241",
+                    "timeReliable": true,
+                    "schemaVersion": "finding-envelope/v2",
+                    "idempotencyKey": "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb",
+                    "lifecycleState": "resolved",
+                    "sourceRevision": 2,
+                    "sourceSequence": 0,
+                    "firstReceivedAt": "2026-11-07T01:54:02.329204Z",
+                    "aggregateRevision": 32,
+                    "normalizedSymptom": "PodRuntimeFault",
+                    "sourceFingerprint": "sha256:a93b95fa8f66b5ab0c4412e03edf5bba8c5c79fe3b131dffcf543fa40130bd1d",
+                    "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                    "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                  }
+                ]
+              },
+              "incident": {
+                "state": "resolved",
+                "revision": 34,
+                "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                "createdAt": "2026-11-07T01:54:03.186907Z",
+                "namespace": "ops-current",
+                "startedAt": "2026-11-07T01:54:02.299706Z",
+                "updatedAt": "2026-11-08T03:33:00.177163Z",
+                "assignedAt": null,
+                "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+                "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad",
+                "resolvedAt": "2026-11-08T03:33:00.176845Z",
+                "fingerprint": "sha256:94eabb2acaa7ca2823bf73655416cd702c64b2a4e2eaa2f21c04549464d086dc",
+                "policyVersion": "correlation/nonvirtual/v1",
+                "schemaVersion": "incident/v2",
+                "lastObservedAt": "2026-11-08T03:27:56.689648Z",
+                "assigneeSubject": "",
+                "recoveryKnownAt": "2026-11-08T03:27:58.200163Z",
+                "suppressedUntil": null,
+                "currentRcaRevision": 732,
+                "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc"
+              }
+            },
+            "tool": "get_incident_context",
+            "state": "succeeded",
+            "budget": {
+              "consumed": {
+                "toolCalls": 1,
+                "graphNodes": 0,
+                "rawQueries": 0,
+                "inputTokens": 0,
+                "resultBytes": 2938,
+                "outputTokens": 0,
+                "evidenceItems": 1,
+                "modelRequests": 0,
+                "modelCostMicros": 0
+              },
+              "remaining": {
+                "toolCalls": 38,
+                "graphNodes": 8000,
+                "rawQueries": 10,
+                "inputTokens": 524288,
+                "resultBytes": 41913932,
+                "outputTokens": 32768,
+                "evidenceItems": 3999,
+                "modelRequests": 8,
+                "modelCostMicros": 0
+              }
+            },
+            "partial": false,
+            "evidenceRefs": [
+              "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb"
+            ],
+            "schemaVersion": "tool-response/v3",
+            "degradedSources": []
+          }
+        },
+        {
+          "argsSummary": {},
+          "stepId": "01a1b94e-0e06-7de9-81d4-1649e2e568b2",
+          "toolName": "get_formal_references",
+          "argsDigest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "state": "succeeded",
+          "result": {
+            "data": {
+              "rca": {
+                "actor": "deterministic-worker",
+                "result": {
+                  "impact": {
+                    "edges": [
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd",
+                        "kind": "selects_pod",
+                        "validFrom": "2026-11-08T03:05:20.484572932Z",
+                        "confidence": 0.95,
+                        "observedAt": "2026-11-08T03:05:20.484572932Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:05:20.484572932Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/selector/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      },
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/discovery.k8s.io/EndpointSlice/588ac39c-2832-44b4-8517-fc22a51634e4",
+                        "kind": "managed_by",
+                        "validFrom": "2026-11-08T03:44:34.383139654Z",
+                        "confidence": 1,
+                        "observedAt": "2026-11-08T03:44:34.383139654Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:44:34.383139654Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      },
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/ConfigMap/70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "kind": "related_to",
+                        "validFrom": "2026-11-08T03:05:43.704657678Z",
+                        "confidence": 1,
+                        "observedAt": "2026-11-08T03:05:43.704657678Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:05:43.704657678Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      },
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Node/c874affc-6a0b-492f-b217-14ad989c0d89",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "kind": "scheduled_on",
+                        "validFrom": "2026-11-08T03:05:43.704657678Z",
+                        "confidence": 1,
+                        "observedAt": "2026-11-08T03:05:43.704657678Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:05:43.704657678Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      },
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "kind": "managed_by",
+                        "validFrom": "2026-11-08T03:05:43.704657678Z",
+                        "confidence": 1,
+                        "observedAt": "2026-11-08T03:05:43.704657678Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:05:43.704657678Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      },
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                        "kind": "managed_by",
+                        "validFrom": "2026-11-08T03:05:43.708304494Z",
+                        "confidence": 1,
+                        "observedAt": "2026-11-08T03:05:43.708304494Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:05:43.708304494Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      }
+                    ],
+                    "nodes": [
+                      {
+                        "kind": "Pod",
+                        "name": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "pod-template-hash": "6d46c4f8f5",
+                          "app.kubernetes.io/name": "ops-metrics-server-metrics",
+                          "ops.platform.io/release": "ops-metrics-server",
+                          "app.kubernetes.io/instance": "ops-metrics-server"
+                        },
+                        "apiGroup": "core",
+                        "stableId": "9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:05:43.704657678Z",
+                        "attributes": {
+                          "health": "normal",
+                          "status": {
+                            "phase": "Running",
+                            "conditions": [
+                              {
+                                "type": "PodReadyToStartContainers",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-08T03:05:22Z"
+                              },
+                              {
+                                "type": "Initialized",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-06T06:16:42Z"
+                              },
+                              {
+                                "type": "Ready",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-08T03:05:43Z"
+                              },
+                              {
+                                "type": "ContainersReady",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-08T03:05:43Z"
+                              },
+                              {
+                                "type": "PodScheduled",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-06T06:16:42Z"
+                              }
+                            ],
+                            "containerStatuses": [
+                              {
+                                "name": "metrics-server",
+                                "ready": true,
+                                "state": {
+                                  "running": {
+                                    "startedAt": "2026-11-08T03:05:23Z"
+                                  }
+                                },
+                                "imageID": "registry.k8s.io/metrics-server/metrics-server@sha256:89258156d0e9af60403eafd44da9676fd66f600c7934d468ccc17e42b199aee2",
+                                "lastState": {
+                                  "terminated": {
+                                    "reason": "Completed",
+                                    "exitCode": 0,
+                                    "startedAt": "2026-11-08T02:53:09Z",
+                                    "finishedAt": "2026-11-08T03:05:22Z",
+                                    "containerID": "containerd://b4a7d397aa8b745e167ec66b029572d65134857aa89a3474e348abc5261fda73"
+                                  }
+                                },
+                                "containerID": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                                "restartCount": 114
+                              }
+                            ]
+                          },
+                          "resourceDomain": "kubernetes"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "lastObservedAt": "2026-11-08T03:05:43.704657678Z",
+                        "firstObservedAt": "2026-11-08T03:05:20.990135445Z"
+                      },
+                      {
+                        "kind": "Service",
+                        "name": "ops-metrics-server-metrics",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "ops.platform.io/release": "ops-metrics-server",
+                          "app.kubernetes.io/instance": "ops-metrics-server",
+                          "app.kubernetes.io/managed-by": "Helm"
+                        },
+                        "apiGroup": "core",
+                        "stableId": "682f3394-2ebd-4ee9-b797-1815b57351dd",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:05:20.484572932Z",
+                        "attributes": {
+                          "health": "unknown",
+                          "resourceDomain": "network"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd",
+                        "lastObservedAt": "2026-11-08T03:05:20.484572932Z",
+                        "firstObservedAt": "2026-11-08T03:05:20.484572932Z"
+                      },
+                      {
+                        "kind": "EndpointSlice",
+                        "name": "ops-metrics-server-metrics-rv68l",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "ops.platform.io/release": "ops-metrics-server",
+                          "app.kubernetes.io/instance": "ops-metrics-server",
+                          "kubernetes.io/service-name": "ops-metrics-server-metrics",
+                          "app.kubernetes.io/managed-by": "Helm",
+                          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io"
+                        },
+                        "apiGroup": "discovery.k8s.io",
+                        "stableId": "588ac39c-2832-44b4-8517-fc22a51634e4",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:44:34.383139654Z",
+                        "attributes": {
+                          "health": "unknown",
+                          "resourceDomain": "network"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/discovery.k8s.io/EndpointSlice/588ac39c-2832-44b4-8517-fc22a51634e4",
+                        "lastObservedAt": "2026-11-08T03:44:34.383139654Z",
+                        "firstObservedAt": "2026-11-08T03:05:21.58628421Z"
+                      },
+                      {
+                        "kind": "ConfigMap",
+                        "name": "ops-metrics-kubelet-ca",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "ops.platform.io/managed-by": "opsctl-bootstrap",
+                          "ops.platform.io/installation-id": "4f62b5d6-1244-42ce-85c6-3150a7837915"
+                        },
+                        "apiGroup": "core",
+                        "stableId": "70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:05:20.892571663Z",
+                        "attributes": {
+                          "health": "unknown",
+                          "resourceDomain": "kubernetes"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/ConfigMap/70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                        "lastObservedAt": "2026-11-08T03:05:20.892571663Z",
+                        "firstObservedAt": "2026-11-08T03:05:20.892571663Z"
+                      },
+                      {
+                        "kind": "Node",
+                        "name": "mssc",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "kubernetes.io/os": "linux",
+                          "kubernetes.io/arch": "amd64",
+                          "beta.kubernetes.io/os": "linux",
+                          "kubernetes.io/hostname": "mssc",
+                          "beta.kubernetes.io/arch": "amd64",
+                          "node-role.kubernetes.io/control-plane": "",
+                          "node.kubernetes.io/exclude-from-external-load-balancers": ""
+                        },
+                        "apiGroup": "core",
+                        "stableId": "c874affc-6a0b-492f-b217-14ad989c0d89",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": null,
+                        "updatedAt": "2026-11-08T03:53:49.465137623Z",
+                        "attributes": {
+                          "health": "normal",
+                          "status": {
+                            "nodeInfo": {
+                              "machineID": "137c892cd7144768955fdb7f59cf51fd",
+                              "systemUUID": "ffefce86-0c67-11eb-adfd-6787a9916300"
+                            },
+                            "addresses": [
+                              {
+                                "type": "InternalIP",
+                                "address": "192.168.0.63"
+                              },
+                              {
+                                "type": "Hostname",
+                                "address": "mssc"
+                              }
+                            ],
+                            "conditions": [
+                              {
+                                "type": "NetworkUnavailable",
+                                "reason": "FlannelIsUp",
+                                "status": "False",
+                                "lastTransitionTime": "2026-11-08T03:04:02Z"
+                              },
+                              {
+                                "type": "MemoryPressure",
+                                "reason": "KubeletHasSufficientMemory",
+                                "status": "False",
+                                "lastTransitionTime": "2026-10-08T09:12:17Z"
+                              },
+                              {
+                                "type": "DiskPressure",
+                                "reason": "KubeletHasNoDiskPressure",
+                                "status": "False",
+                                "lastTransitionTime": "2026-10-08T09:12:17Z"
+                              },
+                              {
+                                "type": "PIDPressure",
+                                "reason": "KubeletHasSufficientPID",
+                                "status": "False",
+                                "lastTransitionTime": "2026-10-08T09:12:17Z"
+                              },
+                              {
+                                "type": "Ready",
+                                "reason": "KubeletReady",
+                                "status": "True",
+                                "lastTransitionTime": "2026-10-08T10:02:54Z"
+                              }
+                            ]
+                          },
+                          "resourceDomain": "kubernetes"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Node/c874affc-6a0b-492f-b217-14ad989c0d89",
+                        "lastObservedAt": "2026-11-08T03:53:49.465137623Z",
+                        "firstObservedAt": "2026-11-08T03:05:20.582133113Z"
+                      },
+                      {
+                        "kind": "ReplicaSet",
+                        "name": "ops-metrics-server-metrics-6d46c4f8f5",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "pod-template-hash": "6d46c4f8f5",
+                          "app.kubernetes.io/name": "ops-metrics-server-metrics",
+                          "ops.platform.io/release": "ops-metrics-server",
+                          "app.kubernetes.io/instance": "ops-metrics-server"
+                        },
+                        "apiGroup": "apps",
+                        "stableId": "63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:05:43.708304494Z",
+                        "attributes": {
+                          "health": "unknown",
+                          "resourceDomain": "kubernetes"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                        "lastObservedAt": "2026-11-08T03:05:43.708304494Z",
+                        "firstObservedAt": "2026-11-08T03:05:21.909091272Z"
+                      },
+                      {
+                        "kind": "Deployment",
+                        "name": "ops-metrics-server-metrics",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "ops.platform.io/release": "ops-metrics-server",
+                          "app.kubernetes.io/instance": "ops-metrics-server",
+                          "app.kubernetes.io/managed-by": "Helm"
+                        },
+                        "apiGroup": "apps",
+                        "stableId": "b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:05:43.71249025Z",
+                        "attributes": {
+                          "health": "unknown",
+                          "status": {
+                            "conditions": [
+                              {
+                                "type": "Progressing",
+                                "reason": "NewReplicaSetAvailable",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-06T03:34:04Z"
+                              },
+                              {
+                                "type": "Available",
+                                "reason": "MinimumReplicasAvailable",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-08T03:05:43Z"
+                              }
+                            ]
+                          },
+                          "resourceDomain": "kubernetes"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                        "lastObservedAt": "2026-11-08T03:05:43.71249025Z",
+                        "firstObservedAt": "2026-11-08T03:05:21.092718217Z"
+                      }
+                    ],
+                    "budgets": {
+                      "maxDepth": 2,
+                      "maxEdges": 400,
+                      "maxNodes": 200,
+                      "edgeCount": 6,
+                      "nodeCount": 7,
+                      "truncated": false,
+                      "storageMaxDepth": 2
+                    },
+                    "partial": false,
+                    "warnings": [],
+                    "conflicts": null,
+                    "freshness": "fresh",
+                    "collectedAt": "2026-11-08T03:57:32.196078505Z",
+                    "graphRevision": {
+                      "ownerEpoch": 20,
+                      "graphGeneration": 2540
+                    },
+                    "ownerInstance": "bb47b73a-593e-4963-b8b2-00d9dd410edf",
+                    "schemaVersion": "resource-graph/v2",
+                    "dependencyOnly": [
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/ConfigMap/70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Node/c874affc-6a0b-492f-b217-14ad989c0d89"
+                    ],
+                    "rankedEvidence": [],
+                    "degradedSources": [],
+                    "directlyAffected": [
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd"
+                    ],
+                    "indirectlyAffected": [
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/discovery.k8s.io/EndpointSlice/588ac39c-2832-44b4-8517-fc22a51634e4"
+                    ]
+                  },
+                  "status": "unresolved",
+                  "partial": true,
+                  "graphPlan": "single-query/v1",
+                  "candidates": [],
+                  "recipeDigest": "sha256:7c592c952c97e9963fa6dacb787864b161a9e0ce0a6bfa6005a57beeeee233ac",
+                  "recipeVersion": "v1",
+                  "schemaVersion": "rca-evaluation/v2",
+                  "evidenceBundle": {
+                    "ranked": [],
+                    "missing": [
+                      "pod-crash-failing",
+                      "container-backoff-error",
+                      "pod-path"
+                    ],
+                    "conflicts": [],
+                    "supporting": [],
+                    "contradicting": [],
+                    "degradedSources": []
+                  }
+                },
+                "source": "deterministic",
+                "revision": 732,
+                "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                "createdAt": "2026-11-08T03:57:32.20346732Z",
+                "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad",
+                "superseded": false,
+                "inputDigest": "sha256:04209f112aec3f40e40a5d6bc75a9205e545c6b65bfc92586980196d8d387655",
+                "inputManifest": {
+                  "to": "2026-11-08T03:57:32.19423567Z",
+                  "from": "2026-11-08T03:52:32.19423567Z",
+                  "graph": {
+                    "edges": [
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd",
+                        "kind": "selects_pod",
+                        "validFrom": "2026-11-08T03:05:20.484572932Z",
+                        "confidence": 0.95,
+                        "observedAt": "2026-11-08T03:05:20.484572932Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:05:20.484572932Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/selector/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      },
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/discovery.k8s.io/EndpointSlice/588ac39c-2832-44b4-8517-fc22a51634e4",
+                        "kind": "managed_by",
+                        "validFrom": "2026-11-08T03:44:34.383139654Z",
+                        "confidence": 1,
+                        "observedAt": "2026-11-08T03:44:34.383139654Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:44:34.383139654Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      },
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/ConfigMap/70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "kind": "related_to",
+                        "validFrom": "2026-11-08T03:05:43.704657678Z",
+                        "confidence": 1,
+                        "observedAt": "2026-11-08T03:05:43.704657678Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:05:43.704657678Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      },
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Node/c874affc-6a0b-492f-b217-14ad989c0d89",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "kind": "scheduled_on",
+                        "validFrom": "2026-11-08T03:05:43.704657678Z",
+                        "confidence": 1,
+                        "observedAt": "2026-11-08T03:05:43.704657678Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:05:43.704657678Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      },
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "kind": "managed_by",
+                        "validFrom": "2026-11-08T03:05:43.704657678Z",
+                        "confidence": 1,
+                        "observedAt": "2026-11-08T03:05:43.704657678Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:05:43.704657678Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      },
+                      {
+                        "to": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                        "ttl": 0,
+                        "from": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                        "kind": "managed_by",
+                        "validFrom": "2026-11-08T03:05:43.708304494Z",
+                        "confidence": 1,
+                        "observedAt": "2026-11-08T03:05:43.708304494Z",
+                        "provenance": {
+                          "observedAt": "2026-11-08T03:05:43.708304494Z",
+                          "ruleVersion": "ariadne/fa2232ce45c4c869e47ddae1c57e8886830cfb6c/structural/identity-projection-v1",
+                          "sourceValues": null,
+                          "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        }
+                      }
+                    ],
+                    "nodes": [
+                      {
+                        "kind": "Pod",
+                        "name": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "pod-template-hash": "6d46c4f8f5",
+                          "app.kubernetes.io/name": "ops-metrics-server-metrics",
+                          "ops.platform.io/release": "ops-metrics-server",
+                          "app.kubernetes.io/instance": "ops-metrics-server"
+                        },
+                        "apiGroup": "core",
+                        "stableId": "9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:05:43.704657678Z",
+                        "attributes": {
+                          "health": "normal",
+                          "status": {
+                            "phase": "Running",
+                            "conditions": [
+                              {
+                                "type": "PodReadyToStartContainers",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-08T03:05:22Z"
+                              },
+                              {
+                                "type": "Initialized",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-06T06:16:42Z"
+                              },
+                              {
+                                "type": "Ready",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-08T03:05:43Z"
+                              },
+                              {
+                                "type": "ContainersReady",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-08T03:05:43Z"
+                              },
+                              {
+                                "type": "PodScheduled",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-06T06:16:42Z"
+                              }
+                            ],
+                            "containerStatuses": [
+                              {
+                                "name": "metrics-server",
+                                "ready": true,
+                                "state": {
+                                  "running": {
+                                    "startedAt": "2026-11-08T03:05:23Z"
+                                  }
+                                },
+                                "imageID": "registry.k8s.io/metrics-server/metrics-server@sha256:89258156d0e9af60403eafd44da9676fd66f600c7934d468ccc17e42b199aee2",
+                                "lastState": {
+                                  "terminated": {
+                                    "reason": "Completed",
+                                    "exitCode": 0,
+                                    "startedAt": "2026-11-08T02:53:09Z",
+                                    "finishedAt": "2026-11-08T03:05:22Z",
+                                    "containerID": "containerd://b4a7d397aa8b745e167ec66b029572d65134857aa89a3474e348abc5261fda73"
+                                  }
+                                },
+                                "containerID": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                                "restartCount": 114
+                              }
+                            ]
+                          },
+                          "resourceDomain": "kubernetes"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                        "lastObservedAt": "2026-11-08T03:05:43.704657678Z",
+                        "firstObservedAt": "2026-11-08T03:05:20.990135445Z"
+                      },
+                      {
+                        "kind": "Service",
+                        "name": "ops-metrics-server-metrics",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "ops.platform.io/release": "ops-metrics-server",
+                          "app.kubernetes.io/instance": "ops-metrics-server",
+                          "app.kubernetes.io/managed-by": "Helm"
+                        },
+                        "apiGroup": "core",
+                        "stableId": "682f3394-2ebd-4ee9-b797-1815b57351dd",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:05:20.484572932Z",
+                        "attributes": {
+                          "health": "unknown",
+                          "resourceDomain": "network"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd",
+                        "lastObservedAt": "2026-11-08T03:05:20.484572932Z",
+                        "firstObservedAt": "2026-11-08T03:05:20.484572932Z"
+                      },
+                      {
+                        "kind": "EndpointSlice",
+                        "name": "ops-metrics-server-metrics-rv68l",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "ops.platform.io/release": "ops-metrics-server",
+                          "app.kubernetes.io/instance": "ops-metrics-server",
+                          "kubernetes.io/service-name": "ops-metrics-server-metrics",
+                          "app.kubernetes.io/managed-by": "Helm",
+                          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io"
+                        },
+                        "apiGroup": "discovery.k8s.io",
+                        "stableId": "588ac39c-2832-44b4-8517-fc22a51634e4",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:44:34.383139654Z",
+                        "attributes": {
+                          "health": "unknown",
+                          "resourceDomain": "network"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/discovery.k8s.io/EndpointSlice/588ac39c-2832-44b4-8517-fc22a51634e4",
+                        "lastObservedAt": "2026-11-08T03:44:34.383139654Z",
+                        "firstObservedAt": "2026-11-08T03:05:21.58628421Z"
+                      },
+                      {
+                        "kind": "ConfigMap",
+                        "name": "ops-metrics-kubelet-ca",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "ops.platform.io/managed-by": "opsctl-bootstrap",
+                          "ops.platform.io/installation-id": "4f62b5d6-1244-42ce-85c6-3150a7837915"
+                        },
+                        "apiGroup": "core",
+                        "stableId": "70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:05:20.892571663Z",
+                        "attributes": {
+                          "health": "unknown",
+                          "resourceDomain": "kubernetes"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/ConfigMap/70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                        "lastObservedAt": "2026-11-08T03:05:20.892571663Z",
+                        "firstObservedAt": "2026-11-08T03:05:20.892571663Z"
+                      },
+                      {
+                        "kind": "Node",
+                        "name": "mssc",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "kubernetes.io/os": "linux",
+                          "kubernetes.io/arch": "amd64",
+                          "beta.kubernetes.io/os": "linux",
+                          "kubernetes.io/hostname": "mssc",
+                          "beta.kubernetes.io/arch": "amd64",
+                          "node-role.kubernetes.io/control-plane": "",
+                          "node.kubernetes.io/exclude-from-external-load-balancers": ""
+                        },
+                        "apiGroup": "core",
+                        "stableId": "c874affc-6a0b-492f-b217-14ad989c0d89",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": null,
+                        "updatedAt": "2026-11-08T03:53:49.465137623Z",
+                        "attributes": {
+                          "health": "normal",
+                          "status": {
+                            "nodeInfo": {
+                              "machineID": "137c892cd7144768955fdb7f59cf51fd",
+                              "systemUUID": "ffefce86-0c67-11eb-adfd-6787a9916300"
+                            },
+                            "addresses": [
+                              {
+                                "type": "InternalIP",
+                                "address": "192.168.0.63"
+                              },
+                              {
+                                "type": "Hostname",
+                                "address": "mssc"
+                              }
+                            ],
+                            "conditions": [
+                              {
+                                "type": "NetworkUnavailable",
+                                "reason": "FlannelIsUp",
+                                "status": "False",
+                                "lastTransitionTime": "2026-11-08T03:04:02Z"
+                              },
+                              {
+                                "type": "MemoryPressure",
+                                "reason": "KubeletHasSufficientMemory",
+                                "status": "False",
+                                "lastTransitionTime": "2026-10-08T09:12:17Z"
+                              },
+                              {
+                                "type": "DiskPressure",
+                                "reason": "KubeletHasNoDiskPressure",
+                                "status": "False",
+                                "lastTransitionTime": "2026-10-08T09:12:17Z"
+                              },
+                              {
+                                "type": "PIDPressure",
+                                "reason": "KubeletHasSufficientPID",
+                                "status": "False",
+                                "lastTransitionTime": "2026-10-08T09:12:17Z"
+                              },
+                              {
+                                "type": "Ready",
+                                "reason": "KubeletReady",
+                                "status": "True",
+                                "lastTransitionTime": "2026-10-08T10:02:54Z"
+                              }
+                            ]
+                          },
+                          "resourceDomain": "kubernetes"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Node/c874affc-6a0b-492f-b217-14ad989c0d89",
+                        "lastObservedAt": "2026-11-08T03:53:49.465137623Z",
+                        "firstObservedAt": "2026-11-08T03:05:20.582133113Z"
+                      },
+                      {
+                        "kind": "ReplicaSet",
+                        "name": "ops-metrics-server-metrics-6d46c4f8f5",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "pod-template-hash": "6d46c4f8f5",
+                          "app.kubernetes.io/name": "ops-metrics-server-metrics",
+                          "ops.platform.io/release": "ops-metrics-server",
+                          "app.kubernetes.io/instance": "ops-metrics-server"
+                        },
+                        "apiGroup": "apps",
+                        "stableId": "63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:05:43.708304494Z",
+                        "attributes": {
+                          "health": "unknown",
+                          "resourceDomain": "kubernetes"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                        "lastObservedAt": "2026-11-08T03:05:43.708304494Z",
+                        "firstObservedAt": "2026-11-08T03:05:21.909091272Z"
+                      },
+                      {
+                        "kind": "Deployment",
+                        "name": "ops-metrics-server-metrics",
+                        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+                        "domain": "k8s",
+                        "labels": {
+                          "ops.platform.io/release": "ops-metrics-server",
+                          "app.kubernetes.io/instance": "ops-metrics-server",
+                          "app.kubernetes.io/managed-by": "Helm"
+                        },
+                        "apiGroup": "apps",
+                        "stableId": "b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                        "namespace": "ops-current",
+                        "updatedAt": "2026-11-08T03:05:43.71249025Z",
+                        "attributes": {
+                          "health": "unknown",
+                          "status": {
+                            "conditions": [
+                              {
+                                "type": "Progressing",
+                                "reason": "NewReplicaSetAvailable",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-06T03:34:04Z"
+                              },
+                              {
+                                "type": "Available",
+                                "reason": "MinimumReplicasAvailable",
+                                "status": "True",
+                                "lastTransitionTime": "2026-11-08T03:05:43Z"
+                              }
+                            ]
+                          },
+                          "resourceDomain": "kubernetes"
+                        },
+                        "sourceRefs": [
+                          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                        ],
+                        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                        "lastObservedAt": "2026-11-08T03:05:43.71249025Z",
+                        "firstObservedAt": "2026-11-08T03:05:21.092718217Z"
+                      }
+                    ],
+                    "budgets": {
+                      "maxDepth": 2,
+                      "maxEdges": 400,
+                      "maxNodes": 200,
+                      "edgeCount": 6,
+                      "nodeCount": 7,
+                      "truncated": false,
+                      "storageMaxDepth": 2
+                    },
+                    "partial": false,
+                    "warnings": [],
+                    "conflicts": null,
+                    "freshness": "fresh",
+                    "collectedAt": "2026-11-08T03:57:32.196078505Z",
+                    "graphRevision": {
+                      "ownerEpoch": 20,
+                      "graphGeneration": 2540
+                    },
+                    "ownerInstance": "bb47b73a-593e-4963-b8b2-00d9dd410edf",
+                    "schemaVersion": "resource-graph/v2",
+                    "dependencyOnly": [
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/b9f15e6a-a59f-4293-ace7-bb3d26bbee3b",
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/63a47dad-93c7-4a68-b7c5-814fce02ec60",
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/ConfigMap/70e62bc7-01bc-490c-baff-9239f14e0bb5",
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Node/c874affc-6a0b-492f-b217-14ad989c0d89"
+                    ],
+                    "rankedEvidence": [],
+                    "degradedSources": [],
+                    "directlyAffected": [
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Service/682f3394-2ebd-4ee9-b797-1815b57351dd"
+                    ],
+                    "indirectlyAffected": [
+                      "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/discovery.k8s.io/EndpointSlice/588ac39c-2832-44b4-8517-fc22a51634e4"
+                    ]
+                  },
+                  "evidence": [],
+                  "evaluatedAt": "2026-11-08T03:57:32.19423567Z",
+                  "graphSources": [
+                    {
+                      "revision": 2,
+                      "scopeDigest": "sha256:67eb23c92a1d76647ca1b3f210cd6cb1f622dc6b7dd496e2cfe343236513d7e9",
+                      "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    }
+                  ],
+                  "schemaVersion": "rca-input/v2",
+                  "findingRevisions": [
+                    {
+                      "digest": "sha256:911c410324b93af93044c8b5fa0bb8f2e496643093acc7567611cd049e719b30",
+                      "findingId": "01a1b3b6-77d9-7382-b225-a9a4f8126977",
+                      "namespace": "ops-current",
+                      "observedAt": "2026-11-08T03:27:56.689648928Z",
+                      "occurrenceId": "01a1b3b6-77d0-7084-b003-793072a49241",
+                      "lifecycleState": "resolved",
+                      "sourceRevision": 2,
+                      "aggregateRevision": 32,
+                      "sourceFingerprint": "sha256:a93b95fa8f66b5ab0c4412e03edf5bba8c5c79fe3b131dffcf543fa40130bd1d",
+                      "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+                      "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                    }
+                  ],
+                  "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc"
+                },
+                "schemaVersion": "rca-revision/v2",
+                "baseIncidentRevision": 34
+              },
+              "plans": [],
+              "historical": false,
+              "formalReferences": [
+                {
+                  "kind": "rca",
+                  "revision": 732,
+                  "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad",
+                  "contentDigest": "sha256:556cb15fd20fbdced119a42e087aeeb8cc2f0fa5815b0f00bba9fcb4a514bc32"
+                }
+              ],
+              "currentRcaRevision": 732
+            },
+            "tool": "get_formal_references",
+            "state": "succeeded",
+            "budget": {
+              "consumed": {
+                "toolCalls": 1,
+                "graphNodes": 0,
+                "rawQueries": 0,
+                "inputTokens": 0,
+                "resultBytes": 29883,
+                "outputTokens": 0,
+                "evidenceItems": 0,
+                "modelRequests": 0,
+                "modelCostMicros": 0
+              },
+              "remaining": {
+                "toolCalls": 37,
+                "graphNodes": 8000,
+                "rawQueries": 10,
+                "inputTokens": 524288,
+                "resultBytes": 41884049,
+                "outputTokens": 32768,
+                "evidenceItems": 3999,
+                "modelRequests": 8,
+                "modelCostMicros": 0
+              }
+            },
+            "partial": false,
+            "evidenceRefs": [],
+            "schemaVersion": "tool-response/v3",
+            "degradedSources": []
+          }
+        },
+        {
+          "argsSummary": {
+            "context": "已授权故障上下文与持久工具结果",
+            "rawPromptOmitted": true
+          },
+          "stepId": "01a1b94e-0ef9-7f06-a593-16ce75478601",
+          "toolName": "model",
+          "argsDigest": "sha256:7c05037c6fae9d2db4e33913369a4e3b871b61c21008fb0b9cbcf439026593d2",
+          "state": "succeeded",
+          "result": {
+            "provider": "openai-compatible",
+            "response": {
+              "id": "6029d6cd-444d-4401-aa43-7e29b8beb4a7",
+              "model": "deepseek-flash",
+              "usage": {
+                "total_tokens": 30902,
+                "prompt_tokens": 29986,
+                "completion_tokens": 916,
+                "prompt_tokens_details": {
+                  "audio_tokens": null,
+                  "cached_tokens": 9088,
+                  "cache_write_tokens": null
+                },
+                "prompt_cache_hit_tokens": 9088,
+                "prompt_cache_miss_tokens": 20898,
+                "completion_tokens_details": null
+              },
+              "object": "chat.completion",
+              "choices": [
+                {
+                  "index": 0,
+                  "message": {
+                    "role": "assistant",
+                    "content": "                                                                  ",
+                    "tool_calls": [
+                      {
+                        "id": "call_00_zDhdmgAljcQDNFxxc2KZ2660",
+                        "type": "function",
+                        "index": 0,
+                        "function": {
+                          "name": "execute_analysis_query",
+                          "arguments": "{\"intent\":{\"datasetId\":\"metrics.pod-cpu\",\"dimensions\":[],\"filters\":[{\"field\":\"namespace\",\"operator\":\"eq\",\"value\":\"ops-current\"},{\"field\":\"pod\",\"operator\":\"eq\",\"value\":\"ops-metrics-server-metrics-6d46c4f8f5-7ztrn\"}],\"limit\":50,\"metrics\":[\"cpu_usage_cores\"],\"operation\":\"trend\",\"schemaVersion\":\"query-intent/v1\",\"sort\":[],\"stepSeconds\":60,\"timeRange\":{\"from\":\"2026-11-08T03:52:41Z\",\"timezone\":\"Asia/Shanghai\",\"to\":\"2026-11-08T03:57:41Z\"}},\"windowRole\":\"recovery\"}"
+                        }
+                      },
+                      {
+                        "id": "call_01_bybLcnrlJyJlDaI2FveW0437",
+                        "type": "function",
+                        "index": 1,
+                        "function": {
+                          "name": "execute_analysis_query",
+                          "arguments": "{\"intent\":{\"datasetId\":\"metrics.pod-memory\",\"dimensions\":[],\"filters\":[{\"field\":\"namespace\",\"operator\":\"eq\",\"value\":\"ops-current\"},{\"field\":\"pod\",\"operator\":\"eq\",\"value\":\"ops-metrics-server-metrics-6d46c4f8f5-7ztrn\"}],\"limit\":50,\"metrics\":[\"memory_working_set_bytes\"],\"operation\":\"trend\",\"schemaVersion\":\"query-intent/v1\",\"sort\":[],\"stepSeconds\":60,\"timeRange\":{\"from\":\"2026-11-08T03:52:41Z\",\"timezone\":\"Asia/Shanghai\",\"to\":\"2026-11-08T03:57:41Z\"}},\"windowRole\":\"recovery\"}"
+                        }
+                      },
+                      {
+                        "id": "call_02_Bl08Q9R1wuLtNbJ0QjPU7958",
+                        "type": "function",
+                        "index": 2,
+                        "function": {
+                          "name": "execute_analysis_query",
+                          "arguments": "{\"intent\":{\"datasetId\":\"metrics.pod-restarts\",\"dimensions\":[],\"filters\":[{\"field\":\"namespace\",\"operator\":\"eq\",\"value\":\"ops-current\"},{\"field\":\"pod\",\"operator\":\"eq\",\"value\":\"ops-metrics-server-metrics-6d46c4f8f5-7ztrn\"}],\"limit\":50,\"metrics\":[\"restart_count\"],\"operation\":\"trend\",\"schemaVersion\":\"query-intent/v1\",\"sort\":[],\"stepSeconds\":60,\"timeRange\":{\"from\":\"2026-11-08T03:52:41Z\",\"timezone\":\"Asia/Shanghai\",\"to\":\"2026-11-08T03:57:41Z\"}},\"windowRole\":\"recovery\"}"
+                        }
+                      },
+                      {
+                        "id": "call_03_NfvNH37ozLVUEopmoPIu5756",
+                        "type": "function",
+                        "index": 3,
+                        "function": {
+                          "name": "query_logs",
+                          "arguments": "{\"budget\":{\"maxBytes\":262144,\"timeoutMs\":3000},\"queryTemplate\":\"pod-logs/v1\",\"resourceCanonicalId\":\"k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc\",\"timeRange\":{\"from\":\"2026-11-08T03:52:41Z\",\"to\":\"2026-11-08T03:57:41Z\"},\"type\":\"log\"}"
+                        }
+                      }
+                    ],
+                    "function_call": null,
+                    "provider_specific_fields": {
+                      "refusal": null
+                    }
+                  },
+                  "finish_reason": "tool_calls",
+                  "provider_specific_fields": {}
+                }
+              ],
+              "created": 1794110263,
+              "moderation": null,
+              "service_tier": null,
+              "system_fingerprint": "bc19ba97cbe016479903222bb1578db6"
+            },
+            "usageKnown": true
+          }
+        },
+        {
+          "argsSummary": {},
+          "stepId": "01a1b94e-2046-756c-bd88-02dd580a06ac",
+          "toolName": "execute_analysis_query",
+          "argsDigest": "sha256:ce80e115570fb1a107c08b2ba4d79ddbbe991a94930de191aa6ac4c854664084",
+          "state": "failed",
+          "errorCode": "SOURCE_DEGRADED"
+        },
+        {
+          "argsSummary": {
+            "timeRangeTo": "2026-11-08T03:57:41Z",
+            "timeRangeFrom": "2026-11-08T03:52:41Z",
+            "rawQueryOmitted": true,
+            "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc"
+          },
+          "stepId": "01a1b94e-204b-769f-afcd-fb005ec3075d",
+          "toolName": "query_logs",
+          "argsDigest": "sha256:3017dcc0fe78984dc0ed877db42dce38119995be34d4829a1dff938247c50ef0",
+          "state": "succeeded",
+          "result": {
+            "data": {
+              "sourceErrorCode": "INVALID_ARGUMENT"
+            },
+            "tool": "query_logs",
+            "state": "degraded",
+            "budget": {
+              "consumed": {
+                "toolCalls": 1,
+                "graphNodes": 0,
+                "rawQueries": 1,
+                "inputTokens": 0,
+                "resultBytes": 578,
+                "outputTokens": 0,
+                "evidenceItems": 0,
+                "modelRequests": 0,
+                "modelCostMicros": 0
+              },
+              "remaining": {
+                "toolCalls": 35,
+                "graphNodes": 8000,
+                "rawQueries": 8,
+                "inputTokens": 494302,
+                "resultBytes": 41612890,
+                "outputTokens": 31852,
+                "evidenceItems": 3899,
+                "modelRequests": 7,
+                "modelCostMicros": 0
+              }
+            },
+            "partial": true,
+            "errorCode": "SOURCE_DEGRADED",
+            "evidenceRefs": [],
+            "schemaVersion": "tool-response/v3",
+            "degradedSources": [
+              "query_logs"
+            ]
+          }
+        },
+        {
+          "argsSummary": {},
+          "stepId": "01a1b94e-204f-7868-b8d6-393bed0f1ccf",
+          "toolName": "execute_analysis_query",
+          "argsDigest": "sha256:ca34429d148aab7223c192d6b0e7667e2f51f2c00608216ae4f2b4f789e1bd80",
+          "state": "failed",
+          "errorCode": "SOURCE_DEGRADED"
+        },
+        {
+          "argsSummary": {},
+          "stepId": "01a1b94e-2060-71f4-b734-f6bc96eeae7f",
+          "toolName": "execute_analysis_query",
+          "argsDigest": "sha256:1045afd7c028e009cfbb15f36328018b81e8d0f4152d2bb01b32a02b149b2ee8",
+          "state": "failed",
+          "errorCode": "SOURCE_DEGRADED"
+        },
+        {
+          "argsSummary": {
+            "context": "已授权故障上下文与持久工具结果",
+            "rawPromptOmitted": true
+          },
+          "stepId": "01a1b94e-2211-70b4-8d9c-fe12a17246e2",
+          "toolName": "model",
+          "argsDigest": "sha256:cfba4fe6530d3c7e43334ea842f9e56c600ad911e40dbd30d71da153c4134893",
+          "state": "succeeded",
+          "result": {
+            "provider": "openai-compatible",
+            "response": {
+              "id": "9542e835-5cbc-4043-be54-a330730b645a",
+              "model": "deepseek-flash",
+              "usage": {
+                "total_tokens": 33093,
+                "prompt_tokens": 31810,
+                "completion_tokens": 1283,
+                "prompt_tokens_details": {
+                  "audio_tokens": null,
+                  "cached_tokens": 28160,
+                  "cache_write_tokens": null
+                },
+                "prompt_cache_hit_tokens": 28160,
+                "prompt_cache_miss_tokens": 3650,
+                "completion_tokens_details": null
+              },
+              "object": "chat.completion",
+              "choices": [
+                {
+                  "index": 0,
+                  "message": {
+                    "role": "assistant",
+                    "content": "{\"answerKind\":\"diagnosis\",\"asOf\":\"2026-11-08T03:57:41Z\",\"clarification\":null,\"degradedSources\":[\"execute_analysis_query(metrics.pod-cpu): SOURCE_DEGRADED\",\"execute_analysis_query(metrics.pod-memory): SOURCE_DEGRADED\",\"execute_analysis_query(metrics.pod-restarts): SOURCE_DEGRADED\",\"query_logs: INVALID_ARGUMENT\"],\"entityRefs\":[],\"evidenceRefs\":[\"b96ae5bf-c41f-5243-88ed-dba5edbd3dbb\"],\"factRefs\":[],\"faultChain\":[],\"faultChainContextRef\":null,\"formalRefs\":[{\"actionPlanId\":null,\"contentDigest\":\"sha256:556cb15fd20fbdced119a42e087aeeb8cc2f0fa5815b0f00bba9fcb4a514bc32\",\"incidentId\":\"01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad\",\"kind\":\"rca\",\"revision\":732}],\"hypotheses\":[{\"conflicts\":[],\"key\":\"容器反复重启导致 PodRuntimeFault（历史观察，未确认）\",\"missingEvidence\":[\"最近5分钟重启计数趋势（metrics.pod-restarts 查询失败）\",\"崩溃/退避日志（query_logs 返回 INVALID_ARGUMENT）\"],\"nextChecks\":[\"指标源恢复后重试 metrics.pod-restarts trend 查询\"],\"summary\":\"上下文快照显示 restartCount=114，且 2026-11-08T02:53:09Z–03:05:22Z 一次终止为 Completed/exitCode=0，随后 03:05:23Z 重启并 Ready；但本次重启趋势与日志查询均失败，无法确认重启是否持续或已停止。\",\"supports\":[\"b96ae5bf-c41f-5243-88ed-dba5edbd3dbb\"]},{\"conflicts\":[],\"key\":\"节点或依赖侧因素间接影响该 Pod（未验证）\",\"missingEvidence\":[\"pod-path 调用路径与网络侧观测（networkCapabilities 为空）\",\"节点侧与 Pod 重启时间对齐的指标\"],\"nextChecks\":[\"在具备网络能力时查询 Service→Pod 路径\"],\"summary\":\"Pod 调度在节点 mssc（192.168.0.63），该节点 Ready=True 且无内存/磁盘/PID 压力；Service 与 EndpointSlice 为受影响对象，但网络能力为空，无法验证调用路径。\",\"supports\":[]}],\"missingEvidence\":[\"metrics.pod-cpu 趋势查询失败（execute_analysis_query 返回 SOURCE_DEGRADED），缺少 2026-11-08T03:52:41Z–03:57:41Z 的 CPU 时序数据。\",\"metrics.pod-memory 趋势查询失败（execute_analysis_query 返回 SOURCE_DEGRADED），缺少同期内存 working set 时序数据。\",\"metrics.pod-restarts 趋势查询失败（execute_analysis_query 返回 SOURCE_DEGRADED），缺少同期重启计数趋势，无法判断 restartCount=114 是否仍在增长。\",\"query_logs 返回 INVALID_ARGUMENT（degradedSources=query_logs），同期容器日志未取得，pod-crash-failing 与 container-backoff-error 仍缺失。\",\"RCA revision 732 仍为 unresolved/partial，evidenceBundle.missing 含 pod-crash-failing、container-backoff-error、pod-path，网络能力列表为空。\"],\"nextChecks\":[\"在指标源恢复后重试 metrics.pod-restarts 与 metrics.pod-cpu、metrics.pod-memory 的 trend 查询（stepSeconds=60，窗口 2026-11-08T03:52:41Z–03:57:41Z），确认 restartCount 是否仍增长。\",\"修正 query_logs 的模板/参数（当前返回 INVALID_ARGUMENT）后重试该 Pod 同期日志，检索崩溃与退避错误。\",\"读取该 Pod 的 resource_history/resource_changes（fault 与 baseline 窗口），核对镜像、探针与资源限制是否变化。\"],\"partial\":true,\"queryResultRefs\":[],\"resourceSourceSteps\":[],\"schemaVersion\":\"assistant-answer/v1\",\"scopeSummary\":\"operational:79014400-9453-4cb4-9678-0fae47981d79 / namespace ops-current / Pod ops-metrics-server-metrics-6d46c4f8f5-7ztrn\",\"summary\":\"本次恢复检查的只读查询全部失败：metrics.pod-cpu、metrics.pod-memory、metrics.pod-restarts 三个趋势查询均返回 SOURCE_DEGRADED，query_logs 返回 INVALID_ARGUMENT，因此最近5分钟（2026-11-08T03:52:41Z–03:57:41Z）没有取得任何 CPU、内存、重启次数或日志数据，无法据此判断当前是否正常。已读取的上下文只显示 Pod 在 2026-11-08T03:05:23Z 重启后处于 Running/Ready、restartCount=114，这属于历史观测，不能当作当前恢复证据，也不能当作历史故障根因。\",\"warnings\":[\"本次为当前恢复检查，未取得任何新的指标或日志结果；查询失败不等于指标正常或为零。\",\"Pod 的 Running/Ready 与 restartCount=114 来自 2026-11-08T03:05:43Z 的上下文快照，不是最近5分钟的观测。\",\"RCA revision 732 status=unresolved、partial=true、candidates 为空，不能作为已确认根因引用。\",\"未执行任何命令或变更，仅调用只读工具。\"]}",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "provider_specific_fields": {
+                      "refusal": null
+                    }
+                  },
+                  "finish_reason": "stop",
+                  "provider_specific_fields": {}
+                }
+              ],
+              "created": 1794110268,
+              "moderation": null,
+              "service_tier": null,
+              "system_fingerprint": "bc19ba97cbe016479903222bb1578db6"
+            },
+            "usageKnown": true
+          }
+        }
+      ]
+    }
+  ],
+  "evidenceRead": {
+    "status": 200,
+    "sourceRevision": 2,
+    "evidenceId": "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb",
+    "replayState": "archived_verified",
+    "contentDigest": "sha256:be6afadfe8c934fcc0e2ac8098d1c74adca6c6cc21224bd0b4cef9f211c206fb"
+  },
+  "formalRead": {
+    "status": 200,
+    "reference": {
+      "kind": "rca",
+      "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad",
+      "revision": 730,
+      "contentDigest": "sha256:2fb83898477298320bdbaa4586a07b9a577c063526ce01e736c608a728783308"
+    }
+  },
+  "outcome": "evidence and explanation passed; metric/log tool arguments failed; retained for product regression"
+}

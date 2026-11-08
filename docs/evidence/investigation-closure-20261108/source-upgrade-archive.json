@@ -1,0 +1,187 @@
+{
+  "candidate": "b878891c62102fca49ec006e3b651a523368d177",
+  "evidenceId": "9938c916-b44d-572e-8603-2fef9984b4b7",
+  "sourceRevision": 1,
+  "registeredRevision": 2,
+  "previousStatus": 403,
+  "status": 200,
+  "evidence": {
+    "sourceScopeDigest": "sha256:ad132639d07561315f080a01a9c456b98f94bebd30b8b97643eb1ca3507d7fb8",
+    "schemaVersion": "evidence/v2",
+    "evidenceId": "9938c916-b44d-572e-8603-2fef9984b4b7",
+    "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+    "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/867fdbee-d0d8-4ad3-87a1-13d279d65c1a",
+    "type": "resource_state",
+    "dataClass": "D0",
+    "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+    "sourceRevision": 1,
+    "sourceSystem": "kubernetes",
+    "backendLogicalId": "current-native-cluster",
+    "queryTemplateVersion": "kubernetes-projection/v3",
+    "queryHash": "sha256:aaf480449a56ccc2e213fb671e6fd5d8a8510e78a6ce80012f4f2738ebf6a404",
+    "effectiveScope": {
+      "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+      "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+      "namespaces": [
+        "ops-current"
+      ],
+      "resources": [],
+      "clusterScoped": true,
+      "authorizationRevision": "collector/01a1ab38-fbeb-79be-91c0-8823152c8c9d/1"
+    },
+    "evaluatedAt": "2026-11-06T00:32:43.646735166Z",
+    "observedFrom": "2026-11-06T00:32:43.646735166Z",
+    "observedTo": "2026-11-06T00:32:43.646735166Z",
+    "sourceRetentionUntil": "2026-11-06T00:32:43.646735166Z",
+    "timeReliable": true,
+    "replayState": "archived_verified",
+    "contentDigest": "sha256:b3afe78cc11ee770ab6ee5d7960e71f8fba42232b66b7032e6f99f38ff5fc6f0",
+    "derivationEvidenceRefs": [],
+    "independenceGroup": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+    "archiveRef": {
+      "backendLogicalId": "current-archive",
+      "object": {
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "objectId": "9938c916-b44d-572e-8603-2fef9984b4b7",
+        "category": "evidence",
+        "key": "tenants/c784249324387d29b3d8174c7dfd97393ba6f1b5496943136d90e83e33f35832/evidence/9938c916-b44d-572e-8603-2fef9984b4b7",
+        "digest": "sha256:8ecbdaa3523cd372a9825d2dd20c1f9af389402f2c243253886365e1aedd3580",
+        "size": 2880,
+        "contentType": "application/vnd.ops.transit-envelope+json",
+        "versionId": "671ab291774838189dac74763459132f",
+        "etag": "\"58a311d537727a71fc12c9cc11fd3cf5\"",
+        "retainUntil": "2027-11-07T00:32:44Z"
+      },
+      "encryptionKeyVersion": "1",
+      "plaintextDigest": "sha256:b3afe78cc11ee770ab6ee5d7960e71f8fba42232b66b7032e6f99f38ff5fc6f0",
+      "ciphertextDigest": "sha256:8ecbdaa3523cd372a9825d2dd20c1f9af389402f2c243253886365e1aedd3580"
+    },
+    "factSlice": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "creationTimestamp": "2026-11-06T00:31:34Z",
+        "labels": {
+          "app": "ops-worker",
+          "pod-template-hash": "857b4d57f4"
+        },
+        "name": "ops-worker-857b4d57f4-px6wq",
+        "namespace": "ops-current",
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "ReplicaSet",
+            "name": "ops-worker-857b4d57f4",
+            "uid": "c31cdde0-2216-4698-8aea-7b50672045a8"
+          }
+        ],
+        "resourceVersion": "2532128",
+        "uid": "867fdbee-d0d8-4ad3-87a1-13d279d65c1a"
+      },
+      "spec": {
+        "containers": [
+          {
+            "image": "ops.local/current/platform-worker@sha256:a2828f57c0936083e9abb935c752bffb3b5c43721164306928d94403285990d2",
+            "name": "worker"
+          }
+        ],
+        "nodeName": "mssc",
+        "serviceAccountName": "ops-worker",
+        "volumes": [
+          {
+            "configMap": {
+              "name": "ops-runtime"
+            },
+            "name": "runtime"
+          },
+          {
+            "name": "identity",
+            "secret": {
+              "secretName": "ops-context-signing"
+            }
+          },
+          {
+            "name": "bao-token"
+          },
+          {
+            "name": "tmp"
+          },
+          {
+            "name": "archive",
+            "secret": {
+              "secretName": "ops-archive-credentials"
+            }
+          },
+          {
+            "name": "kubernetes-token"
+          },
+          {
+            "name": "metrics-source",
+            "secret": {
+              "secretName": "ops-metrics-source"
+            }
+          },
+          {
+            "name": "logs-source",
+            "secret": {
+              "secretName": "ops-logs-source"
+            }
+          }
+        ]
+      },
+      "status": {
+        "conditions": [
+          {
+            "lastTransitionTime": "2026-11-06T00:31:36Z",
+            "status": "True",
+            "type": "PodReadyToStartContainers"
+          },
+          {
+            "lastTransitionTime": "2026-11-06T00:31:34Z",
+            "status": "True",
+            "type": "Initialized"
+          },
+          {
+            "lastTransitionTime": "2026-11-06T00:31:38Z",
+            "status": "True",
+            "type": "Ready"
+          },
+          {
+            "lastTransitionTime": "2026-11-06T00:31:38Z",
+            "status": "True",
+            "type": "ContainersReady"
+          },
+          {
+            "lastTransitionTime": "2026-11-06T00:31:34Z",
+            "status": "True",
+            "type": "PodScheduled"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "containerID": "containerd://7e84c97f5107708d17c91148f8f7d16536b2596b59bba788387bb7c11a22e8bb",
+            "imageID": "ops.local/current/platform-worker@sha256:a2828f57c0936083e9abb935c752bffb3b5c43721164306928d94403285990d2",
+            "lastState": {},
+            "name": "worker",
+            "ready": true,
+            "restartCount": 0,
+            "state": {
+              "running": {
+                "startedAt": "2026-11-06T00:31:38Z"
+              }
+            }
+          }
+        ],
+        "phase": "Running"
+      }
+    }
+  },
+  "meta": {
+    "degradedSources": [],
+    "freshness": "archived",
+    "partial": false,
+    "warnings": []
+  }
+}
