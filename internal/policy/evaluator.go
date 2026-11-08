@@ -62,7 +62,10 @@ type InvocationContext struct {
 // digests cross this boundary. AllowedTools comes from the trusted tool registry
 // and must never be populated from request bodies.
 type PolicyInput struct {
-	Request             auth.RequestContext
+	Request auth.RequestContext
+	// NativeGrantScopes is set from a verified native session or a re-proved
+	// persisted native authority. Legacy claims retain their intersection rule.
+	NativeGrantScopes   bool
 	PrincipalType       PrincipalType
 	RequestType         RequestType
 	Scope               configregistry.Scope
@@ -113,6 +116,7 @@ func NewEvaluator(resolver ActivePolicyResolver, compiler *BundleCompiler, logic
 }
 
 func (evaluator *PolicyEvaluator) Evaluate(ctx context.Context, input PolicyInput) (PolicyDecision, error) {
+	input.NativeGrantScopes = input.NativeGrantScopes || auth.AuthorityFromContext(ctx).Native()
 	if err := ctx.Err(); err != nil {
 		return denyDecision(input, "", "evaluation_cancelled"), fmt.Errorf("%w: %v", ErrPolicyEvaluation, err)
 	}
@@ -263,7 +267,11 @@ func scopeAllowed(input PolicyInput) bool {
 	case configregistry.ScopeCluster:
 		return containsUUID(input.Request.ClusterScopes, input.Scope.ClusterID)
 	case configregistry.ScopeNamespace:
-		if !containsUUID(input.Request.ClusterScopes, input.Scope.ClusterID) {
+		clusterGranted := containsUUID(input.Request.ClusterScopes, input.Scope.ClusterID)
+		if input.NativeGrantScopes && clusterGranted {
+			return true
+		}
+		if !input.NativeGrantScopes && !clusterGranted {
 			return false
 		}
 		for _, scope := range input.Request.NamespaceScopes {

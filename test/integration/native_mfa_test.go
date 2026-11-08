@@ -880,14 +880,16 @@ func mfaEnrolFactor(t *testing.T, client mfaClient, session *mfaSession, passwor
 		t.Fatalf("password verification status = %d, want 200; body=%s", code, body)
 	}
 	revision++
+	// Confirmation must reuse the code just proved, even across a TOTP boundary.
+	provenCode := mfaCodeAt(t, secret, identity.TOTPStep(time.Now().UTC())-1)
 	code, _, body = client.do(t, http.MethodPost, "/api/v1/auth/step-up-challenges/"+challengeID+":verify", map[string]any{
-		"method": "totp", "credential": mfaCodeAt(t, secret, identity.TOTPStep(time.Now().UTC())-1), "expectedChallengeRevision": revision,
+		"method": "totp", "credential": provenCode, "expectedChallengeRevision": revision,
 	}, session)
 	if code != http.StatusOK {
 		t.Fatalf("totp verification status = %d, want 200; body=%s", code, body)
 	}
 	code, _, body = client.do(t, http.MethodPost, "/api/v1/auth/mfa/enrollments/"+enrollmentID+":verify", map[string]any{
-		"totpCode": mfaCodeAt(t, secret, identity.TOTPStep(time.Now().UTC())-1), "expectedEnrollmentRevision": 1,
+		"totpCode": provenCode, "expectedEnrollmentRevision": 1,
 		"stepUp": map[string]any{"challengeId": challengeID, "sessionRef": session.sessionRef},
 	}, session)
 	if code != http.StatusOK {

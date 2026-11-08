@@ -13,6 +13,7 @@ import (
 	"github.com/google/uuid"
 	"ops-platform/internal/auth"
 	"ops-platform/internal/configregistry"
+	"ops-platform/internal/identity"
 	"ops-platform/policies"
 )
 
@@ -40,6 +41,58 @@ func TestEvaluatorAllowsScopedReadOnlyToolsAndReturnsDeterministicDecision(t *te
 	second, err := evaluator.Evaluate(ctx, input)
 	if err != nil || !reflect.DeepEqual(first, second) {
 		t.Fatalf("same bundle and input did not produce a deterministic decision: first=%#v second=%#v err=%v", first, second, err)
+	}
+}
+
+func TestNativeAndLegacyNamespaceGrantSemantics(t *testing.T) {
+	tenant, cluster, other := uuid.New(), uuid.New(), uuid.New()
+	compiler, version, _, err := testSignedPolicy(context.Background(), t, tenant)
+	if err != nil {
+		t.Fatal(err)
+	}
+	evaluator, err := NewEvaluator(&staticPolicyResolver{version: version}, compiler, "baseline")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct {
+		name       string
+		native     bool
+		clusters   []uuid.UUID
+		namespaces []auth.NamespaceScope
+		allow      bool
+	}{
+		{"native whole cluster", true, []uuid.UUID{cluster}, nil, true},
+		{"native exact namespace", true, nil, []auth.NamespaceScope{{ClusterID: cluster, Namespace: "apps"}}, true},
+		{"native other namespace", true, nil, []auth.NamespaceScope{{ClusterID: cluster, Namespace: "other"}}, false},
+		{"native other cluster", true, []uuid.UUID{other}, []auth.NamespaceScope{{ClusterID: other, Namespace: "apps"}}, false},
+		{"legacy needs namespace", false, []uuid.UUID{cluster}, nil, false},
+		{"legacy needs cluster", false, nil, []auth.NamespaceScope{{ClusterID: cluster, Namespace: "apps"}}, false},
+		{"legacy intersection", false, []uuid.UUID{cluster}, []auth.NamespaceScope{{ClusterID: cluster, Namespace: "apps"}}, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			input := operatorPolicyInput(tenant, cluster)
+			input.NativeGrantScopes = tc.native
+			input.Request.ClusterScopes, input.Request.NamespaceScopes = tc.clusters, tc.namespaces
+			input.Scope = configregistry.Scope{Type: configregistry.ScopeNamespace, ClusterID: cluster, Namespace: "apps"}
+			input.RequestType, input.ToolName, input.ToolReadOnly = RequestTool, "query_metrics", true
+			input.AllowedTools = []string{"query_metrics"}
+			d, err := evaluator.Evaluate(context.Background(), input)
+			if d.Allow != tc.allow || (err == nil) != tc.allow {
+				t.Fatalf("allow=%v err=%v want %v", d.Allow, err, tc.allow)
+			}
+			if tc.native {
+				input.NativeGrantScopes = false
+				ctx := auth.WithNativeSession(context.Background(), auth.NativeSessionContext{Session: identity.ActiveSession{TenantID: tenant, UserID: uuid.New(), Subject: input.Request.Subject, AuthorizationVersion: 1}})
+				live, err := evaluator.Evaluate(ctx, input)
+				if live.Allow != tc.allow || (err == nil) != tc.allow || live.DecisionID != d.DecisionID {
+					t.Fatalf("live/persisted native scope decisions differ: live=%+v persisted=%+v err=%v", live, d, err)
+				}
+			}
+			if !tc.native && tc.allow {
+				input.Scope = configregistry.Scope{Type: configregistry.ScopeCluster, ClusterID: other}
+				assertDenied(t, evaluator, context.Background(), input)
+			}
+		})
 	}
 }
 

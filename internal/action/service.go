@@ -156,7 +156,11 @@ func (s Service) authorizeAs(ctx context.Context, tx pgx.Tx, a auth.RequestConte
 		scope.Namespace = ns
 	}
 	risk := ClassifyRiskBinding(b)
-	decision, err := s.Policy.Evaluate(ctx, policy.PolicyInput{Request: a, PrincipalType: policy.PrincipalOperator, RequestType: policy.RequestAction, Scope: scope, Risk: policy.Risk(risk), RiskAcknowledged: touch, ClusterLevel: p.Type == "k8s_cluster", RootLevel: p.Type == "ssh_root", StepUpVerified: step, ActualCommandDigest: b.CommandDigest, ConfirmedCommandDigest: b.CommandDigest})
+	nativeScopes := hasNative
+	if frozen != nil {
+		nativeScopes, _ = frozen.nativeForRecheck()
+	}
+	decision, err := s.Policy.Evaluate(ctx, policy.PolicyInput{Request: a, NativeGrantScopes: nativeScopes, PrincipalType: policy.PrincipalOperator, RequestType: policy.RequestAction, Scope: scope, Risk: policy.Risk(risk), RiskAcknowledged: touch, ClusterLevel: p.Type == "k8s_cluster", RootLevel: p.Type == "ssh_root", StepUpVerified: step, ActualCommandDigest: b.CommandDigest, ConfirmedCommandDigest: b.CommandDigest})
 	if err != nil && !(!touch && errors.Is(err, policy.ErrPolicyDenied) && decision.PolicyVersion != "") {
 		return decision, nil, err
 	}
