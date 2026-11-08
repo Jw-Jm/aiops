@@ -44,18 +44,14 @@ func (r Repository) Get(ctx context.Context, tenant, id uuid.UUID, scope graph.S
 // GetTx revalidates evidence and its current source binding inside the caller's authority-fenced transaction.
 func GetTx(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID, scope graph.Scope) (e Evidence, err error) {
 	var raw []byte
-	var ns, state string
+	var ns, state, archiveStatus string
 	var archiveRaw []byte
-	err = tx.QueryRow(ctx, `SELECT m.metadata,m.namespace,m.replay_state,i.object_ref FROM platform.evidence_metadata m LEFT JOIN platform.evidence_archive_intents i USING(tenant_id,evidence_id) WHERE m.tenant_id=$1 AND m.evidence_id=$2 AND NOT m.deleting`, tenant, id).Scan(&raw, &ns, &state, &archiveRaw)
+	err = tx.QueryRow(ctx, `SELECT m.metadata,m.namespace,m.replay_state,i.object_ref,COALESCE(i.status,'') FROM platform.evidence_metadata m LEFT JOIN platform.evidence_archive_intents i USING(tenant_id,evidence_id) WHERE m.tenant_id=$1 AND m.evidence_id=$2 AND NOT m.deleting`, tenant, id).Scan(&raw, &ns, &state, &archiveRaw, &archiveStatus)
 	if err != nil {
 		return e, err
 	}
 	if json.Unmarshal(raw, &e) != nil {
 		return e, errors.New("invalid evidence metadata")
-	}
-	digest, err := evidenceSourceDigest(ctx, tx, e)
-	if err != nil || e.SourceScopeDigest == "" || e.SourceScopeDigest != digest {
-		return e, ErrScopeUnverified
 	}
 	e.ReplayState = state
 	if state == "archived_verified" {
@@ -67,6 +63,12 @@ func GetTx(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID, scope graph.Sco
 	}
 	if !scope.Allows(e.ResourceCanonicalID, ns) {
 		return e, graph.ErrScope
+	}
+	digest, err := evidenceSourceDigest(ctx, tx, e)
+	if err != nil || e.SourceScopeDigest == "" || e.SourceScopeDigest != digest {
+		if state != "archived_verified" || archiveStatus != "verified" || !historicalArchiveBindingTx(ctx, tx, e, ns) {
+			return e, ErrScopeUnverified
+		}
 	}
 	return e, nil
 }

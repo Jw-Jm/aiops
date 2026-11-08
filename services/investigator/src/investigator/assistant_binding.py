@@ -142,14 +142,14 @@ def committed_reads(steps):
 def query_required(context, task_kind="data_query"):
     # Classify only the current user request, not quoted history or observations.
     message=context.get("message","")
-    if re.search(r"(?:不要|无需|不必|禁止|勿).{0,8}(?:查询|统计|计数|计算)|只解释|仅解释|\b(?:do not|don't|no need to)\s+(?:query|count|calculate)\b",message,re.I):return False
+    if re.search(r"(?:不要|无需|不必|禁止|勿|不(?:再|重新)).{0,8}(?:查询|统计|计数|计算)|只解释|仅解释|\b(?:do not|don't|no need to)\s+(?:query|count|calculate)\b",message,re.I):return False
     if task_kind in ("incident_followup", "resource_troubleshooting") and re.search(r"CPU|内存|重启|日志|metrics\.|logs\.|\b(memory|restarts?|logs?)\b",message,re.I) and re.search(r"读取|查询|检查|趋势|\b(read|query|check|trend)\b",message,re.I):
         return True
     return bool(context.get("requestedTimeRange") and re.search(r"统计|数量|多少|计数|总数|平均|趋势|错误率|成功率|\b(count|sum|average|rate|trend)\b",message,re.I))
 
 def evidence_reads_required(context):
     message=context.get("message","")
-    if re.search(r"(?:不要|无需|不必|禁止|勿).{0,8}(?:查询|读取|取证|检查|补证)|只解释|仅解释|\b(?:do not|don't)\s+(?:query|read|check)\b",message,re.I):return False
+    if re.search(r"(?:不要|无需|不必|禁止|勿|不(?:再|重新)).{0,8}(?:查询|读取|取证|检查|补证)|只解释|仅解释|\b(?:do not|don't)\s+(?:query|read|check)\b",message,re.I):return False
     if any(m.get("role")=="assistant" for m in context.get("history",[])):
         return bool(re.search(r"检查|补证|读取|查询|调查|排查|继续|\b(check|read|investigate|continue)\b",message,re.I))
     return True
@@ -157,9 +157,9 @@ def evidence_reads_required(context):
 def model_tool_names(context, available):
     """An explicit explanation/read list does not need the entire query catalog."""
     available = set(available)
-    if not context.get("historicalFaultChainContext"): return available
-    if not evidence_reads_required(context) and not query_required(context):
+    if (context.get("history") or context.get("historicalFaultChainContext")) and not evidence_reads_required(context) and not query_required(context):
         return set()
+    if not context.get("historicalFaultChainContext"): return available
     requested = {name for name in available if re.search(r"\b" + re.escape(name) + r"\b", context.get("message", ""))}
     preloaded = {"get_assistant_context", "resource_history", "resource_findings", "resource_changes", "get_incident_context", "get_formal_references"}
     if requested and requested <= preloaded and not query_required(context):
