@@ -2,6 +2,8 @@
 import copy
 import json
 import re
+from datetime import datetime, timezone
+from math import ceil, floor
 from jsonschema import Draft202012Validator
 from pathlib import Path
 
@@ -27,7 +29,10 @@ availability of PostgreSQL control-plane datasets such as incidents.records or a
 Resolve relative dates using the platform-generated requestedAt in the assistant
 context and binding.timezone. Yesterday means that timezone's complete previous
 calendar day; never use the model's clock. If requestedTimeRange is present,
-use its exact bounds and timezone for historical queries; it is server-resolved. If the reference time or timezone is
+use its bounds and timezone; it is server-resolved. External source coverage may
+only cover a subset: use availableRequestedTimeRange when supplied and explicitly
+report the uncovered interval as a gap, never as normal or zero. Never shift or
+expand the requested interval to obtain data. If the reference time or timezone is
 missing, ask for an explicit interval. Preserve the declared interval on follow-up
 unless the user explicitly requests a different one; now requires a fresh read.
 The server computes every number, ordering, comparison and unit. Reference only
@@ -70,6 +75,21 @@ attaches its own source handles; never copy those fields from historical answers
 def is_assistant(job):
     return job.get("schemaVersion")=="investigation-job/v3"
 
+def available_requested_range(context, capability):
+    """Planning hint is an intersection, never a new source qualification."""
+    requested = context.get("requestedTimeRange") or {}
+    if capability.get("status") != "continuous_verified": return None
+    try:
+        stamp = lambda value: datetime.fromisoformat(value.replace("Z", "+00:00")).timestamp()
+        if stamp(capability["verifiedUntil"]) <= stamp(context["requestedAt"]): return None
+        start = ceil(max(stamp(requested["from"]), stamp(capability["coverageFrom"])))
+        end = floor(min(stamp(requested["to"]), stamp(capability["coverageTo"])))
+        if start >= end or end-start > capability["maxWindowSeconds"]: return None
+        render = lambda value: datetime.fromtimestamp(value, timezone.utc).isoformat().replace("+00:00", "Z")
+        return {"from": render(start), "to": render(end), "timezone": requested["timezone"]}
+    except (KeyError, TypeError, ValueError, OverflowError):
+        return None
+
 def model_tool_result(tool, result):
     from .redaction import sanitize
     out = sanitize(result)
@@ -85,6 +105,8 @@ def model_tool_result(tool, result):
             if not isinstance(capability, dict) or not capability.get("datasetId") or not capability.get("operation"):
                 unknown.append(capability)
                 continue
+            available = available_requested_range(data, capability)
+            if available: capability["availableRequestedTimeRange"] = available
             common = {key: value for key, value in capability.items() if key not in ("datasetId", "operation", "verifiedUntil", "proofDigest")}
             group = groups.setdefault(json.dumps(common, sort_keys=True), {**common, "datasets": {}})
             group["datasets"].setdefault(capability["datasetId"], []).append({key: capability[key] for key in ("operation", "verifiedUntil") if key in capability})
@@ -101,7 +123,7 @@ def messages(job, prior):
         raise ValueError("ASSISTANT_VERSION_UNSUPPORTED")
     trusted={key:job[key] for key in ("jobId","tenantId","policyVersion","budget","expiresAt","scope","assistant") if key in job}
     request="Continue from committed reads." if prior else "First call get_assistant_context using standard tool calling."
-    query_policy = "Use analysisCatalog or describe_analysis_dataset for exact metric, filter and dimension names; never invent them. For a single resource, set canonicalId on execute_analysis_query, not a pod/name/uid filter absent from the dataset. Trend queries require dimensions:[\"time\"], integer-second window endpoints, stepSeconds>=60, and at most 50 points. Omit windowRole unless the current context provides that frozen window; a request for a current recovery check does not create a recovery window. Use only the query_logs templates in its input enum."
+    query_policy = "Use analysisCatalog or describe_analysis_dataset for exact metric, filter and dimension names; never invent them. For external datasets, sourceCapabilities also limits the permitted operations and coverage; catalog presence alone does not qualify an operation. Use availableRequestedTimeRange for covered reads and explain any uncovered part of requestedTimeRange. For requested log records use the qualified samples operation, dimensions:[], sort:[], limit<=20, not an unqualified trend. For a single resource, including logs, set canonicalId on execute_analysis_query, not a pod/name/uid filter absent from the dataset. Trend queries require dimensions:[\"time\"], integer-second window endpoints, stepSeconds>=60, and at most 50 points. Omit windowRole unless the current context provides that frozen window; a request for a current recovery check does not create a recovery window. Use only the query_logs templates in its input enum."
     prompt=[{"role":"system","content":POLICY+"\n"+query_policy},
             {"role":"system","content":json.dumps({"trusted_context":trusted})},
             {"role":"user","content":request+" Return the final JSON only after receiving the tools' results."},

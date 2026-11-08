@@ -184,3 +184,23 @@ def test_model_capability_groups_preserve_each_operation_expiry_and_quality():
     assert out[0]["datasets"]["metrics.pod-memory"] == [{"operation": "aggregate", "verifiedUntil": "expiry-a"}, {"operation": "compare", "verifiedUntil": "expiry-b"}]
     assert out[1]["status"] == "unavailable"
     assert out[1]["datasets"]["metrics.pod-memory"] == [{"operation": "compare", "verifiedUntil": "expiry-c"}]
+
+
+def test_external_query_hint_intersects_coverage_without_mutating_receipt():
+    from investigator.assistant_binding import model_tool_result, available_requested_range
+    context = {"requestedAt": "2026-11-08T04:15:01Z", "requestedTimeRange": {
+        "from": "2026-11-08T04:10:01Z", "to": "2026-11-08T04:15:01Z", "timezone": "Asia/Shanghai"}}
+    capability = {"datasetId": "metrics.pod-cpu", "operation": "trend", "status": "continuous_verified",
+        "coverageFrom": "2026-11-08T04:09:00Z", "coverageTo": "2026-11-08T04:14:42.394Z",
+        "verifiedUntil": "2026-11-08T04:15:24Z", "maxWindowSeconds": 1800}
+    receipt = {"data": {**context, "sourceCapabilities": [capability]}}
+    original = copy.deepcopy(receipt)
+    projected = model_tool_result("get_assistant_context", receipt)
+    assert projected["data"]["sourceCapabilities"][0]["availableRequestedTimeRange"] == {
+        "from": "2026-11-08T04:10:01Z", "to": "2026-11-08T04:14:42Z", "timezone": "Asia/Shanghai"}
+    assert receipt == original
+    for changes in ({"status": "unavailable"}, {"verifiedUntil": context["requestedAt"]},
+                    {"coverageTo": "2026-11-08T04:09:59Z"}, {"maxWindowSeconds": 60},
+                    {"coverageTo": "invalid"}):
+        assert available_requested_range(context, {**capability, **changes}) is None
+    assert available_requested_range(context, {**capability, "coverageFrom": "2026-11-08T04:10:02.1Z"})["from"] == "2026-11-08T04:10:03Z"
