@@ -16,6 +16,7 @@ import socket
 import ssl
 import subprocess
 import urllib.request
+from urllib.parse import urlsplit
 
 
 def command(args):
@@ -37,9 +38,68 @@ def private_write(path, content):
         output.write(content)
 
 
+def verify_runtime_images(images):
+    """Never deploy a digest that only exists under an unrelated local tag."""
+    targets = {}
+    for line in command(["ctr", "-n", "k8s.io", "images", "ls"]).decode().splitlines()[1:]:
+        fields = line.split()
+        if len(fields) >= 3:
+            targets[fields[0]] = fields[2]
+    ready = set(command(["ctr", "-n", "k8s.io", "images", "check", "--quiet"]).decode().splitlines())
+    verified = []
+    for component in ["api", "worker", "investigator"]:
+        reference = images.get(component, {}).get("image", "")
+        if not re.fullmatch(r"[^\s@]+@sha256:[0-9a-f]{64}", reference):
+            raise ValueError(component + " requires a pinned image digest")
+        if targets.get(reference) != reference.split("@", 1)[1]:
+            raise ValueError(component + " pinned image is not registered with its exact digest in containerd k8s.io")
+        if reference not in ready:
+            raise ValueError(component + " pinned image content is incomplete or not unpacked")
+        verified.append(reference)
+    return verified
+
+
+def web_runtime_config(environment):
+    mode = environment.get("humanAuthMode")
+    if mode not in ("native", "oidc"):
+        raise ValueError("explicit environment humanAuthMode required")
+    config = {"auth": {"mode": mode}}
+    if mode == "oidc":
+        oidc = environment.get("oidc", {})
+        if not isinstance(oidc, dict) or set(oidc) - {"authority", "clientId", "proxyPath"}:
+            raise ValueError("only public OIDC client configuration may enter the Web release")
+        authority = urlsplit(str(oidc.get("authority", "")))
+        if authority.scheme != "https" or not authority.hostname or authority.username or authority.password or authority.query or authority.fragment or not oidc.get("clientId"):
+            raise ValueError("explicit HTTPS OIDC public configuration required")
+        config["oidc"] = oidc
+    return config
+
+
+def verify_web_runtime(release, environment):
+    path = release / "web/runtime-config.json"
+    if not path.is_file() or path.is_symlink():
+        raise ValueError("prepared Web runtime-config.json required; run prepare-web before deployment")
+    raw = path.read_bytes()
+    if json.loads(raw) != web_runtime_config(environment):
+        raise ValueError("Web authentication configuration differs from the environment")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def prepare_web_runtime(release, environment):
+    path = release / "web/runtime-config.json"
+    if not path.exists():
+        if (release / "manifest.json").exists():
+            raise ValueError("accepted release is immutable; prepare another candidate")
+        if not (release / "web/index.html").is_file():
+            raise ValueError("built Web assets required before prepare-web")
+        with path.open("x") as output:
+            output.write(json.dumps(web_runtime_config(environment), indent=2) + "\n")
+    return verify_web_runtime(release, environment)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("operation", choices=["status", "backup", "record"])
+    parser.add_argument("operation", choices=["status", "backup", "prepare-web", "preflight", "record"])
     parser.add_argument("--root", type=Path, default=Path("/data/ops-current"))
     parser.add_argument("--namespace", default="ops-current")
     parser.add_argument("--release")
@@ -53,6 +113,29 @@ def main():
     expected = json.loads((root / "evidence/environment-bootstrap.json").read_text())
     if expected["namespace"] != ns or expected["namespaceUid"] != namespace["metadata"]["uid"]:
         parser.error("namespace identity differs from this current environment")
+    if args.operation in ("prepare-web", "preflight", "record"):
+        if not args.release or not re.fullmatch(r"[0-9a-f]{40}", args.release):
+            parser.error(args.operation + " requires a full 40-character Git commit")
+        release = root / "releases" / args.release
+        if not release.is_dir() or release.is_symlink():
+            parser.error("prepared release directory required")
+        environment = json.loads((root / "config/environment.json").read_text())
+        if args.operation == "prepare-web":
+            try:
+                digest = prepare_web_runtime(release, environment)
+            except ValueError as error:
+                parser.error(str(error))
+            print(json.dumps({"release": args.release, "webRuntimeConfigSHA256": digest}))
+            return
+        images = json.loads((release / "images.json").read_text())
+        try:
+            verified = verify_runtime_images(images)
+            web_runtime_digest = verify_web_runtime(release, environment)
+        except ValueError as error:
+            parser.error(str(error))
+        if args.operation == "preflight":
+            print(json.dumps({"release": args.release, "namespace": ns, "readyImages": verified}))
+            return
     version = schema()  # A real authenticated query, not container/Pod readiness.
     now = datetime.datetime.now(datetime.timezone.utc)
     if args.operation == "status":
@@ -87,15 +170,9 @@ def main():
         private_write(backup / "backup.json", (json.dumps(manifest, indent=2) + "\n").encode())
         print(json.dumps({"backup": str(backup), "schema": version, "private": True}))
         return
-    if not args.release or not re.fullmatch(r"[0-9a-f]{40}", args.release):
-        parser.error("record requires a full 40-character Git commit")
-    release = root / "releases" / args.release
-    if not release.is_dir() or release.is_symlink():
-        parser.error("prepared release directory required")
     accepted = json.loads((root / "evidence/acceptance.json").read_text())
     if accepted.get("status") != "passed_core" or accepted.get("commit") != args.release or accepted.get("namespaceUID") != namespace["metadata"]["uid"]:
         parser.error("matching current core acceptance receipt required")
-    images = json.loads((release / "images.json").read_text())
     deployments = kube(ns, "deployments")
     required = {"ops-api": "api", "ops-worker": "worker", "ops-investigator": "investigator"}
     selected = []
@@ -128,6 +205,7 @@ def main():
                 "namespaceUID": namespace["metadata"]["uid"], "database": "ops_current", "databaseSchema": version,
                 "images": images, "runtimeConfigSHA256": hashlib.sha256(config_bytes).hexdigest(),
                 "webIndexSHA256": hashlib.sha256((release / "web/index.html").read_bytes()).hexdigest(),
+                "webRuntimeConfigSHA256": web_runtime_digest,
                 "acceptedAt": accepted["at"], "knownLimitations": accepted.get("knownLimitations", [])}
     target = release / "manifest.json"
     if target.exists() and json.loads(target.read_text()) != manifest:

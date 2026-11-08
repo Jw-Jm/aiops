@@ -12,6 +12,7 @@ import {
   getFindings,
   getIncidentRCA,
   getResourceByCanonicalID,
+  getAssistantCapabilities,
 } from "../api/generated/platform";
 import type {
   IncidentSuccessV2,
@@ -66,6 +67,21 @@ export function IncidentWorkspace() {
       checked(getIncident(incidentId, requestOptions(signal))),
   });
   const incident = (q.data as IncidentSuccessV2 | undefined)?.data;
+  const assistantHref = `/assistant?${new URLSearchParams({ incidentId, clusterUid: incident?.clusterUid || "" })}`;
+  const assistant = useQuery({
+    queryKey: ["incident-assistant-capabilities", incident?.clusterUid],
+    enabled: tab === "investigation" && !!incident?.clusterUid,
+    queryFn: ({ signal }) =>
+      checked(
+        getAssistantCapabilities(
+          { clusterUid: incident!.clusterUid },
+          requestOptions(signal),
+        ),
+      ),
+  });
+  const assistantAvailable =
+    !!assistant.data?.data.enabled &&
+    assistant.data.data.taskKinds.includes("incident_followup");
   const rca = useQuery({
     queryKey: ["rca", incidentId],
     enabled: tab === "graph",
@@ -183,9 +199,7 @@ export function IncidentWorkspace() {
         description="先了解故障现象与影响，再核对证据、调查原因和执行本人确认的命令。"
         extra={
           <Space>
-            <Link
-              to={`/assistant?incidentId=${encodeURIComponent(incidentId)}&clusterUid=${encodeURIComponent(incident?.clusterUid || "")}`}
-            >
+            <Link to={assistantHref}>
               <Button disabled={!incident}>自然语言追问</Button>
             </Link>
             <Link to="/events/incidents">
@@ -358,10 +372,23 @@ export function IncidentWorkspace() {
                       key: "investigation",
                       label: "智能调查",
                       children: (
-                        <InvestigationPanel
-                          incident={incident}
-                          onEvidence={evidence}
-                        />
+                        <>
+                          <QueryState
+                            loading={assistant.isPending}
+                            error={assistant.error}
+                            retry={() => void assistant.refetch()}
+                          />
+                          <InvestigationPanel
+                            incident={incident}
+                            onEvidence={evidence}
+                            assistantHref={
+                              assistantAvailable ? assistantHref : undefined
+                            }
+                            creationBlocked={
+                              assistant.isPending || assistant.isError
+                            }
+                          />
+                        </>
                       ),
                     },
                     {

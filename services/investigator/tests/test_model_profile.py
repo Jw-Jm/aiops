@@ -114,6 +114,7 @@ def test_hosted_real_holmes_formatting_keeps_ledger_and_json_validation(tmp_path
     class Ledger:
         def allocate(self,name,args,model,reserve):self.reserve=reserve;return {'stepId':'hosted-unit'}
         def settle(self,*args):pass
+        def request(self,path):assert path=='/steps';return []
     p=AssistantModelProfile.model_validate(hosted_material())
     key=tmp_path/'key';key.write_text('unit-not-a-real-key')
     llm=p.provider(BudgetedLLM,api_key_file=str(key));llm.job_api=Ledger();llm.needs_initial_tools=False

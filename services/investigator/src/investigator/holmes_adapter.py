@@ -9,7 +9,7 @@ from holmes.core.tools_utils.tool_executor import ToolExecutor
 from holmes.core.tool_calling_llm import ToolCallingLLM
 from holmes.core.truncation.input_context_window_limiter import CompactionInsufficientError
 from .budget import BudgetedLLM, ModelCallError
-from .prompt_binding import messages, OUTPUT_JSON_SCHEMA
+from .prompt_binding import messages, OUTPUT_JSON_SCHEMA, OUTPUT_SCHEMA_INSTRUCTION
 from .redaction import sanitize
 
 class PlatformTool(Tool):
@@ -55,7 +55,7 @@ def investigate(job, model, job_api, bridge, api_key_file="/run/secrets/model-ap
         tools.append(tool)
     toolset=Toolset(name="platform",description="Platform read-only semantic MCP",tools=tools,
                     enabled=True,status=ToolsetStatusEnum.ENABLED)
-    from .assistant_binding import is_assistant, messages as assistant_messages, output_schema as assistant_schema, committed_reads, query_required, required_query_tool, evidence_reads_required, model_tool_names
+    from .assistant_binding import is_assistant, messages as assistant_messages, output_schema as assistant_schema, output_schema_for_steps, committed_reads, query_required, required_query_tool, evidence_reads_required, model_tool_names
     assistant=is_assistant(job)
     steps=job_api.request("/steps")
     if assistant and not any(step["state"] == "succeeded" and step["toolName"] == "get_assistant_context" for step in steps):
@@ -99,7 +99,16 @@ def investigate(job, model, job_api, bridge, api_key_file="/run/secrets/model-ap
     prompt=assistant_messages(job,prior) if assistant else messages(job,prior)
     schema=assistant_schema() if assistant else OUTPUT_JSON_SCHEMA
     # JSON-mode providers do not receive the schema through response_format.
-    schema_message={"role":"system","content":"Return the final JSON object matching this exact output schema. Do not add or rename fields. "+json.dumps(schema,separators=(",",":"))} if getattr(llm,"structured_output_mode","json_schema")=="json_object" else None
+    # The message must carry the exact dynamic schema the platform validates
+    # against: a static copy would let the model fill reference fields the
+    # committed-steps schema pins to empty enums.
+    def schema_for_validation():
+        if not assistant:
+            return OUTPUT_JSON_SCHEMA
+        return output_schema_for_steps(job_api.request("/steps"), job["assistant"]["taskKind"])
+    def current_schema_message():
+        return {"role":"system","content":OUTPUT_SCHEMA_INSTRUCTION+json.dumps(schema_for_validation(),separators=(",",":"))}
+    schema_message=current_schema_message() if getattr(llm,"structured_output_mode","json_schema")=="json_object" else None
     if schema_message:prompt.append(schema_message)
     response_format={"type":"json_schema","json_schema":{"name":"AssistantAnswer" if assistant else "InvestigationResult","strict":True,"schema":schema}}
     try:
@@ -121,7 +130,7 @@ def investigate(job, model, job_api, bridge, api_key_file="/run/secrets/model-ap
         repair_steps=job_api.request("/steps")
         repair_prior=committed_reads(repair_steps)
         repair_prompt=assistant_messages(job,repair_prior)+[{"role":"user","content":"The previous response was invalid JSON or violated the output/reference schema. Return one object matching the required schema. resourceSourceSteps must be [], faultChainContextRef must be null: the platform attaches its own references. Use only permitted committed references. Historical checks are not checks executed in this Job. Do not copy platform-owned fields from prior answers."}]
-        if schema_message:repair_prompt.append(schema_message)
+        if schema_message:repair_prompt.append(current_schema_message())
         try:
             repaired=agent.call(messages=repair_prompt,response_format=response_format)
         except CompactionInsufficientError:

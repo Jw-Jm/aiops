@@ -54,7 +54,7 @@ python3 scripts/current/release.py backup
 
 1. **确定提交并保存产物。** 从审核过的完整 Git 提交建立新 `releases/<commit>`，同一份源码构建 API、Worker、investigator 与 Web。记录镜像及文件摘要，保留所需源码、许可证和依赖准入材料。目标架构按实际环境选择，第三方哈希锁不得随意更改。
 2. **备份与兼容性检查。** 运行备份，检查当前 schema、下一版要求及配置变化。若有数据库迁移，使用迁移工具要求的专用 duty 执行；不能使用 API/Worker 登录，也不能将身份 bootstrap 登录误作结构迁移账号。优先增量兼容迁移，不在普通升级中重建库或重新建租户。
-3. **更新同一 namespace。** 使用固定摘要更新 `ops-api`、`ops-worker`、`ops-investigator` 的 Deployment，Web 指向新 release 的静态文件。配置变更有快照和审核记录，服务仍使用同一 data/private 目录。不要覆盖正在运行的二进制，也不要新建长期 `rNN` 栈。
+3. **准备页面配置并检查镜像，再更新同一 namespace。** Web 构建完成后，运行 `python3 scripts/current/release.py prepare-web --release <完整提交>`，按现有 `config/environment.json` 的显式认证模式生成候选 `web/runtime-config.json`；不能向已验收版本补写配置，也不能在前端推测登录模式。导入候选镜像后，再运行 `python3 scripts/current/release.py preflight --release <完整提交>`，确认页面配置与环境一致，API、Worker 和 investigator 的精确摘要名称已在 containerd `k8s.io` 注册，目标摘要一致且内容完整、已解包。只有临时 tag 或 blob 内容不足以满足 `imagePullPolicy: Never`；门禁失败时不得切换 Deployment。通过后使用固定摘要更新 `ops-api`、`ops-worker`、`ops-investigator`，Web 指向新 release 的静态文件。配置变更有快照和审核记录，服务仍使用同一 data/private 目录。不要覆盖正在运行的二进制，也不要新建长期 `rNN` 栈。`record` 会重复检查镜像及页面配置门禁，并记录页面配置摘要。
 4. **验收实际入口。** 核对 PG 可查询、工作负载身份、原生采集、四类指标、日志查询与历史恢复、真实故障与加密归档、权限拒绝。单独记录模型/调查及命令执行的实际状态；fixture 结果不得替代 current HTTP 验收。
 5. **记录已验收版本。** 准备与实际入口、namespace UID 和完整提交一致的 `evidence/acceptance.json` 后执行：
 

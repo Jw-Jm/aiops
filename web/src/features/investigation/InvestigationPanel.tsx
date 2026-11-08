@@ -3,7 +3,7 @@ import { stateLabel } from "../../components/presentation";
 import { useState, useRef } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { Alert, Button, Input, Space, Table } from "antd";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   createInvestigation,
   getInvestigation,
@@ -28,10 +28,15 @@ import { useAuth } from "../../auth/AuthProvider";
 export function InvestigationPanel({
   incident,
   onEvidence,
+  assistantHref,
+  creationBlocked = false,
 }: {
   incident: IncidentV2;
   onEvidence?: (id: string) => void;
+  assistantHref?: string;
+  creationBlocked?: boolean;
 }) {
+  const navigate = useNavigate();
   const { session } = useAuth();
   const [url, setUrl] = useSearchParams();
   const client = useQueryClient();
@@ -158,41 +163,48 @@ export function InvestigationPanel({
         title="智能调查会读取证据，不会执行命令"
         description="调查用于整理证据和提出可能原因。处置命令需要你在人工处置中单独输入并确认。页面关闭后，可从历史记录继续查看进度。"
       />
-      <details className="inline-details status-note">
-        <summary>本次调查重点与收紧（可选）</summary>
-        <Space direction="vertical" style={{ maxWidth: 480 }}>
-          <Input.TextArea
-            aria-label="调查重点"
-            value={focus}
-            onChange={(e) => setFocus(e.target.value)}
-            maxLength={500}
-            showCount
-            placeholder="例如：优先核对内存通道与节点运行环境的关系"
-            autoSize={{ minRows: 2, maxRows: 4 }}
-          />
-          <Space wrap>
-            <Input
-              aria-label="收紧时长秒"
-              value={tightenDuration}
-              onChange={(e) => setTightenDuration(e.target.value)}
-              placeholder="收紧时长（秒，1–600）"
-              style={{ width: 180 }}
-              inputMode="numeric"
+      {assistantHref && (
+        <p className="status-note">
+          新调查和追问会绑定当前故障，并保存在助手会话中。下方保留历史调查记录。
+        </p>
+      )}
+      {!assistantHref && (
+        <details className="inline-details status-note">
+          <summary>本次调查重点与收紧（可选）</summary>
+          <Space direction="vertical" style={{ maxWidth: 480 }}>
+            <Input.TextArea
+              aria-label="调查重点"
+              value={focus}
+              onChange={(e) => setFocus(e.target.value)}
+              maxLength={500}
+              showCount
+              placeholder="例如：优先核对内存通道与节点运行环境的关系"
+              autoSize={{ minRows: 2, maxRows: 4 }}
             />
-            <Input
-              aria-label="收紧工具调用次数"
-              value={tightenCalls}
-              onChange={(e) => setTightenCalls(e.target.value)}
-              placeholder="收紧工具调用（1–40）"
-              style={{ width: 180 }}
-              inputMode="numeric"
-            />
+            <Space wrap>
+              <Input
+                aria-label="收紧时长秒"
+                value={tightenDuration}
+                onChange={(e) => setTightenDuration(e.target.value)}
+                placeholder="收紧时长（秒，1–600）"
+                style={{ width: 180 }}
+                inputMode="numeric"
+              />
+              <Input
+                aria-label="收紧工具调用次数"
+                value={tightenCalls}
+                onChange={(e) => setTightenCalls(e.target.value)}
+                placeholder="收紧工具调用（1–40）"
+                style={{ width: 180 }}
+                inputMode="numeric"
+              />
+            </Space>
+            <span className="muted">
+              只能收紧不能放宽：填写的值高于服务端额度时按服务端额度执行。同一故障版本下不同收紧或重点会生成新的调查任务。
+            </span>
           </Space>
-          <span className="muted">
-            只能收紧不能放宽：填写的值高于服务端额度时按服务端额度执行。同一故障版本下不同收紧或重点会生成新的调查任务。
-          </span>
-        </Space>
-      </details>
+        </details>
+      )}
       {inputError && (
         <Alert
           showIcon
@@ -205,8 +217,13 @@ export function InvestigationPanel({
       <Space wrap className="status-note">
         <Button
           type="primary"
+          disabled={creationBlocked}
           loading={create.isPending}
           onClick={() => {
+            if (assistantHref) {
+              navigate(assistantHref);
+              return;
+            }
             const e = tighteningInputError();
             setInputError(e ?? "");
             if (!e) create.mutate();
@@ -244,7 +261,7 @@ export function InvestigationPanel({
           </Button>
         )}
       </Space>
-      <h3>历史调查</h3>
+      <h3>{assistantHref ? "旧版历史调查" : "历史调查"}</h3>
       <QueryState
         loading={timeline.isPending}
         error={timeline.error}

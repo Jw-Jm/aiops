@@ -74,6 +74,7 @@ test-python:
 	$(PYTHON) -m unittest discover -s scripts/deepflow-dev -p 'test_*.py'
 	$(PYTHON) -m unittest discover -s scripts/assistant-eval -p 'test_*.py'
 	$(PYTHON) -m unittest discover -s scripts/assistant-runtime -p 'test_*.py'
+	$(PYTHON) -m unittest discover -s scripts/current -p 'test_*.py'
 
 test-local: test-unit test-contract test-web test-python test-security
 

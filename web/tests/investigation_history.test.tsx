@@ -1,6 +1,6 @@
 import { it, expect, vi, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { setNativeCredentials, clearCredentials } from "../src/api/client";
 import type { IncidentV2 } from "../src/api/generated/models";
@@ -26,6 +26,44 @@ vi.mock("../src/api/generated/platform", () => ({
   getInvestigationSteps: api.steps,
 }));
 afterEach(() => clearCredentials());
+
+it("routes new incident investigations to the bound assistant and retains legacy history without admitting a v2 job", async () => {
+  setNativeCredentials("tenant", "csrf");
+  const reply = (data: unknown) =>
+    Promise.resolve({ status: 200, data: { data, requestId: "test" } });
+  api.history.mockImplementation(() => reply([]));
+  api.create.mockClear();
+  function Location() {
+    const location = useLocation();
+    return (
+      <span data-testid="investigation-location">
+        {location.pathname + location.search}
+      </span>
+    );
+  }
+  render(
+    <QueryClientProvider
+      client={
+        new QueryClient({ defaultOptions: { queries: { retry: false } } })
+      }
+    >
+      <MemoryRouter initialEntries={["/incident"]}>
+        <Location />
+        <InvestigationPanel
+          incident={{ incidentId: "incident", revision: 1 } as IncidentV2}
+          assistantHref="/assistant?incidentId=incident&clusterUid=cluster"
+        />
+      </MemoryRouter>
+    </QueryClientProvider>,
+  );
+  expect(await screen.findByText("旧版历史调查")).toBeInTheDocument();
+  expect(screen.queryByLabelText("调查重点")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "开始智能调查" }));
+  expect(screen.getByTestId("investigation-location")).toHaveTextContent(
+    "/assistant?incidentId=incident&clusterUid=cluster",
+  );
+  expect(api.create).not.toHaveBeenCalled();
+});
 it("retains the mapped investigation result and evidence while refusing cancellation of the old owner task", async () => {
   setNativeCredentials("tenant", "csrf");
   const reply = (data: unknown) =>
@@ -89,7 +127,10 @@ it("sends the focus and budget tightening with the manual trigger and projects t
   api.create.mockImplementation(() =>
     Promise.resolve({
       status: 202,
-      data: { data: { jobId: "focus-job", state: "queued" }, requestId: "test" },
+      data: {
+        data: { jobId: "focus-job", state: "queued" },
+        requestId: "test",
+      },
     }),
   );
   render(
@@ -156,7 +197,9 @@ it("rejects out-of-range tightening locally without calling the API", async () =
   });
   fireEvent.click(screen.getByRole("button", { name: "开始智能调查" }));
   await waitFor(() =>
-    expect(screen.getByText("工具调用收紧必须是 1–40 的整数")).toBeInTheDocument(),
+    expect(
+      screen.getByText("工具调用收紧必须是 1–40 的整数"),
+    ).toBeInTheDocument(),
   );
   expect(api.create).not.toHaveBeenCalled();
 });

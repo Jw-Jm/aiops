@@ -8,7 +8,7 @@ import json
 import hashlib
 import logging
 from .redaction import sanitize
-from .prompt_binding import output_schema_for_steps
+from .prompt_binding import output_schema_for_steps, OUTPUT_SCHEMA_INSTRUCTION
 
 
 class ModelCallError(RuntimeError):
@@ -88,6 +88,18 @@ class BudgetedLLM(DefaultLLM):
             # evidence IDs can appear in the formal result's reference array.
             if self.structured_output_mode == "json_object":
                 kwargs["response_format"]={"type":"json_object"}
+                steps=self.job_api.request("/steps")
+                if self.assistant_task:
+                    from .assistant_binding import output_schema_for_steps as assistant_schema_for_steps
+                    schema=assistant_schema_for_steps(steps,self.assistant_task_kind)
+                else:
+                    schema=output_schema_for_steps(steps)
+                # Holmes may have committed more reads since the first call or
+                # repair. Replace only our trusted contract, preserving history.
+                messages=[message for message in messages if not (
+                    message.get("role")=="system" and isinstance(message.get("content"),str)
+                    and message["content"].startswith(OUTPUT_SCHEMA_INSTRUCTION))]
+                messages.append({"role":"system","content":OUTPUT_SCHEMA_INSTRUCTION+json.dumps(schema,separators=(",",":"))})
             elif self.assistant_task:
                 from .assistant_binding import output_schema_for_steps as assistant_schema_for_steps
                 kwargs["response_format"]={"type":"json_schema","json_schema":{"name":"AssistantAnswer","strict":True,"schema":assistant_schema_for_steps(self.job_api.request("/steps"), self.assistant_task_kind)}}

@@ -109,3 +109,42 @@ def test_json_mode_supplies_exact_output_contract_on_initial_call_and_repair():
             schema=json.loads(messages[0].split("fields. ",1)[1])
             assert schema["additionalProperties"] is False
             assert "answerKind" in schema["required"]
+
+
+def test_json_mode_carries_the_dynamic_committed_steps_schema():
+    # JSON-object providers never see response_format; the system message is
+    # the only schema transport, so it must be the exact dynamic schema the
+    # platform validates against (pinned enums and maxItems from committed
+    # steps), never a static copy.
+    from investigator.assistant_binding import output_schema_for_steps
+    steps = [{"toolName": "get_assistant_context", "state": "succeeded", "result": {"data": {"requestedAt": "2026-10-16T01:00:00Z"}}}]
+    job, api, bridge, model, live = setup_runtime(steps)
+    live.clear()
+    live.extend(steps)
+    model.provider.return_value.structured_output_mode = "json_object"
+    with patch("investigator.holmes_adapter.ToolCallingLLM") as agent:
+        agent.return_value.call.side_effect = [SimpleNamespace(result="{}")]
+        investigate(job, model, api, bridge)
+        prompt = agent.return_value.call.call_args.kwargs["messages"]
+    schema_message = [m["content"] for m in prompt if m.get("role") == "system" and "exact output schema" in m.get("content", "")]
+    assert len(schema_message) == 1
+    carried = json.loads(schema_message[0].split("fields. ", 1)[1])
+    expected = output_schema_for_steps(steps, job["assistant"]["taskKind"])
+    assert carried == expected
+    assert carried["properties"]["answerKind"]["enum"] == expected["properties"]["answerKind"]["enum"]
+
+
+def test_json_mode_repair_uses_reads_committed_during_the_first_call():
+    from investigator.assistant_binding import output_schema_for_steps
+    job, api, bridge, model, steps = setup_runtime()
+    model.provider.return_value.structured_output_mode = "json_object"
+    with patch("investigator.holmes_adapter.ToolCallingLLM") as agent:
+        def first_call(**kwargs):
+            steps.append({"toolName": "get_incident_context", "state": "succeeded", "result": {"evidenceRefs": ["00000000-0000-4000-8000-000000000001"]}})
+            return SimpleNamespace(result="invalid-json")
+        replies = iter([first_call, lambda **kwargs: SimpleNamespace(result="{}")])
+        agent.return_value.call.side_effect = lambda **kwargs: next(replies)(**kwargs)
+        investigate(job, model, api, bridge)
+        repair = agent.return_value.call.call_args.kwargs["messages"]
+    content = next(m["content"] for m in repair if m.get("role") == "system" and "exact output schema" in m.get("content", ""))
+    assert json.loads(content.split("fields. ", 1)[1]) == output_schema_for_steps(steps, job["assistant"]["taskKind"])
