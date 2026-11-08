@@ -47,4 +47,17 @@ func TestSuggestionMatch(t *testing.T) {
 		}
 	}
 }
+
+func TestKubectlRiskWithGlobalFlags(t *testing.T) {
+	for _, command := range []string{"kubectl --request-timeout=10s --namespace=ops-current get pod x", "kubectl -n ops-current --context current logs x", "kubectl --namespace ops-current describe pod x"} {
+		if risk := Classify(command); risk.OperationRisk != "medium" {
+			t.Errorf("literal read classified as mutation: %q %+v", command, risk)
+		}
+	}
+	for _, command := range []string{"kubectl -n ops-current delete pod x", "kubectl --context=current exec x -- id", "kubectl --unknown get delete pod x", "kubectl --namespace", "kubectl -n $NS get pod x", "kubectl --namespace= get pod x", "kubectl --namespace --help get pod x", "kubectl -- get pod x", "kubectl --request-timeout=10s get pod x; rm x"} {
+		if risk := Classify(command); risk.OperationRisk != "high" {
+			t.Errorf("ambiguous or mutating command downgraded: %q %+v", command, risk)
+		}
+	}
+}
 func ptr(s string) *string { return &s }

@@ -11,7 +11,7 @@ import (
 )
 
 const ComparatorVersion = "bash-target-v1-mvdan-3.14.1"
-const RiskVersion = "bash-risk/v1-mvdan-3.14.1"
+const RiskVersion = "bash-risk/v2-mvdan-3.14.1"
 
 var ErrInvalid = errors.New("invalid command request")
 var ErrDenied = errors.New("command request denied")
@@ -86,7 +86,10 @@ func Classify(command string) Risk {
 			switch name {
 			case "true", "false", "printf", "echo", "cat", "head", "tail", "wc", "id", "whoami", "pwd", "ls", "date":
 			case "kubectl":
-				if len(n.Args) < 2 || !slices.Contains([]string{"get", "describe", "logs", "version", "api-resources", "api-versions"}, n.Args[1].Lit()) {
+				verb := kubectlVerb(n.Args[1:])
+				if verb == "" {
+					high("effect_unknown")
+				} else if !slices.Contains([]string{"get", "describe", "logs", "version", "api-resources", "api-versions"}, verb) {
 					high("kubernetes_mutation")
 				}
 			case "virtctl":
@@ -110,6 +113,35 @@ func Classify(command string) Risk {
 	})
 	slices.Sort(r.Features)
 	return r
+}
+
+// Only known value-taking global flags can precede the verb. Unknown or
+// dynamic flags remain high risk rather than being mistaken for a read verb.
+func kubectlVerb(args []*syntax.Word) string {
+	for i := 0; i < len(args); i++ {
+		value := args[i].Lit()
+		if value == "" || value == "--" {
+			return ""
+		}
+		if !strings.HasPrefix(value, "-") {
+			return value
+		}
+		flag, inline, hasValue := strings.Cut(value, "=")
+		if !slices.Contains([]string{"-n", "--namespace", "--context", "--request-timeout"}, flag) {
+			return ""
+		}
+		if hasValue {
+			if inline == "" || strings.HasPrefix(inline, "-") {
+				return ""
+			}
+		} else {
+			i++
+			if i >= len(args) || args[i].Lit() == "" || strings.HasPrefix(args[i].Lit(), "-") {
+				return ""
+			}
+		}
+	}
+	return ""
 }
 
 // Conservative versioned comparison requires the same executable and primary
