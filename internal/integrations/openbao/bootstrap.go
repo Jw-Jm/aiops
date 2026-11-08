@@ -237,6 +237,9 @@ func (c *Client) Configure(ctx context.Context) error {
 	if err := c.ensurePKIRoot(ctx); err != nil {
 		return err
 	}
+	if err := c.ensurePKICRLMaintenance(ctx); err != nil {
+		return err
+	}
 	if err := c.ensurePKIRole(ctx); err != nil {
 		return err
 	}
@@ -297,6 +300,9 @@ func (c *Client) ConfigureWorkloadPKI(ctx context.Context) error {
 		return err
 	}
 	if err := c.ensurePKIRoot(ctx); err != nil {
+		return err
+	}
+	if err := c.ensurePKICRLMaintenance(ctx); err != nil {
 		return err
 	}
 	for _, serviceAccount := range workloadServiceAccounts {
@@ -691,6 +697,9 @@ func (c *Client) verifyConfiguration(ctx context.Context) error {
 		}
 	}
 	if err := c.verifyPKIMountTTL(ctx); err != nil {
+		return err
+	}
+	if err := c.verifyPKICRLMaintenance(ctx); err != nil {
 		return err
 	}
 	var auth dataResponse
