@@ -8,11 +8,13 @@ export function RiskPanel({
   request,
   profileName,
   targetName,
+  requiresStepUp,
 }: {
   assessment: unknown;
   request: CommandRiskAssessmentRequest;
   profileName: string;
   targetName?: string;
+  requiresStepUp?: boolean;
 }) {
   const a = record(assessment),
     risk = record(a.risk),
@@ -140,7 +142,7 @@ export function RiskPanel({
             key: "step",
             label: "身份验证",
             children:
-              risk.requiresStepUp === true
+              requiresStepUp || risk.requiresStepUp === true
                 ? "需要重新输入密码和动态验证码"
                 : "当前身份验证满足要求",
           },

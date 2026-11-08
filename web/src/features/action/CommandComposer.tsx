@@ -495,7 +495,8 @@ export function CommandComposer({ incident }: { incident: IncidentV2 }) {
       authEvents.removeEventListener("authorizationChanged", revoke);
     };
   }, [executionId]);
-  const needsStep = record(assessment?.risk).requiresStepUp === true;
+  const needsStep =
+    auth.authMode === "native" || record(assessment?.risk).requiresStepUp === true;
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);
@@ -792,6 +793,7 @@ export function CommandComposer({ incident }: { incident: IncidentV2 }) {
       {assessment && (
         <>
           <RiskPanel
+            requiresStepUp={needsStep}
             targetName={
               verifiedTarget === target && typeof targetName === "string"
                 ? targetName

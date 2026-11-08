@@ -55,10 +55,9 @@ func (s Service) BeginDispatch(ctx context.Context, tenant, id uuid.UUID) (Dispa
 		denied := err != nil || !time.Now().Before(deadline) || !time.Now().Before(a.TokenExpiresAt)
 		if !denied {
 			// There is no live session here: re-prove the identity system that
-			// admitted the command, at its frozen version. A native high-privilege
-			// command additionally re-proves the frozen step-up proof; without one it
-			// is denied rather than dispatched.
-			if native, _ := e.Authority.nativeForRecheck(); native && p.HighPrivilege() {
+			// admitted the command, at its frozen version. Any accepted native proof
+			// remains binding, including a namespace command verified in the UI.
+			if native, _ := e.Authority.nativeForRecheck(); native && (p.HighPrivilege() || e.stepUp != nil) {
 				proof, proofErr := s.reproveFrozenStepUp(ctx, tx, e)
 				if proofErr != nil {
 					denied = true
@@ -143,7 +142,7 @@ func (s Service) ClaimWithKey(ctx context.Context, tenant, id uuid.UUID, token, 
 		if err != nil {
 			return err
 		}
-		if native, _ := e.Authority.nativeForRecheck(); native && p.HighPrivilege() {
+		if native, _ := e.Authority.nativeForRecheck(); native && (p.HighPrivilege() || e.stepUp != nil) {
 			proof, proofErr := s.reproveFrozenStepUp(ctx, tx, e)
 			if proofErr != nil {
 				return proofErr

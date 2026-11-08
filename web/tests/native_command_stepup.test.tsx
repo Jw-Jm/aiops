@@ -208,3 +208,18 @@ it("refuses the risk acknowledgement until the step-up is verified", async () =>
   expect(api.confirm).not.toHaveBeenCalled();
   client.clear();
 });
+
+it("requires explicit native verification in the page for namespace commands too", async () => {
+  api.risk.mockResolvedValue(envelope({
+    ...assessment,
+    risk: { ...assessment.risk, requiresStepUp: false },
+  }));
+  const client = await setup();
+  fireEvent.click(screen.getByRole("button", { name: "2 · 评估实际命令风险" }));
+  await screen.findByLabelText("验证密码");
+  fireEvent.click(screen.getByRole("checkbox"));
+  expect(screen.getByRole("button", { name: "4 · 本人确认风险" })).toBeDisabled();
+  expect(screen.getByText("需要重新输入密码和动态验证码")).toBeInTheDocument();
+  expect(api.confirm).not.toHaveBeenCalled();
+  client.clear();
+});

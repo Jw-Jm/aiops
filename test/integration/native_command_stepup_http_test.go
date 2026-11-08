@@ -5,6 +5,7 @@ import (
 	"crypto/ed25519"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -691,9 +692,20 @@ func TestNativeCommandHTTPConcurrentAcknowledgeAndReplay(t *testing.T) {
 // the command runs without any challenge reference. The high-privilege path must
 // not change this behaviour.
 func TestNativeCommandHTTPNamespaceProfileNeedsNoStepUp(t *testing.T) {
+	testNativeNamespaceCommand(t, "none")
+}
+
+func TestNativeCommandHTTPNamespaceAcceptedProofRemainsBinding(t *testing.T) {
+	for _, stage := range []string{"valid", "dispatch", "claim"} {
+		t.Run(stage, func(t *testing.T) { testNativeNamespaceCommand(t, stage) })
+	}
+}
+
+func testNativeNamespaceCommand(t *testing.T, proofStage string) {
+	t.Helper()
 	f := newNativeCommandHTTPFixture(t)
 	f.session, _ = mfaLoginWithCookie(t, f.mfa, f.login, f.password)
-	mfaEnrolFactor(t, f.mfa, &f.session, f.password)
+	f.secret, _ = mfaEnrolFactor(t, f.mfa, &f.session, f.password)
 	// A namespace scoped profile over a namespaced target.
 	namespace := "apps"
 	name := "pod-http"
@@ -732,6 +744,9 @@ func TestNativeCommandHTTPNamespaceProfileNeedsNoStepUp(t *testing.T) {
 		t.Fatal("a namespace profile must not require a step-up")
 	}
 	f.session.stepUpChallenge = ""
+	if proofStage != "none" {
+		f.session.stepUpChallenge = f.commandChallenge(t, assessment.Data, identity.TOTPStep(time.Now().UTC()))
+	}
 	status, payload, body = f.actions.do(t, http.MethodPost, "/api/v1/commands:risk-acknowledge", map[string]any{
 		"assessmentId": assessment.Data.ID, "executionRequestDigest": assessment.Data.RequestDigest,
 	}, &f.session)
@@ -748,9 +763,31 @@ func TestNativeCommandHTTPNamespaceProfileNeedsNoStepUp(t *testing.T) {
 		t.Fatalf("namespace prepare = %d %s", status, body)
 	}
 	executionID := uuid.MustParse(fmt.Sprintf("%v", mfaData(t, payload)["executionId"]))
+	revokeProof := func() {
+		t.Helper()
+		if _, err := f.db.ExecContext(f.ctx, `UPDATE identity.step_up_sessions SET revoked_at=clock_timestamp() WHERE tenant_id=$1 AND step_up_ref=(SELECT step_up_proof_id FROM action.executions WHERE tenant_id=$1 AND execution_id=$2)`, f.tenantID, executionID); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if proofStage == "dispatch" {
+		revokeProof()
+	}
 	dispatch, err := f.worker.BeginDispatch(f.ctx, f.tenantID, executionID)
+	if proofStage == "dispatch" {
+		if !errors.Is(err, action.ErrDenied) || dispatch.Token != "" {
+			t.Fatalf("revoked namespace proof dispatched: token present=%v err=%v", dispatch.Token != "", err)
+		}
+		return
+	}
 	if err != nil || dispatch.Token == "" {
 		t.Fatalf("namespace dispatch = %+v (%v)", dispatch, err)
+	}
+	if proofStage == "claim" {
+		revokeProof()
+		if _, err = f.worker.ClaimWithKey(f.ctx, f.tenantID, executionID, dispatch.Token, ""); err == nil {
+			t.Fatal("revoked namespace proof claimed")
+		}
+		return
 	}
 	if _, err = f.worker.ClaimWithKey(f.ctx, f.tenantID, executionID, dispatch.Token, ""); err != nil {
 		t.Fatalf("namespace claim = %v", err)
