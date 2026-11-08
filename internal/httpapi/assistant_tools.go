@@ -30,6 +30,20 @@ type assistantGraphReader struct {
 	Job      investigation.Job
 }
 
+func assistantQueryWindowAllowed(intent analytics.QueryIntent, requested *analytics.QueryTimeRange) bool {
+	window := intent.TimeRange
+	if window == nil || window.Timezone != requested.Timezone || window.From.IsZero() || !window.To.After(window.From) {
+		return false
+	}
+	if window.From.Equal(requested.From) && window.To.Equal(requested.To) {
+		return true
+	}
+	// External collectors can lag the request. A covered subset is allowed;
+	// widening the requested interval and changing control-plane queries are not.
+	external := strings.HasPrefix(intent.DatasetID, "metrics.") || strings.HasPrefix(intent.DatasetID, "logs.") || strings.HasPrefix(intent.DatasetID, "network.")
+	return external && !window.From.Before(requested.From) && !window.To.After(requested.To)
+}
+
 func (a assistantGraphReader) Query(ctx context.Context, q graph.Query) (graph.Result, error) {
 	var out graph.Result
 	h := a.Handlers
@@ -458,7 +472,7 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 			}
 		} else if intent.DatasetID != "resources.current" && input.RequestedTimeRange != nil {
 			window := input.RequestedTimeRange
-			if intent.TimeRange == nil || !intent.TimeRange.From.Equal(window.From) || !intent.TimeRange.To.Equal(window.To) || intent.TimeRange.Timezone != window.Timezone {
+			if !assistantQueryWindowAllowed(intent, window) {
 				return out, investigation.ErrInvalid
 			}
 		}
@@ -501,6 +515,11 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 			}
 			out.Data = data
 			out.Partial = !stored.Result.Exact
+			if requested := input.RequestedTimeRange; requested != nil && intent.TimeRange != nil && (!intent.TimeRange.From.Equal(requested.From) || !intent.TimeRange.To.Equal(requested.To)) {
+				data["requestedTimeRange"] = requested
+				data["coverageGap"] = true
+				out.Partial = true
+			}
 			out.DegradedSources = stored.Result.DegradedSources
 			return out, nil
 		}

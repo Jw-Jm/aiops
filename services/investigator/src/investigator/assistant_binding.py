@@ -84,6 +84,7 @@ def available_requested_range(context, capability):
         if stamp(capability["verifiedUntil"]) <= stamp(context["requestedAt"]): return None
         start = ceil(max(stamp(requested["from"]), stamp(capability["coverageFrom"])))
         end = floor(min(stamp(requested["to"]), stamp(capability["coverageTo"])))
+        if capability.get("operation") == "trend": end -= (end-start) % 60
         if start >= end or end-start > capability["maxWindowSeconds"]: return None
         render = lambda value: datetime.fromtimestamp(value, timezone.utc).isoformat().replace("+00:00", "Z")
         return {"from": render(start), "to": render(end), "timezone": requested["timezone"]}

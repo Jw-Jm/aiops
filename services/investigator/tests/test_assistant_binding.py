@@ -197,7 +197,7 @@ def test_external_query_hint_intersects_coverage_without_mutating_receipt():
     original = copy.deepcopy(receipt)
     projected = model_tool_result("get_assistant_context", receipt)
     assert projected["data"]["sourceCapabilities"][0]["availableRequestedTimeRange"] == {
-        "from": "2026-11-08T04:10:01Z", "to": "2026-11-08T04:14:42Z", "timezone": "Asia/Shanghai"}
+        "from": "2026-11-08T04:10:01Z", "to": "2026-11-08T04:14:01Z", "timezone": "Asia/Shanghai"}
     assert receipt == original
     for changes in ({"status": "unavailable"}, {"verifiedUntil": context["requestedAt"]},
                     {"coverageTo": "2026-11-08T04:09:59Z"}, {"maxWindowSeconds": 60},
