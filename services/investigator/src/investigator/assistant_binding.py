@@ -101,7 +101,8 @@ def messages(job, prior):
         raise ValueError("ASSISTANT_VERSION_UNSUPPORTED")
     trusted={key:job[key] for key in ("jobId","tenantId","policyVersion","budget","expiresAt","scope","assistant") if key in job}
     request="Continue from committed reads." if prior else "First call get_assistant_context using standard tool calling."
-    prompt=[{"role":"system","content":POLICY},
+    query_policy = "Use analysisCatalog or describe_analysis_dataset for exact metric, filter and dimension names; never invent them. For a single resource, set canonicalId on execute_analysis_query, not a pod/name/uid filter absent from the dataset. Trend queries require dimensions:[\"time\"], integer-second window endpoints, stepSeconds>=60, and at most 50 points. Omit windowRole unless the current context provides that frozen window; a request for a current recovery check does not create a recovery window. Use only the query_logs templates in its input enum."
+    prompt=[{"role":"system","content":POLICY+"\n"+query_policy},
             {"role":"system","content":json.dumps({"trusted_context":trusted})},
             {"role":"user","content":request+" Return the final JSON only after receiving the tools' results."},
             {"role":"user","content":json.dumps({"untrusted_committed_results":[model_tool_result(result.get("tool"), result) for result in prior]},ensure_ascii=False,separators=(",", ":"))}]

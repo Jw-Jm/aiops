@@ -93,6 +93,21 @@ func sameStringSet(a, b []string) bool {
 
 type AssistantTools struct{ Legacy InvestigationTools }
 
+func analysisCatalogForDomain(domain string) (analytics.AnalysisCatalog, error) {
+	catalog, err := analytics.Catalog()
+	if err != nil {
+		return catalog, err
+	}
+	approved := []analytics.Dataset{}
+	for _, dataset := range catalog.Datasets {
+		if dataset.AuthorizationDomain == domain {
+			approved = append(approved, dataset)
+		}
+	}
+	catalog.Datasets = approved
+	return catalog, nil
+}
+
 // Private in-process binding: HTTP callers cannot supply or widen this value.
 type assistantEvidenceScopeKey struct{}
 type assistantEvidenceScope struct {
@@ -287,11 +302,14 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 		if json.Unmarshal(rawJSON(input), &data) != nil {
 			return out, investigation.ErrInvalid
 		}
+		catalog, err := analysisCatalogForDomain(j.Assistant.AuthorizationDomain)
+		if err != nil {
+			return out, err
+		}
+		// The first model call needs exact metrics and filter names, not only
+		// dataset IDs. This is the same admitted catalog as the describe tool.
+		data["analysisCatalog"] = catalog
 		if j.Assistant.TaskKind == "data_query" {
-			catalog, err := analytics.Catalog()
-			if err != nil {
-				return out, err
-			}
 			datasets := []map[string]string{}
 			for _, dataset := range catalog.Datasets {
 				if dataset.AuthorizationDomain == j.Assistant.AuthorizationDomain {
@@ -373,7 +391,7 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 		if json.Unmarshal(args, &p) != nil {
 			return out, analytics.ErrUnsupported
 		}
-		catalog, err := analytics.Catalog()
+		catalog, err := analysisCatalogForDomain(j.Assistant.AuthorizationDomain)
 		if err != nil {
 			return out, err
 		}

@@ -17,12 +17,19 @@ class PlatformTool(Tool):
     _job_api: object = PrivateAttr()
     _bridge: object = PrivateAttr()
     _task_kind: str = PrivateAttr(default="")
+    _window_roles: list[str] | None = PrivateAttr(default=None)
 
     def get_openai_format(self):
         parameters={key:value for key,value in self._schema.items() if key not in ("$id","$schema","x-tool-contract")}
         if self._task_kind=="data_query" and self.name=="execute_analysis_query":
             # Query scope is already frozen; resource overrides belong to investigations.
             parameters["properties"]={key:value for key,value in parameters.get("properties",{}).items() if key not in ("canonicalId","windowRole")}
+        elif self.name=="execute_analysis_query" and self._window_roles is not None:
+            parameters["properties"]=dict(parameters.get("properties",{}))
+            if self._window_roles:
+                parameters["properties"]["windowRole"]={"enum":self._window_roles}
+            else:
+                parameters["properties"].pop("windowRole",None)
         # Legacy output metadata references private contracts, not tool inputs.
         if "x-tool-contract" in self._schema and "$defs" in parameters:
             definitions={key:value for key,value in parameters["$defs"].items() if key!="output"}
@@ -70,6 +77,9 @@ def investigate(job, model, job_api, bridge, api_key_file="/run/secrets/model-ap
             raise RuntimeError("ASSISTANT_CONTEXT_UNAVAILABLE")
     if assistant:
         context=next(step["result"].get("data",{}) for step in steps if step["state"]=="succeeded" and step["toolName"]=="get_assistant_context")
+        windows=context.get("faultChainEvaluationRequest") or {}
+        for tool in tools:
+            tool._window_roles=[role for role in ("fault","baseline","recovery") if windows.get(role)]
         if context.get("truncated"):
             raise ModelCallError("MODEL_CONTEXT_LIMIT")
         reads=[]

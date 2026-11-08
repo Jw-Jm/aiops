@@ -136,13 +136,7 @@ func (g Gateway) handlerFor(defs []tools.Definition) (http.Handler, error) {
 				err = bounded.Err()
 			}
 			if err != nil {
-				code := "SOURCE_DEGRADED"
-				if errors.Is(err, investigation.ErrDenied) {
-					code = "INVESTIGATION_NOT_AUTHORIZED"
-				}
-				if errors.Is(err, context.DeadlineExceeded) {
-					code = "SOURCE_TIMEOUT"
-				}
+				code := sourceReadErrorCode(err)
 				_ = g.Repository.FailStep(ctx, v.Lease, c.StepID, code)
 				return g.failed(ctx, v, d.Name, errors.New(code)), nil
 			}
@@ -210,6 +204,19 @@ func (g Gateway) handlerFor(defs []tools.Definition) (http.Handler, error) {
 		return &sdkauth.TokenInfo{Expiration: time.Unix(claims.ExpiresAt, 0), Extra: map[string]any{"opsVerified": verified{claims, j, l}}}, nil
 	}
 	return sdkauth.RequireBearerToken(verifier, nil)(transport), nil
+}
+
+func sourceReadErrorCode(err error) string {
+	switch {
+	case errors.Is(err, context.DeadlineExceeded):
+		return "SOURCE_TIMEOUT"
+	case errors.Is(err, investigation.ErrDenied), errors.Is(err, analytics.ErrDenied):
+		return "INVESTIGATION_NOT_AUTHORIZED"
+	case errors.Is(err, investigation.ErrInvalid), errors.Is(err, analytics.ErrInvalid), errors.Is(err, analytics.ErrUnsupported):
+		return "INVALID_ARGUMENT"
+	default:
+		return "SOURCE_DEGRADED"
+	}
 }
 func (g Gateway) failed(ctx context.Context, v verified, tool string, err error) *sdk.CallToolResult {
 	j, e := g.Repository.Get(ctx, v.Job.TenantID, v.Job.JobID)

@@ -34,3 +34,14 @@ def test_data_query_does_not_offer_resource_override_parameters():
     assert "canonicalId" in schema["properties"]
     tool._task_kind="resource_troubleshooting"
     assert tool.get_openai_format()["function"]["parameters"]["properties"]==schema["properties"]
+
+
+def test_incident_query_only_offers_windows_present_in_frozen_context():
+    schema={"type":"object","properties":{"intent":{"type":"object"},"canonicalId":{"type":"string"},"windowRole":{"enum":["fault","baseline","recovery"]}}}
+    original=copy.deepcopy(schema)
+    tool=PlatformTool(name="execute_analysis_query",description="Bound query")
+    tool._schema=schema;tool._task_kind="incident_followup";tool._window_roles=[]
+    assert "windowRole" not in tool.get_openai_format()["function"]["parameters"]["properties"]
+    tool._window_roles=["fault"]
+    assert tool.get_openai_format()["function"]["parameters"]["properties"]["windowRole"]=={"enum":["fault"]}
+    assert schema==original

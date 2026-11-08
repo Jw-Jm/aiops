@@ -237,7 +237,7 @@ export function IncidentWorkspace() {
               incidentId={incidentId}
               state={text(incident.state)}
               revision={Number(incident.revision)}
-              assigneeSubject={text(incident.assigneeSubject)}
+              assigneeSubject={incident.assigneeSubject ?? ""}
               currentSubject={auth.session?.subject ?? ""}
               isAdmin={!!auth.session?.roles.includes("platform_admin")}
               onChanged={async () => {

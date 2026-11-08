@@ -269,7 +269,9 @@ export function InvestigationPanel({
       >
         {history.length === 0 ? (
           <p className="muted">
-            当前没有可见的历史调查。开始调查后，进度和结果会保存在此处。
+            {assistantHref
+              ? "当前没有可见的旧版调查。新调查的进度和结果保存在助手会话中。"
+              : "当前没有可见的历史调查。开始调查后，进度和结果会保存在此处。"}
           </p>
         ) : (
           <Space wrap>
