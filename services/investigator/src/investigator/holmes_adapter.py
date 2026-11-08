@@ -104,7 +104,7 @@ def investigate(job, model, job_api, bridge, api_key_file="/run/secrets/model-ap
     agent=ToolCallingLLM(tool_executor=ToolExecutor([toolset]),max_steps=8,llm=llm,tool_results_dir=None)
     llm.needs_initial_tools=not bool(prior)
     llm.assistant_task=assistant
-    llm.requires_query=assistant and job["assistant"]["taskKind"]=="data_query" and query_required(context)
+    llm.requires_query=assistant and query_required(context,job["assistant"]["taskKind"])
     if assistant:llm.assistant_task_kind=job["assistant"]["taskKind"]
     prompt=assistant_messages(job,prior) if assistant else messages(job,prior)
     schema=assistant_schema() if assistant else OUTPUT_JSON_SCHEMA

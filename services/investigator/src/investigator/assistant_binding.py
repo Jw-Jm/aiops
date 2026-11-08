@@ -116,10 +116,12 @@ def committed_reads(steps):
     return [step.get("result") or {"tool":step["toolName"],"state":step["state"],"errorCode":step.get("errorCode") or "READ_NOT_COMPLETED","data":{}}
             for step in steps if step.get("toolName")!="model" and step.get("state") in ("succeeded","failed")]
 
-def query_required(context):
+def query_required(context, task_kind="data_query"):
     # Classify only the current user request, not quoted history or observations.
     message=context.get("message","")
     if re.search(r"(?:不要|无需|不必|禁止|勿).{0,8}(?:查询|统计|计数|计算)|只解释|仅解释|\b(?:do not|don't|no need to)\s+(?:query|count|calculate)\b",message,re.I):return False
+    if task_kind in ("incident_followup", "resource_troubleshooting") and re.search(r"CPU|内存|重启|日志|metrics\.|logs\.|\b(memory|restarts?|logs?)\b",message,re.I) and re.search(r"读取|查询|检查|趋势|\b(read|query|check|trend)\b",message,re.I):
+        return True
     return bool(context.get("requestedTimeRange") and re.search(r"统计|数量|多少|计数|总数|平均|趋势|错误率|成功率|\b(count|sum|average|rate|trend)\b",message,re.I))
 
 def evidence_reads_required(context):
