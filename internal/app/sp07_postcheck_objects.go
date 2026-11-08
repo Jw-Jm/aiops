@@ -101,16 +101,26 @@ func nativePostCheckObjects(root unstructured.Unstructured, tenant, cluster stri
 		}
 		return o, add(o)
 	}
-	list := func(kind, namespace, selector string) ([]unstructured.Unstructured, error) {
-		path := postCheckPath(kind, namespace, "") + "?limit=41"
-		if selector != "" {
-			path += "&labelSelector=" + url.QueryEscape(selector)
+	list := func(kind, namespace string, selectors url.Values) ([]unstructured.Unstructured, error) {
+		query := url.Values{"limit": {"41"}}
+		for k, v := range selectors {
+			query[k] = v
 		}
+		path := postCheckPath(kind, namespace, "") + "?" + query.Encode()
 		o, err := read(path)
 		if err != nil {
 			return nil, err
 		}
-		if o.GetKind() != kind+"List" || o.GetContinue() != "" {
+		version := "v1"
+		switch kind {
+		case "ReplicaSet":
+			version = "apps/v1"
+		case "EndpointSlice":
+			version = "discovery.k8s.io/v1"
+		case "VolumeAttachment":
+			version = "storage.k8s.io/v1"
+		}
+		if o.GetKind() != kind+"List" || o.GetAPIVersion() != version || o.GetContinue() != "" {
 			return nil, errPostCheckSnapshot
 		}
 		items, ok, _ := unstructured.NestedSlice(o.Object, "items")
@@ -124,7 +134,15 @@ func nativePostCheckObjects(root unstructured.Unstructured, tenant, cluster stri
 				return nil, errPostCheckSnapshot
 			}
 			item := unstructured.Unstructured{Object: m}
-			if item.GetKind() != kind || item.GetNamespace() != namespace || item.GetUID() == "" {
+			// Kubernetes list entries normally omit type metadata; inherit only
+			// from the checked collection type, as the native informer does.
+			if item.GetKind() == "" {
+				item.SetKind(kind)
+			}
+			if item.GetAPIVersion() == "" {
+				item.SetAPIVersion(version)
+			}
+			if item.GetKind() != kind || item.GetAPIVersion() != version || item.GetNamespace() != namespace || item.GetUID() == "" {
 				return nil, errPostCheckSnapshot
 			}
 			out = append(out, item)
@@ -164,7 +182,7 @@ func nativePostCheckObjects(root unstructured.Unstructured, tenant, cluster stri
 			}
 		}
 	case "Deployment":
-		replicas, err := list("ReplicaSet", ns, "")
+		replicas, err := list("ReplicaSet", ns, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -175,7 +193,7 @@ func nativePostCheckObjects(root unstructured.Unstructured, tenant, cluster stri
 				}
 			}
 		}
-		pods, err := list("Pod", ns, "")
+		pods, err := list("Pod", ns, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -201,7 +219,7 @@ func nativePostCheckObjects(root unstructured.Unstructured, tenant, cluster stri
 			}
 			selected = append(selected, root)
 		} else {
-			items, err := list("EndpointSlice", ns, "kubernetes.io/service-name="+root.GetName())
+			items, err := list("EndpointSlice", ns, url.Values{"labelSelector": {"kubernetes.io/service-name=" + root.GetName()}})
 			if err != nil {
 				return nil, err
 			}
@@ -245,7 +263,7 @@ func nativePostCheckObjects(root unstructured.Unstructured, tenant, cluster stri
 			if _, err := get("CSIDriver", "", driver); err != nil {
 				return nil, err
 			}
-			pods, err := list("Pod", ns, "")
+			pods, err := list("Pod", ns, nil)
 			if err != nil {
 				return nil, err
 			}
@@ -275,7 +293,7 @@ func nativePostCheckObjects(root unstructured.Unstructured, tenant, cluster stri
 				}
 			}
 			if attachRequired {
-				attachments, err := list("VolumeAttachment", "", "")
+				attachments, err := list("VolumeAttachment", "", nil)
 				if err != nil {
 					return nil, err
 				}
@@ -291,18 +309,23 @@ func nativePostCheckObjects(root unstructured.Unstructured, tenant, cluster stri
 		}
 	}
 	if root.GetKind() != "Node" {
-		events, err := list("Event", ns, "")
-		if err != nil {
-			return nil, err
-		}
-		uids := map[string]bool{}
+		// Read only warnings for the exact snapshot identities. Unrelated normal
+		// events must not exhaust this target's bounded evidence budget.
+		uids := []string{}
 		for _, o := range objects {
-			uids[string(o.GetUID())] = true
+			uids = append(uids, string(o.GetUID()))
 		}
-		for _, ev := range events {
-			uid, _, _ := unstructured.NestedString(ev.Object, "involvedObject", "uid")
-			typ, _, _ := unstructured.NestedString(ev.Object, "type")
-			if uids[uid] && typ == "Warning" {
+		for _, expectedUID := range uids {
+			events, err := list("Event", ns, url.Values{"fieldSelector": {"involvedObject.uid=" + expectedUID + ",type=Warning"}})
+			if err != nil {
+				return nil, err
+			}
+			for _, ev := range events {
+				uid, _, _ := unstructured.NestedString(ev.Object, "involvedObject", "uid")
+				typ, _, _ := unstructured.NestedString(ev.Object, "type")
+				if uid != expectedUID || typ != "Warning" {
+					return nil, errPostCheckSnapshot
+				}
 				if err := add(ev); err != nil {
 					return nil, err
 				}

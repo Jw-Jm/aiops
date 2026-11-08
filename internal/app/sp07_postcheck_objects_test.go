@@ -24,7 +24,7 @@ func TestNativePostCheckCollectionFencesAndProjection(t *testing.T) {
 		switch path {
 		case "/api/v1/namespaces/ns/pods/pod":
 			return pod, nil
-		case "/api/v1/namespaces/ns/events?limit=41":
+		case "/api/v1/namespaces/ns/events?fieldSelector=involvedObject.uid%3Dpod-uid%2Ctype%3DWarning&limit=41":
 			return list, nil
 		}
 		return unstructured.Unstructured{}, errors.New("unexpected request")
@@ -43,6 +43,24 @@ func TestNativePostCheckCollectionFencesAndProjection(t *testing.T) {
 	if rca.SpecDigest(postCheckProjection(pod)) != digest {
 		t.Fatal("metadata changed rollback configuration")
 	}
+	// Actual API list entries omit kind/apiVersion. A target warning must still
+	// be retained; an explicitly conflicting type must never be rewritten.
+	warning := map[string]any{"metadata": map[string]any{"name": "warning", "namespace": "ns", "uid": "warning-uid", "resourceVersion": "2"}, "involvedObject": map[string]any{"uid": "pod-uid"}, "type": "Warning"}
+	list.Object["items"] = []any{warning}
+	objects, err = nativePostCheckObjects(pod, "tenant", "cluster", scope, read)
+	if err != nil || len(objects) != 2 || objects[1].GetKind() != "Event" || objects[1].GetAPIVersion() != "v1" {
+		t.Fatalf("API list warning lost: objects=%v err=%v", objects, err)
+	}
+	warning["kind"] = "Pod"
+	if _, err := nativePostCheckObjects(pod, "tenant", "cluster", scope, read); err == nil {
+		t.Fatal("conflicting item kind accepted")
+	}
+	delete(warning, "kind")
+	warning["involvedObject"] = map[string]any{"uid": "another-pod"}
+	if _, err := nativePostCheckObjects(pod, "tenant", "cluster", scope, read); err == nil {
+		t.Fatal("unrelated warning accepted from a filtered request")
+	}
+	list.Object["items"] = []any{}
 	list.SetContinue("next")
 	if _, err := nativePostCheckObjects(pod, "tenant", "cluster", scope, read); err == nil {
 		t.Fatal("partial events accepted")
