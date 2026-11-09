@@ -6,6 +6,7 @@ import (
 	"crypto/ed25519"
 	"crypto/rand"
 	"database/sql"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"net/http/httptest"
@@ -393,6 +394,33 @@ func TestAssistantSearchFiltersAndCursorStayConsistent(t *testing.T) {
 // The list endpoint binds the filter to the cursor. Two requests that carry the
 // same normalized filter continue the same page; a request that really changes
 // the filter is refused.
+// assistantCursorPayload decodes a signed assistant cursor into the fields that
+// describe the filter and the position. The expiry is stamped in seconds, so
+// two cursors for the same filter may differ in that field across a second
+// boundary: the filter digest and the position must be identical.
+func assistantCursorPayload(token string) (string, error) {
+	parts := strings.Split(token, ".")
+	if len(parts) != 2 {
+		return "", errors.New("cursor is not a signed token")
+	}
+	raw, err := base64.RawURLEncoding.DecodeString(parts[0])
+	if err != nil {
+		return "", err
+	}
+	var cursor struct {
+		Tenant      string `json:"tenant"`
+		Subject     string `json:"subject"`
+		Kind        string `json:"kind"`
+		ScopeDigest string `json:"scopeDigest"`
+		Before      string `json:"before"`
+		BeforeID    string `json:"beforeId"`
+	}
+	if err := json.Unmarshal(raw, &cursor); err != nil {
+		return "", err
+	}
+	return strings.Join([]string{cursor.Tenant, cursor.Subject, cursor.Kind, cursor.ScopeDigest, cursor.Before, cursor.BeforeID}, "|"), nil
+}
+
 func TestAssistantListCursorUsesTheNormalizedFilter(t *testing.T) {
 	ctx, _, _, b, repo, _ := assistantConversationFixture(t, "Pod 排查")
 	for _, title := range []string{"Pod 节点", "节点磁盘 100%"} {
@@ -430,14 +458,24 @@ func TestAssistantListCursorUsesTheNormalizedFilter(t *testing.T) {
 	if len(first.Data) != 1 || first.Meta.NextCursor == "" {
 		t.Fatalf("the first page returned no cursor: %s", body)
 	}
-	// The same filter, written differently, is the same filter: the cursor is
-	// the same cursor.
+	// The same filter, written differently, is the same filter: both cursors
+	// carry the same normalized scope and the same position. The signed token
+	// itself is time bound, so the bytes may differ across a second boundary:
+	// only the signed payload has to be identical.
 	status, normalized, body := call("?q=Pod&archived=exclude&limit=1")
 	if status != 200 {
 		t.Fatalf("normalized list = %d %s", status, body)
 	}
-	if normalized.Meta.NextCursor != first.Meta.NextCursor {
-		t.Fatalf("the normalized filter produced another cursor: %q / %q", first.Meta.NextCursor, normalized.Meta.NextCursor)
+	firstPayload, err := assistantCursorPayload(first.Meta.NextCursor)
+	if err != nil {
+		t.Fatalf("decode the first cursor: %v", err)
+	}
+	normalizedPayload, err := assistantCursorPayload(normalized.Meta.NextCursor)
+	if err != nil {
+		t.Fatalf("decode the normalized cursor: %v", err)
+	}
+	if normalizedPayload != firstPayload {
+		t.Fatalf("the normalized filter produced another cursor payload: %q / %q", firstPayload, normalizedPayload)
 	}
 	// The page continues with the same filter.
 	status, second, body := call("?q=Pod&archived=exclude&limit=1&cursor=" + first.Meta.NextCursor)

@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"ops-platform/internal/audit"
+	"ops-platform/internal/auth"
 	"ops-platform/internal/investigation"
 	"ops-platform/internal/investigation/tools"
 	"ops-platform/internal/persistence"
@@ -42,14 +43,41 @@ func (r Repository) SetLegalHold(ctx context.Context, tenant, turn uuid.UUID, su
 		if _, err := investigation.AuditScopeTx(ctx, tx, tenant, subject); err != nil {
 			return err
 		}
-		var allowed bool
-		if err := tx.QueryRow(ctx, `SELECT investigation.assistant_set_hold($1,$2,$3,$4,$5)`, tenant, turn, subject, held, tools.RedactText(reason)).Scan(&allowed); err != nil {
+		allowed, err := setLegalHoldTx(ctx, tx, tenant, turn, subject, held, tools.RedactText(reason))
+		if err != nil {
 			return err
 		}
 		if !allowed {
 			return investigation.ErrDenied
 		}
-		_, err := audit.Append(ctx, tx, audit.Entry{TenantID: tenant, RecordID: uuid.Must(uuid.NewV7()), EntityID: turn, EntityKind: "assistant_turn", EventType: "assistant.legal_hold.changed", Subject: subject, Payload: map[string]any{"held": held, "reason": tools.RedactText(reason)}})
+		_, err = audit.Append(ctx, tx, audit.Entry{TenantID: tenant, RecordID: uuid.Must(uuid.NewV7()), EntityID: turn, EntityKind: "assistant_turn", EventType: "assistant.legal_hold.changed", Subject: subject, Payload: map[string]any{"held": held, "reason": tools.RedactText(reason)}})
 		return err
 	})
+}
+
+// setLegalHoldTx writes the hold through the fence that matches the proven
+// identity source. A legacy administrator keeps the frozen migration 42 fence
+// (platform.role_bindings). A native administrator is fenced inside the
+// database by the live session, the account's own subject and the current
+// platform_admin grant, so the write can never depend on a legacy binding.
+func setLegalHoldTx(ctx context.Context, tx pgx.Tx, tenant, turn uuid.UUID, subject string, held bool, reason string) (bool, error) {
+	var allowed bool
+	if investigation.AuditAuthorityFromContext(ctx).Source == investigation.AuditSourceNative {
+		native, ok := auth.NativeSessionFromContext(ctx)
+		if !ok {
+			return false, investigation.ErrDenied
+		}
+		session := native.Session
+		if session.TenantID != tenant || session.Subject != subject ||
+			session.UserID == uuid.Nil || session.SessionID == uuid.Nil ||
+			session.AuthorizationVersion < 1 || session.CredentialVersion < 1 || session.SessionVersion < 1 {
+			return false, investigation.ErrDenied
+		}
+		err := tx.QueryRow(ctx, `SELECT investigation.assistant_set_hold_native($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+			tenant, turn, session.UserID, session.SessionID, session.AuthorizationVersion,
+			session.CredentialVersion, session.SessionVersion, subject, held, reason).Scan(&allowed)
+		return allowed, err
+	}
+	err := tx.QueryRow(ctx, `SELECT investigation.assistant_set_hold($1,$2,$3,$4,$5)`, tenant, turn, subject, held, reason).Scan(&allowed)
+	return allowed, err
 }
