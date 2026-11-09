@@ -2325,6 +2325,27 @@ func (e UnavailableGraphV2SchemaVersion) Valid() bool {
 	}
 }
 
+// Defines values for ListAssistantConversationsParamsArchived.
+const (
+	Exclude ListAssistantConversationsParamsArchived = "exclude"
+	Include ListAssistantConversationsParamsArchived = "include"
+	Only    ListAssistantConversationsParamsArchived = "only"
+)
+
+// Valid indicates whether the value is a known member of the ListAssistantConversationsParamsArchived enum.
+func (e ListAssistantConversationsParamsArchived) Valid() bool {
+	switch e {
+	case Exclude:
+		return true
+	case Include:
+		return true
+	case Only:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ListCommandExecutionsParamsState.
 const (
 	ListCommandExecutionsParamsStateCancelled        ListCommandExecutionsParamsState = "cancelled"
@@ -2890,6 +2911,12 @@ type AssistantRebindV1 struct {
 		Timezone string    `json:"timezone"`
 		To       time.Time `json:"to"`
 	} `json:"timeRange,omitempty"`
+}
+
+// AssistantRenameV1 defines model for AssistantRenameV1.
+type AssistantRenameV1 struct {
+	ExpectedConversationRevision int64  `json:"expectedConversationRevision"`
+	Title                        string `json:"title"`
 }
 
 // AssistantResolutionEnvelopeV1 defines model for AssistantResolutionEnvelopeV1.
@@ -5905,12 +5932,22 @@ type GetAssistantCapabilitiesParams struct {
 
 // ListAssistantConversationsParams defines parameters for ListAssistantConversations.
 type ListAssistantConversationsParams struct {
-	Limit  *int    `form:"limit,omitempty" json:"limit,omitempty"`
-	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit    *int                                      `form:"limit,omitempty" json:"limit,omitempty"`
+	Cursor   *string                                   `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Q        *string                                   `form:"q,omitempty" json:"q,omitempty"`
+	Archived *ListAssistantConversationsParamsArchived `form:"archived,omitempty" json:"archived,omitempty"`
 }
+
+// ListAssistantConversationsParamsArchived defines parameters for ListAssistantConversations.
+type ListAssistantConversationsParamsArchived string
 
 // CreateAssistantConversationParams defines parameters for CreateAssistantConversation.
 type CreateAssistantConversationParams struct {
+	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// RenameAssistantConversationParams defines parameters for RenameAssistantConversation.
+type RenameAssistantConversationParams struct {
 	IdempotencyKey string `json:"Idempotency-Key"`
 }
 
@@ -6629,6 +6666,9 @@ type RevokeNativeUserSessionsJSONRequestBody = NativeIdentitySessionRevocationRe
 
 // CreateAssistantConversationJSONRequestBody defines body for CreateAssistantConversation for application/json ContentType.
 type CreateAssistantConversationJSONRequestBody = AssistantCreateConversationV1
+
+// RenameAssistantConversationJSONRequestBody defines body for RenameAssistantConversation for application/json ContentType.
+type RenameAssistantConversationJSONRequestBody = AssistantRenameV1
 
 // RebindAssistantConversationJSONRequestBody defines body for RebindAssistantConversation for application/json ContentType.
 type RebindAssistantConversationJSONRequestBody = AssistantRebindV1
@@ -10543,6 +10583,9 @@ type ServerInterface interface {
 	// GetAssistantConversation getAssistantConversation
 	// (GET /api/v1/assistant/conversations/{conversationId})
 	GetAssistantConversation(w http.ResponseWriter, r *http.Request, conversationId openapi_types.UUID)
+	// RenameAssistantConversation renameAssistantConversation
+	// (PATCH /api/v1/assistant/conversations/{conversationId})
+	RenameAssistantConversation(w http.ResponseWriter, r *http.Request, conversationId openapi_types.UUID, params RenameAssistantConversationParams)
 	// RebindAssistantConversation rebindAssistantConversation
 	// (POST /api/v1/assistant/conversations/{conversationId}/binding)
 	RebindAssistantConversation(w http.ResponseWriter, r *http.Request, conversationId openapi_types.UUID, params RebindAssistantConversationParams)
@@ -11051,6 +11094,12 @@ func (_ Unimplemented) CreateAssistantConversation(w http.ResponseWriter, r *htt
 // GetAssistantConversation getAssistantConversation
 // (GET /api/v1/assistant/conversations/{conversationId})
 func (_ Unimplemented) GetAssistantConversation(w http.ResponseWriter, r *http.Request, conversationId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// RenameAssistantConversation renameAssistantConversation
+// (PATCH /api/v1/assistant/conversations/{conversationId})
+func (_ Unimplemented) RenameAssistantConversation(w http.ResponseWriter, r *http.Request, conversationId openapi_types.UUID, params RenameAssistantConversationParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -13651,6 +13700,32 @@ func (siw *ServerInterfaceWrapper) ListAssistantConversations(w http.ResponseWri
 		return
 	}
 
+	// ------------- Optional query parameter "q" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "q", r.URL.Query(), &params.Q, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "q"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "q", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "archived" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "archived", r.URL.Query(), &params.Archived, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "archived"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "archived", Err: err})
+		}
+		return
+	}
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ListAssistantConversations(w, r, params)
 	}))
@@ -13724,6 +13799,60 @@ func (siw *ServerInterfaceWrapper) GetAssistantConversation(w http.ResponseWrite
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetAssistantConversation(w, r, conversationId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// RenameAssistantConversation operation middleware
+func (siw *ServerInterfaceWrapper) RenameAssistantConversation(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "conversationId" -------------
+	var conversationId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "conversationId", chi.URLParam(r, "conversationId"), &conversationId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "conversationId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params RenameAssistantConversationParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RenameAssistantConversation(w, r, conversationId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -17762,6 +17891,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/api/v1/assistant/conversations/{conversationId}", wrapper.GetAssistantConversation)
 	})
 	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/api/v1/assistant/conversations/{conversationId}", wrapper.RenameAssistantConversation)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/assistant/conversations/{conversationId}/binding", wrapper.RebindAssistantConversation)
 	})
 	r.Group(func(r chi.Router) {
@@ -19860,6 +19992,47 @@ type GetAssistantConversationdefaultJSONResponse struct {
 }
 
 func (response GetAssistantConversationdefaultJSONResponse) VisitGetAssistantConversationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RenameAssistantConversationRequestObject struct {
+	ConversationId openapi_types.UUID `json:"conversationId"`
+	Params         RenameAssistantConversationParams
+	Body           *RenameAssistantConversationJSONRequestBody
+}
+
+type RenameAssistantConversationResponseObject interface {
+	VisitRenameAssistantConversationResponse(w http.ResponseWriter) error
+}
+
+type RenameAssistantConversation200JSONResponse AssistantConversationEnvelopeV1
+
+func (response RenameAssistantConversation200JSONResponse) VisitRenameAssistantConversationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RenameAssistantConversationdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response RenameAssistantConversationdefaultJSONResponse) VisitRenameAssistantConversationResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -23529,6 +23702,9 @@ type StrictServerInterface interface {
 	// GetAssistantConversation getAssistantConversation
 	// (GET /api/v1/assistant/conversations/{conversationId})
 	GetAssistantConversation(ctx context.Context, request GetAssistantConversationRequestObject) (GetAssistantConversationResponseObject, error)
+	// RenameAssistantConversation renameAssistantConversation
+	// (PATCH /api/v1/assistant/conversations/{conversationId})
+	RenameAssistantConversation(ctx context.Context, request RenameAssistantConversationRequestObject) (RenameAssistantConversationResponseObject, error)
 	// RebindAssistantConversation rebindAssistantConversation
 	// (POST /api/v1/assistant/conversations/{conversationId}/binding)
 	RebindAssistantConversation(ctx context.Context, request RebindAssistantConversationRequestObject) (RebindAssistantConversationResponseObject, error)
@@ -25158,6 +25334,40 @@ func (sh *strictHandler) GetAssistantConversation(w http.ResponseWriter, r *http
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetAssistantConversationResponseObject); ok {
 		if err := validResponse.VisitGetAssistantConversationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// RenameAssistantConversation operation middleware
+func (sh *strictHandler) RenameAssistantConversation(w http.ResponseWriter, r *http.Request, conversationId openapi_types.UUID, params RenameAssistantConversationParams) {
+	var request RenameAssistantConversationRequestObject
+
+	request.ConversationId = conversationId
+	request.Params = params
+
+	var body RenameAssistantConversationJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.RenameAssistantConversation(ctx, request.(RenameAssistantConversationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RenameAssistantConversation")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(RenameAssistantConversationResponseObject); ok {
+		if err := validResponse.VisitRenameAssistantConversationResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

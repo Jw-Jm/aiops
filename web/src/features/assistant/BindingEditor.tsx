@@ -1,18 +1,34 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Alert, Button, Checkbox, Input, Space, Typography } from "antd";
 import { useQueryClient } from "@tanstack/react-query";
-import { checked, requestOptions } from "../../api/client";
+import { ApiError, checked, requestOptions } from "../../api/client";
 import { rebindAssistantConversation } from "../../api/generated/platform";
 import type { AssistantConversationV1 } from "../../api/generated/models";
+
+// The rebind intent is frozen when the editor opens: the conversation and the
+// revision that the user saw. A later navigation or a background refresh must
+// not move the adjustment onto another conversation nor overwrite a change of
+// somebody else.
+type RebindIntent = {
+  conversationId: string;
+  revision: number;
+  idempotencyKey: string;
+  scopeKey: string;
+};
 
 export function BindingEditor({
   conversation,
   running,
   onChanged,
+  scopeKey,
 }: {
   conversation: AssistantConversationV1;
   running: boolean;
   onChanged: () => void;
+  // The identity and the authorization scope the editor was opened under. The
+  // editor belongs to one conversation *and* one scope: a cached conversation
+  // of the same id under another account or another scope is another editor.
+  scopeKey: string;
 }) {
   const [open, setOpen] = useState(false);
   const [namespace, setNamespace] = useState("");
@@ -22,20 +38,58 @@ export function BindingEditor({
   const [to, setTo] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
+  const [intent, setIntent] = useState<RebindIntent>();
+  const abort = useRef(new AbortController());
+  const busyRef = useRef(false);
   const client = useQueryClient();
+  // The editor belongs to one conversation and one authorization scope.
+  // Another conversation, another account or another scope replaces the draft
+  // and drops a request that is still in flight.
+  useEffect(() => {
+    abort.current.abort();
+    abort.current = new AbortController();
+    busyRef.current = false;
+    setBusy(false);
+    setOpen(false);
+    setIntent(undefined);
+    setNamespace("");
+    setIncludeCluster(false);
+    setTarget("");
+    setFrom("");
+    setTo("");
+    setError(undefined);
+  }, [conversation.conversationId, scopeKey]);
+  useEffect(() => () => abort.current.abort(), []);
   const start = () => {
     const scope = conversation.binding.executionScope as
       | { namespaces?: string[]; clusterScoped?: boolean }
       | undefined;
+    abort.current.abort();
+    abort.current = new AbortController();
     setNamespace(scope?.namespaces?.join(",") || "");
     setIncludeCluster(scope?.clusterScoped === true);
     setTarget("");
     setFrom("");
     setTo("");
     setError(undefined);
+    setIntent({
+      conversationId: conversation.conversationId,
+      revision: conversation.revision,
+      idempotencyKey: crypto.randomUUID(),
+      scopeKey,
+    });
     setOpen(!open);
   };
   const save = async () => {
+    const frozen = intent;
+    // A second submit of the same intent would either duplicate the request
+    // or conflict with the first one.
+    if (!frozen || busyRef.current) return;
+    // The intent belongs to the scope it was opened under. A scope change
+    // drops it before the request is sent.
+    if (frozen.scopeKey !== scopeKey) return;
+    const signal = abort.current.signal;
+    busyRef.current = true;
     setBusy(true);
     setError(undefined);
     try {
@@ -50,9 +104,9 @@ export function BindingEditor({
           : undefined;
       await checked(
         rebindAssistantConversation(
-          conversation.conversationId,
+          frozen.conversationId,
           {
-            expectedConversationRevision: conversation.revision,
+            expectedConversationRevision: frozen.revision,
             namespaceSelection: namespace
               .split(",")
               .map((x) => x.trim())
@@ -61,16 +115,33 @@ export function BindingEditor({
             ...(target.trim() ? { resourceCanonicalId: target.trim() } : {}),
             ...(window ? { timeRange: window } : {}),
           },
-          requestOptions(undefined, true),
+          requestOptions(signal, true, frozen.idempotencyKey),
         ),
       );
+      if (signal.aborted || abort.current.signal !== signal) return;
       setOpen(false);
+      setIntent(undefined);
       onChanged();
       await client.invalidateQueries({ queryKey: ["assistant"] });
     } catch (e) {
-      setError(e instanceof Error ? e.message : "调整失败");
+      if (signal.aborted || abort.current.signal !== signal) return;
+      if (e instanceof ApiError && [401, 403].includes(e.status)) {
+        client.removeQueries({ queryKey: ["assistant"] });
+      }
+      setError(
+        e instanceof ApiError && e.status === 409
+          ? "会话已被其他操作修改，请刷新后重试"
+          : e instanceof ApiError && e.status === 403
+            ? "没有调整此会话范围的权限"
+            : e instanceof Error
+              ? e.message
+              : "调整失败",
+      );
     } finally {
-      setBusy(false);
+      if (abort.current.signal === signal) {
+        busyRef.current = false;
+        setBusy(false);
+      }
     }
   };
   if (conversation.authorizationDomain === "audit") return null;
@@ -130,7 +201,7 @@ export function BindingEditor({
             UID。已完成轮次保留原始窗口；收窄范围后，范围外历史不进入后续回答。
           </Typography.Text>
           {error && <Alert type="error" title={error} />}
-          <Button loading={busy} onClick={() => void save()}>
+          <Button loading={busy} disabled={busy} onClick={() => void save()}>
             确认应用到后续轮次
           </Button>
         </>

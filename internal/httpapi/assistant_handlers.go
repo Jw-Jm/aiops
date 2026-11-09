@@ -235,19 +235,37 @@ func (h *AssistantHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 			}
+			// The filter is normalized once and the normalized value is used for
+			// the repository query and for the cursor digest. A request that
+			// only differs in whitespace or in an omitted archive state
+			// continues the same page instead of being refused as a foreign
+			// filter.
+			query, archived, err := assistant.ConversationFilter{Query: r.URL.Query().Get("q"), Archived: r.URL.Query().Get("archived")}.Normalize()
+			if err != nil {
+				fail(err)
+				return
+			}
+			filter := assistant.ConversationFilter{Query: query, Archived: archived}
+			// The filter belongs to the cursor: a page of one search may not be
+			// continued with the filter of another search.
+			digest := graph.ScopeDigest(filter)
 			cursor, err := h.decodeCursor(r.URL.Query().Get("cursor"), actor, "assistant-list")
 			if err != nil {
 				fail(err)
 				return
 			}
-			page, err := h.Repository.ListPage(r.Context(), actor.TenantID, actor.Subject, cursor.Before, cursor.BeforeID, limit)
+			if cursor.ScopeDigest != "" && cursor.ScopeDigest != digest {
+				fail(investigation.ErrDenied)
+				return
+			}
+			page, err := h.Repository.ListPage(r.Context(), actor.TenantID, actor.Subject, cursor.Before, cursor.BeforeID, limit, filter)
 			if err != nil {
 				fail(err)
 				return
 			}
 			next := ""
 			if page.HasMore {
-				next = h.cursor(actor, assistantCursor{Kind: "assistant-list", Before: page.Before, BeforeID: page.BeforeID})
+				next = h.cursor(actor, assistantCursor{Kind: "assistant-list", ScopeDigest: digest, Before: page.Before, BeforeID: page.BeforeID})
 			}
 			writeJSON(w, 200, map[string]any{"data": page.Items, "meta": map[string]any{"nextCursor": next}, "requestId": actor.RequestID})
 		default:
@@ -372,6 +390,27 @@ func (h *AssistantHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 			if !archive && r.Method == "GET" {
 				out, err := h.Repository.GetReadable(r.Context(), actor.TenantID, id, actor.Subject)
+				if err != nil {
+					fail(err)
+					return
+				}
+				writeJSON(w, 200, map[string]any{"data": out, "requestId": actor.RequestID})
+				return
+			}
+			if !archive && r.Method == "PATCH" {
+				if len(r.Header.Values("Idempotency-Key")) != 1 || !validIdempotencyKey(r.Header.Get("Idempotency-Key")) {
+					fail(investigation.ErrInvalid)
+					return
+				}
+				var q struct {
+					Title                       string `json:"title"`
+					ExpectedConversationRevision int64  `json:"expectedConversationRevision"`
+				}
+				if decodeInvestigation(r, &q) != nil {
+					fail(investigation.ErrInvalid)
+					return
+				}
+				out, err := h.Repository.Rename(r.Context(), actor.TenantID, id, actor.Subject, r.Header.Get("Idempotency-Key"), q.ExpectedConversationRevision, q.Title)
 				if err != nil {
 					fail(err)
 					return

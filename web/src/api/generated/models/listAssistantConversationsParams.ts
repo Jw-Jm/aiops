@@ -4,6 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
+import type { ListAssistantConversationsArchived } from './listAssistantConversationsArchived.ts';
 
 export type ListAssistantConversationsParams = {
 /**
@@ -12,4 +13,9 @@ export type ListAssistantConversationsParams = {
  */
 limit?: number;
 cursor?: string;
+/**
+ * @maxLength 160
+ */
+q?: string;
+archived?: ListAssistantConversationsArchived;
 };

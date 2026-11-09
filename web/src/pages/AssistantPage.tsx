@@ -10,6 +10,8 @@ import {
   Col,
   Input,
   List,
+  Modal,
+  Popconfirm,
   Row,
   Select,
   Space,
@@ -29,6 +31,7 @@ import {
   getAssistantTurn,
   listAssistantConversations,
   listAssistantMessages,
+  renameAssistantConversation,
   resolveAssistantResource,
   interpretAssistantSymptom,
   submitAssistantMessage,
@@ -45,6 +48,21 @@ import { QueryState } from "../components/QueryState";
 import { DiagnosisAnswer } from "../features/assistant/DiagnosisAnswer";
 import { ConversationContext } from "../features/assistant/ConversationContext";
 import { useConversationStream } from "../features/assistant/useConversationStream";
+
+// The archive view of the conversation list. The value is sent to the server:
+// the browser never filters an already fetched page.
+type ArchiveView = "exclude" | "include" | "only";
+// A rename is bound to the conversation and the revision that were shown when
+// the dialog was opened.
+type RenameIntent = {
+  conversationId: string;
+  revision: number;
+  scope: string;
+  idempotencyKey: string;
+};
+// An archive confirmation is bound to the conversation it was opened for.
+type ArchiveIntent = { conversationId: string; scope: string };
+
 export function AssistantPage({
   initialDomain,
 }: { initialDomain?: "audit" } = {}) {
@@ -178,11 +196,44 @@ export function AssistantPage({
     setDomain(session?.roles.includes("operator") ? "operational" : "audit");
   }, [scopeKey, session?.roles, url]);
   const [referent, setReferent] = useState<string>();
-  const [listCursor, setListCursor] = useState<string>();
+  // The search term is applied on the server. The browser never filters an
+  // already fetched page and calls it a search.
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [archiveView, setArchiveView] = useState<ArchiveView>("exclude");
+  // The cursor belongs to the scope and the filter that produced it. A cursor
+  // of another search, another archive view or another account is never sent:
+  // the server refuses such a cursor and the refusal would be meaningless.
+  const [pagination, setPagination] = useState<{
+    scope: string;
+    query: string;
+    archive: ArchiveView;
+    cursor?: string;
+  }>({ scope: scopeKey, query: "", archive: "exclude" });
+  const listCursor =
+    pagination.scope === scopeKey &&
+    pagination.query === searchQuery &&
+    pagination.archive === archiveView
+      ? pagination.cursor
+      : undefined;
   const [messageCursor, setMessageCursor] = useState<string>();
   const [error, setError] = useState<Error>();
   const [busy, setBusy] = useState(false);
   const [turn, setTurn] = useState<AssistantTurnV1>();
+  const [renameOpen, setRenameOpen] = useState(false);
+  const [renameValue, setRenameValue] = useState("");
+  const [renameBusy, setRenameBusy] = useState(false);
+  const [renameError, setRenameError] = useState<string>();
+  // The rename intent is frozen when the dialog opens: the target and the
+  // revision are the ones the user saw. A later navigation, a background
+  // refresh or a revoked grant must not move the rename onto another
+  // conversation and must not overwrite a change of somebody else.
+  const [renameIntent, setRenameIntent] = useState<RenameIntent>();
+  // The archive confirmation freezes its target as well: the confirmed
+  // conversation is the one that was shown when the confirmation opened.
+  const [archiveIntent, setArchiveIntent] = useState<ArchiveIntent>();
+  const renameAbort = useRef(new AbortController());
+  const renameBusyRef = useRef(false);
   useEffect(() => {
     setTurn(undefined);
     setMessage("");
@@ -191,8 +242,32 @@ export function AssistantPage({
     setMessageCursor(undefined);
   }, [scopeKey, id]);
   useEffect(() => {
-    setListCursor(undefined);
+    // A new account or scope starts without the search of the previous
+    // subject: the old cursor and the old filter never address a result of
+    // the new scope.
+    setSearchTerm("");
+    setSearchQuery("");
+    setArchiveView("exclude");
+    setPagination({ scope: scopeKey, query: "", archive: "exclude" });
   }, [scopeKey]);
+  useEffect(() => {
+    // The rename dialog and the archive confirmation belong to the scope and
+    // the conversation they were opened for. A pending rename of the previous
+    // scope is aborted and its result is dropped.
+    renameAbort.current.abort();
+    renameAbort.current = new AbortController();
+    renameBusyRef.current = false;
+    setRenameBusy(false);
+    setRenameOpen(false);
+    setRenameIntent(undefined);
+    setRenameValue("");
+    setRenameError(undefined);
+    setArchiveIntent(undefined);
+  }, [scopeKey, id]);
+  useEffect(() => {
+    const timer = setTimeout(() => setSearchQuery(searchTerm.trim()), 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
   const conversation = useQuery({
     queryKey: ["assistant", scopeKey, id, "conversation"],
     enabled: !!id,
@@ -249,11 +324,23 @@ export function AssistantPage({
     "audit.events": "过去七天的平台审计事件有多少？按操作类型分组。",
   };
   const conversations = useQuery({
-    queryKey: ["assistant", scopeKey, "conversations", listCursor],
+    queryKey: [
+      "assistant",
+      scopeKey,
+      "conversations",
+      listCursor,
+      searchQuery,
+      archiveView,
+    ],
     queryFn: ({ signal }) =>
       checked(
         listAssistantConversations(
-          { limit: 20, cursor: listCursor },
+          {
+            limit: 20,
+            cursor: listCursor,
+            q: searchQuery || undefined,
+            archived: archiveView,
+          },
           requestOptions(signal),
         ),
       ),
@@ -372,6 +459,71 @@ export function AssistantPage({
       // Only the newest request may release the busy state; an older request that
       // finished after a scope change must not clear the current loading state.
       if (epoch === busyEpoch.current) setBusy(false);
+    }
+  }
+  function openRename() {
+    const target = conversation.data?.data;
+    if (!target) return;
+    // The intent is fixed here: the conversation and the revision that the
+    // user saw when the dialog opened.
+    renameAbort.current.abort();
+    renameAbort.current = new AbortController();
+    setRenameIntent({
+      conversationId: target.conversationId,
+      revision: target.revision,
+      scope: scopeKey,
+      idempotencyKey: crypto.randomUUID(),
+    });
+    setRenameValue(target.title || "");
+    setRenameError(undefined);
+    setRenameOpen(true);
+  }
+  async function rename() {
+    const intent = renameIntent;
+    // A second submit of the same intent would either duplicate the request
+    // or conflict with the first one. The dialog stays closed until the
+    // request is settled.
+    if (!intent || renameBusyRef.current) return;
+    if (intent.scope !== scopeKey) return;
+    const signal = renameAbort.current.signal;
+    renameBusyRef.current = true;
+    setRenameBusy(true);
+    setRenameError(undefined);
+    try {
+      await checked(
+        renameAssistantConversation(
+          intent.conversationId,
+          { title: renameValue, expectedConversationRevision: intent.revision },
+          requestOptions(signal, true, intent.idempotencyKey),
+        ),
+      );
+      if (signal.aborted || renameAbort.current.signal !== signal) return;
+      setRenameOpen(false);
+      setRenameIntent(undefined);
+      setRenameValue("");
+      await reload();
+    } catch (cause) {
+      if (signal.aborted || renameAbort.current.signal !== signal) return;
+      const e = cause instanceof Error ? cause : new Error("改名失败");
+      if (e instanceof ApiError && [401, 403].includes(e.status)) {
+        // The grant of the previous subject is gone: the cached conversation
+        // of that scope must not stay on the screen.
+        client.removeQueries({ queryKey: ["assistant", scopeKey] });
+      }
+      setRenameError(
+        e instanceof ApiError && e.status === 409
+          ? "会话已被其他操作修改，请刷新后重试"
+          : e instanceof ApiError && e.status === 403
+            ? "没有修改此会话的权限"
+            : e instanceof ApiError && e.status === 401
+              ? "登录状态已失效，请重新登录"
+              : e.message,
+      );
+    } finally {
+      if (renameAbort.current.signal === signal) {
+        renameBusyRef.current = false;
+        setRenameBusy(false);
+      }
     }
   }
   async function create() {
@@ -533,6 +685,28 @@ export function AssistantPage({
               </Button>
             }
           >
+            <Space orientation="vertical" style={{ width: "100%" }}>
+              {/* The filter controls stay outside the result state: a failed
+                  or still loading search must remain clearable and the
+                  archive view must remain switchable. */}
+              <Input
+                allowClear
+                aria-label="搜索会话"
+                placeholder="按会话名称搜索（服务端检索）"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <Select
+                aria-label="归档范围"
+                value={archiveView}
+                onChange={setArchiveView}
+                options={[
+                  { value: "exclude", label: "未归档" },
+                  { value: "include", label: "全部会话" },
+                  { value: "only", label: "已归档" },
+                ]}
+              />
+            </Space>
             <QueryState
               loading={conversations.isPending}
               error={conversations.error}
@@ -541,14 +715,25 @@ export function AssistantPage({
               <Space>
                 <Button
                   disabled={!listCursor}
-                  onClick={() => setListCursor(undefined)}
+                  onClick={() =>
+                    setPagination({
+                      scope: scopeKey,
+                      query: searchQuery,
+                      archive: archiveView,
+                    })
+                  }
                 >
                   最新会话
                 </Button>
                 <Button
                   disabled={!conversations.data?.meta?.nextCursor}
                   onClick={() =>
-                    setListCursor(conversations.data?.meta?.nextCursor)
+                    setPagination({
+                      scope: scopeKey,
+                      query: searchQuery,
+                      archive: archiveView,
+                      cursor: conversations.data?.meta?.nextCursor,
+                    })
                   }
                 >
                   下一页
@@ -570,6 +755,11 @@ export function AssistantPage({
                   </List.Item>
                 )}
               />
+              {(conversations.data?.data || []).length === 0 && (
+                <Typography.Text type="secondary">
+                  {searchQuery ? "没有匹配的会话" : "暂无会话"}
+                </Typography.Text>
+              )}
             </QueryState>
           </Card>
         </Col>
@@ -578,27 +768,53 @@ export function AssistantPage({
             title={conversation.data?.data.title || "新建会话"}
             extra={
               id && (
-                <Button
-                  disabled={!canWriteConversation || busy || !!running}
-                  onClick={() =>
-                    void mutate(async (signal, canCommit) => {
-                      await checked(
-                        archiveAssistantConversation(
-                          id,
-                          {},
-                          requestOptions(signal, true),
-                        ),
-                      );
-                      if (!canCommit()) return;
-                      const next = new URLSearchParams();
-                      next.set("clusterUid", cluster);
-                      setUrl(next);
-                      setTurn(undefined);
-                    })
-                  }
-                >
-                  归档
-                </Button>
+                <Space>
+                  <Button
+                    disabled={!canWriteConversation || busy || !!running}
+                    onClick={openRename}
+                  >
+                    改名
+                  </Button>
+                  <Popconfirm
+                    title="确认归档该会话？"
+                    description="归档不会删除历史消息与固定引用。"
+                    okText="归档"
+                    cancelText="取消"
+                    onConfirm={() => {
+                      // The confirmation owns the conversation it was opened
+                      // for. A navigation in the meantime must not archive
+                      // another conversation.
+                      const intent = archiveIntent;
+                      if (!intent || intent.scope !== scopeKey) return;
+                      void mutate(async (signal, canCommit) => {
+                        await checked(
+                          archiveAssistantConversation(
+                            intent.conversationId,
+                            {},
+                            requestOptions(signal, true),
+                          ),
+                        );
+                        if (!canCommit()) return;
+                        const next = new URLSearchParams();
+                        next.set("clusterUid", cluster);
+                        setUrl(next);
+                        setTurn(undefined);
+                      });
+                    }}
+                  >
+                    <Button
+                      disabled={!canWriteConversation || busy || !!running}
+                      onClick={() =>
+                        setArchiveIntent({
+                          conversationId: id,
+                          scope: scopeKey,
+                        })
+                      }
+                    >
+                      归档
+                    </Button>
+                  </Popconfirm>
+                </Space>
               )
             }
           >
@@ -955,9 +1171,10 @@ export function AssistantPage({
                 {conversation.data && (
                   <div id="assistant-binding-editor">
                     <BindingEditor
-                      key={id}
+                      key={`${id}:${scopeKey}`}
                       conversation={conversation.data.data}
                       running={Boolean(running)}
+                      scopeKey={scopeKey}
                       onChanged={() => {
                         setTurn(undefined);
                         setMessageCursor(undefined);
@@ -1201,6 +1418,35 @@ export function AssistantPage({
               </QueryState>
             )}
           </Card>
+          <Modal
+            title="重命名会话"
+            open={renameOpen}
+            okText="保存"
+            cancelText="取消"
+            confirmLoading={renameBusy}
+            okButtonProps={{ disabled: !renameIntent || renameBusy }}
+            onCancel={() => {
+              // A cancelled dialog drops its draft and its request. The
+              // conversation keeps its name.
+              renameAbort.current.abort();
+              renameAbort.current = new AbortController();
+              renameBusyRef.current = false;
+              setRenameBusy(false);
+              setRenameOpen(false);
+              setRenameIntent(undefined);
+              setRenameValue("");
+              setRenameError(undefined);
+            }}
+            onOk={() => void rename()}
+          >
+            <Input
+              aria-label="会话名称"
+              maxLength={160}
+              value={renameValue}
+              onChange={(e) => setRenameValue(e.target.value)}
+            />
+            {renameError && <Alert type="error" title={renameError} />}
+          </Modal>
         </Col>
       </Row>
     </>

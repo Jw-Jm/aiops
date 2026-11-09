@@ -284,7 +284,7 @@ func (f *mappedHistoryFixture) frozenJob(t *testing.T) map[string]any {
 func TestNativeMappedHistoricalOwnerRead(t *testing.T) {
 	f := newMappedHistoryFixture(t)
 
-	if page, err := f.repo.ListPage(f.nativeCtx, f.tenantID, f.subject, time.Time{}, uuid.Nil, 10); err != nil {
+	if page, err := f.repo.ListPage(f.nativeCtx, f.tenantID, f.subject, time.Time{}, uuid.Nil, 10, assistant.ConversationFilter{}); err != nil {
 		t.Fatalf("list: %v", err)
 	} else if len(page.Items) != 1 || page.Items[0].ConversationID != f.convID || page.Items[0].OwnerSubject != f.legacy {
 		t.Fatalf("mapped list = %+v", page.Items)
@@ -319,7 +319,7 @@ func TestNativeMappedHistoricalOwnerRead(t *testing.T) {
 		t.Fatal(err)
 	}
 	otherSubject, _, otherCtx := f.createSession(t, otherUser)
-	if page, err := f.repo.ListPage(otherCtx, f.tenantID, otherSubject, time.Time{}, uuid.Nil, 10); err != nil || len(page.Items) != 0 {
+	if page, err := f.repo.ListPage(otherCtx, f.tenantID, otherSubject, time.Time{}, uuid.Nil, 10, assistant.ConversationFilter{}); err != nil || len(page.Items) != 0 {
 		t.Fatalf("unmapped account list = %+v, %v", page.Items, err)
 	}
 	if _, err := f.repo.GetReadable(otherCtx, f.tenantID, f.convID, otherSubject); !historicalDenied(err) {

@@ -732,9 +732,40 @@ func (r Repository) Archive(ctx context.Context, tenant, id uuid.UUID, subject s
 	})
 }
 
+// ConversationFilter narrows the personal conversation list on the server. The
+// search is never applied to an already fetched page by the browser.
+type ConversationFilter struct {
+	// Query matches the conversation title, case-insensitively.
+	Query string
+	// Archived is "exclude" (default), "include" or "only".
+	Archived string
+}
+
+// Normalize validates the filter and returns the values used by the query.
+func (f ConversationFilter) Normalize() (string, string, error) {
+	query := strings.TrimSpace(f.Query)
+	if utf8.RuneCountInString(query) > 160 {
+		return "", "", investigation.ErrInvalid
+	}
+	archived := f.Archived
+	switch archived {
+	case "":
+		archived = "exclude"
+	case "exclude", "include", "only":
+	default:
+		return "", "", investigation.ErrInvalid
+	}
+	return query, archived, nil
+}
+
+// escapeLike neutralizes the wildcards of a user supplied search term.
+func escapeLike(value string) string {
+	return strings.NewReplacer(`\`, `\\`, `%`, `\%`, `_`, `\_`).Replace(value)
+}
+
 // List omits even titles of conversations whose current grants are invalid.
-func (r Repository) List(ctx context.Context, tenant uuid.UUID, subject string, before time.Time, beforeID uuid.UUID, limit int) ([]Conversation, error) {
-	page, err := r.ListPage(ctx, tenant, subject, before, beforeID, limit)
+func (r Repository) List(ctx context.Context, tenant uuid.UUID, subject string, before time.Time, beforeID uuid.UUID, limit int, filter ConversationFilter) ([]Conversation, error) {
+	page, err := r.ListPage(ctx, tenant, subject, before, beforeID, limit, filter)
 	return page.Items, err
 }
 
@@ -745,21 +776,25 @@ type ConversationPage struct {
 	HasMore  bool
 }
 
-func (r Repository) ListPage(ctx context.Context, tenant uuid.UUID, subject string, before time.Time, beforeID uuid.UUID, limit int) (ConversationPage, error) {
+func (r Repository) ListPage(ctx context.Context, tenant uuid.UUID, subject string, before time.Time, beforeID uuid.UUID, limit int, filter ConversationFilter) (ConversationPage, error) {
 	page := ConversationPage{Items: []Conversation{}}
 	if limit < 1 || limit > 50 {
 		return page, investigation.ErrInvalid
+	}
+	query, archived, err := filter.Normalize()
+	if err != nil {
+		return page, err
 	}
 	if before.IsZero() {
 		before = time.Now().UTC().Add(time.Second)
 		beforeID = uuid.MustParse("ffffffff-ffff-ffff-ffff-ffffffffffff")
 	}
-	err := persistence.WithTenantTx(ctx, r.Pool, tenant, func(tx pgx.Tx) error {
+	err = persistence.WithTenantTx(ctx, r.Pool, tenant, func(tx pgx.Tx) error {
 		rs, err := newReadSubjects(ctx, tx, tenant, subject)
 		if err != nil {
 			return err
 		}
-		rows, err := tx.Query(ctx, `SELECT conversation_id,updated_at FROM investigation.assistant_conversations WHERE tenant_id=$1 AND owner_subject = ANY($2) AND archived_at IS NULL AND (updated_at,conversation_id)<($3,$4) ORDER BY updated_at DESC,conversation_id DESC LIMIT 201`, tenant, rs.subjects(), before, beforeID)
+		rows, err := tx.Query(ctx, `SELECT conversation_id,updated_at FROM investigation.assistant_conversations WHERE tenant_id=$1 AND owner_subject = ANY($2) AND (updated_at,conversation_id)<($3,$4) AND ($5='' OR title ILIKE '%'||$5||'%' ESCAPE '\') AND (CASE WHEN $6='only' THEN archived_at IS NOT NULL WHEN $6='include' THEN true ELSE archived_at IS NULL END) ORDER BY updated_at DESC,conversation_id DESC LIMIT 201`, tenant, rs.subjects(), before, beforeID, escapeLike(query), archived)
 		if err != nil {
 			return err
 		}

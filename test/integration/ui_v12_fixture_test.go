@@ -1606,9 +1606,9 @@ func uiV12VerifySourceStates(ctx context.Context, report *uiV12Report, pool *pgx
 
 func uiV12VerifyHistory(ctx context.Context, report *uiV12Report, pool *pgxpool.Pool, state *uiV12State) {
 	repo := assistant.Repository{Pool: pool}
-	listA, errA := repo.List(ctx, state.TenantID, uiV12OperatorASubject, time.Time{}, uuid.Nil, 50)
-	listB, errB := repo.List(ctx, state.TenantID, uiV12OperatorBSubject, time.Time{}, uuid.Nil, 50)
-	listLogin, errLogin := repo.List(ctx, state.TenantID, "ui_v12_api", time.Time{}, uuid.Nil, 50)
+	listA, errA := repo.List(ctx, state.TenantID, uiV12OperatorASubject, time.Time{}, uuid.Nil, 50, assistant.ConversationFilter{})
+	listB, errB := repo.List(ctx, state.TenantID, uiV12OperatorBSubject, time.Time{}, uuid.Nil, 50, assistant.ConversationFilter{})
+	listLogin, errLogin := repo.List(ctx, state.TenantID, "ui_v12_api", time.Time{}, uuid.Nil, 50, assistant.ConversationFilter{})
 	conversationA := state.Conversations[uiV12OperatorASubject]
 	conversationB := state.Conversations[uiV12OperatorBSubject]
 	report.check("history_owner_a",

@@ -20,6 +20,7 @@ import type {
   AssistantMutationEnvelopeV1,
   AssistantQueryEnvelopeV1,
   AssistantRebindV1,
+  AssistantRenameV1,
   AssistantResolutionEnvelopeV1,
   AssistantResolveResourceV1,
   AssistantResourceSourceStepEnvelopeV1,
@@ -959,6 +960,71 @@ export const getAssistantConversation = async (conversationId: string, options?:
 
   const data: getAssistantConversationResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as getAssistantConversationResponse
+}
+
+
+
+export type renameAssistantConversationResponse200 = {
+  data: AssistantConversationEnvelopeV1
+  status: 200
+}
+
+export type renameAssistantConversationResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type renameAssistantConversationResponseSuccess = (renameAssistantConversationResponse200) & {
+  headers: Headers;
+};
+export type renameAssistantConversationResponseError = (renameAssistantConversationResponseDefault) & {
+  headers: Headers;
+};
+
+export type renameAssistantConversationResponse = (renameAssistantConversationResponseSuccess | renameAssistantConversationResponseError)
+
+export const getRenameAssistantConversationUrl = (conversationId: string,) => {
+
+
+
+
+  return `/api/v1/assistant/conversations/${conversationId}`
+}
+
+/**
+ * @summary renameAssistantConversation
+ */
+export const renameAssistantConversation = async (conversationId: string,
+    assistantRenameV1: AssistantRenameV1, options?: RequestInit): Promise<renameAssistantConversationResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getRenameAssistantConversationUrl(conversationId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(assistantRenameV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: renameAssistantConversationResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as renameAssistantConversationResponse
 }
 
 
