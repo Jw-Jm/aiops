@@ -1,0 +1,28 @@
+{
+  "phase": "runtime archive degradation and recovery",
+  "observedBefore": {
+    "process": "weed",
+    "pod": "ops-seaweedfs-0",
+    "memoryMaxBytes": 1073741824,
+    "memoryCurrentBytes": 1073111040,
+    "anonymousBytes": 1056100352,
+    "fileCacheBytes": 12382208,
+    "workingsetRefaultFile": 57836833,
+    "pgscanDirect": 59450584,
+    "readKiBPerSecond": 345706.93,
+    "archiveHTTP": 503
+  },
+  "operationalChange": {
+    "resource": "statefulset/ops-seaweedfs",
+    "namespace": "ops-current",
+    "GOMEMLIMIT": "640MiB",
+    "dataOrPermissionsChanged": false,
+    "rollingRestart": true
+  },
+  "observedAfter": {
+    "podUid": "4bf32bad-263d-4f19-a57a-2a9c9a928a43",
+    "readKiBPerSecond": 15.84,
+    "archiveHTTP": 200
+  },
+  "interpretation": "Memory pressure/page reclaim was observed alongside IO thrashing; setting Go memory budget with rolling restart restored reads. Long-duration stability not established by this sample. Authoritative chart still needs same setting before full closure."
+}

@@ -1,0 +1,72 @@
+{
+  "method": "GET",
+  "path": "/api/v1/assistant/turns/01a1bff1-0338-7dc3-aaa2-c26189d7d7b0",
+  "status": 200,
+  "body": {
+    "data": {
+      "turnId": "01a1bff1-0338-7dc3-aaa2-c26189d7d7b0",
+      "conversationId": "01a1bff0-b844-70c2-a4e5-32c7cc5d29af",
+      "jobId": "01a1bff1-0338-7dc4-a1f4-f7ff333482f2",
+      "state": "partial",
+      "answer": {
+        "asOf": "2026-11-09T10:53:43.076359003Z",
+        "partial": true,
+        "summary": "无法完成对故障 01a1ae2d-eff0-7664-a10e-d02a701023f4 冻结 RCA 第1版的复盘：实际调用 get_formal_references（rcaRevision=1）返回失败，错误码 SOURCE_DEGRADED，因此没有取得任何 RCA 版本引用、contentDigest 或两条 FailedMount 归档证据的 resourceVersion，无法比较二者。",
+        "factRefs": [],
+        "warnings": [
+          "resourceVersion 递增仅表示对象版本变化，本身不能证明因果；即使取得两条证据，也只能作为时序线索",
+          "未取得数据不等于正常或为零，不能据此推断 FailedMount 已消失或与故障无关",
+          "source_read_failed:get_formal_references:SOURCE_DEGRADED"
+        ],
+        "answerKind": "unsupported",
+        "entityRefs": [],
+        "hypotheses": [],
+        "nextChecks": [
+          "在正式引用来源恢复后，重新调用 get_formal_references(rcaRevision=1) 取得版本与 contentDigest",
+          "取得两条 FailedMount 归档证据后，逐条比对 resourceVersion、时间戳与所属对象，判断是否同一对象、是否同一事件",
+          "补充挂载失败与 Pod 调度/启动时间线的对照，确认是否存在可验证的因果链而非仅版本递增"
+        ],
+        "evidenceRefs": [],
+        "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+        "schemaVersion": "assistant-answer/v1",
+        "degradedSources": [
+          "get_formal_references：SOURCE_DEGRADED（RCA 正式引用读取失败）"
+        ],
+        "missingEvidence": [
+          "get_formal_references(rcaRevision=1) 调用失败，错误码 SOURCE_DEGRADED，未返回 RCA 第1版内容与 contentDigest",
+          "未取得两条 FailedMount 归档证据的 resourceVersion 值，无法进行递增比较",
+          "缺少 RCA 第1版中该故障链的 supports/conflicts/coverage 说明，无法评估因果假设",
+          "本次任务禁止新指标/日志查询与刷新 RCA，无法用其他来源补齐上述缺口"
+        ],
+        "queryResultRefs": []
+      },
+      "createdAt": "2026-11-09T10:53:25.7156Z",
+      "conversationRevision": 2,
+      "focus": "重点比较两条 FailedMount 归档证据的 resourceVersion；递增不能单独证明因果。",
+      "budget": {
+        "durationSeconds": 120,
+        "toolCalls": 6,
+        "rawQueries": 10,
+        "resultBytes": 41943040,
+        "graphNodes": 8000,
+        "evidenceItems": 4000,
+        "modelRequests": 3,
+        "inputTokens": 524288,
+        "outputTokens": 32768,
+        "modelCostMicros": 0,
+        "consumed": {
+          "toolCalls": 2,
+          "rawQueries": 0,
+          "resultBytes": 399155,
+          "graphNodes": 0,
+          "evidenceItems": 100,
+          "modelRequests": 2,
+          "inputTokens": 36677,
+          "outputTokens": 609,
+          "modelCostMicros": 0
+        }
+      }
+    },
+    "requestId": "01a1bff1-8eb5-7b0f-b17f-9906d6e19bc4"
+  }
+}

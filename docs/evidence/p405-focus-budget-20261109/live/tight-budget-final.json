@@ -1,0 +1,65 @@
+{
+  "method": "GET",
+  "path": "/api/v1/assistant/turns/01a1bff5-613b-741e-9b61-873341e00f06",
+  "status": 200,
+  "body": {
+    "data": {
+      "turnId": "01a1bff5-613b-741e-9b61-873341e00f06",
+      "conversationId": "01a1bff0-b844-70c2-a4e5-32c7cc5d29af",
+      "jobId": "01a1bff5-613b-741f-b699-8a24fd255fea",
+      "parentTurnId": "01a1bff1-0338-7dc3-aaa2-c26189d7d7b0",
+      "state": "partial",
+      "errorCode": "BUDGET_EXHAUSTED",
+      "answer": {
+        "asOf": "2026-11-09T10:58:12.761477624Z",
+        "partial": true,
+        "summary": "本轮已停止，保留已提交的查询事实；未完成的检查没有结论。",
+        "factRefs": [],
+        "warnings": [
+          "BUDGET_EXHAUSTED"
+        ],
+        "answerKind": "unsupported",
+        "entityRefs": [],
+        "hypotheses": [],
+        "nextChecks": [
+          "缩小范围后发起新一轮检查"
+        ],
+        "evidenceRefs": [],
+        "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+        "schemaVersion": "assistant-answer/v1",
+        "degradedSources": [],
+        "missingEvidence": [
+          "remaining_checks_not_completed"
+        ],
+        "queryResultRefs": []
+      },
+      "createdAt": "2026-11-09T10:58:11.90535Z",
+      "conversationRevision": 3,
+      "focus": "验证工具额度耗尽：禁止新指标日志查询或命令；只允许历史正式引用。",
+      "budget": {
+        "durationSeconds": 60,
+        "toolCalls": 1,
+        "rawQueries": 10,
+        "resultBytes": 41943040,
+        "graphNodes": 8000,
+        "evidenceItems": 4000,
+        "modelRequests": 1,
+        "inputTokens": 524288,
+        "outputTokens": 32768,
+        "modelCostMicros": 0,
+        "consumed": {
+          "toolCalls": 1,
+          "rawQueries": 0,
+          "resultBytes": 60778,
+          "graphNodes": 0,
+          "evidenceItems": 0,
+          "modelRequests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "modelCostMicros": 0
+        }
+      }
+    },
+    "requestId": "01a1bff5-f114-7cba-b0c6-b196d29ee932"
+  }
+}

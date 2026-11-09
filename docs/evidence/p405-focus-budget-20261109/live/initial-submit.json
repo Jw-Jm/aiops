@@ -1,0 +1,50 @@
+{
+  "method": "POST",
+  "path": "/api/v1/assistant/conversations/01a1bff0-b844-70c2-a4e5-32c7cc5d29af/messages",
+  "status": 202,
+  "request": {
+    "message": "仅复盘故障 01a1ae2d-eff0-7664-a10e-d02a701023f4 的冻结 RCA 第1版，实际调用 get_formal_references，rcaRevision=1，按调查重点解释。禁止新指标日志查询、刷新 RCA、执行命令。",
+    "expectedConversationRevision": 1,
+    "focus": "重点比较两条 FailedMount 归档证据的 resourceVersion；递增不能单独证明因果。",
+    "budgetTightening": {
+      "toolCalls": 6,
+      "modelRequests": 3,
+      "durationSeconds": 120
+    }
+  },
+  "body": {
+    "data": {
+      "turnId": "01a1bff1-0338-7dc3-aaa2-c26189d7d7b0",
+      "conversationId": "01a1bff0-b844-70c2-a4e5-32c7cc5d29af",
+      "jobId": "01a1bff1-0338-7dc4-a1f4-f7ff333482f2",
+      "state": "queued",
+      "createdAt": "2026-11-09T10:53:25.7156Z",
+      "conversationRevision": 2,
+      "focus": "重点比较两条 FailedMount 归档证据的 resourceVersion；递增不能单独证明因果。",
+      "budget": {
+        "durationSeconds": 120,
+        "toolCalls": 6,
+        "rawQueries": 10,
+        "resultBytes": 41943040,
+        "graphNodes": 8000,
+        "evidenceItems": 4000,
+        "modelRequests": 3,
+        "inputTokens": 524288,
+        "outputTokens": 32768,
+        "modelCostMicros": 0,
+        "consumed": {
+          "toolCalls": 0,
+          "rawQueries": 0,
+          "resultBytes": 0,
+          "graphNodes": 0,
+          "evidenceItems": 0,
+          "modelRequests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "modelCostMicros": 0
+        }
+      }
+    },
+    "requestId": "01a1bff1-0305-7e6c-aa95-c748138a6406"
+  }
+}
