@@ -59,6 +59,25 @@ def verify_runtime_images(images):
     return verified
 
 
+def verify_worker_service(config, service, deployment):
+    address = urlsplit("//" + config.get("ListenAddress", ""))
+    if not address.hostname or address.hostname in ("localhost", "127.0.0.1", "::1"):
+        raise ValueError("Worker RPC listener is loopback-only; the Worker service cannot reach it")
+    ports = [p for p in service["spec"]["ports"] if p["port"] == 8082]
+    if len(ports) != 1:
+        raise ValueError("Worker service RPC port 8082 required")
+    target = ports[0].get("targetPort", 8082)
+    if isinstance(target, str):
+        matches = [p["containerPort"] for c in deployment["spec"]["template"]["spec"]["containers"]
+                   for p in c.get("ports", []) if p.get("name") == target]
+        if len(matches) != 1:
+            raise ValueError("Worker service named targetPort is ambiguous or missing")
+        target = matches[0]
+    if target != address.port:
+        raise ValueError("Worker service targetPort differs from the configured RPC listener")
+    return target
+
+
 def web_runtime_config(environment):
     mode = environment.get("humanAuthMode")
     if mode not in ("native", "oidc"):
@@ -131,6 +150,8 @@ def main():
         try:
             verified = verify_runtime_images(images)
             web_runtime_digest = verify_web_runtime(release, environment)
+            verify_worker_service(json.loads((root / "config/sp04-worker.json").read_text()),
+                                  kube(ns, "service/ops-worker"), kube(ns, "deployment/ops-worker"))
         except ValueError as error:
             parser.error(str(error))
         if args.operation == "preflight":

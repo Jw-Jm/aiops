@@ -45,6 +45,23 @@ class WebRuntimeTests(unittest.TestCase):
             self.assertEqual(path.read_text(), '{"auth":{"mode":"oidc"}}')
 
 
+class WorkerServiceTests(unittest.TestCase):
+    def test_rejects_loopback_and_mismatched_service_route(self):
+        service = {"spec": {"ports": [{"port": 8082, "targetPort": 18282}]}}
+        with self.assertRaisesRegex(ValueError, "loopback-only"):
+            release.verify_worker_service({"ListenAddress": "127.0.0.1:18282"}, service, {})
+        with self.assertRaisesRegex(ValueError, "differs"):
+            release.verify_worker_service({"ListenAddress": "0.0.0.0:8082"}, service, {})
+        self.assertEqual(release.verify_worker_service({"ListenAddress": "0.0.0.0:18282"}, service, {}), 18282)
+
+    def test_named_port_resolves_to_one_configured_listener(self):
+        service = {"spec": {"ports": [{"port": 8082, "targetPort": "rpc"}]}}
+        deployment = {"spec": {"template": {"spec": {"containers": [{"ports": [{"name": "rpc", "containerPort": 18282}]}]}}}}
+        self.assertEqual(release.verify_worker_service({"ListenAddress": "0.0.0.0:18282"}, service, deployment), 18282)
+        with self.assertRaisesRegex(ValueError, "ambiguous or missing"):
+            release.verify_worker_service({"ListenAddress": "0.0.0.0:18282"}, service, {"spec": {"template": {"spec": {"containers": []}}}})
+
+
 class ImagePreflightTests(unittest.TestCase):
     def setUp(self):
         self.images = {name: {"image": "ops.local/" + name + "@sha256:" + digit * 64}
