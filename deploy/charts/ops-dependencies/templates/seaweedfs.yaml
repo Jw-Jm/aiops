@@ -74,6 +74,11 @@ spec:
           command: ["weed"]
           args: ["-config_dir=/etc/seaweedfs", "server", "-dir=/data", "-s3", "-s3.config=/etc/archive-iam/s3.json", {{ printf "-volume.max=%d" (int (default 12 $component.volumeMax)) | quote }}, "-master.volumeSizeLimitMB=128", "-master.telemetry=false", "-s3.cert.file=/etc/archive-tls/tls.crt", "-s3.key.file=/etc/archive-tls/tls.key"]
           env:
+            # The Go runtime of the archive keeps its heap inside the fixed
+            # container limit. Without this bound the page cache grows past the
+            # 1Gi limit and the archive reads stall on constant refaults.
+            - name: GOMEMLIMIT
+              value: 640MiB
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
