@@ -167,8 +167,8 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 			var err error
 			stored, err = investigation.ReadAssistantQueryByPlanTx(ctx, tx, j, result.PlanDigest)
 			if errors.Is(err, pgx.ErrNoRows) {
-				stored = investigation.BuildStoredQueryResult(result)
-				return nil
+				stored, err = buildSanitizedQueryResult(result)
+				return err
 			}
 			return err
 		})
@@ -669,4 +669,13 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 		return a.Legacy.Invoke(ctx, j, name, args)
 	}
 	return out, nil
+}
+
+// Hash the same redacted representation that MCP discloses and persists.
+func buildSanitizedQueryResult(result analytics.QueryResult) (investigation.StoredQueryResult, error) {
+	var sanitized analytics.QueryResult
+	if json.Unmarshal([]byte(tools.RedactText(string(rawJSON(result)))), &sanitized) != nil {
+		return investigation.StoredQueryResult{}, investigation.ErrInvalid
+	}
+	return investigation.BuildStoredQueryResult(sanitized), nil
 }
