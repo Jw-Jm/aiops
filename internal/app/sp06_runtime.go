@@ -258,6 +258,7 @@ func StartSP06API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Han
 	handlers.Repository.AssistantEnabled = c.Assistant != nil && c.Assistant.Enabled
 	if handlers.Repository.AssistantEnabled {
 		handlers.Repository.AssistantModelProfile = c.Assistant.Profile
+		handlers.LegacyDisabled = c.Assistant.Profile.SchemaVersion == "assistant-model-profile/v2"
 	}
 	if sp04.SP05 != nil {
 		handlers.Repository.CurrentRCA = sp04.SP05.CurrentInvestigationRCA

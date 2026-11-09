@@ -24,14 +24,15 @@ import (
 )
 
 type InvestigationHandlers struct {
-	Repository    investigation.Repository
-	Signer        investigation.ContextSigner
-	Trust         auth.WorkloadTrust
-	CursorKey     ed25519.PrivateKey
-	Authorize     func(context.Context, investigation.Job, string, json.RawMessage) error
-	PolicyVersion func(context.Context, auth.RequestContext, string) (string, error)
-	PolicyBudget  func(context.Context, auth.RequestContext, string, string) (investigation.Budget, error)
-	Budget        investigation.Budget
+	Repository     investigation.Repository
+	Signer         investigation.ContextSigner
+	Trust          auth.WorkloadTrust
+	CursorKey      ed25519.PrivateKey
+	Authorize      func(context.Context, investigation.Job, string, json.RawMessage) error
+	PolicyVersion  func(context.Context, auth.RequestContext, string) (string, error)
+	PolicyBudget   func(context.Context, auth.RequestContext, string, string) (investigation.Budget, error)
+	Budget         investigation.Budget
+	LegacyDisabled bool
 }
 
 func decodeInvestigation(r *http.Request, v any) error {
@@ -84,6 +85,10 @@ func (h *InvestigationHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request
 		return
 	}
 	if len(parts) == 5 && parts[2] == "incidents" && parts[4] == "investigations" && r.Method == "POST" {
+		if h.LegacyDisabled {
+			writeSP04Error(w, 503, "CAPABILITY_DISABLED", "legacy investigation model unavailable; use the incident assistant conversation", false, actor.RequestID)
+			return
+		}
 		id, err := uuid.Parse(parts[3])
 		if err != nil {
 			investigationError(w, investigation.ErrInvalid, actor.RequestID)
