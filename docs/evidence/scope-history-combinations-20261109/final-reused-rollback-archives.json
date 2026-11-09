@@ -1,0 +1,559 @@
+[
+  {
+    "id": "01a1bdbf-0993-719b-92e9-79695756b9f3",
+    "status": 200,
+    "body": {
+      "data": {
+        "sourceScopeDigest": "sha256:67eb23c92a1d76647ca1b3f210cd6cb1f622dc6b7dd496e2cfe343236513d7e9",
+        "schemaVersion": "evidence/v2",
+        "evidenceId": "01a1bdbf-0993-719b-92e9-79695756b9f3",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/704b8cfa-d86a-42e7-828d-413f8925bb02",
+        "type": "resource_state",
+        "dataClass": "D0",
+        "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "sourceRevision": 2,
+        "sourceSystem": "kubernetes",
+        "backendLogicalId": "current-native-cluster",
+        "queryTemplateVersion": "command-kubernetes-post-check/v1",
+        "queryHash": "sha256:3af29163801e09dabf50a0ee10190686f7d5c7b43dd9d039d4439407f00c9005",
+        "effectiveScope": {
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "namespaces": [
+            "default",
+            "kube-flannel",
+            "kube-node-lease",
+            "kube-public",
+            "kube-system",
+            "ops-amd64-core-20261009",
+            "ops-amd64-final-20261010",
+            "ops-amd64-final-targets-20261010",
+            "ops-amd64-unified-r10-20261019",
+            "ops-amd64-unified-r10-targets",
+            "ops-amd64-validation-targets-20261010",
+            "ops-assistant-deepflow-20261013",
+            "ops-assistant-live-20261013",
+            "ops-current",
+            "ops-dev-network",
+            "ops-native-v12-r24-20261026",
+            "ops-native-v12-r34-20261027",
+            "ops-native-v12-r35-outside",
+            "ops-native-v12-r35-scope",
+            "ops-ui-v12-mfa-20261022-gpt",
+            "sp04-chain-2284bf2e",
+            "sp04-chain-230836e8",
+            "sp04-chain-28945919",
+            "sp04-chain-45829ac4",
+            "sp04-chain-620f6bcb",
+            "sp04-chain-9f8f21b7",
+            "sp04-chain-a27d6e34",
+            "sp04-chain-c0dbfe18",
+            "sp04-chain-c6d904dc",
+            "sp04-chain-e0b92b58",
+            "sp04-chain-f327e4fc"
+          ],
+          "resources": [],
+          "clusterScoped": true,
+          "authorizationRevision": "sha256:b211ef88c24563d5ea1a87ff782a7b54495570a2e8327fd4f3a877da719d3912"
+        },
+        "evaluatedAt": "2026-11-09T00:39:36.08309027Z",
+        "observedFrom": "2026-11-09T00:39:36.08309027Z",
+        "observedTo": "2026-11-09T00:39:36.08309027Z",
+        "sourceRetentionUntil": "2026-11-09T00:39:36.08309027Z",
+        "timeReliable": true,
+        "replayState": "archived_verified",
+        "contentDigest": "sha256:c5aa718c8d40a7bb74067293753fd80503066d5e94431be7c7c8eea95ae470ab",
+        "derivationEvidenceRefs": [],
+        "independenceGroup": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "archiveRef": {
+          "backendLogicalId": "current-archive",
+          "object": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "objectId": "01a1bdbf-0993-719b-92e9-79695756b9f3",
+            "category": "evidence",
+            "key": "tenants/c784249324387d29b3d8174c7dfd97393ba6f1b5496943136d90e83e33f35832/evidence/01a1bdbf-0993-719b-92e9-79695756b9f3",
+            "digest": "sha256:506807ebbd976936d04eec12af46d0535aceceba4f213d9cfc6ca7d39387f592",
+            "size": 1272,
+            "contentType": "application/vnd.ops.transit-envelope+json",
+            "versionId": "6719c673bf33e69484bc51aee064bdca",
+            "etag": "\"31dfc75786a43a69d7c5c476c4d9956f\"",
+            "retainUntil": "2027-11-10T00:39:37Z"
+          },
+          "encryptionKeyVersion": "1",
+          "plaintextDigest": "sha256:c5aa718c8d40a7bb74067293753fd80503066d5e94431be7c7c8eea95ae470ab",
+          "ciphertextDigest": "sha256:506807ebbd976936d04eec12af46d0535aceceba4f213d9cfc6ca7d39387f592"
+        },
+        "factSlice": {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "metadata": {
+            "generation": 9,
+            "labels": {
+              "ops.platform.io/acceptance": "remediation-20261109"
+            },
+            "name": "ops-command-closure",
+            "namespace": "ops-current",
+            "uid": "704b8cfa-d86a-42e7-828d-413f8925bb02"
+          },
+          "spec": {
+            "replicas": 1,
+            "template": {
+              "spec": {
+                "containers": [
+                  {
+                    "image": "ops.local/current/command-runner@sha256:bef1188002556accd30604c18a0e57c27bd0afe8b0168bc216421d3b8486f310",
+                    "name": "acceptance",
+                    "ports": null,
+                    "restartPolicy": null,
+                    "volumeDevices": null,
+                    "volumeMounts": null
+                  }
+                ]
+              }
+            }
+          },
+          "status": {
+            "availableReplicas": 1,
+            "conditions": [
+              {
+                "status": "True",
+                "type": "Progressing"
+              },
+              {
+                "status": "True",
+                "type": "Available"
+              }
+            ],
+            "observedGeneration": 9,
+            "readyReplicas": 1,
+            "replicas": 1,
+            "updatedReplicas": 1
+          }
+        }
+      },
+      "meta": {
+        "degradedSources": [],
+        "freshness": "archived",
+        "partial": false,
+        "warnings": []
+      },
+      "requestId": "01a1be1d-e390-7887-91c2-e06d01520eb5"
+    }
+  },
+  {
+    "id": "01a1bdbf-09b3-770d-9a5d-82746d4613f6",
+    "status": 200,
+    "body": {
+      "data": {
+        "sourceScopeDigest": "sha256:67eb23c92a1d76647ca1b3f210cd6cb1f622dc6b7dd496e2cfe343236513d7e9",
+        "schemaVersion": "evidence/v2",
+        "evidenceId": "01a1bdbf-09b3-770d-9a5d-82746d4613f6",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/29af90e1-00b5-44e4-8a79-033f8a16615b",
+        "type": "resource_state",
+        "dataClass": "D0",
+        "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "sourceRevision": 2,
+        "sourceSystem": "kubernetes",
+        "backendLogicalId": "current-native-cluster",
+        "queryTemplateVersion": "command-kubernetes-post-check/v1",
+        "queryHash": "sha256:35c94872774e78a646cd98b2a9e6c75d9c1b49a7d11c5905a0ca3e7b96bc8078",
+        "effectiveScope": {
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "namespaces": [
+            "default",
+            "kube-flannel",
+            "kube-node-lease",
+            "kube-public",
+            "kube-system",
+            "ops-amd64-core-20261009",
+            "ops-amd64-final-20261010",
+            "ops-amd64-final-targets-20261010",
+            "ops-amd64-unified-r10-20261019",
+            "ops-amd64-unified-r10-targets",
+            "ops-amd64-validation-targets-20261010",
+            "ops-assistant-deepflow-20261013",
+            "ops-assistant-live-20261013",
+            "ops-current",
+            "ops-dev-network",
+            "ops-native-v12-r24-20261026",
+            "ops-native-v12-r34-20261027",
+            "ops-native-v12-r35-outside",
+            "ops-native-v12-r35-scope",
+            "ops-ui-v12-mfa-20261022-gpt",
+            "sp04-chain-2284bf2e",
+            "sp04-chain-230836e8",
+            "sp04-chain-28945919",
+            "sp04-chain-45829ac4",
+            "sp04-chain-620f6bcb",
+            "sp04-chain-9f8f21b7",
+            "sp04-chain-a27d6e34",
+            "sp04-chain-c0dbfe18",
+            "sp04-chain-c6d904dc",
+            "sp04-chain-e0b92b58",
+            "sp04-chain-f327e4fc"
+          ],
+          "resources": [],
+          "clusterScoped": true,
+          "authorizationRevision": "sha256:b211ef88c24563d5ea1a87ff782a7b54495570a2e8327fd4f3a877da719d3912"
+        },
+        "evaluatedAt": "2026-11-09T00:39:36.115449718Z",
+        "observedFrom": "2026-11-09T00:39:36.115449718Z",
+        "observedTo": "2026-11-09T00:39:36.115449718Z",
+        "sourceRetentionUntil": "2026-11-09T00:39:36.115449718Z",
+        "timeReliable": true,
+        "replayState": "archived_verified",
+        "contentDigest": "sha256:9760bde4c14724f713c0adc2a67a8f92b94bfc9502ae5086c1aada6acda2423d",
+        "derivationEvidenceRefs": [],
+        "independenceGroup": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "archiveRef": {
+          "backendLogicalId": "current-archive",
+          "object": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "objectId": "01a1bdbf-09b3-770d-9a5d-82746d4613f6",
+            "category": "evidence",
+            "key": "tenants/c784249324387d29b3d8174c7dfd97393ba6f1b5496943136d90e83e33f35832/evidence/01a1bdbf-09b3-770d-9a5d-82746d4613f6",
+            "digest": "sha256:79e50418438d7336e1f79a4304a607aad0f09d1018aa162c4be891a78172dfd9",
+            "size": 1000,
+            "contentType": "application/vnd.ops.transit-envelope+json",
+            "versionId": "6719c673bcdd8d9785b99083b986167a",
+            "etag": "\"8d9be619de5b41c7eb4bcdc2914b0eb3\"",
+            "retainUntil": "2027-11-10T00:39:37Z"
+          },
+          "encryptionKeyVersion": "1",
+          "plaintextDigest": "sha256:9760bde4c14724f713c0adc2a67a8f92b94bfc9502ae5086c1aada6acda2423d",
+          "ciphertextDigest": "sha256:79e50418438d7336e1f79a4304a607aad0f09d1018aa162c4be891a78172dfd9"
+        },
+        "factSlice": {
+          "apiVersion": "apps/v1",
+          "kind": "ReplicaSet",
+          "metadata": {
+            "generation": 7,
+            "labels": {
+              "app": "ops-command-closure",
+              "ops.platform.io/acceptance": "remediation-20261109",
+              "pod-template-hash": "8445fddff"
+            },
+            "name": "ops-command-closure-8445fddff",
+            "namespace": "ops-current",
+            "ownerReferences": [
+              {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "Deployment",
+                "name": "ops-command-closure",
+                "uid": "704b8cfa-d86a-42e7-828d-413f8925bb02"
+              }
+            ],
+            "uid": "29af90e1-00b5-44e4-8a79-033f8a16615b"
+          },
+          "spec": {}
+        }
+      },
+      "meta": {
+        "degradedSources": [],
+        "freshness": "archived",
+        "partial": false,
+        "warnings": []
+      },
+      "requestId": "01a1be1d-e3a2-70e5-8a80-44cec5cada55"
+    }
+  },
+  {
+    "id": "01a1bdbf-09d9-7b2e-9e1d-a6072fd4392a",
+    "status": 200,
+    "body": {
+      "data": {
+        "sourceScopeDigest": "sha256:67eb23c92a1d76647ca1b3f210cd6cb1f622dc6b7dd496e2cfe343236513d7e9",
+        "schemaVersion": "evidence/v2",
+        "evidenceId": "01a1bdbf-09d9-7b2e-9e1d-a6072fd4392a",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/ReplicaSet/08221d1f-6985-4532-8d03-11d8e425ef1d",
+        "type": "resource_state",
+        "dataClass": "D0",
+        "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "sourceRevision": 2,
+        "sourceSystem": "kubernetes",
+        "backendLogicalId": "current-native-cluster",
+        "queryTemplateVersion": "command-kubernetes-post-check/v1",
+        "queryHash": "sha256:1e526500526ebca6ad5683929656a9e4596f7a63553ee00ba7759b6e5079d73f",
+        "effectiveScope": {
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "namespaces": [
+            "default",
+            "kube-flannel",
+            "kube-node-lease",
+            "kube-public",
+            "kube-system",
+            "ops-amd64-core-20261009",
+            "ops-amd64-final-20261010",
+            "ops-amd64-final-targets-20261010",
+            "ops-amd64-unified-r10-20261019",
+            "ops-amd64-unified-r10-targets",
+            "ops-amd64-validation-targets-20261010",
+            "ops-assistant-deepflow-20261013",
+            "ops-assistant-live-20261013",
+            "ops-current",
+            "ops-dev-network",
+            "ops-native-v12-r24-20261026",
+            "ops-native-v12-r34-20261027",
+            "ops-native-v12-r35-outside",
+            "ops-native-v12-r35-scope",
+            "ops-ui-v12-mfa-20261022-gpt",
+            "sp04-chain-2284bf2e",
+            "sp04-chain-230836e8",
+            "sp04-chain-28945919",
+            "sp04-chain-45829ac4",
+            "sp04-chain-620f6bcb",
+            "sp04-chain-9f8f21b7",
+            "sp04-chain-a27d6e34",
+            "sp04-chain-c0dbfe18",
+            "sp04-chain-c6d904dc",
+            "sp04-chain-e0b92b58",
+            "sp04-chain-f327e4fc"
+          ],
+          "resources": [],
+          "clusterScoped": true,
+          "authorizationRevision": "sha256:b211ef88c24563d5ea1a87ff782a7b54495570a2e8327fd4f3a877da719d3912"
+        },
+        "evaluatedAt": "2026-11-09T00:39:36.153717519Z",
+        "observedFrom": "2026-11-09T00:39:36.153717519Z",
+        "observedTo": "2026-11-09T00:39:36.153717519Z",
+        "sourceRetentionUntil": "2026-11-09T00:39:36.153717519Z",
+        "timeReliable": true,
+        "replayState": "archived_verified",
+        "contentDigest": "sha256:7fc3610140fe7d9442f3846f94da51b8a5ea446c43803be934c67488f65ae735",
+        "derivationEvidenceRefs": [],
+        "independenceGroup": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "archiveRef": {
+          "backendLogicalId": "current-archive",
+          "object": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "objectId": "01a1bdbf-09d9-7b2e-9e1d-a6072fd4392a",
+            "category": "evidence",
+            "key": "tenants/c784249324387d29b3d8174c7dfd97393ba6f1b5496943136d90e83e33f35832/evidence/01a1bdbf-09d9-7b2e-9e1d-a6072fd4392a",
+            "digest": "sha256:03af94d8cac961268210c0f9ad0cc9da40c4f8d301f3f5834619affb9ef33164",
+            "size": 1000,
+            "contentType": "application/vnd.ops.transit-envelope+json",
+            "versionId": "6719c673baa9ecac15338e852a111f9e",
+            "etag": "\"584e649768f9c7474ad7a38032d107e8\"",
+            "retainUntil": "2027-11-10T00:39:37Z"
+          },
+          "encryptionKeyVersion": "1",
+          "plaintextDigest": "sha256:7fc3610140fe7d9442f3846f94da51b8a5ea446c43803be934c67488f65ae735",
+          "ciphertextDigest": "sha256:03af94d8cac961268210c0f9ad0cc9da40c4f8d301f3f5834619affb9ef33164"
+        },
+        "factSlice": {
+          "apiVersion": "apps/v1",
+          "kind": "ReplicaSet",
+          "metadata": {
+            "generation": 6,
+            "labels": {
+              "app": "ops-command-closure",
+              "ops.platform.io/acceptance": "remediation-20261109",
+              "pod-template-hash": "8477758dfd"
+            },
+            "name": "ops-command-closure-8477758dfd",
+            "namespace": "ops-current",
+            "ownerReferences": [
+              {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "Deployment",
+                "name": "ops-command-closure",
+                "uid": "704b8cfa-d86a-42e7-828d-413f8925bb02"
+              }
+            ],
+            "uid": "08221d1f-6985-4532-8d03-11d8e425ef1d"
+          },
+          "spec": {}
+        }
+      },
+      "meta": {
+        "degradedSources": [],
+        "freshness": "archived",
+        "partial": false,
+        "warnings": []
+      },
+      "requestId": "01a1be1d-e3ae-72a9-b88d-aec336e2607b"
+    }
+  },
+  {
+    "id": "01a1bdbf-09fe-779c-81bf-0cdc048c1cae",
+    "status": 200,
+    "body": {
+      "data": {
+        "sourceScopeDigest": "sha256:67eb23c92a1d76647ca1b3f210cd6cb1f622dc6b7dd496e2cfe343236513d7e9",
+        "schemaVersion": "evidence/v2",
+        "evidenceId": "01a1bdbf-09fe-779c-81bf-0cdc048c1cae",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/49224918-5319-4743-b3ce-1c6473066e27",
+        "type": "resource_state",
+        "dataClass": "D0",
+        "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "sourceRevision": 2,
+        "sourceSystem": "kubernetes",
+        "backendLogicalId": "current-native-cluster",
+        "queryTemplateVersion": "command-kubernetes-post-check/v1",
+        "queryHash": "sha256:02e9460dc6af481ce324f62c32fa17b2042b00c840821b7ec7f75bb5d6fcd63a",
+        "effectiveScope": {
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "namespaces": [
+            "default",
+            "kube-flannel",
+            "kube-node-lease",
+            "kube-public",
+            "kube-system",
+            "ops-amd64-core-20261009",
+            "ops-amd64-final-20261010",
+            "ops-amd64-final-targets-20261010",
+            "ops-amd64-unified-r10-20261019",
+            "ops-amd64-unified-r10-targets",
+            "ops-amd64-validation-targets-20261010",
+            "ops-assistant-deepflow-20261013",
+            "ops-assistant-live-20261013",
+            "ops-current",
+            "ops-dev-network",
+            "ops-native-v12-r24-20261026",
+            "ops-native-v12-r34-20261027",
+            "ops-native-v12-r35-outside",
+            "ops-native-v12-r35-scope",
+            "ops-ui-v12-mfa-20261022-gpt",
+            "sp04-chain-2284bf2e",
+            "sp04-chain-230836e8",
+            "sp04-chain-28945919",
+            "sp04-chain-45829ac4",
+            "sp04-chain-620f6bcb",
+            "sp04-chain-9f8f21b7",
+            "sp04-chain-a27d6e34",
+            "sp04-chain-c0dbfe18",
+            "sp04-chain-c6d904dc",
+            "sp04-chain-e0b92b58",
+            "sp04-chain-f327e4fc"
+          ],
+          "resources": [],
+          "clusterScoped": true,
+          "authorizationRevision": "sha256:b211ef88c24563d5ea1a87ff782a7b54495570a2e8327fd4f3a877da719d3912"
+        },
+        "evaluatedAt": "2026-11-09T00:39:36.190477627Z",
+        "observedFrom": "2026-11-09T00:39:36.190477627Z",
+        "observedTo": "2026-11-09T00:39:36.190477627Z",
+        "sourceRetentionUntil": "2026-11-09T00:39:36.190477627Z",
+        "timeReliable": true,
+        "replayState": "archived_verified",
+        "contentDigest": "sha256:79d58fb2c897929056ecd201d64c181e244c3b58c58e0d6f5aadb81ca6cbeed3",
+        "derivationEvidenceRefs": [],
+        "independenceGroup": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "archiveRef": {
+          "backendLogicalId": "current-archive",
+          "object": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "objectId": "01a1bdbf-09fe-779c-81bf-0cdc048c1cae",
+            "category": "evidence",
+            "key": "tenants/c784249324387d29b3d8174c7dfd97393ba6f1b5496943136d90e83e33f35832/evidence/01a1bdbf-09fe-779c-81bf-0cdc048c1cae",
+            "digest": "sha256:1dc9281a19c0e4f5f2565bc1ac6ceb5a28bbdd3e21dd5e7037a195f88e41d79b",
+            "size": 1848,
+            "contentType": "application/vnd.ops.transit-envelope+json",
+            "versionId": "6719c673b8659e0b56124a18f70c5d0a",
+            "etag": "\"843eb612d1ed91aa0289cbf85625a793\"",
+            "retainUntil": "2027-11-10T00:39:37Z"
+          },
+          "encryptionKeyVersion": "1",
+          "plaintextDigest": "sha256:79d58fb2c897929056ecd201d64c181e244c3b58c58e0d6f5aadb81ca6cbeed3",
+          "ciphertextDigest": "sha256:1dc9281a19c0e4f5f2565bc1ac6ceb5a28bbdd3e21dd5e7037a195f88e41d79b"
+        },
+        "factSlice": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "generation": 1,
+            "labels": {
+              "app": "ops-command-closure",
+              "ops.platform.io/acceptance": "remediation-20261109",
+              "pod-template-hash": "8445fddff"
+            },
+            "name": "ops-command-closure-8445fddff-2mbdb",
+            "namespace": "ops-current",
+            "ownerReferences": [
+              {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "ReplicaSet",
+                "name": "ops-command-closure-8445fddff",
+                "uid": "29af90e1-00b5-44e4-8a79-033f8a16615b"
+              }
+            ],
+            "uid": "49224918-5319-4743-b3ce-1c6473066e27"
+          },
+          "spec": {
+            "containers": [
+              {
+                "image": "ops.local/current/command-runner@sha256:bef1188002556accd30604c18a0e57c27bd0afe8b0168bc216421d3b8486f310",
+                "name": "acceptance",
+                "ports": null,
+                "restartPolicy": null,
+                "volumeDevices": null,
+                "volumeMounts": null
+              }
+            ],
+            "nodeName": "mssc"
+          },
+          "status": {
+            "conditions": [
+              {
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "name": "acceptance",
+                "ready": true,
+                "state": {
+                  "running": {}
+                }
+              }
+            ],
+            "phase": "Running",
+            "podIP": "10.244.0.173",
+            "podIPs": [
+              {
+                "ip": "10.244.0.173"
+              }
+            ]
+          }
+        }
+      },
+      "meta": {
+        "degradedSources": [],
+        "freshness": "archived",
+        "partial": false,
+        "warnings": []
+      },
+      "requestId": "01a1be1d-e3ba-72ef-a508-61c3d3b439b0"
+    }
+  }
+]

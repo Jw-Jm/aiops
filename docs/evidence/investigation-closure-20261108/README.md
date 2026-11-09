@@ -1,5 +1,7 @@
 # 页面调查闭环验收 · 2026-11-08
 
+**后续补正：** 本记录的任意旧归档读取与另一个旧故障复盘是两条独立证据，不能宣称已经证明同一旧故障使用旧来源归档。该组合及命名空间 operator 正例已在 [2026-11-09 组合补验](../scope-history-combinations-20261109/README.md) 通过；本记录原始事实和失败保留。
+
 远程独立开发环境：`mssc-direct`，页面 `https://192.168.0.63:30471`，namespace `ops-current`。应用候选为 `b878891c62102fca49ec006e3b651a523368d177`。本轮不恢复 KubeVirt/CDI、Trace 或生产发行。
 
 真实故障 `01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad` 绑定 Pod `ops-current/ops-metrics-server-metrics-6d46c4f8f5-7ztrn`，UID `9d925158-f0c9-4ce5-84b8-830959e148dc`。从故障页统一入口进入助手，会话为 `01a1b94d-1319-7857-a2cb-e93cef0b1c99`。历史累计重启 114 次、已恢复的状态与当前只读检查分别展示，没有确认历史根因。

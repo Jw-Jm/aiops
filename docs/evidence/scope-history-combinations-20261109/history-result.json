@@ -1,0 +1,75 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "turnId": "01a1bde0-e190-76fe-9a1f-c011a91911d4",
+      "conversationId": "01a1bdd8-400d-7e5d-9db2-cb336faa16c5",
+      "jobId": "01a1bde0-e190-76ff-9ce2-dcf8d7df0d9f",
+      "parentTurnId": "01a1bdda-0a2f-7c29-8817-43b10842080e",
+      "state": "completed",
+      "answer": {
+        "asOf": "2026-11-09T01:16:44.977965549Z",
+        "partial": false,
+        "summary": "已按 rcaRevision=1 读取冻结 RCA 第 1 版（revision 1，contentDigest sha256:d131fc8917122a7c9fd0ed2c661d8d47d28a0cf667ab8edb74b163f4f82f1a35，historical=true）：其归档证据为两条 Pod 6eb76263-66c2-49ce-befc-d842ef473ae2 的 FailedMount Event（证据 3dbe6b3d-67b1-560e-9712-a5093ce69b3b、9f58d2ab-8723-5df5-931c-85b89676206f，均 archived_verified，sourceRevision=1），但该版 RCA 结论为 unresolved、partial=true，supporting/contradicting 均为空，故当时只能确认挂载失败事件存在，无法确认根因。",
+        "factRefs": [],
+        "warnings": [
+          "本次读取为历史归档（historical=true），当前 RCA 已为 revision 22，来源注册当前版本为 2；RCA 1 引用的是 sourceRevision=1 的归档证据，不代表现时状态。",
+          "RCA 1 状态为 unresolved 且 partial=true，其结论不能作为已确认根因。",
+          "未执行任何现时指标/日志查询、未刷新 RCA、未执行命令。"
+        ],
+        "answerKind": "diagnosis",
+        "entityRefs": [],
+        "formalRefs": [
+          {
+            "kind": "rca",
+            "revision": 1,
+            "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+            "contentDigest": "sha256:d131fc8917122a7c9fd0ed2c661d8d47d28a0cf667ab8edb74b163f4f82f1a35"
+          }
+        ],
+        "hypotheses": [
+          {
+            "key": "pod-failedmount-archived",
+            "summary": "RCA 1 归档的两条 FailedMount Event（resourceVersion 2528117、2528128，观测时间 2026-11-06T00:06:44Z）表明该 Pod 当时存在卷挂载失败，但 RCA 1 未给出候选原因，属未解决假设。",
+            "supports": [
+              "3dbe6b3d-67b1-560e-9712-a5093ce69b3b",
+              "9f58d2ab-8723-5df5-931c-85b89676206f"
+            ],
+            "conflicts": [],
+            "nextChecks": [
+              "读取来源版本 1 的 PV/PVC/Secret/ConfigMap 归档证据以定位挂载失败对象。"
+            ],
+            "missingEvidence": [
+              "缺少挂载源对象侧归档证据与节点侧证据（node-not-ready、node-causal-evidence、node-path）。"
+            ]
+          }
+        ],
+        "nextChecks": [
+          "如需解释挂载失败成因，在允许的会话中读取 RCA 1 引用来源版本 1 的挂载源对象（PV/PVC/Secret/ConfigMap）归档证据。",
+          "补齐 RCA 1 缺失的 node-not-ready、node-causal-evidence、node-path 归档证据后再评估因果链。",
+          "若需与现时对照，另行授权读取当前 revision 22 与来源版本 2 的证据，不与 RCA 1 混用。"
+        ],
+        "evidenceRefs": [
+          "3dbe6b3d-67b1-560e-9712-a5093ce69b3b",
+          "9f58d2ab-8723-5df5-931c-85b89676206f"
+        ],
+        "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+        "schemaVersion": "assistant-answer/v1",
+        "degradedSources": [
+          "01a1ab38-fbeb-79be-91c0-8823152c8c9d/analyzer/ops-current",
+          "01a1ab38-fbeb-79be-91c0-8823152c8c9d/archive"
+        ],
+        "missingEvidence": [
+          "RCA 1 的 evidenceBundle.missing 明确列出 node-not-ready、node-causal-evidence、node-path，缺少节点侧与因果路径证据。",
+          "RCA 1 的 supporting 与 contradicting 均为空，candidates 为空，归档证据仅两条 FailedMount Event，无挂载源（PV/PVC/Secret/ConfigMap）侧证据。",
+          "RCA 1 的 degradedSources 含 01a1ab38-fbeb-79be-91c0-8823152c8c9d/analyzer/ops-current 与 01a1ab38-fbeb-79be-91c0-8823152c8c9d/archive，来源质量受限。",
+          "按用户要求未做现时指标/日志查询、未刷新 RCA、未执行命令，因此没有版本 2 来源下的新观测可对照。"
+        ],
+        "queryResultRefs": []
+      },
+      "createdAt": "2026-11-09T01:16:34.068527Z",
+      "conversationRevision": 5
+    },
+    "requestId": "01a1bde1-5510-7081-ba67-740b27cb1127"
+  }
+}

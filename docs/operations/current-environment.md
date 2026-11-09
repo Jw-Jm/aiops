@@ -6,8 +6,9 @@
 
 - 主机：`mssc-direct`（192.168.0.63）。集群 namespace：`ops-current`。
 - 页面：<https://192.168.0.63:30471/login>。
+- 当前接受候选：`fbdfef5e6c80caf6fa5af6816ac9896e5ea5593d`；精确镜像、复用来源与实际组合验收见 [2026-11-09 补正](../evidence/scope-history-combinations-20261109/README.md)。
 - 数据库：独立容器 `ops-current-pg`，`127.0.0.1:15554/ops_current`，当前 schema 74。API、Worker、身份 bootstrap 和只读 CLI 使用独立 NOINHERIT 登录。
-- 新管理员：`ops.admin`。已通过正常首次改密、MFA 绑定，并通过密码/TOTP 绑定的管理 API 显式授予当前 namespace 的 operator 权限；admin 不隐含 operator。
+- 管理账号：`ops.admin`。已通过正常首次改密、MFA 绑定；operator 为单独显式授权，admin 不隐含 operator。本次命名空间组合验收使用独立且仅有 `ops-current` 授权的 operator，不借助管理账号的整集群授权取得正例。
 - 密码位于远程 `/data/ops-current/private/browser-account.json`；MFA 初始绑定及恢复材料位于同目录 `browser-mfa.json`。这些文件仅存放在部署主机的私有目录和私有备份内，不进 Git，也不通过公开验收输出传递。
 - 原账号、历史故障和配置未从损坏的旧库整库复制。模型供应商的既有 API 授权凭证是配置重用项；工作负载 PKI、数据库凭证、Registry 签名密钥和本地管理员均重新建立。
 
@@ -74,9 +75,9 @@ python3 scripts/current/release.py backup
 
 ## 已知边界
 
-- 命名空间授权下的资源问数提交仍返回 403；这是已有策略作用域衔接问题，未通过扩大权限规避。审计域实际模型/Worker 问数已完成并返回带事实引用的结果。
+- 命名空间 operator 的统一故障调查及历史归档复盘已通过实际模型/Worker 读取，原页面集群级默认值和策略作用域衔接问题已修复，未扩大账号权限。旧 403 仅为当时失败证据，不能当作正例通过；资源问数的其余页面切片仍按总账逐项验收。
 - 全局能力接口仍可报告 Graph partial/degraded；不能将 Pod Ready 或部分页面 200 称为全局健康。当前 namespace 的指标、日志、资源和故障链路分别验收。
-- 命令配置可发布；真实命令执行仍为 configuration-only/disabled。KubeVirt/CDI、Trace、生产、高可用和空缓存离线交付未恢复验收。
+- 受控命令已完成真实资源修改、本人密码/TOTP 确认、Runner、输出归档、未知结果防重复和独立恢复/人工回退；见 [原操作证据](../evidence/incident-remediation-20261109/README.md)。旧 configuration-only/disabled 描述已过时。当前托管模型禁止旧 v2 调查路径，旧 POST 明确拒绝创建任务，统一页面使用已验收的 v3；不影响受控命令。KubeVirt/CDI、Trace、生产、高可用和空缓存离线交付未恢复验收。
 - b3d Web 构建使用全局 pnpm 10.18.3，仓库声明为 12.7.0；构建与验收通过，但工具链差异保留为风险。
 - Worker Graph Lease 慢告警在存储迁移前与共享 `/data` 同步排队吻合；迁移后 PostgreSQL checkpoint sync 已降至 0.020s 内、sdb 写延迟约 0.1–0.3ms，但 `lease_cas` 仍有约 201–303ms 周期告警。2026-11-07 排查结论：`lease_cas` 阶段计时包含共享限速预算（默认 QPS 10，槽位 100ms）的排队等待，采集队列压力下控制类（Lease PUT）按让位规则等约 2 个槽位 ≈ 200ms，实测分布 p50=202ms/p90=204ms 紧贴告警阈值且恒定，与该机制完全吻合；apiserver 写路径本身健康（宿主 kubectl 对 Lease 真实写实测 27–34ms，etcd 在 NVMe 上 fsync 1–2ms）。该告警为良性的计时归因噪声，Lease 续约预算（8 秒续约期限）余量充足，不需要修复；若要消除告警需把限速等待从阶段计时中分离，属可选优化。
 - 2026-11-07 环境网络变更与持久化：主机有线网卡 enp3s0 被改配为静态 `10.10.10.2/24`（新网段），kube-apiserver 证书 SAN、kubeconfig、平台采集配置（`sp04-worker.json`/`sp04-api.json`）及文档入口仍引用 `192.168.0.63`。经确认选择保留双地址：`192.168.0.63/24` 已作为第二地址写入 `/etc/netplan/00-installer-config.yaml` 并通过 `netplan apply` 生效；开机链路为 netplan-configure.service（enabled）→ NetworkManager（netplan-enp3s0 连接 autoconnect，双地址）——已核实 netplan 文件、生成的 NM 配置与激活状态三者一致。原配置备份于 `/data/ops-current/backups/netplan-00-installer-backup-20261107.yaml`。整机重启仍需按既有私有流程手工解封 OpenBao。若未来整体迁移到 10.10.10.2，需先更新 apiserver 证书 SAN 与全部配置/文档。期间另观测到从 Pod 网络访问 ClusterIP 10.96.0.1:6443 明文探测超时（TLS 端口对明文应答 400，节点 IP 路径即时应答），未影响业务，记录备查。

@@ -1,5 +1,7 @@
 # V1.2 复刻与接入实施文档
 
+当前实施状态请读 [task-progress.csv](task-progress.csv)、[acceptance.csv](acceptance.csv) 和 [最新接续](continuation-handoff.md)。`tasks.csv` 与 `original-plan/` 的“待实施”是初始方案基线，由 validate-plan.py 保护，不表示当前代码尚未开始；运行证据和任务状态按实施总账更新。2026-11-09 补正见 [覆盖映射](../../evidence/scope-history-combinations-20261109/ledger-coverage.json)。
+
 日期：2026-10-21。当前交付为方案、清单和方案自审，不启动业务实现或环境变更。
 
 建议阅读顺序：

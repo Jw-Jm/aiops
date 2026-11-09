@@ -1,0 +1,136 @@
+[
+  {
+    "status": 200,
+    "body": {
+      "data": {
+        "turnId": "01a1bdd8-ea50-748b-961e-70eaf114705b",
+        "conversationId": "01a1bdd8-400d-7e5d-9db2-cb336faa16c5",
+        "jobId": "01a1bdd8-ea50-748c-a180-cb7623e5ffb3",
+        "state": "awaiting_user",
+        "answer": {
+          "asOf": "2026-11-09T01:07:52.26968912Z",
+          "partial": false,
+          "summary": "资源指代不明确，请确认本轮目标。",
+          "factRefs": [],
+          "warnings": [],
+          "answerKind": "clarification",
+          "entityRefs": [],
+          "hypotheses": [],
+          "nextChecks": [],
+          "evidenceRefs": [],
+          "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+          "clarification": {
+            "question": "“它/该资源”具体指哪个资源？请选择已验证身份，或明确填写资源名称和类型。",
+            "candidates": [],
+            "missingFields": [
+              "referentCanonicalId"
+            ],
+            "clarificationId": "01a1bdd8-ea50-748b-961e-70eaf114705b"
+          },
+          "schemaVersion": "assistant-answer/v1",
+          "degradedSources": [],
+          "missingEvidence": [],
+          "queryResultRefs": []
+        },
+        "createdAt": "2026-11-09T01:07:52.020905Z",
+        "conversationRevision": 2
+      },
+      "requestId": "01a1bdde-799c-743a-9104-8ef4a7dd9ed4"
+    }
+  },
+  {
+    "status": 200,
+    "body": {
+      "data": {
+        "turnId": "01a1bdd9-4c85-712f-bf71-b93fd187a130",
+        "conversationId": "01a1bdd8-400d-7e5d-9db2-cb336faa16c5",
+        "jobId": "01a1bdd9-4c85-7130-bb79-ddf43163fa35",
+        "parentTurnId": "01a1bdd8-ea50-748b-961e-70eaf114705b",
+        "state": "partial",
+        "answer": {
+          "asOf": "2026-11-09T01:08:21.648210392Z",
+          "partial": true,
+          "summary": "本轮无法完成冻结 RCA 第 1 版的复盘：当前可用工具中没有 get_formal_references，因此无法读取 RCA 1 的固定版本/摘要及其引用的来源版本1历史归档证据，也无法给出证据 ID。",
+          "factRefs": [],
+          "warnings": [
+            "按要求未刷新 RCA、未执行命令、未查询现时指标与日志；当前来源版本为 2，与 RCA 1 所引用的版本 1 不同。",
+            "model_answer_incomplete"
+          ],
+          "answerKind": "unsupported",
+          "entityRefs": [],
+          "hypotheses": [],
+          "nextChecks": [
+            "在具备 get_formal_references 能力的会话中，以 rcaRevision=1 读取 RCA 1 的固定 revision 与 contentDigest。",
+            "按 RCA 1 引用的来源版本1归档证据 ID 逐条读取历史归档内容后再解释事实。"
+          ],
+          "evidenceRefs": [],
+          "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+          "schemaVersion": "assistant-answer/v1",
+          "degradedSources": [],
+          "missingEvidence": [
+            "可用工具目录中不存在 get_formal_references，无法按 rcaRevision=1 读取固定 RCA 1 的 revision 与 contentDigest。",
+            "无法获取 RCA 1 引用的来源版本1历史归档证据及其证据 ID，因此不能解释当时的归档事实。",
+            "未执行任何现时指标/日志查询（按要求禁止），故无新的观测数据可引用。"
+          ],
+          "queryResultRefs": []
+        },
+        "createdAt": "2026-11-09T01:08:17.161231Z",
+        "conversationRevision": 3
+      },
+      "requestId": "01a1bdde-79e5-7e95-9767-8b7b96163c0e"
+    }
+  },
+  {
+    "status": 200,
+    "body": {
+      "data": {
+        "turnId": "01a1bdda-0a2f-7c29-8817-43b10842080e",
+        "conversationId": "01a1bdd8-400d-7e5d-9db2-cb336faa16c5",
+        "jobId": "01a1bdda-0a2f-7c2a-8110-0504ff8cab83",
+        "parentTurnId": "01a1bdd9-4c85-712f-bf71-b93fd187a130",
+        "state": "partial",
+        "answer": {
+          "asOf": "2026-11-09T01:09:13.983060377Z",
+          "partial": true,
+          "summary": "无法复盘冻结 RCA 第 1 版：get_formal_references 只返回当前 revision 22（contentDigest sha256:973f8894f60b255f9de33a8d3858c2061395f360170ebab19b36a136d90c66ca），未返回 rcaRevision=1 的固定版本，因此 RCA 1 的摘要与所引用的来源版本1归档证据 ID 均不可得。",
+          "factRefs": [],
+          "warnings": [
+            "当前 RCA 为 revision 22（historical=false），与请求的 RCA 1 不是同一版本；当前来源版本为 2，与 RCA 1 引用的版本 1 不同。",
+            "当前 RCA 22 的 evidenceBundle 为 partial：missing 包含 node-not-ready、node-causal-evidence、node-path，supporting/contradicting 均为空，degradedSources 含 graph。",
+            "model_answer_incomplete"
+          ],
+          "answerKind": "unsupported",
+          "entityRefs": [],
+          "formalRefs": [
+            {
+              "kind": "rca",
+              "revision": 22,
+              "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+              "contentDigest": "sha256:973f8894f60b255f9de33a8d3858c2061395f360170ebab19b36a136d90c66ca"
+            }
+          ],
+          "hypotheses": [],
+          "nextChecks": [
+            "在支持按 rcaRevision=1 读取历史归档的会话中重新调用 get_formal_references，取得 RCA 1 的 revision 与 contentDigest。",
+            "按 RCA 1 引用的来源版本1归档证据 ID 逐条读取历史归档内容后再解释事实。"
+          ],
+          "evidenceRefs": [],
+          "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+          "schemaVersion": "assistant-answer/v1",
+          "degradedSources": [
+            "graph"
+          ],
+          "missingEvidence": [
+            "get_formal_references 未返回 rcaRevision=1 的固定 revision 与 contentDigest，仅返回当前 revision 22，故 RCA 1 的固定摘要无法引用。",
+            "RCA 1 所引用的来源版本1历史归档证据及其证据 ID 未随任何成功读取返回，无法解释当时的归档事实。",
+            "按用户要求未执行现时指标/日志查询、未刷新 RCA、未执行命令，因此没有新的观测数据可引用。"
+          ],
+          "queryResultRefs": []
+        },
+        "createdAt": "2026-11-09T01:09:05.716024Z",
+        "conversationRevision": 4
+      },
+      "requestId": "01a1bdde-79f3-79b5-91f5-c733b71029cb"
+    }
+  }
+]

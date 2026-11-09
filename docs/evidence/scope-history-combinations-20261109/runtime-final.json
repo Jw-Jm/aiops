@@ -1,0 +1,77 @@
+{
+  "candidate": "fbdfef5e6c80caf6fa5af6816ac9896e5ea5593d",
+  "namespaceUID": "c4dc825f-0897-417b-a876-f151e7783629",
+  "deployments": [
+    {
+      "name": "ops-api",
+      "ready": 1,
+      "images": [
+        "ops.local/current/platform-api@sha256:a3a8fadd17d580d1fbc175a4d0d0fa79e09239cd1769117e4022303d9da5925f"
+      ]
+    },
+    {
+      "name": "ops-command-closure",
+      "ready": 1,
+      "images": [
+        "ops.local/current/command-runner@sha256:bef1188002556accd30604c18a0e57c27bd0afe8b0168bc216421d3b8486f310"
+      ]
+    },
+    {
+      "name": "ops-investigator",
+      "ready": 1,
+      "images": [
+        "ops.local/current/investigator@sha256:12c2de14920a4bc7cfd7c0e7922b6029176e0a142d308b4a981f6bb4174be0c5"
+      ]
+    },
+    {
+      "name": "ops-worker",
+      "ready": 1,
+      "images": [
+        "ops.local/current/platform-worker@sha256:f54cfb69a57464c833323865ef092e00db5680d0d02522f928f36fc5b8d4ebbc"
+      ]
+    }
+  ],
+  "schema": 74,
+  "images": {
+    "worker": {
+      "tag": "ops.local/current/platform-worker:c2fe195",
+      "image": "ops.local/current/platform-worker@sha256:f54cfb69a57464c833323865ef092e00db5680d0d02522f928f36fc5b8d4ebbc",
+      "manifestDigest": "sha256:f54cfb69a57464c833323865ef092e00db5680d0d02522f928f36fc5b8d4ebbc",
+      "imageID": "sha256:887929eb3554755dc09437a5ae122f99b67df5a5a1b44c3a01139e9d87717e00",
+      "binarySHA256": "00352cd571127011cdbc3d2da15a50d97fa0435488f31e2d1f5234da39f5fbae",
+      "sourceCommit": "c2fe195d7523d132eb95a46cd2e895c3ad736eea",
+      "entrypoint": "/ops-worker",
+      "entrypointSHA256": "00352cd571127011cdbc3d2da15a50d97fa0435488f31e2d1f5234da39f5fbae",
+      "reusedUnchangedFromCommit": "c2fe195d7523d132eb95a46cd2e895c3ad736eea"
+    },
+    "investigator": {
+      "tag": "ops.local/current/investigator:3e597ea",
+      "image": "ops.local/current/investigator@sha256:12c2de14920a4bc7cfd7c0e7922b6029176e0a142d308b4a981f6bb4174be0c5",
+      "manifestDigest": "sha256:12c2de14920a4bc7cfd7c0e7922b6029176e0a142d308b4a981f6bb4174be0c5",
+      "sourceCommit": "3e597ea36eae708ed47e3e24955d6a974e392f9a",
+      "baseImageConfigDigest": "sha256:ca36cf90409f0ec8b0c8a70648257dc6a00128b0e3803968db7b127d49551bd3",
+      "imageID": "sha256:02523f77453a08022a699673d08eee0e6e16ff60c7299e5ef673ed140a109647",
+      "reusedUnchangedFromCommit": "3e597ea36eae708ed47e3e24955d6a974e392f9a"
+    },
+    "api": {
+      "tag": "ops.local/current/platform-api:fbdfef5",
+      "image": "ops.local/current/platform-api@sha256:a3a8fadd17d580d1fbc175a4d0d0fa79e09239cd1769117e4022303d9da5925f",
+      "manifestDigest": "sha256:a3a8fadd17d580d1fbc175a4d0d0fa79e09239cd1769117e4022303d9da5925f",
+      "sourceCommit": "fbdfef5e6c80caf6fa5af6816ac9896e5ea5593d",
+      "baseImageConfigDigest": "sha256:4a00160f37435a3a922ffd191d668e8823debedd05f4cb768c0b692f37851d06",
+      "imageID": "sha256:14f8c91b8674b3df09911e3f741aeb727809040106c7c83188405df6a7f6196d",
+      "entrypoint": "/ops-api",
+      "entrypointSHA256": "c3097ea833ea4655834ac10a367bc85162ffb45dc2c775bbdad9c1d3731d4b3f",
+      "binarySHA256": "c3097ea833ea4655834ac10a367bc85162ffb45dc2c775bbdad9c1d3731d4b3f"
+    }
+  },
+  "web": {
+    "running": true,
+    "mount": "/data/ops-current/releases/fbdfef5e6c80caf6fa5af6816ac9896e5ea5593d/web",
+    "readOnly": true,
+    "tmpfs": {
+      "/tmp": "rw,noexec,nosuid,size=64m"
+    },
+    "sourceReusedFromCommit": "3e597ea36eae708ed47e3e24955d6a974e392f9a"
+  }
+}

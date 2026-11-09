@@ -1,0 +1,86 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "turnId": "01a1bde0-56a6-7998-9069-73aad67d6ee0",
+      "conversationId": "01a1bde0-1c85-76f0-8103-24bddf1d9bfa",
+      "jobId": "01a1bde0-56a6-7999-885f-64720a940685",
+      "state": "partial",
+      "answer": {
+        "asOf": "2026-11-09T01:16:09.41605598Z",
+        "partial": true,
+        "summary": "在 ops-current 中，Deployment ops-command-closure（704b8cfa-d86a-42e7-828d-413f8925bb02）的 RolloutStuck Finding 于 2026-11-09T00:19:48.011396Z 触发，Incident 01a1bdac-eaef-7730-a73a-90738956cc96 已于 2026-11-09T00:28:22.583073Z 恢复为 resolved；但当前正式 RCA revision 82 状态为 unresolved/partial，缺少 rollout-stuck、blocking-pod、rollout-path 证据，因此只能确认发生与恢复，不能确认根因。",
+        "factRefs": [],
+        "warnings": [
+          "Finding 载荷中 rolloutStuck=false 且 lifecycleState=resolved，与 normalizedSymptom=RolloutStuck 并存，说明该 Finding 记录的是已恢复的瞬时状态，不能据此推断当前仍异常。",
+          "RCA revision 82 的 inputManifest 窗口为 2026-11-09T01:10:41.22051922Z 至 01:15:41.22051922Z，晚于 Incident 恢复时间，属于事后评估窗口，未覆盖故障发生时段。",
+          "恢复不等于根因已确认；缺失观测不能证明正常或零。",
+          "model_answer_incomplete"
+        ],
+        "answerKind": "diagnosis",
+        "entityRefs": [],
+        "formalRefs": [
+          {
+            "kind": "rca",
+            "revision": 82,
+            "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96",
+            "contentDigest": "sha256:e50a29206ca04d13c2b4031dda4ac27a62b49faea4c63fe2b71bc18ed004aa77"
+          }
+        ],
+        "hypotheses": [
+          {
+            "key": "rollout-blocked-by-pod",
+            "summary": "假设：rollout 因某个 Pod 无法就绪而停滞，随后该 Pod 恢复使 Incident 自动 resolved；目前无 blocking-pod 观测支持。",
+            "supports": [],
+            "conflicts": [],
+            "nextChecks": [
+              "在故障窗口内查询该 Deployment 关联 Pod 的 phase 与重启增量"
+            ],
+            "missingEvidence": [
+              "阻塞 Pod 的 phase/就绪/重启观测",
+              "Deployment→ReplicaSet→Pod rollout 路径观测"
+            ]
+          },
+          {
+            "key": "transient-rollout-timeout",
+            "summary": "假设：rollout 在 00:19:48Z 前后短暂超时触发告警，约 8 分钟后自行完成；Finding 载荷 rolloutStuck=false 与此一致，但缺少 rollout 进度证据。",
+            "supports": [],
+            "conflicts": [],
+            "nextChecks": [
+              "读取故障窗口内该 Deployment 的变更与 rollout 状态观测"
+            ],
+            "missingEvidence": [
+              "rollout 进度/超时时间序列观测",
+              "故障窗口内的 Deployment 状态变更记录"
+            ]
+          }
+        ],
+        "nextChecks": [
+          "在故障窗口（约 2026-11-09T00:19:48Z 至 00:28:22Z）内读取该 Deployment 的 rollout 状态与 ReplicaSet/Pod 观测，补齐 rollout-stuck 与 blocking-pod 证据",
+          "读取该 Deployment 关联 Pod 的 phase、重启与事件，确认是否存在阻塞 Pod",
+          "修复两个来源的 proof 降级后重跑 RCA，以生成 supporting/contradicting 证据"
+        ],
+        "evidenceRefs": [
+          "921d1694-f531-5dcc-b97f-26c4a607094c"
+        ],
+        "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+        "schemaVersion": "assistant-answer/v1",
+        "degradedSources": [
+          "01a1ae32-5595-7eea-aa8a-ac0ff097c123/proof",
+          "01a1ae32-b7a2-7987-bc83-9a7d8855093d/proof"
+        ],
+        "missingEvidence": [
+          "RCA 证据包缺少 rollout-stuck 证据：无 rollout 进度/超时观测",
+          "RCA 证据包缺少 blocking-pod 证据：无阻塞 Pod 的 phase/重启/事件观测",
+          "RCA 证据包缺少 rollout-path 证据：无 Deployment→ReplicaSet→Pod 的 rollout 路径观测",
+          "RCA 证据包 supporting 与 contradicting 均为空，无法区分根因候选",
+          "来源证明降级：01a1ae32-5595-7eea-aa8a-ac0ff097c123/proof 与 01a1ae32-b7a2-7987-bc83-9a7d8855093d/proof"
+        ],
+        "queryResultRefs": []
+      },
+      "createdAt": "2026-11-09T01:15:58.507425Z",
+      "conversationRevision": 2
+    },
+    "requestId": "01a1bde0-e17b-7550-8255-22f57f7063f2"
+  }
+}

@@ -1,3 +1,11 @@
+## 2026-11-09 组合补验与完成声明补正
+
+当前独立 current 接受版本为 `fbdfef5e6c80caf6fa5af6816ac9896e5ea5593d`，schema74。命名空间 operator 正例与同一旧故障/RCA1/来源升级前两条真实归档/AI复盘的组合均通过；固定版本抽屉、重载、当前范围/匿名/跨账号拒绝通过。实际旧故障/RCA/来源版本未变。先前把两个分开的历史证明视为组合完整、以及把命名空间403留为正例缺口的完成声明已纠正；失败回执保留。
+
+既有真实修改/回退/未知结果等运行证据复用，未新增命令执行。P4-05/P5-01/P5-02/P6-01 从 not_started 更新为 in_progress，39项现为5 complete、20 in_progress、14 not_started；17个切片登记已覆盖子动作及未验范围，六维 passed 数保持 visual0、interaction5、api5、persistence5、authorization3、live5。它们仍包含尚未逐项通过的完整动作和视觉，不能把单条机制升级成整片通过。
+
+证据与机械核对：[组合验收](../../evidence/scope-history-combinations-20261109/README.md)、[总账映射](../../evidence/scope-history-combinations-20261109/ledger-coverage.json)。当前接续见 continuation-handoff.md。下方旧 rNN 环境和完成措辞保留历史时间语境，不代表当前运行身份；tasks.csv 是冻结的初始方案，真实实施总账为 task-progress.csv。
+
 ## 2026-11-04 r54 告警、故障处理、命令配置实际接通
 
 用户明确要求打通三项功能，并排除长期稳定性工作。30471 已部署API r54、Worker r54c、Web r54b。启用SP05，经真实管理员密码/TOTP把Kubernetes来源从revision3升级4（保留v1并添加finding-envelope/v2），采集声明同步，范围和凭据不扩张。专属PVC真实Pending产生非空告警/Incident；页面完成受理、处置，真实PV绑定后按既有五分钟规则恢复，页面关闭和刷新回读通过。时间线/关联告警/影响资源/诊断图200，旧版本409、外集群403。
