@@ -4,6 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
+import type { AssistantBudgetTighteningV1 } from './assistantBudgetTighteningV1.ts';
 import type { AssistantFaultChainRequestV1 } from './assistantFaultChainRequestV1.ts';
 
 export interface AssistantSubmitMessageV1 {
@@ -18,4 +19,10 @@ export interface AssistantSubmitMessageV1 {
   clarificationId?: string;
   referentCanonicalId?: string;
   faultChainRequest?: AssistantFaultChainRequestV1;
+  /**
+     * 调查重点：仅作为用户意图，不改变授权范围或额度。长度为脱敏后的字符数，上限 500。
+     * @maxLength 500
+     */
+  focus?: string;
+  budgetTightening?: AssistantBudgetTighteningV1;
 }

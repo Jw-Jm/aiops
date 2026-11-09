@@ -204,3 +204,17 @@ def test_external_query_hint_intersects_coverage_without_mutating_receipt():
                     {"coverageTo": "invalid"}):
         assert available_requested_range(context, {**capability, **changes}) is None
     assert available_requested_range(context, {**capability, "coverageFrom": "2026-11-08T04:10:02.1Z"})["from"] == "2026-11-08T04:10:03Z"
+
+def test_focus_is_user_intent_and_never_an_authorization_override():
+    job=payload()["job"];job["focus"]="只看最近一次重启"
+    prior=[{"tool":"get_assistant_context","state":"succeeded","data":{"message":"统计故障数量"}}]
+    prompt=messages(job,prior)
+    assert prompt[-1]["role"]=="user"
+    focus_message=prompt[-1]["content"]
+    assert "Investigation focus" in focus_message
+    # The focus never becomes a system instruction and never widens the scope.
+    assert all(p["role"]!="system" or "只看最近一次重启" not in p["content"] for p in prompt)
+    assert all("只看最近一次重启" not in p["content"] for p in prompt if p["role"]=="system")
+    # The frozen platform context is unchanged by the focus.
+    trusted=[p for p in prompt if p["role"]=="system" and "trusted_context" in p["content"]][0]
+    assert "只看最近一次重启" not in trusted["content"]

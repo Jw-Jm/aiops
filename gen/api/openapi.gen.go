@@ -2535,6 +2535,64 @@ type AssistantAnswerV1 struct {
 	Warnings      []string    `json:"warnings"`
 }
 
+// AssistantBudgetConsumedV1 defines model for AssistantBudgetConsumedV1.
+type AssistantBudgetConsumedV1 struct {
+	EvidenceItems   int64 `json:"evidenceItems"`
+	GraphNodes      int64 `json:"graphNodes"`
+	InputTokens     int64 `json:"inputTokens"`
+	ModelCostMicros int64 `json:"modelCostMicros"`
+	ModelRequests   int64 `json:"modelRequests"`
+	OutputTokens    int64 `json:"outputTokens"`
+	RawQueries      int64 `json:"rawQueries"`
+	ResultBytes     int64 `json:"resultBytes"`
+	ToolCalls       int64 `json:"toolCalls"`
+}
+
+// AssistantBudgetTighteningV1 defines model for AssistantBudgetTighteningV1.
+type AssistantBudgetTighteningV1 struct {
+	// DurationSeconds 0 或省略表示该维度不请求收紧，沿用当次准入额度。高于当次准入额度的值按当次准入额度收紧（clamp），不会放大额度；高于平台上限的值被拒绝。非空值必须是非负整数。
+	DurationSeconds *int64 `json:"durationSeconds,omitempty"`
+
+	// EvidenceItems 0 或省略表示该维度不请求收紧，沿用当次准入额度。高于当次准入额度的值按当次准入额度收紧（clamp），不会放大额度；高于平台上限的值被拒绝。非空值必须是非负整数。
+	EvidenceItems *int64 `json:"evidenceItems,omitempty"`
+
+	// GraphNodes 0 或省略表示该维度不请求收紧，沿用当次准入额度。高于当次准入额度的值按当次准入额度收紧（clamp），不会放大额度；高于平台上限的值被拒绝。非空值必须是非负整数。
+	GraphNodes *int64 `json:"graphNodes,omitempty"`
+
+	// InputTokens 0 或省略表示该维度不请求收紧，沿用当次准入额度。高于当次准入额度的值按当次准入额度收紧（clamp），不会放大额度；高于平台上限的值被拒绝。非空值必须是非负整数。
+	InputTokens *int64 `json:"inputTokens,omitempty"`
+
+	// ModelRequests 0 或省略表示该维度不请求收紧，沿用当次准入额度。高于当次准入额度的值按当次准入额度收紧（clamp），不会放大额度；高于平台上限的值被拒绝。非空值必须是非负整数。
+	ModelRequests *int64 `json:"modelRequests,omitempty"`
+
+	// OutputTokens 0 或省略表示该维度不请求收紧，沿用当次准入额度。高于当次准入额度的值按当次准入额度收紧（clamp），不会放大额度；高于平台上限的值被拒绝。非空值必须是非负整数。
+	OutputTokens *int64 `json:"outputTokens,omitempty"`
+
+	// RawQueries 0 或省略表示该维度不请求收紧，沿用当次准入额度。高于当次准入额度的值按当次准入额度收紧（clamp），不会放大额度；高于平台上限的值被拒绝。非空值必须是非负整数。
+	RawQueries *int64 `json:"rawQueries,omitempty"`
+
+	// ResultBytes 0 或省略表示该维度不请求收紧，沿用当次准入额度。高于当次准入额度的值按当次准入额度收紧（clamp），不会放大额度；高于平台上限的值被拒绝。非空值必须是非负整数。
+	ResultBytes *int64 `json:"resultBytes,omitempty"`
+
+	// ToolCalls 0 或省略表示该维度不请求收紧，沿用当次准入额度。高于当次准入额度的值按当次准入额度收紧（clamp），不会放大额度；高于平台上限的值被拒绝。非空值必须是非负整数。
+	ToolCalls *int64 `json:"toolCalls,omitempty"`
+}
+
+// AssistantBudgetV1 defines model for AssistantBudgetV1.
+type AssistantBudgetV1 struct {
+	Consumed        *AssistantBudgetConsumedV1 `json:"consumed,omitempty"`
+	DurationSeconds int64                      `json:"durationSeconds"`
+	EvidenceItems   int64                      `json:"evidenceItems"`
+	GraphNodes      int64                      `json:"graphNodes"`
+	InputTokens     int64                      `json:"inputTokens"`
+	ModelCostMicros int64                      `json:"modelCostMicros"`
+	ModelRequests   int64                      `json:"modelRequests"`
+	OutputTokens    int64                      `json:"outputTokens"`
+	RawQueries      int64                      `json:"rawQueries"`
+	ResultBytes     int64                      `json:"resultBytes"`
+	ToolCalls       int64                      `json:"toolCalls"`
+}
+
 // AssistantCapabilitiesEnvelopeV1 defines model for AssistantCapabilitiesEnvelopeV1.
 type AssistantCapabilitiesEnvelopeV1 struct {
 	Data struct {
@@ -2980,12 +3038,16 @@ type AssistantStoredQueryResultV1 struct {
 
 // AssistantSubmitMessageV1 defines model for AssistantSubmitMessageV1.
 type AssistantSubmitMessageV1 struct {
+	BudgetTightening             *AssistantBudgetTighteningV1  `json:"budgetTightening,omitempty"`
 	ClarificationId              *openapi_types.UUID           `json:"clarificationId,omitempty"`
 	ExpectedConversationRevision int64                         `json:"expectedConversationRevision"`
 	FaultChainRequest            *AssistantFaultChainRequestV1 `json:"faultChainRequest,omitempty"`
-	Message                      string                        `json:"message"`
-	ParentTurnId                 *openapi_types.UUID           `json:"parentTurnId,omitempty"`
-	ReferentCanonicalId          *string                       `json:"referentCanonicalId,omitempty"`
+
+	// Focus 调查重点：仅作为用户意图，不改变授权范围或额度。长度为脱敏后的字符数，上限 500。
+	Focus               *string             `json:"focus,omitempty"`
+	Message             string              `json:"message"`
+	ParentTurnId        *openapi_types.UUID `json:"parentTurnId,omitempty"`
+	ReferentCanonicalId *string             `json:"referentCanonicalId,omitempty"`
 }
 
 // AssistantTurnEnvelopeV1 defines model for AssistantTurnEnvelopeV1.
@@ -3000,10 +3062,12 @@ type AssistantTurnEnvelopeV1 struct {
 // AssistantTurnV1 defines model for AssistantTurnV1.
 type AssistantTurnV1 struct {
 	Answer               *AssistantAnswerV1   `json:"answer,omitempty"`
+	Budget               *AssistantBudgetV1   `json:"budget,omitempty"`
 	ConversationId       openapi_types.UUID   `json:"conversationId"`
 	ConversationRevision int64                `json:"conversationRevision"`
 	CreatedAt            time.Time            `json:"createdAt"`
 	ErrorCode            *string              `json:"errorCode,omitempty"`
+	Focus                *string              `json:"focus,omitempty"`
 	JobId                openapi_types.UUID   `json:"jobId"`
 	ParentTurnId         *openapi_types.UUID  `json:"parentTurnId,omitempty"`
 	State                AssistantTurnV1State `json:"state"`

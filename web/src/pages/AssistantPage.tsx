@@ -9,6 +9,7 @@ import {
   Card,
   Col,
   Input,
+  InputNumber,
   List,
   Modal,
   Popconfirm,
@@ -159,9 +160,24 @@ export function AssistantPage({
     new Date().toISOString().slice(0, 16),
   );
   const [message, setMessage] = useState("");
+  // The operator focus and the requested budget narrowing belong to the
+  // current scope and conversation. They are draft state: a scope change, an
+  // account change or a different conversation drops them, so a draft never
+  // leaks into another authorization context.
+  const [focus, setFocus] = useState("");
+  const [tightenToolCalls, setTightenToolCalls] = useState<number | null>(
+    null,
+  );
+  const [tightenModelRequests, setTightenModelRequests] = useState<
+    number | null
+  >(null);
+  const [tightenDurationSeconds, setTightenDurationSeconds] = useState<
+    number | null
+  >(null);
   useClusterDraft(
     symptom.trim().length > 0 ||
       message.trim().length > 0 ||
+      focus.trim().length > 0 ||
       targetName.trim().length > 0 ||
       !!selectedTarget,
   );
@@ -181,6 +197,10 @@ export function AssistantPage({
     setBusy(false);
     setSymptom("");
     setMessage("");
+    setFocus("");
+    setTightenToolCalls(null);
+    setTightenModelRequests(null);
+    setTightenDurationSeconds(null);
     setTargetName("");
     setSelectedTarget(undefined);
     setNamespace("");
@@ -237,6 +257,10 @@ export function AssistantPage({
   useEffect(() => {
     setTurn(undefined);
     setMessage("");
+    setFocus("");
+    setTightenToolCalls(null);
+    setTightenModelRequests(null);
+    setTightenDurationSeconds(null);
     setReferent(undefined);
     setError(undefined);
     setMessageCursor(undefined);
@@ -369,12 +393,47 @@ export function AssistantPage({
   });
   const scopeRef = useRef(scopeKey);
   const scopeAbort = useRef(new AbortController());
+  // The conversation lifecycle generation. It advances whenever the page
+  // leaves the conversation a request was started for, so a late answer of an
+  // older conversation is refused even when the same conversation is shown
+  // again (A -> B -> A). The scope is part of the key, so a scope or account
+  // change advances the generation as well.
+  const conversationKey = `${scopeKey}|${id ?? ""}`;
+  const [conversationLifecycle, setConversationLifecycle] = useState({
+    key: conversationKey,
+    epoch: 1,
+  });
+  if (conversationLifecycle.key !== conversationKey) {
+    // The conversation changed during this render. React re-renders the page
+    // with the new generation before it commits, so the request ownership and
+    // the acceptance check always use the same generation.
+    setConversationLifecycle({
+      key: conversationKey,
+      epoch: conversationLifecycle.epoch + 1,
+    });
+  }
+  const conversationEpochRef = useRef(conversationLifecycle.epoch);
+  conversationEpochRef.current = conversationLifecycle.epoch;
+  // The requests that belong to the conversation shown now. Leaving that
+  // conversation aborts them, so a late answer of another conversation is
+  // dropped instead of being committed into the current page.
+  const conversationAbort = useRef(new AbortController());
   // The conversation currently shown. A child that answers for another
   // conversation must not write into this page.
   const conversationRef = useRef(id);
   useEffect(() => {
     conversationRef.current = id;
   }, [id]);
+  useEffect(() => {
+    conversationAbort.current.abort();
+    conversationAbort.current = new AbortController();
+    // The busy state belongs to the newest request. The request of the
+    // conversation that was left no longer owns it.
+    busyEpoch.current += 1;
+    setBusy(false);
+    // The state belongs to the mounted scope: a new conversation or a new page
+    // epoch starts from a clean state.
+  }, [conversationLifecycle.epoch]);
   const unmountedRef = useRef(false);
   useEffect(() => {
     scopeRef.current = scopeKey;
@@ -437,12 +496,28 @@ export function AssistantPage({
   };
   async function mutate(
     action: (signal: AbortSignal, canCommit: () => boolean) => Promise<void>,
+    bound?: { conversation: string },
   ) {
     const runScope = scopeKey;
-    const signal = scopeAbort.current.signal;
+    const runEpoch = conversationEpochRef.current;
+    const runConversation = bound?.conversation;
+    // A request that belongs to a conversation is cancelled when the page
+    // leaves that conversation, so a late answer of another conversation never
+    // reaches this page.
+    const signal = bound
+      ? AbortSignal.any([
+          scopeAbort.current.signal,
+          conversationAbort.current.signal,
+        ])
+      : scopeAbort.current.signal;
     const epoch = (busyEpoch.current += 1);
     const canCommit = () =>
-      !unmountedRef.current && scopeRef.current === runScope && !signal.aborted;
+      !unmountedRef.current &&
+      scopeRef.current === runScope &&
+      !signal.aborted &&
+      (runConversation === undefined ||
+        (conversationEpochRef.current === runEpoch &&
+          conversationRef.current === runConversation));
     setBusy(true);
     setError(undefined);
     try {
@@ -450,9 +525,20 @@ export function AssistantPage({
       if (!canCommit()) return;
       await reload();
     } catch (cause) {
-      if (scopeRef.current !== runScope || signal.aborted) return;
+      if (!canCommit()) return;
       const e = cause instanceof Error ? cause : new Error("操作失败");
-      setError(e);
+      // A version conflict is reported as such. The page never fetches a new
+      // revision and retries silently under it. A lost grant is reported and
+      // the cached conversation of that scope is dropped.
+      setError(
+        e instanceof ApiError && e.status === 409
+          ? new Error("会话已被其他操作修改，请刷新后重试")
+          : e instanceof ApiError && e.status === 403
+            ? new Error("当前授权已变化，请刷新后重试")
+            : e instanceof ApiError && e.status === 401
+              ? new Error("登录状态已失效，请重新登录")
+              : e,
+      );
       if (e instanceof ApiError && [401, 403].includes(e.status))
         client.removeQueries({ queryKey: ["assistant", scopeKey] });
     } finally {
@@ -607,29 +693,66 @@ export function AssistantPage({
       });
     });
   }
+  // The requested narrowing is sent as-is: the server clamps it to the
+  // admission and echoes the budget it actually applied. An invalid value is
+  // refused by the server, so the page never claims a larger budget.
+  const tightening =
+    tightenToolCalls !== null ||
+    tightenModelRequests !== null ||
+    tightenDurationSeconds !== null
+      ? {
+          ...(tightenToolCalls !== null ? { toolCalls: tightenToolCalls } : {}),
+          ...(tightenModelRequests !== null
+            ? { modelRequests: tightenModelRequests }
+            : {}),
+          ...(tightenDurationSeconds !== null
+            ? { durationSeconds: tightenDurationSeconds }
+            : {}),
+        }
+      : undefined;
+  const invalidTightening =
+    [tightenToolCalls, tightenModelRequests, tightenDurationSeconds].some(
+      (value) =>
+        value !== null &&
+        (!Number.isInteger(value) || value < 0 || value > 2_000_000_000),
+    );
   async function send() {
     if (!id || !conversation.data || !canWriteConversation) return;
-    await mutate(async (signal, canCommit) => {
-      const clarification = active?.answer?.clarification?.clarificationId;
-      const out = await checked(
-        submitAssistantMessage(
-          id,
-          {
-            message,
-            expectedConversationRevision: conversation.data!.data.revision,
-            ...(active ? { parentTurnId: active.turnId } : {}),
-            ...(clarification ? { clarificationId: clarification } : {}),
-            ...(referent ? { referentCanonicalId: referent } : {}),
-          },
-          requestOptions(signal, true),
-        ),
-      );
-      if (!canCommit()) return;
-      setTurn(out.data);
-      setReferent(undefined);
-      setMessage("");
-      setMessageCursor(undefined);
-    });
+    // The revision and the idempotency key of this submission are frozen when
+    // the operator sends: a late answer of another conversation may neither
+    // pick up another revision nor reuse another key.
+    const revision = conversation.data.data.revision;
+    const idempotencyKey = crypto.randomUUID();
+    await mutate(
+      async (signal, canCommit) => {
+        const clarification = active?.answer?.clarification?.clarificationId;
+        const out = await checked(
+          submitAssistantMessage(
+            id,
+            {
+              message,
+              expectedConversationRevision: revision,
+              ...(active ? { parentTurnId: active.turnId } : {}),
+              ...(clarification ? { clarificationId: clarification } : {}),
+              ...(referent ? { referentCanonicalId: referent } : {}),
+              ...(focus.trim() ? { focus: focus.trim() } : {}),
+              ...(tightening ? { budgetTightening: tightening } : {}),
+            },
+            requestOptions(signal, true, idempotencyKey),
+          ),
+        );
+        if (!canCommit()) return;
+        setTurn(out.data);
+        setReferent(undefined);
+        setMessage("");
+        setFocus("");
+        setTightenToolCalls(null);
+        setTightenModelRequests(null);
+        setTightenDurationSeconds(null);
+        setMessageCursor(undefined);
+      },
+      { conversation: id },
+    );
   }
   return (
     <>
@@ -1190,6 +1313,8 @@ export function AssistantPage({
                       conversation={conversation.data.data}
                       disabled={Boolean(running) || busy}
                       epoch={submissionEpoch}
+                      focus={focus.trim() || undefined}
+                      budgetTightening={tightening}
                       onSubmitted={(next, epoch) =>
                         acceptFaultChainTurn(
                           next,
@@ -1402,6 +1527,72 @@ export function AssistantPage({
                       : "输入问题，例如：当前有多少异常 Pod？"
                   }
                 />
+                <Input.TextArea
+                  aria-label="调查重点"
+                  disabled={!canWriteConversation || !!running}
+                  value={focus}
+                  onChange={(e) => setFocus(e.target.value)}
+                  maxLength={500}
+                  showCount
+                  rows={2}
+                  placeholder="调查重点（可选，仅作为用户意图，不改变授权范围）"
+                />
+                <Space wrap>
+                  <InputNumber
+                    aria-label="工具调用上限"
+                    disabled={!canWriteConversation || !!running}
+                    value={tightenToolCalls}
+                    min={0}
+                    max={2000000000}
+                    placeholder="工具调用上限"
+                    onChange={(value) => setTightenToolCalls(value ?? null)}
+                  />
+                  <InputNumber
+                    aria-label="模型请求上限"
+                    disabled={!canWriteConversation || !!running}
+                    value={tightenModelRequests}
+                    min={0}
+                    max={2000000000}
+                    placeholder="模型请求上限"
+                    onChange={(value) => setTightenModelRequests(value ?? null)}
+                  />
+                  <InputNumber
+                    aria-label="运行时长上限（秒）"
+                    disabled={!canWriteConversation || !!running}
+                    value={tightenDurationSeconds}
+                    min={0}
+                    max={2000000000}
+                    placeholder="运行时长上限（秒）"
+                    onChange={(value) =>
+                      setTightenDurationSeconds(value ?? null)
+                    }
+                  />
+                  <Typography.Text type="secondary">
+                    只能收紧服务端当次准入额度，实际生效值以本轮回显为准。
+                    留空或填 0 表示该维度不收紧，仍沿用当次准入额度（不会禁止调用）；填写的值高于当次准入额度时按当次准入额度收紧，高于平台上限则整次提交被拒绝。
+                  </Typography.Text>
+                </Space>
+                {invalidTightening && (
+                  <Alert
+                    type="error"
+                    title="额度收紧值必须是非负整数，非法值不会被静默按默认值处理。"
+                  />
+                )}
+                {active?.budget && (
+                  <Card size="small" title="本轮实际额度">
+                    <Typography.Text>
+                      重点：{active.focus || "未指定"}
+                    </Typography.Text>
+                    <Typography.Paragraph>
+                      工具调用 {active.budget.toolCalls} · 模型请求{" "}
+                      {active.budget.modelRequests} · 时长{" "}
+                      {active.budget.durationSeconds} 秒
+                      {active.budget.consumed
+                        ? ` · 已消耗工具调用 ${active.budget.consumed.toolCalls}`
+                        : ""}
+                    </Typography.Paragraph>
+                  </Card>
+                )}
                 <Button
                   type="primary"
                   loading={busy}
@@ -1409,6 +1600,7 @@ export function AssistantPage({
                     !canWriteConversation ||
                     !message.trim() ||
                     !!running ||
+                    invalidTightening ||
                     !capabilities.data?.data.enabled
                   }
                   onClick={() => void send()}

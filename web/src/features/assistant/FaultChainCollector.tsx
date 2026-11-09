@@ -4,6 +4,7 @@ import {
   Button,
   Checkbox,
   Input,
+  InputNumber,
   Select,
   Space,
   Typography,
@@ -14,6 +15,7 @@ import {
 } from "../../api/generated/platform";
 import { checked, requestOptions } from "../../api/client";
 import type {
+  AssistantBudgetTighteningV1,
   AssistantConversationV1,
   AssistantFaultChainRequestV1,
   AssistantTurnV1,
@@ -23,6 +25,8 @@ export function FaultChainCollector({
   conversation,
   disabled,
   epoch,
+  focus,
+  budgetTightening,
   onSubmitted,
 }: {
   conversation: AssistantConversationV1;
@@ -31,6 +35,11 @@ export function FaultChainCollector({
   // advances it on every scope, conversation, binding or turn change, so a late
   // answer of an older epoch is never accepted.
   epoch: number;
+  // The focus and the requested narrowing come from the page: the collector
+  // submits the same frozen input as a message turn, so the server applies one
+  // rule for both entries.
+  focus?: string;
+  budgetTightening?: AssistantBudgetTighteningV1;
   onSubmitted: (turn: AssistantTurnV1, epoch: number) => void;
 }) {
   const [name, setName] = useState("");
@@ -143,6 +152,8 @@ export function FaultChainCollector({
             message: "收集故障链证据",
             expectedConversationRevision: conversation.revision,
             faultChainRequest: request,
+            ...(focus ? { focus } : {}),
+            ...(budgetTightening ? { budgetTightening } : {}),
           },
           requestOptions(signal, true),
         ),

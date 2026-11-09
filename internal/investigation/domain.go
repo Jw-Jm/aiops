@@ -2,6 +2,7 @@
 package investigation
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"github.com/google/uuid"
@@ -85,6 +86,113 @@ func (b Budget) Valid() bool {
 	}
 	return b.DurationSeconds > 0 && b.DurationSeconds <= 600 && b.ToolCalls > 0 && b.Usage.Within(DefaultBudget().Usage)
 }
+// BudgetTightening is a caller request to narrow an admitted budget. A zero
+// dimension means "not requested for that dimension"; a negative value is
+// invalid input and never a silent default.
+type BudgetTightening struct {
+	DurationSeconds int64 `json:"durationSeconds"`
+	ToolCalls       int64 `json:"toolCalls"`
+	RawQueries      int64 `json:"rawQueries"`
+	ResultBytes     int64 `json:"resultBytes"`
+	GraphNodes      int64 `json:"graphNodes"`
+	EvidenceItems   int64 `json:"evidenceItems"`
+	ModelRequests   int64 `json:"modelRequests"`
+	InputTokens     int64 `json:"inputTokens"`
+	OutputTokens    int64 `json:"outputTokens"`
+}
+
+// UnmarshalJSON decodes a requested narrowing. Every dimension is a
+// non-nullable integer: an explicit null, a fraction, a string, a boolean or
+// an unknown dimension is refused instead of being read as an omitted
+// dimension. The dimension names are checked here because a custom decoder
+// replaces the boundary of the request decoder, which would otherwise be the
+// only place that rejects an unknown field.
+func (t *BudgetTightening) UnmarshalJSON(data []byte) error {
+	if len(bytes.TrimSpace(data)) == 0 || string(bytes.TrimSpace(data)) == "null" {
+		return ErrInvalid
+	}
+	var raw map[string]json.RawMessage
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return ErrInvalid
+	}
+	if raw == nil {
+		return ErrInvalid
+	}
+	out := BudgetTightening{}
+	for name, value := range raw {
+		target := map[string]*int64{
+			"durationSeconds": &out.DurationSeconds,
+			"toolCalls":       &out.ToolCalls,
+			"rawQueries":      &out.RawQueries,
+			"resultBytes":     &out.ResultBytes,
+			"graphNodes":      &out.GraphNodes,
+			"evidenceItems":   &out.EvidenceItems,
+			"modelRequests":   &out.ModelRequests,
+			"inputTokens":     &out.InputTokens,
+			"outputTokens":    &out.OutputTokens,
+		}[name]
+		if target == nil {
+			return ErrInvalid
+		}
+		// An explicit null is not an omitted dimension: it would be read as
+		// "not requested" and silently widen the request to the admission.
+		if len(value) == 0 || string(value) == "null" {
+			return ErrInvalid
+		}
+		var number int64
+		if err := json.Unmarshal(value, &number); err != nil {
+			return ErrInvalid
+		}
+		*target = number
+	}
+	*t = out
+	return nil
+}
+
+// vector returns the tightenable usage dimensions. Model cost is not
+// tightenable: it is owned by the admission and the default profile grants
+// none, so a client request for it would always be invalid.
+func (t BudgetTightening) vector() []int64 {
+	return []int64{t.ToolCalls, t.RawQueries, t.ResultBytes, t.GraphNodes, t.EvidenceItems, t.ModelRequests, t.InputTokens, t.OutputTokens}
+}
+
+// TightenBudget narrows the admitted budget and never widens it. It reuses
+// the workbench semantics of the manual investigation entry point: a zero
+// dimension is "not requested", a negative or otherwise invalid value is
+// rejected instead of silently defaulted, and LowerBudget keeps the
+// per-dimension minimum, so a request above the admitted dimension is
+// clamped back to it.
+func TightenBudget(base Budget, request BudgetTightening) (Budget, error) {
+	if !base.Valid() {
+		return Budget{}, ErrInvalid
+	}
+	values := request.vector()
+	for _, value := range values {
+		if value < 0 {
+			return Budget{}, ErrInvalid
+		}
+	}
+	requested := base
+	for i, value := range values {
+		if value == 0 {
+			continue
+		}
+		limits := requested.Usage.vector()
+		limits[i] = value
+		requested.Usage = usage(limits)
+	}
+	if request.DurationSeconds < 0 {
+		return Budget{}, ErrInvalid
+	}
+	if request.DurationSeconds != 0 {
+		requested.DurationSeconds = request.DurationSeconds
+	}
+	if !requested.Valid() {
+		return Budget{}, ErrInvalid
+	}
+	return LowerBudget(base, requested)
+}
+
 func LowerBudget(profile, policy Budget) (Budget, error) {
 	if !profile.Valid() || !policy.Valid() {
 		return Budget{}, ErrBudget

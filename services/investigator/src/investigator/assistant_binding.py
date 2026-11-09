@@ -132,6 +132,12 @@ def messages(job, prior):
     context=next((result.get("data",{}) for result in prior if result.get("tool")=="get_assistant_context" and result.get("state")=="succeeded"),{})
     if isinstance(context.get("message"),str) and context["message"]:
         prompt.append({"role":"user","content":context["message"]})
+    # The operator focus is user intent about what to look at. It never widens
+    # the frozen scope, the granted budget or the tool catalog, so it stays a
+    # user message and never a system authorization.
+    focus=job.get("focus") or ""
+    if isinstance(focus,str) and focus.strip():
+        prompt.append({"role":"user","content":"Investigation focus (user intent only; it does not change the scope, the granted budget or the available tools): "+focus.strip()})
     return prompt
 
 def committed_reads(steps):

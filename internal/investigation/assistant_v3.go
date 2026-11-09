@@ -397,7 +397,7 @@ func CreateAssistantJobTx(ctx context.Context, tx pgx.Tx, j Job) error {
 		incident = j.IncidentID
 		revision = j.TriggerRevision
 	}
-	_, err := tx.Exec(ctx, `INSERT INTO investigation.jobs(tenant_id,job_id,incident_id,trigger_revision,state,schema_version,requesting_subject,trigger_kind,policy_version,effective_scope,effective_scope_digest,tool_catalog_digest,budget,budget_reserved,budget_consumed,expires_at,assistant_binding) VALUES($1,$2,$3,$4,'queued','investigation-job/v3',$5,'manual',$6,$7,$8,$9,$10,$11,$11,$12,$13)`, j.TenantID, j.JobID, incident, revision, j.Subject, j.PolicyVersion, raw(j.Scope), j.EffectiveScopeDigest, j.ToolCatalogDigest, raw(j.Budget), raw(Usage{}), j.ExpiresAt, raw(j.Assistant))
+	_, err := tx.Exec(ctx, `INSERT INTO investigation.jobs(tenant_id,job_id,incident_id,trigger_revision,state,schema_version,requesting_subject,trigger_kind,policy_version,effective_scope,effective_scope_digest,tool_catalog_digest,budget,budget_reserved,budget_consumed,expires_at,assistant_binding,focus,admission_digest) VALUES($1,$2,$3,$4,'queued','investigation-job/v3',$5,'manual',$6,$7,$8,$9,$10,$11,$11,$12,$13,$14,$15)`, j.TenantID, j.JobID, incident, revision, j.Subject, j.PolicyVersion, raw(j.Scope), j.EffectiveScopeDigest, j.ToolCatalogDigest, raw(j.Budget), raw(Usage{}), j.ExpiresAt, raw(j.Assistant), j.Focus, j.AdmissionDigest)
 	if err != nil {
 		return err
 	}

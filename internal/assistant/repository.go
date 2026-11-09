@@ -402,12 +402,24 @@ func (r Repository) MessagePage(ctx context.Context, tenant, id uuid.UUID, subje
 	return out, err
 }
 
-const turnColumns = `turn_id,conversation_id,job_id,parent_turn_id,state,error_code,answer,created_at,base_conversation_revision+1`
-
 func loadTurn(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID) (Turn, error) {
 	var out Turn
-	err := tx.QueryRow(ctx, `SELECT `+turnColumns+` FROM investigation.assistant_turns WHERE tenant_id=$1 AND turn_id=$2`, tenant, id).Scan(&out.TurnID, &out.ConversationID, &out.JobID, &out.ParentTurnID, &out.State, &out.ErrorCode, &out.Answer, &out.CreatedAt, &out.ConversationRevision)
-	return out, err
+	var focus string
+	var budget, consumed []byte
+	// The applied focus and budget live on the job row, so a reloaded turn
+	// reports what the Worker really runs under.
+	err := tx.QueryRow(ctx, `SELECT t.turn_id,t.conversation_id,t.job_id,t.parent_turn_id,t.state,t.error_code,t.answer,t.created_at,t.base_conversation_revision+1,COALESCE(j.focus,''),COALESCE(j.budget,'{}'::jsonb),COALESCE(j.budget_consumed,'{}'::jsonb) FROM investigation.assistant_turns t LEFT JOIN investigation.jobs j ON j.tenant_id=t.tenant_id AND j.job_id=t.job_id WHERE t.tenant_id=$1 AND t.turn_id=$2`, tenant, id).Scan(&out.TurnID, &out.ConversationID, &out.JobID, &out.ParentTurnID, &out.State, &out.ErrorCode, &out.Answer, &out.CreatedAt, &out.ConversationRevision, &focus, &budget, &consumed)
+	if err != nil {
+		return out, err
+	}
+	out.Focus = focus
+	var applied investigation.Budget
+	var used investigation.Usage
+	if json.Unmarshal(budget, &applied) == nil && applied.DurationSeconds > 0 {
+		json.Unmarshal(consumed, &used)
+		out.Budget = budgetView(applied, used)
+	}
+	return out, nil
 }
 func (r Repository) Submit(ctx context.Context, tenant, id uuid.UUID, subject, key string, q SubmitMessage) (Turn, error) {
 	var out Turn
@@ -427,6 +439,19 @@ func (r Repository) Submit(ctx context.Context, tenant, id uuid.UUID, subject, k
 	}
 	if !admission.Budget.Valid() || admission.ModelProfileVersion == "" {
 		return out, investigation.ErrDenied
+	}
+	// The client may only narrow the admission. The applied budget is computed
+	// here and is the one the Worker actually runs under.
+	budget := admission.Budget
+	if q.BudgetTightening != nil {
+		budget, err = investigation.TightenBudget(admission.Budget, *q.BudgetTightening)
+		if err != nil {
+			return out, investigation.ErrInvalid
+		}
+	}
+	focus, err := NormalizeFocus(q.Focus)
+	if err != nil {
+		return out, investigation.ErrInvalid
 	}
 	digest := graph.ScopeDigest(struct {
 		ID    uuid.UUID
@@ -558,8 +583,15 @@ func (r Repository) Submit(ctx context.Context, tenant, id uuid.UUID, subject, k
 				}
 			}
 			requestedWindow = &q.FaultChainRequest.Fault
+			// The evidence-only mode never spends model budget. It narrows the
+			// effective budget before the frozen input, the admission digest and
+			// the job are built, so all three carry the same applied limits.
+			budget.ModelRequests = 0
+			budget.InputTokens = 0
+			budget.OutputTokens = 0
+			budget.DurationSeconds = min(budget.DurationSeconds, 60)
 		}
-		input := TurnInput{FaultChainRequest: q.FaultChainRequest, RequestedTimeRange: requestedWindow, ReferenceResolution: referenceResolution, SchemaVersion: "assistant-input/v1", RequestedAt: requestedAt, Message: tools.RedactText(q.Message), Binding: c.Binding, History: history, HistoryManifestDigest: graph.ScopeDigest(history), ParentTurnID: q.ParentTurnID, ClarificationID: q.ClarificationID}
+		input := TurnInput{FaultChainRequest: q.FaultChainRequest, RequestedTimeRange: requestedWindow, ReferenceResolution: referenceResolution, SchemaVersion: "assistant-input/v1", RequestedAt: requestedAt, Message: tools.RedactText(q.Message), Binding: c.Binding, History: history, HistoryManifestDigest: graph.ScopeDigest(history), ParentTurnID: q.ParentTurnID, ClarificationID: q.ClarificationID, Focus: focus, EffectiveBudget: &budget}
 		if q.FaultChainRequest == nil && c.Mode == "troubleshoot" && !strings.Contains(q.Message, "现在") && !strings.Contains(strings.ToLower(q.Message), "now") {
 			for i := len(history) - 1; i >= 0; i-- {
 				if history[i].Role != "assistant" {
@@ -591,12 +623,15 @@ func (r Repository) Submit(ctx context.Context, tenant, id uuid.UUID, subject, k
 		if len(inputRaw) > 48<<10 {
 			return investigation.ErrBudget
 		}
-		out = Turn{TurnID: uuid.Must(uuid.NewV7()), ConversationID: id, JobID: uuid.Must(uuid.NewV7()), ParentTurnID: q.ParentTurnID, State: "queued", ConversationRevision: c.Revision + 1}
+		out = Turn{TurnID: uuid.Must(uuid.NewV7()), ConversationID: id, JobID: uuid.Must(uuid.NewV7()), ParentTurnID: q.ParentTurnID, State: "queued", ConversationRevision: c.Revision + 1, Focus: focus}
 		defs, err := tools.CatalogFor("investigation-job/v3", taskKind(c), c.AuthorizationDomain, "assistant-tools/v2")
 		if err != nil {
 			return err
 		}
-		j := investigation.Job{SchemaVersion: "investigation-job/v3", TenantID: tenant, JobID: out.JobID, IncidentID: c.Binding.IncidentID, Subject: subject, Scope: c.Binding.ExecutionScope, EffectiveScopeDigest: graph.ScopeDigest(c.Binding.ExecutionScope), PolicyVersion: admission.PolicyVersion, ToolCatalogDigest: tools.Digest(defs), Budget: admission.Budget, ExpiresAt: time.Now().UTC().Add(time.Duration(admission.Budget.DurationSeconds) * time.Second)}
+		j := investigation.Job{SchemaVersion: "investigation-job/v3", TenantID: tenant, JobID: out.JobID, IncidentID: c.Binding.IncidentID, Subject: subject, Scope: c.Binding.ExecutionScope, EffectiveScopeDigest: graph.ScopeDigest(c.Binding.ExecutionScope), PolicyVersion: admission.PolicyVersion, ToolCatalogDigest: tools.Digest(defs), Budget: budget, Focus: focus, AdmissionDigest: graph.ScopeDigest(struct {
+			Budget investigation.Budget
+			Focus  string
+		}{budget, focus}), ExpiresAt: time.Now().UTC().Add(time.Duration(budget.DurationSeconds) * time.Second)}
 		if j.IncidentID != uuid.Nil {
 			if err := tx.QueryRow(ctx, `SELECT revision FROM incident.records WHERE tenant_id=$1 AND incident_id=$2 FOR SHARE`, tenant, j.IncidentID).Scan(&j.TriggerRevision); err != nil {
 				return err
@@ -618,12 +653,10 @@ func (r Repository) Submit(ctx context.Context, tenant, id uuid.UUID, subject, k
 		if q.FaultChainRequest != nil {
 			j.Assistant.ExecutionMode = "evidence_only"
 			j.Assistant.FaultChainRequestDigest = graph.ScopeDigest(*q.FaultChainRequest)
-			j.Budget.ModelRequests = 0
-			j.Budget.InputTokens = 0
-			j.Budget.OutputTokens = 0
-			j.Budget.DurationSeconds = min(j.Budget.DurationSeconds, 60)
 			j.ExpiresAt = requestedAt.Add(time.Duration(j.Budget.DurationSeconds) * time.Second)
 		}
+		// Echo the budget the job actually runs under, not the requested one.
+		out.Budget = budgetView(j.Budget, investigation.Usage{})
 		mid := uuid.Must(uuid.NewV7())
 		if err = investigation.CreateAssistantJobTx(ctx, tx, j); err != nil {
 			return err

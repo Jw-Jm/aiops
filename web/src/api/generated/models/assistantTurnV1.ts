@@ -5,6 +5,7 @@
  * OpenAPI spec version: 1.4.0
  */
 import type { AssistantAnswerV1 } from './assistantAnswerV1.ts';
+import type { AssistantBudgetV1 } from './assistantBudgetV1.ts';
 import type { AssistantTurnV1State } from './assistantTurnV1State.ts';
 
 export interface AssistantTurnV1 {
@@ -17,4 +18,7 @@ export interface AssistantTurnV1 {
   answer?: AssistantAnswerV1;
   createdAt: string;
   conversationRevision: number;
+  /** @maxLength 500 */
+  focus?: string;
+  budget?: AssistantBudgetV1;
 }
