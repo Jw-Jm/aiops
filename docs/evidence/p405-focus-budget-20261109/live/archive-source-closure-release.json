@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "ops-current-release/v1",
+  "commit": "d7789c5ec7dabe3a363af5accaf0b65e846dbd8d",
+  "namespace": "ops-current",
+  "namespaceUID": "c4dc825f-0897-417b-a876-f151e7783629",
+  "database": "ops_current",
+  "databaseSchema": 75,
+  "images": {
+    "worker": {
+      "tag": "ops.local/current/platform-worker:c2fe195",
+      "image": "ops.local/current/platform-worker@sha256:f54cfb69a57464c833323865ef092e00db5680d0d02522f928f36fc5b8d4ebbc",
+      "manifestDigest": "sha256:f54cfb69a57464c833323865ef092e00db5680d0d02522f928f36fc5b8d4ebbc",
+      "imageID": "sha256:887929eb3554755dc09437a5ae122f99b67df5a5a1b44c3a01139e9d87717e00",
+      "binarySHA256": "00352cd571127011cdbc3d2da15a50d97fa0435488f31e2d1f5234da39f5fbae",
+      "sourceCommit": "c2fe195d7523d132eb95a46cd2e895c3ad736eea",
+      "entrypoint": "/ops-worker",
+      "entrypointSHA256": "00352cd571127011cdbc3d2da15a50d97fa0435488f31e2d1f5234da39f5fbae",
+      "reusedUnchangedFromCommit": "c2fe195d7523d132eb95a46cd2e895c3ad736eea"
+    },
+    "investigator": {
+      "tag": "ops.local/current/investigator:4c7c413",
+      "image": "ops.local/current/investigator@sha256:c981bda5f40bacaa79968c21f2e719eacf6556e3a0533434a4d2642d2e2225d8",
+      "manifestDigest": "sha256:c981bda5f40bacaa79968c21f2e719eacf6556e3a0533434a4d2642d2e2225d8",
+      "sourceCommit": "4c7c4134e357897af9614c081042c8609b81d593",
+      "baseImageConfigDigest": "sha256:02523f77453a08022a699673d08eee0e6e16ff60c7299e5ef673ed140a109647",
+      "imageID": "sha256:91b3110a505e0ed567099e33da43c4600173f0a895b2cd2fe17f09e29b49f387",
+      "reusedUnchangedFromCommit": "4c7c4134e357897af9614c081042c8609b81d593"
+    },
+    "api": {
+      "tag": "ops.local/current/platform-api:4c7c413",
+      "image": "ops.local/current/platform-api@sha256:b3815ffc4fd2df3e9118107892e5ec6dc3897f717b988e5252657d453e8ffb12",
+      "manifestDigest": "sha256:b3815ffc4fd2df3e9118107892e5ec6dc3897f717b988e5252657d453e8ffb12",
+      "sourceCommit": "4c7c4134e357897af9614c081042c8609b81d593",
+      "baseImageConfigDigest": "sha256:88002dc710dd4e5f0b66cc6c7b1c230669ddade6cae1a70ef736b5ffe9651b01",
+      "imageID": "sha256:17fcc68f2fd329abde8269662c5e097d68f17d1570b2834a95793107e729d30e",
+      "entrypoint": "/ops-api",
+      "entrypointSHA256": "af7c28952e9b1572e9b3b15efb4cf2ecc8b70dde88a1d2ac86cc55426cfd103a",
+      "binarySHA256": "af7c28952e9b1572e9b3b15efb4cf2ecc8b70dde88a1d2ac86cc55426cfd103a",
+      "reusedUnchangedFromCommit": "4c7c4134e357897af9614c081042c8609b81d593"
+    }
+  },
+  "runtimeConfigSHA256": "b343d35d0ec9c1c3d5060810017cf7c8b25feac6191e49344c2d9086a12f0c25",
+  "webIndexSHA256": "0a95da7b1b181ccac0fff140700eecd075ba7214831104d20fa4e22c36546afa",
+  "webRuntimeConfigSHA256": "d2f17846a71e89e71fce255fdb1855a207e3215f3665d23bf8cfa8fd4e2688d9",
+  "acceptedAt": "2026-11-09T11:59:57.570618+00:00",
+  "knownLimitations": [
+    "public investigation workbench uncommitted changes rejected in current review: detail loading, lifecycle/state updates, history projection and realPG cases remain; not deployed",
+    "all26P4 slice actions and P5-01/P6-01/P5-02shared outputs remain incomplete; no full four-task or visual pass",
+    "GOMEMLIMIT is Go managed memory budget, not a hard RSS bound; current recovery and roughly1hour observation do not establish indefinite stability",
+    "KubeVirt/CDI/Trace/SP08 deferrals unchanged; no production release"
+  ]
+}

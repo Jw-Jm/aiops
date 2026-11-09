@@ -72,3 +72,9 @@
 当前API/Web/调查器实际运行4c7c413，Worker仍c2，schema75；正式接受指针仍179ca6a。源chart尚未带GOMEMLIMIT，下一阶段必须落回deploy/charts/ops-dependencies/templates/seaweedfs.yaml并验证；没有把带未归并运行配置的候选登记成完整接受版本。
 
 P4-05尚需统一入口公开步骤/调查详情与历史、停止确认等功能动作收口，26条主切片尚未整体通过；P5-01/P6-01及P5-02共享输出动作继续；HTML视觉未验。v1公开GET investigation/job及steps已现场200/4step，可复用既有API；不需要开启被禁用的旧v2模型创建路径。所有原执行/回退/unknown证据继续复用，不重新修改业务资源。
+
+## 归档配置源已收口；公开工作台仍返修
+
+2026-11-09，M1由task59868d05落回Chart，Codex真实Helm渲染检查通过。仅提交Chart和渲染测试两文件为d7789c5，未将新工作台的未通过代码混入提交或部署。应用镜像/页面保持4c7c413原样，Worker c2，schema75；正式release工具现已接受d7789c5，runtime镜像来源仍如实标4c/c2，Chart配置与运行640MiB一致。约1小时后的归档及固定RCA读200，无memorymax/oom事件（live/archive-source-closure-*）。这纠正前文“指针仍179、Chart待落库”的历史状态，不等于P4整项通过。
+
+新工作台独立审核未通过：已知Job的详情因disabled turn query.isPending永久加载（已用完整挂载探针复现）；运行中Job/步骤无自动刷新；详情与停止确认缺父级scope/会话生命周期围栏；故障历史仍序列化整个v3 Job，未用公开投影；现有旧版历史UI未接v3精确链接。新增5条Web测试仅对独立确认组件/helper及历史列表，不足以证明详情可用。公开投影/历史/取消归属三处后端改动缺真实PG正反例，26动作清单未交付。上述工作保留原差异，集中返修，绝不按整项/四项/视觉完成。
