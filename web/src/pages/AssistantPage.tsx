@@ -93,6 +93,9 @@ export function AssistantPage({
     setCluster(scopedCluster);
   }, [scopedCluster]);
   const [namespace, setNamespace] = useState("");
+  const clusterScopedGranted = session?.clusterScopes.includes(
+    candidates.find((candidate) => candidate.clusterUid === cluster)?.clusterId ?? "",
+  ) ?? false;
   const [targetName, setTargetName] = useState("");
   const [targetKind, setTargetKind] = useState("Pod");
   const [resolution, setResolution] = useState<{
@@ -397,7 +400,7 @@ export function AssistantPage({
                 : namespace
                   ? [namespace]
                   : [],
-              includeClusterScoped: log ? false : !namespace,
+              includeClusterScoped: log ? false : !namespace && clusterScopedGranted,
             }
           : {}),
       };
@@ -744,7 +747,7 @@ export function AssistantPage({
                                       namespaceSelection: namespace
                                         ? [namespace]
                                         : [],
-                                      includeClusterScoped: !namespace,
+                                      includeClusterScoped: !namespace && clusterScopedGranted,
                                       selector: {
                                         name: targetName,
                                         kind: targetKind,

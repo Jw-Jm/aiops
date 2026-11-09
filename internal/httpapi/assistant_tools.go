@@ -294,20 +294,52 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 		if json.Unmarshal(args, &params) != nil {
 			return out, investigation.ErrInvalid
 		}
+		var data investigation.FormalRead
 		err := persistence.WithTenantTx(ctx, h.Pool, j.TenantID, func(tx pgx.Tx) error {
 			if investigation.CheckAssistantJobTx(ctx, tx, j) != nil {
 				return investigation.ErrDenied
 			}
-			data, refs, err := investigation.ReadFormalReferencesTx(ctx, tx, j, params.Revision)
-			if err == nil {
-				out.Data = data
-				out.EvidenceRefs = refs
-			}
+			var refs []string
+			var err error
+			data, refs, err = investigation.ReadFormalReferencesTx(ctx, tx, j, params.Revision)
+			out.EvidenceRefs = refs
 			return err
 		})
 		if err != nil {
 			return out, err
 		}
+		data.ArchivedEvidence = []map[string]any{}
+		data.OmittedEvidence = []string{}
+		bytesLeft := 24 << 10
+		for _, frozen := range data.Evidence {
+			if frozen.ReplayState != "archived_verified" || len(data.ArchivedEvidence) >= 20 {
+				data.OmittedEvidence = append(data.OmittedEvidence, frozen.EvidenceID)
+				continue
+			}
+			// Reuse the signed, authority-fenced archive reader; metadata alone
+			// is not evidence that the model has read the historical facts.
+			raw, err := a.Legacy.read(ctx, j, "/api/v1/evidence/"+frozen.EvidenceID, nil, nil)
+			if err != nil {
+				return out, err
+			}
+			var archived evidence.Evidence
+			if json.Unmarshal(raw, &archived) != nil || archived.EvidenceID != frozen.EvidenceID || archived.ContentDigest != frozen.ContentDigest || archived.SourceRevision != frozen.SourceRevision || archived.SourceRegistrationID != frozen.SourceRegistrationID || evidence.Digest(archived.FactSlice) != frozen.ContentDigest {
+				return out, investigation.ErrDenied
+			}
+			if len(archived.FactSlice) > bytesLeft {
+				data.OmittedEvidence = append(data.OmittedEvidence, frozen.EvidenceID)
+				continue
+			}
+			bytesLeft -= len(archived.FactSlice)
+			data.ArchivedEvidence = append(data.ArchivedEvidence, map[string]any{
+				"evidenceId": archived.EvidenceID, "resourceCanonicalId": archived.ResourceCanonicalID,
+				"sourceRegistrationId": archived.SourceRegistrationID, "sourceRevision": archived.SourceRevision,
+				"contentDigest": archived.ContentDigest, "observedFrom": archived.ObservedFrom,
+				"observedTo": archived.ObservedTo, "replayState": archived.ReplayState, "facts": archived.FactSlice,
+			})
+		}
+		out.Partial = len(data.OmittedEvidence) != 0
+		out.Data = data
 	case "get_assistant_context":
 		if err := load(); err != nil {
 			return out, err

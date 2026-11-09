@@ -20,11 +20,14 @@ type FormalReference struct {
 }
 
 type FormalRead struct {
-	FormalReferences   []FormalReference `json:"formalReferences"`
-	RCA                json.RawMessage   `json:"rca,omitempty"`
-	Plans              []map[string]any  `json:"plans"`
-	Historical         bool              `json:"historical"`
-	CurrentRCARevision int64             `json:"currentRcaRevision"`
+	FormalReferences   []FormalReference   `json:"formalReferences"`
+	RCA                json.RawMessage     `json:"rca,omitempty"`
+	Plans              []map[string]any    `json:"plans"`
+	Historical         bool                `json:"historical"`
+	CurrentRCARevision int64               `json:"currentRcaRevision"`
+	Evidence           []evidence.Evidence `json:"-"`
+	ArchivedEvidence   []map[string]any    `json:"archivedEvidence"`
+	OmittedEvidence    []string            `json:"omittedEvidence"`
 }
 
 func authorizeFormalIncidentTx(ctx context.Context, tx pgx.Tx, j Job, id uuid.UUID) (int64, error) {
@@ -48,14 +51,12 @@ func authorizeFormalRCATx(ctx context.Context, tx pgx.Tx, j Job, raw []byte) err
 	if json.Unmarshal(raw, &rev) != nil || rev.TenantID != j.TenantID.String() || rev.IncidentID != j.IncidentID.String() {
 		return ErrInvalid
 	}
-	if rca.CheckGraphSources(ctx, tx, j.TenantID, rev.InputManifest.GraphSources, rev.InputManifest.Graph) != nil {
-		return ErrDenied
-	}
 	for _, node := range rev.InputManifest.Graph.Nodes {
 		if !j.Scope.Allows(node.CanonicalID, node.Namespace) {
 			return ErrDenied
 		}
 	}
+	verified := []evidence.Evidence{}
 	for _, ref := range rev.InputManifest.Evidence {
 		id, err := uuid.Parse(ref.EvidenceID)
 		if err != nil {
@@ -65,6 +66,13 @@ func authorizeFormalRCATx(ctx context.Context, tx pgx.Tx, j Job, raw []byte) err
 		if err != nil || !slices.Contains(j.Budget.AllowedDataClasses, e.DataClass) {
 			return ErrDenied
 		}
+		if e.ContentDigest != ref.ContentDigest || e.SourceRevision != ref.SourceRevision || e.SourceRegistrationID != ref.SourceRegistrationID || e.SourceScopeDigest != ref.SourceScopeDigest || e.ResourceCanonicalID != ref.ResourceCanonicalID {
+			return ErrDenied
+		}
+		verified = append(verified, e)
+	}
+	if rca.CheckGraphSources(ctx, tx, j.TenantID, rev.InputManifest.GraphSources, rev.InputManifest.Graph) != nil && authorizeArchivedGraphTx(ctx, tx, j, rev, verified) != nil {
+		return ErrDenied
 	}
 	return nil
 }
@@ -98,6 +106,7 @@ func ReadFormalReferencesTx(ctx context.Context, tx pgx.Tx, j Job, revision int6
 	json.Unmarshal(raw, &rev)
 	for _, e := range rev.InputManifest.Evidence {
 		refs = append(refs, e.EvidenceID)
+		out.Evidence = append(out.Evidence, e)
 	}
 	out.RCA, err = formalRCASummary(rev, refs)
 	if err != nil {

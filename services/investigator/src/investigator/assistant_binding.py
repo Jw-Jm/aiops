@@ -157,13 +157,15 @@ def evidence_reads_required(context):
 def model_tool_names(context, available):
     """An explicit explanation/read list does not need the entire query catalog."""
     available = set(available)
+    # Reading a named frozen reference is compatible with prohibiting fresh queries.
+    formal = {"get_formal_references"} & available if "get_formal_references" in context.get("message", "") else set()
     if (context.get("history") or context.get("historicalFaultChainContext")) and not evidence_reads_required(context) and not query_required(context):
-        return set()
+        return formal
     if not context.get("historicalFaultChainContext"): return available
     requested = {name for name in available if re.search(r"\b" + re.escape(name) + r"\b", context.get("message", ""))}
     preloaded = {"get_assistant_context", "resource_history", "resource_findings", "resource_changes", "get_incident_context", "get_formal_references"}
     if requested and requested <= preloaded and not query_required(context):
-        return set()  # Requested reads were committed before the model phase.
+        return formal  # A requested RCA revision may differ from the preloaded latest.
     return available
 
 def required_query_tool(steps):

@@ -13,13 +13,13 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"io"
 	"log/slog"
-	"strings"
 	"net"
 	"net/http"
 	"net/url"
 	"ops-platform/internal/assistant"
 	"ops-platform/internal/auth"
 	"ops-platform/internal/configregistry"
+	"ops-platform/internal/graph"
 	"ops-platform/internal/httpapi"
 	"ops-platform/internal/integrations/openbao"
 	"ops-platform/internal/investigation"
@@ -30,6 +30,7 @@ import (
 	"ops-platform/internal/persistence"
 	"ops-platform/internal/policy"
 	"os"
+	"strings"
 	"sync"
 	"time"
 )
@@ -243,7 +244,11 @@ func StartSP06API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Han
 		if err != nil {
 			return "", err
 		}
-		decision, err := evaluator.Evaluate(ctx, policy.PolicyInput{Request: a, PrincipalType: policy.PrincipalOperator, RequestType: policy.RequestTool, Scope: scope, ToolName: "get_incident_context", AllowedTools: names, ToolReadOnly: true, Risk: policy.RiskLow})
+		grant, err := (graph.Authorization{Pool: pool}).Effective(ctx, a.TenantID.String(), a.Subject, cluster)
+		if err != nil {
+			return "", investigation.ErrDenied
+		}
+		decision, err := evaluateInvestigationPolicy(ctx, evaluator, grant, policy.PolicyInput{Request: a, PrincipalType: policy.PrincipalOperator, RequestType: policy.RequestTool, Scope: scope, ToolName: "get_incident_context", AllowedTools: names, ToolReadOnly: true, Risk: policy.RiskLow})
 		if err != nil || !decision.Allow {
 			return "", investigation.ErrDenied
 		}
@@ -300,7 +305,12 @@ func StartSP06API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Han
 			deny := func(reason string, err error) (assistant.Admission, error) {
 				// Denials stay FORBIDDEN on the wire; the reason is for the
 				// operator, because every gate here is otherwise silent.
-				slog.Warn("assistant admission denied", "reason", reason, "task", task, "domain", conversation.AuthorizationDomain, "subject", func() string { actor, _ := auth.RequestContextFromContext(ctx); return actor.Subject }(), "error", func() string { if err != nil { return err.Error() }; return "" }())
+				slog.Warn("assistant admission denied", "reason", reason, "task", task, "domain", conversation.AuthorizationDomain, "subject", func() string { actor, _ := auth.RequestContextFromContext(ctx); return actor.Subject }(), "error", func() string {
+					if err != nil {
+						return err.Error()
+					}
+					return ""
+				}())
 				return assistant.Admission{}, investigation.ErrDenied
 			}
 			if !c.Assistant.Enabled {
@@ -324,7 +334,7 @@ func StartSP06API(ctx context.Context, pool *pgxpool.Pool, sp04 *httpapi.SP04Han
 			if err != nil {
 				return deny("tool_catalog_unavailable", err)
 			}
-			decision, err := evaluator.Evaluate(ctx, policy.PolicyInput{Request: actor, PrincipalType: principal, RequestType: policy.RequestTool, Scope: scope, ToolName: "get_assistant_context", AllowedTools: tools.Names(defs), ToolReadOnly: true, Risk: policy.RiskLow, AssistantTaskKind: task, AuthorizationDomain: conversation.AuthorizationDomain})
+			decision, err := evaluateInvestigationPolicy(ctx, evaluator, conversation.Binding.ExecutionScope, policy.PolicyInput{Request: actor, PrincipalType: principal, RequestType: policy.RequestTool, Scope: scope, ToolName: "get_assistant_context", AllowedTools: tools.Names(defs), ToolReadOnly: true, Risk: policy.RiskLow, AssistantTaskKind: task, AuthorizationDomain: conversation.AuthorizationDomain})
 			if err != nil || !decision.Allow {
 				return deny("policy_denied:"+strings.Join(decision.Reasons, ","), err)
 			}

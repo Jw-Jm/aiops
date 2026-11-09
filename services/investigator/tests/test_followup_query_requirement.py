@@ -24,3 +24,12 @@ def test_retrospective_prohibits_new_reads_without_a_fault_chain_context():
     assert not query_required(context, "incident_followup")
     assert not evidence_reads_required(context)
     assert model_tool_names(context, ["execute_analysis_query", "get_formal_references"]) == set()
+
+
+def test_retrospective_keeps_explicit_fixed_reference_read_but_no_fresh_queries():
+    from investigator.assistant_binding import model_tool_names
+    context = {"message": "禁止新查询；调用 get_formal_references，rcaRevision=1 复盘归档", "history": [{"role": "assistant"}]}
+    available = ["get_formal_references", "execute_analysis_query", "describe_analysis_dataset"]
+    assert model_tool_names(context, available) == {"get_formal_references"}
+    context["historicalFaultChainContext"] = {"frozen": True}
+    assert model_tool_names(context, available) == {"get_formal_references"}

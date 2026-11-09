@@ -20,6 +20,7 @@ import { setCredentials } from "../../src/api/client";
 
 vi.mock("../../src/api/observation", () => ({ observation: vi.fn() }));
 
+const authScope = vi.hoisted(() => ({ clusterScopes: ["id-a", "id-b"] }));
 const api = vi.hoisted(() => ({
   capabilities: vi.fn(),
   conversations: vi.fn(),
@@ -40,7 +41,7 @@ vi.mock("../../src/auth/AuthProvider", () => ({
         { clusterId: "id-a", clusterUid: "uid-a", displayName: "集群 A" },
         { clusterId: "id-b", clusterUid: "uid-b", displayName: "集群 B" },
       ],
-      clusterScopes: ["uid-a", "uid-b"],
+      clusterScopes: authScope.clusterScopes,
       namespaceScopes: [],
     },
     user: { profile: { preferred_username: "operator-a" } },
@@ -130,6 +131,7 @@ function renderAssistant(initial: string) {
 }
 
 beforeEach(() => {
+  authScope.clusterScopes = ["id-a", "id-b"];
   vi.mocked(observation).mockReset();
   setCredentials("fixture", "tenant");
   api.capabilities.mockResolvedValue(capabilitiesEnvelope);
@@ -269,7 +271,9 @@ it("discards a late created conversation when AssistantPage unmounts", async () 
   api.create.mockReturnValueOnce(pending.promise);
   const view = renderAssistant("/assistant?clusterUid=uid-a&canonicalId=pod-1");
   expect(await screen.findByText("故障排查")).toBeInTheDocument();
-  fireEvent.click((await screen.findByText("创建会话")).closest("button")!);
+  const button = (await screen.findByText("创建会话")).closest("button")!;
+  await waitFor(() => expect(button).toBeEnabled());
+  fireEvent.click(button);
   await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));
   view.unmount();
   await act(async () => {
@@ -397,4 +401,16 @@ it("keeps the existing model task gate for a valid linked log context", async ()
   ).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "创建会话" })).toBeDisabled();
   expect(api.create).not.toHaveBeenCalled();
+});
+
+
+it.each([true, false])("creates an incident conversation with only granted cluster-level scope (%s)", async (clusterGranted) => {
+  authScope.clusterScopes = clusterGranted ? ["id-a"] : [];
+  api.create.mockReturnValueOnce(new Promise(() => {}));
+  renderAssistant("/assistant?clusterUid=uid-a&incidentId=INC-2096");
+  const button = (await screen.findByText("创建会话")).closest("button")!;
+  await waitFor(() => expect(button).toBeEnabled());
+  fireEvent.click(button);
+  await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));
+  expect(api.create.mock.calls[0][0]).toMatchObject({incidentId:"INC-2096",includeClusterScoped:clusterGranted});
 });
