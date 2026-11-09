@@ -1,0 +1,258 @@
+{
+  "before": {
+    "method": "GET",
+    "path": "/api/v1/assistant/turns/01a1bf2e-8baa-77ab-be09-044dc1c5b03d",
+    "status": 200,
+    "body": {
+      "data": {
+        "turnId": "01a1bf2e-8baa-77ab-be09-044dc1c5b03d",
+        "conversationId": "01a1bf2d-f9dc-7047-8dd9-0359309d184f",
+        "jobId": "01a1bf2e-8baa-77ac-860c-17a519ceb042",
+        "state": "partial",
+        "answer": {
+          "asOf": "2026-11-09T07:21:12.103294635Z",
+          "partial": true,
+          "summary": "已按 rcaRevision=1 读取故障 01a1ae2d-eff0-7664-a10e-d02a701023f4 的冻结 RCA 第 1 版（contentDigest sha256:d131fc8917122a7c9fd0ed2c661d8d47d28a0cf667ab8edb74b163f4f82f1a35，historical=true，当前 RCA 已到 revision 22）：归档快照仅含两条 Pod 6eb76263-66c2-49ce-befc-d842ef473ae2 的 Event 证据，reason 均为 FailedMount，resourceVersion 分别为 2528117 与 2528128，状态 unresolved/partial，无候选根因。",
+          "factRefs": [],
+          "warnings": [
+            "引用的是归档历史版本 RCA 1，不代表当前 RCA（revision 22）结论",
+            "两条证据的 sourceRevision 均为 1，而当前来源注册版本为 2，归档证据与当前来源版本不一致",
+            "证据 observedFrom/observedTo 均为 2026-11-06T00:06:44Z 附近，属归档回放（archived_verified），非实时观测",
+            "未执行任何新查询、未刷新 RCA、未执行命令；缺失观测不能推断为正常",
+            "model_answer_incomplete"
+          ],
+          "answerKind": "diagnosis",
+          "entityRefs": [],
+          "formalRefs": [
+            {
+              "kind": "rca",
+              "revision": 1,
+              "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+              "contentDigest": "sha256:d131fc8917122a7c9fd0ed2c661d8d47d28a0cf667ab8edb74b163f4f82f1a35"
+            }
+          ],
+          "hypotheses": [
+            {
+              "key": "pod-volume-mount-failure",
+              "summary": "Pod 6eb76263-66c2-49ce-befc-d842ef473ae2 在 2026-11-06T00:06:44Z 附近发生卷挂载失败（FailedMount），两次 Event 的 resourceVersion 递增（2528117→2528128）提示同一失败被重复记录；仅为归档观察，未确认因果。",
+              "supports": [
+                "3dbe6b3d-67b1-560e-9712-a5093ce69b3b",
+                "9f58d2ab-8723-5df5-931c-85b89676206f"
+              ],
+              "conflicts": [],
+              "nextChecks": [
+                "在允许新查询时读取该 Pod 的当前状态与卷绑定关系"
+              ],
+              "missingEvidence": [
+                "挂载失败涉及的具体卷/PVC 与错误消息",
+                "Pod 当时的 phase 与容器状态",
+                "节点侧 kubelet/CSI 相关证据"
+              ]
+            },
+            {
+              "key": "node-or-path-contributing-factor",
+              "summary": "RCA 1 的 missing 列表指向 node-not-ready、node-causal-evidence、node-path，提示节点或存储路径侧因素可能参与，但归档中无任何支持或反证证据，无法评估。",
+              "supports": [],
+              "conflicts": [],
+              "nextChecks": [
+                "在允许新查询时检查承载该 Pod 的节点 Ready 状态与存储路径可达性"
+              ],
+              "missingEvidence": [
+                "node-not-ready 观测",
+                "node-causal-evidence",
+                "node-path 证据"
+              ]
+            }
+          ],
+          "nextChecks": [
+            "如需当前结论，另行按授权读取当前 RCA 版本（revision 22）的正式引用，而非归档 revision 1",
+            "在允许新查询时，针对 Pod 6eb76263-66c2-49ce-befc-d842ef473ae2 补齐 node-not-ready、node-causal-evidence、node-path 三类缺失证据",
+            "核对来源注册版本 1→2 的变更内容，确认归档证据是否仍与当前来源语义一致"
+          ],
+          "evidenceRefs": [
+            "3dbe6b3d-67b1-560e-9712-a5093ce69b3b",
+            "9f58d2ab-8723-5df5-931c-85b89676206f"
+          ],
+          "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+          "schemaVersion": "assistant-answer/v1",
+          "degradedSources": [
+            "01a1ab38-fbeb-79be-91c0-8823152c8c9d/analyzer/ops-current",
+            "01a1ab38-fbeb-79be-91c0-8823152c8c9d/archive"
+          ],
+          "missingEvidence": [
+            "冻结 RCA 1 的 evidenceBundle.missing 明确列出 node-not-ready、node-causal-evidence、node-path，缺少节点侧与路径侧证据",
+            "归档证据仅两条 Event 事实（reason/resourceVersion），未包含挂载失败的具体卷、错误消息或 Pod 状态细节",
+            "RCA 1 的 supporting 与 contradicting 均为空，无支持性因果证据，也无反证",
+            "RCA 1 记录 degradedSources：01a1ab38-fbeb-79be-91c0-8823152c8c9d/analyzer/ops-current 与 01a1ab38-fbeb-79be-91c0-8823152c8c9d/archive，来源质量受限",
+            "本次按指令未做新指标/日志查询，也未刷新 RCA，因此无法补充当前状态观测"
+          ],
+          "queryResultRefs": []
+        },
+        "createdAt": "2026-11-09T07:21:01.105495Z",
+        "conversationRevision": 3
+      },
+      "requestId": "01a1bf31-53c4-718b-a759-dea4547bf1f7"
+    }
+  },
+  "after": {
+    "method": "GET",
+    "path": "/api/v1/assistant/turns/01a1bf2e-8baa-77ab-be09-044dc1c5b03d",
+    "status": 200,
+    "body": {
+      "data": {
+        "turnId": "01a1bf2e-8baa-77ab-be09-044dc1c5b03d",
+        "conversationId": "01a1bf2d-f9dc-7047-8dd9-0359309d184f",
+        "jobId": "01a1bf2e-8baa-77ac-860c-17a519ceb042",
+        "state": "partial",
+        "answer": {
+          "asOf": "2026-11-09T07:21:12.103294635Z",
+          "partial": true,
+          "summary": "已按 rcaRevision=1 读取故障 01a1ae2d-eff0-7664-a10e-d02a701023f4 的冻结 RCA 第 1 版（contentDigest sha256:d131fc8917122a7c9fd0ed2c661d8d47d28a0cf667ab8edb74b163f4f82f1a35，historical=true，当前 RCA 已到 revision 22）：归档快照仅含两条 Pod 6eb76263-66c2-49ce-befc-d842ef473ae2 的 Event 证据，reason 均为 FailedMount，resourceVersion 分别为 2528117 与 2528128，状态 unresolved/partial，无候选根因。",
+          "factRefs": [],
+          "warnings": [
+            "引用的是归档历史版本 RCA 1，不代表当前 RCA（revision 22）结论",
+            "两条证据的 sourceRevision 均为 1，而当前来源注册版本为 2，归档证据与当前来源版本不一致",
+            "证据 observedFrom/observedTo 均为 2026-11-06T00:06:44Z 附近，属归档回放（archived_verified），非实时观测",
+            "未执行任何新查询、未刷新 RCA、未执行命令；缺失观测不能推断为正常",
+            "model_answer_incomplete"
+          ],
+          "answerKind": "diagnosis",
+          "entityRefs": [],
+          "formalRefs": [
+            {
+              "kind": "rca",
+              "revision": 1,
+              "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+              "contentDigest": "sha256:d131fc8917122a7c9fd0ed2c661d8d47d28a0cf667ab8edb74b163f4f82f1a35"
+            }
+          ],
+          "hypotheses": [
+            {
+              "key": "pod-volume-mount-failure",
+              "summary": "Pod 6eb76263-66c2-49ce-befc-d842ef473ae2 在 2026-11-06T00:06:44Z 附近发生卷挂载失败（FailedMount），两次 Event 的 resourceVersion 递增（2528117→2528128）提示同一失败被重复记录；仅为归档观察，未确认因果。",
+              "supports": [
+                "3dbe6b3d-67b1-560e-9712-a5093ce69b3b",
+                "9f58d2ab-8723-5df5-931c-85b89676206f"
+              ],
+              "conflicts": [],
+              "nextChecks": [
+                "在允许新查询时读取该 Pod 的当前状态与卷绑定关系"
+              ],
+              "missingEvidence": [
+                "挂载失败涉及的具体卷/PVC 与错误消息",
+                "Pod 当时的 phase 与容器状态",
+                "节点侧 kubelet/CSI 相关证据"
+              ]
+            },
+            {
+              "key": "node-or-path-contributing-factor",
+              "summary": "RCA 1 的 missing 列表指向 node-not-ready、node-causal-evidence、node-path，提示节点或存储路径侧因素可能参与，但归档中无任何支持或反证证据，无法评估。",
+              "supports": [],
+              "conflicts": [],
+              "nextChecks": [
+                "在允许新查询时检查承载该 Pod 的节点 Ready 状态与存储路径可达性"
+              ],
+              "missingEvidence": [
+                "node-not-ready 观测",
+                "node-causal-evidence",
+                "node-path 证据"
+              ]
+            }
+          ],
+          "nextChecks": [
+            "如需当前结论，另行按授权读取当前 RCA 版本（revision 22）的正式引用，而非归档 revision 1",
+            "在允许新查询时，针对 Pod 6eb76263-66c2-49ce-befc-d842ef473ae2 补齐 node-not-ready、node-causal-evidence、node-path 三类缺失证据",
+            "核对来源注册版本 1→2 的变更内容，确认归档证据是否仍与当前来源语义一致"
+          ],
+          "evidenceRefs": [
+            "3dbe6b3d-67b1-560e-9712-a5093ce69b3b",
+            "9f58d2ab-8723-5df5-931c-85b89676206f"
+          ],
+          "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+          "schemaVersion": "assistant-answer/v1",
+          "degradedSources": [
+            "01a1ab38-fbeb-79be-91c0-8823152c8c9d/analyzer/ops-current",
+            "01a1ab38-fbeb-79be-91c0-8823152c8c9d/archive"
+          ],
+          "missingEvidence": [
+            "冻结 RCA 1 的 evidenceBundle.missing 明确列出 node-not-ready、node-causal-evidence、node-path，缺少节点侧与路径侧证据",
+            "归档证据仅两条 Event 事实（reason/resourceVersion），未包含挂载失败的具体卷、错误消息或 Pod 状态细节",
+            "RCA 1 的 supporting 与 contradicting 均为空，无支持性因果证据，也无反证",
+            "RCA 1 记录 degradedSources：01a1ab38-fbeb-79be-91c0-8823152c8c9d/analyzer/ops-current 与 01a1ab38-fbeb-79be-91c0-8823152c8c9d/archive，来源质量受限",
+            "本次按指令未做新指标/日志查询，也未刷新 RCA，因此无法补充当前状态观测"
+          ],
+          "queryResultRefs": []
+        },
+        "createdAt": "2026-11-09T07:21:01.105495Z",
+        "conversationRevision": 3
+      },
+      "requestId": "01a1bf32-14e7-73de-9cf9-8c8c67347e27"
+    }
+  },
+  "formalBefore": {
+    "method": "GET",
+    "path": "/api/v1/assistant/turns/01a1bf2e-8baa-77ab-be09-044dc1c5b03d/formal-references?index=0",
+    "status": 200,
+    "body": {
+      "data": {
+        "metadata": {
+          "candidates": [],
+          "createdAt": "2026-11-06T00:10:36.141999608Z",
+          "evidenceRefs": [
+            "3dbe6b3d-67b1-560e-9712-a5093ce69b3b",
+            "9f58d2ab-8723-5df5-931c-85b89676206f"
+          ],
+          "missingEvidence": [
+            "node-not-ready",
+            "node-causal-evidence",
+            "node-path"
+          ],
+          "revision": 1,
+          "source": "deterministic",
+          "status": "unresolved",
+          "superseded": false
+        },
+        "reference": {
+          "kind": "rca",
+          "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+          "revision": 1,
+          "contentDigest": "sha256:d131fc8917122a7c9fd0ed2c661d8d47d28a0cf667ab8edb74b163f4f82f1a35"
+        }
+      },
+      "requestId": "01a1bf31-74ac-7bf5-802e-571b8b3e5078"
+    }
+  },
+  "formalAfter": {
+    "method": "GET",
+    "path": "/api/v1/assistant/turns/01a1bf2e-8baa-77ab-be09-044dc1c5b03d/formal-references?index=0",
+    "status": 200,
+    "body": {
+      "data": {
+        "metadata": {
+          "candidates": [],
+          "createdAt": "2026-11-06T00:10:36.141999608Z",
+          "evidenceRefs": [
+            "3dbe6b3d-67b1-560e-9712-a5093ce69b3b",
+            "9f58d2ab-8723-5df5-931c-85b89676206f"
+          ],
+          "missingEvidence": [
+            "node-not-ready",
+            "node-causal-evidence",
+            "node-path"
+          ],
+          "revision": 1,
+          "source": "deterministic",
+          "status": "unresolved",
+          "superseded": false
+        },
+        "reference": {
+          "kind": "rca",
+          "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+          "revision": 1,
+          "contentDigest": "sha256:d131fc8917122a7c9fd0ed2c661d8d47d28a0cf667ab8edb74b163f4f82f1a35"
+        }
+      },
+      "requestId": "01a1bf32-151d-7109-914d-a48e0216affd"
+    }
+  }
+}

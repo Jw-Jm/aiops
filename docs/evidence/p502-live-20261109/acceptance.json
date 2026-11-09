@@ -1,0 +1,28 @@
+{
+  "at": "2026-11-09T07:53:30.161992+00:00",
+  "status": "passed_core",
+  "scope": "current development candidate: scoped conversation lifecycle, reconnect/cancel and native administrator legal hold; not whole four-task or whole HTML-slice acceptance",
+  "commit": "179ca6afc9b0ba60e95e5f8e2f674fcd2deaf11d",
+  "namespace": "ops-current",
+  "namespaceUID": "c4dc825f-0897-417b-a876-f151e7783629",
+  "database": "ops_current",
+  "schema": 75,
+  "origin": "https://192.168.0.63:30471",
+  "backup": "/mnt/ops-sdb/ops-current/backups/20261109T074941Z",
+  "checks": [
+    "15 independent PostgreSQL cases passed (14 functional and migration roles), no skip; local forward-only migration gates passed",
+    "actual native namespace operator search/rename/archive; frozen old RCA1 and two archived evidence references readable; answer unchanged after archive and migration",
+    "same-key rename replay no revision or timestamp change; payload conflict/stale409; no CSRF403; foreign-owner404/403; anonymous401; scope escalation403",
+    "actual running model turn disconnected and recovered same turn/job with one submission; UI cancellation200 and terminal cancelled",
+    "native administrator UI legal hold set200 and release200; database flags and redacted audit records persisted; namespace operator403; no legacy grant added",
+    "prior mutation/rollback/unknown-result receipts reused and readable200 without executing new resource commands"
+  ],
+  "evidenceDirectory": "docs/evidence/p502-live-20261109",
+  "knownLimitations": [
+    "P4-05/P5-01/P6-01 remain incomplete; shared output actions within 14 P5-02 primary slices still require P5-01 closure; no whole four-task completion",
+    "HTML 1:1 visual validation not performed, no visual dimension upgraded",
+    "isolated PostgreSQL TTL/hold tests are synthetic fixtures; business data timestamps/cleanup not manipulated",
+    "concurrent revocation lock contention was not stress tested; account/session/grant shared locks inspected",
+    "KubeVirt/CDI, Trace and SP08 deferrals unchanged; no production release"
+  ]
+}

@@ -1,0 +1,139 @@
+{
+  "submitted": {
+    "path": "/api/v1/assistant/conversations/01a1bf33-f7fd-7124-b954-8fa271850887/messages",
+    "status": 202,
+    "body": {
+      "data": {
+        "turnId": "01a1bf36-1c75-7bed-bfde-0862c5de8423",
+        "conversationId": "01a1bf33-f7fd-7124-b954-8fa271850887",
+        "jobId": "01a1bf36-1c75-7bef-8aee-10386a72f79a",
+        "parentTurnId": "01a1bf34-ae03-70c5-aac0-fca67d146f59",
+        "state": "queued",
+        "createdAt": "2026-11-09T07:29:16.922867Z",
+        "conversationRevision": 4
+      },
+      "requestId": "01a1bf36-1c60-71b3-9076-22868966b804"
+    }
+  },
+  "observedWhileOffline": {
+    "state": "running",
+    "turn": "01a1bf36-1c75-7bed-bfde-0862c5de8423",
+    "job": "01a1bf36-1c75-7bef-8aee-10386a72f79a",
+    "source": "read-only SQL; native browser was offline"
+  },
+  "reconnected": {
+    "method": "GET",
+    "path": "/api/v1/assistant/turns/01a1bf36-1c75-7bed-bfde-0862c5de8423",
+    "status": 200,
+    "body": {
+      "data": {
+        "turnId": "01a1bf36-1c75-7bed-bfde-0862c5de8423",
+        "conversationId": "01a1bf33-f7fd-7124-b954-8fa271850887",
+        "jobId": "01a1bf36-1c75-7bef-8aee-10386a72f79a",
+        "parentTurnId": "01a1bf34-ae03-70c5-aac0-fca67d146f59",
+        "state": "running",
+        "createdAt": "2026-11-09T07:29:16.922867Z",
+        "conversationRevision": 4
+      },
+      "requestId": "01a1bf36-3881-7b4f-8c04-282b54c32264"
+    }
+  },
+  "terminal": {
+    "method": "GET",
+    "path": "/api/v1/assistant/turns/01a1bf36-1c75-7bed-bfde-0862c5de8423",
+    "status": 200,
+    "body": {
+      "data": {
+        "turnId": "01a1bf36-1c75-7bed-bfde-0862c5de8423",
+        "conversationId": "01a1bf33-f7fd-7124-b954-8fa271850887",
+        "jobId": "01a1bf36-1c75-7bef-8aee-10386a72f79a",
+        "parentTurnId": "01a1bf34-ae03-70c5-aac0-fca67d146f59",
+        "state": "partial",
+        "answer": {
+          "asOf": "2026-11-09T07:27:43.208165574Z",
+          "partial": true,
+          "summary": "本轮仅按你的要求读取冻结 RCA 第1版（revision=1，historical=true，contentDigest=sha256:d131fc8917122a7c9fd0ed2c661d8d47d28a0cf667ab8edb74b163f4f82f1a35），未做任何新查询或命令；该版本基于 Pod 6eb76263-66c2-49ce-befc-d842ef473ae2 在 2026-11-06T00:05:36Z–00:10:36Z 窗口内的两条 FailedMount 证据，status=unresolved、partial=true、candidates 为空，只能解释观察到的挂载失败，不能确认因果。",
+          "factRefs": [],
+          "warnings": [
+            "本次为历史复盘：RCA 第1版 historical=true，当前 RCA 已推进到 revision=22，第1版内容不代表当前结论",
+            "两条证据的 observedFrom 与 observedTo 相同（2026-11-06T00:06:44.072330915Z 与 2026-11-06T00:06:44.072373956Z），是单点归档观测，不是持续时长",
+            "证据引用仅使用 evidenceRefs 中的 evidenceId，未使用 nativeUID 或 resourceVersion 作为证据标识",
+            "按你的要求未执行任何新查询或命令",
+            "model_answer_incomplete"
+          ],
+          "answerKind": "diagnosis",
+          "entityRefs": [],
+          "formalRefs": [
+            {
+              "kind": "rca",
+              "revision": 1,
+              "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+              "contentDigest": "sha256:d131fc8917122a7c9fd0ed2c661d8d47d28a0cf667ab8edb74b163f4f82f1a35"
+            }
+          ],
+          "hypotheses": [
+            {
+              "key": "pod-volume-mount-failure",
+              "summary": "Pod 6eb76263-66c2-49ce-befc-d842ef473ae2 在 2026-11-06T00:06:44Z 前后出现两次 FailedMount 事件，提示其卷挂载流程失败；但第1版未给出卷名、错误文本或卷侧对象状态，无法确定是卷缺失、绑定冲突还是节点侧挂载问题。",
+              "supports": [
+                "3dbe6b3d-67b1-560e-9712-a5093ce69b3b",
+                "9f58d2ab-8723-5df5-931c-85b89676206f"
+              ],
+              "conflicts": [],
+              "nextChecks": [
+                "读取该 Pod 冻结窗口内的 resource_history 与 resource_changes",
+                "读取关联 PVC/PV 的当前状态"
+              ],
+              "missingEvidence": [
+                "卷名与 FailedMount 具体错误消息",
+                "关联 PVC/PV 的绑定状态与访问模式",
+                "kubelet 侧挂载日志"
+              ]
+            },
+            {
+              "key": "node-side-contribution",
+              "summary": "第1版 evidenceBundle.missing 明确缺少 node-not-ready、node-causal-evidence 与 node-path，说明节点侧是否参与尚未被检查；这既不能支持也不能排除节点因素。",
+              "supports": [],
+              "conflicts": [],
+              "nextChecks": [
+                "在授权范围内检查该 Pod 所在节点的 Ready 状态与路径证据"
+              ],
+              "missingEvidence": [
+                "node-not-ready 观测",
+                "node-causal-evidence",
+                "node-path 证据"
+              ]
+            }
+          ],
+          "nextChecks": [
+            "如需继续，可在获得授权后读取该 Pod 在冻结故障窗口内的 resource_history/resource_changes，核对卷相关字段与事件序列",
+            "如需继续，可读取关联 PVC/PV 的当前状态与绑定关系，验证挂载失败是否与卷侧对象相关",
+            "如需继续，可对比 RCA 第1版与当前 revision=22 的差异，确认后续版本是否补充了 node-not-ready 或 node-path 证据"
+          ],
+          "evidenceRefs": [
+            "3dbe6b3d-67b1-560e-9712-a5093ce69b3b",
+            "9f58d2ab-8723-5df5-931c-85b89676206f"
+          ],
+          "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+          "schemaVersion": "assistant-answer/v1",
+          "degradedSources": [
+            "01a1ab38-fbeb-79be-91c0-8823152c8c9d/analyzer/ops-current",
+            "01a1ab38-fbeb-79be-91c0-8823152c8c9d/archive"
+          ],
+          "missingEvidence": [
+            "RCA 第1版 evidenceBundle.missing 明确列出 node-not-ready、node-causal-evidence、node-path 三项缺失，节点侧与存储路径是否参与未被检查",
+            "两条证据仅含 nativeKind=Event、reason=FailedMount、nativeUID、resourceVersion，缺少挂载失败的具体卷名、错误消息与涉及的 PVC/PV 对象",
+            "缺少同一窗口内 Pod 事件序列、卷绑定状态与 kubelet 侧挂载日志，无法区分卷不存在、绑定冲突、权限或多挂载冲突等机制",
+            "RCA 第1版 status=unresolved 且 candidates 为空，无任何已确认根因候选",
+            "按你的要求本轮未执行新查询，上述缺口未做补充验证"
+          ],
+          "queryResultRefs": []
+        },
+        "createdAt": "2026-11-09T07:29:16.922867Z",
+        "conversationRevision": 4
+      },
+      "requestId": "01a1bf36-9519-7d3b-b411-e3dbca2360ad"
+    }
+  },
+  "postCount": 1
+}

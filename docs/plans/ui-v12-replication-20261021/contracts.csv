@@ -73,7 +73,7 @@ C-071,INV,GET,/api/v1/incidents/{incidentId}/rca/revisions/{revision},已有-适
 C-072,AI,GET,/api/v1/assistant/capabilities,已有-适配,P5-01,运维+个人所有者+当前数据范围,clusterUid,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
 C-073,AI,GET,/api/v1/assistant/conversations,已有-适配,P5-02,运维+个人所有者+当前数据范围,limit;cursor,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
 C-074,AI,POST,/api/v1/assistant/conversations,已有-适配,P5-02,运维+个人所有者+当前数据范围,title;mode;authorizationDomain;clusterUid;namespaceSelection;includeClusterScoped;incidentId;resourceCanonicalIds;symptom;timeRange;timezone;Idempotency-Key,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
-C-075,AI,PATCH,/api/v1/assistant/conversations/{conversationId},拟新增,P5-02,运维+个人所有者+当前数据范围,已验证上下文/固定版本/绝对窗口/消息/版本,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
+C-075,AI,PATCH,/api/v1/assistant/conversations/{conversationId},已有-适配,P5-02,运维+个人所有者+当前数据范围,title;expectedConversationRevision;Idempotency-Key;CSRF,会话/轮次/事实/查询/引用/事件,7c336fe实现owner+当前grant重验、revision围栏、幂等重放/冲突、标题脱敏；179ca6a现场回读，证据../../evidence/p502-live-20261109/
 C-076,AI,POST,/api/v1/assistant/conversations/{conversationId}/binding,已有-适配,P5-02,运维+个人所有者+当前数据范围,expectedConversationRevision;namespaceSelection;includeClusterScoped;resourceCanonicalId;timeRange;Idempotency-Key,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
 C-077,AI,POST,/api/v1/assistant/conversations/{conversationId}/messages,已有-适配,P5-02,运维+个人所有者+当前数据范围,message;expectedConversationRevision;parentTurnId;clarificationId;referentCanonicalId;faultChainRequest;Idempotency-Key,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留
 C-078,AI,GET,/api/v1/assistant/conversations/{conversationId}/events,已有-适配,P5-02,运维+个人所有者+当前数据范围,conversationId;Last-Event-ID,会话/轮次/事实/查询/引用/事件,具体方法和参数已在OpenAPI核对；删除沿用归档和保留

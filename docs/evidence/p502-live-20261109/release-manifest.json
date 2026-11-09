@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "ops-current-release/v1",
+  "commit": "179ca6afc9b0ba60e95e5f8e2f674fcd2deaf11d",
+  "namespace": "ops-current",
+  "namespaceUID": "c4dc825f-0897-417b-a876-f151e7783629",
+  "database": "ops_current",
+  "databaseSchema": 75,
+  "images": {
+    "worker": {
+      "tag": "ops.local/current/platform-worker:c2fe195",
+      "image": "ops.local/current/platform-worker@sha256:f54cfb69a57464c833323865ef092e00db5680d0d02522f928f36fc5b8d4ebbc",
+      "manifestDigest": "sha256:f54cfb69a57464c833323865ef092e00db5680d0d02522f928f36fc5b8d4ebbc",
+      "imageID": "sha256:887929eb3554755dc09437a5ae122f99b67df5a5a1b44c3a01139e9d87717e00",
+      "binarySHA256": "00352cd571127011cdbc3d2da15a50d97fa0435488f31e2d1f5234da39f5fbae",
+      "sourceCommit": "c2fe195d7523d132eb95a46cd2e895c3ad736eea",
+      "entrypoint": "/ops-worker",
+      "entrypointSHA256": "00352cd571127011cdbc3d2da15a50d97fa0435488f31e2d1f5234da39f5fbae",
+      "reusedUnchangedFromCommit": "c2fe195d7523d132eb95a46cd2e895c3ad736eea"
+    },
+    "investigator": {
+      "tag": "ops.local/current/investigator:3e597ea",
+      "image": "ops.local/current/investigator@sha256:12c2de14920a4bc7cfd7c0e7922b6029176e0a142d308b4a981f6bb4174be0c5",
+      "manifestDigest": "sha256:12c2de14920a4bc7cfd7c0e7922b6029176e0a142d308b4a981f6bb4174be0c5",
+      "sourceCommit": "3e597ea36eae708ed47e3e24955d6a974e392f9a",
+      "baseImageConfigDigest": "sha256:ca36cf90409f0ec8b0c8a70648257dc6a00128b0e3803968db7b127d49551bd3",
+      "imageID": "sha256:02523f77453a08022a699673d08eee0e6e16ff60c7299e5ef673ed140a109647",
+      "reusedUnchangedFromCommit": "3e597ea36eae708ed47e3e24955d6a974e392f9a"
+    },
+    "api": {
+      "tag": "ops.local/current/platform-api:179ca6a",
+      "image": "ops.local/current/platform-api@sha256:a6666c2b4049146380343cee6e0d875e5d4a2b19f9dcd77fdc629c2100243599",
+      "manifestDigest": "sha256:a6666c2b4049146380343cee6e0d875e5d4a2b19f9dcd77fdc629c2100243599",
+      "sourceCommit": "179ca6afc9b0ba60e95e5f8e2f674fcd2deaf11d",
+      "baseImageConfigDigest": "sha256:14f8c91b8674b3df09911e3f741aeb727809040106c7c83188405df6a7f6196d",
+      "imageID": "sha256:88002dc710dd4e5f0b66cc6c7b1c230669ddade6cae1a70ef736b5ffe9651b01",
+      "entrypoint": "/ops-api",
+      "entrypointSHA256": "d9dcbfb3a53086e518427371fdbab50428af0c4ae8ef1c23ef270ab8db9d8e17",
+      "binarySHA256": "d9dcbfb3a53086e518427371fdbab50428af0c4ae8ef1c23ef270ab8db9d8e17"
+    }
+  },
+  "runtimeConfigSHA256": "b343d35d0ec9c1c3d5060810017cf7c8b25feac6191e49344c2d9086a12f0c25",
+  "webIndexSHA256": "ae1d5a4335ee2e78dcb6710abc911e96c2e9c483aaba43341d714df695521996",
+  "webRuntimeConfigSHA256": "d2f17846a71e89e71fce255fdb1855a207e3215f3665d23bf8cfa8fd4e2688d9",
+  "acceptedAt": "2026-11-09T07:53:30.161992+00:00",
+  "knownLimitations": [
+    "P4-05/P5-01/P6-01 remain incomplete; shared output actions within 14 P5-02 primary slices still require P5-01 closure; no whole four-task completion",
+    "HTML 1:1 visual validation not performed, no visual dimension upgraded",
+    "isolated PostgreSQL TTL/hold tests are synthetic fixtures; business data timestamps/cleanup not manipulated",
+    "concurrent revocation lock contention was not stress tested; account/session/grant shared locks inspected",
+    "KubeVirt/CDI, Trace and SP08 deferrals unchanged; no production release"
+  ]
+}

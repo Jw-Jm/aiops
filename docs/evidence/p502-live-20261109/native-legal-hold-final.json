@@ -1,0 +1,68 @@
+{
+  "candidate": "179ca6afc9b0ba60e95e5f8e2f674fcd2deaf11d",
+  "adminAuthority": {
+    "subject": "user:01a1ab0b-3e7a-7160-926d-891871ad3d1e",
+    "authorization": {
+      "grants": [
+        {
+          "authorizationVersion": 3,
+          "bindingId": "b91d3a1a-aa24-47f8-8c9b-ddb082d04218",
+          "grantedAt": "2026-11-06T01:03:00.468811Z",
+          "revokedAt": null,
+          "role": "operator",
+          "scope": {
+            "clusterUids": [
+              "79014400-9453-4cb4-9678-0fae47981d79"
+            ],
+            "namespaces": []
+          },
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "userId": "01a1ab0b-3e7a-7160-926d-891871ad3d1e"
+        },
+        {
+          "authorizationVersion": 3,
+          "bindingId": "01a1ab0b-3e80-7a40-9327-514819fab9ab",
+          "grantedAt": "2026-11-05T09:30:03.264877Z",
+          "revokedAt": null,
+          "role": "platform_admin",
+          "scope": {
+            "clusterUids": [],
+            "namespaces": []
+          },
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "userId": "01a1ab0b-3e7a-7160-926d-891871ad3d1e"
+        }
+      ]
+    }
+  },
+  "set": {
+    "status": 200,
+    "body": {
+      "data": {
+        "held": true
+      },
+      "requestId": "01a1bf4a-80ef-7d64-a676-63a23a16eaa6"
+    }
+  },
+  "release": {
+    "status": 200,
+    "body": {
+      "data": {
+        "held": false
+      },
+      "requestId": "01a1bf4a-e1fa-75d8-b5dc-4eea5d7cf883"
+    }
+  },
+  "operatorDenied": {
+    "method": "POST",
+    "path": "/api/v1/assistant/legal-holds",
+    "status": 403,
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "investigation request rejected",
+      "requestId": "01a1bf4a-e213-798f-830d-4ac3205b9b25",
+      "retryable": false,
+      "schemaVersion": "error-envelope/v2"
+    }
+  }
+}

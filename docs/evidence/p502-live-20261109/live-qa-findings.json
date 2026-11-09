@@ -1,0 +1,88 @@
+{
+  "candidate": "7c336fe7f96bb88b54984976e883f3130b89f915",
+  "p502FunctionalClosure": false,
+  "blockedBy": [
+    {
+      "id": "NATIVE-LEGAL-HOLD",
+      "actual": {
+        "method": "POST",
+        "path": "/api/v1/assistant/legal-holds",
+        "status": 403,
+        "body": {
+          "code": "FORBIDDEN",
+          "message": "investigation request rejected",
+          "requestId": "01a1bf34-79e6-7c78-bf18-5667cc7c38aa",
+          "retryable": false,
+          "schemaVersion": "error-envelope/v2"
+        }
+      },
+      "expected": "Native platform_admin can set a justified hold using current authority; operator remains denied",
+      "source": "SQL assistant_set_hold rechecks only legacy role_bindings"
+    }
+  ],
+  "otherOwner": {
+    "read": {
+      "method": "GET",
+      "path": "/api/v1/assistant/conversations/01a1bf2d-f9dc-7047-8dd9-0359309d184f",
+      "status": 404,
+      "body": {
+        "code": "NOT_FOUND",
+        "message": "investigation request rejected",
+        "requestId": "01a1bf34-31cb-70d6-82fc-1454e19b211d",
+        "retryable": false,
+        "schemaVersion": "error-envelope/v2"
+      }
+    },
+    "rename": {
+      "method": "PATCH",
+      "path": "/api/v1/assistant/conversations/01a1bf2d-f9dc-7047-8dd9-0359309d184f",
+      "status": 403,
+      "body": {
+        "code": "FORBIDDEN",
+        "message": "investigation request rejected",
+        "requestId": "01a1bf34-79dd-72e0-af78-51861021a5fd",
+        "retryable": false,
+        "schemaVersion": "error-envelope/v2"
+      }
+    }
+  },
+  "noCsrf": {
+    "status": 403,
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "a valid native CSRF token is required",
+      "requestId": "01a1bf32-b30e-7102-88bf-c1ae54fe7a44",
+      "retryable": false
+    }
+  },
+  "scope": {
+    "status": 200,
+    "subject": "native:01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f",
+    "authorization": {
+      "grants": [
+        {
+          "authorizationVersion": 2,
+          "bindingId": "233b35d6-0ef4-46d1-a1e8-1ba3185656c0",
+          "grantedAt": "2026-11-09T01:02:30.572121Z",
+          "revokedAt": null,
+          "role": "operator",
+          "scope": {
+            "clusterUids": [
+              "79014400-9453-4cb4-9678-0fae47981d79"
+            ],
+            "namespaces": [
+              "ops-current"
+            ]
+          },
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "userId": "01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f"
+        }
+      ]
+    },
+    "administratorState": {
+      "activeAdministrators": 1,
+      "isAdministrator": false,
+      "isLastActiveAdministrator": false
+    }
+  }
+}

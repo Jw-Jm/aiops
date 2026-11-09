@@ -1,0 +1,60 @@
+{
+  "foreignRead": {
+    "method": "GET",
+    "path": "/api/v1/assistant/conversations/01a1bf2d-f9dc-7047-8dd9-0359309d184f",
+    "status": 404,
+    "body": {
+      "code": "NOT_FOUND",
+      "message": "investigation request rejected",
+      "requestId": "01a1bf34-31cb-70d6-82fc-1454e19b211d",
+      "retryable": false,
+      "schemaVersion": "error-envelope/v2"
+    }
+  },
+  "foreignRename": {
+    "method": "PATCH",
+    "path": "/api/v1/assistant/conversations/01a1bf2d-f9dc-7047-8dd9-0359309d184f",
+    "status": 403,
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "investigation request rejected",
+      "requestId": "01a1bf34-79dd-72e0-af78-51861021a5fd",
+      "retryable": false,
+      "schemaVersion": "error-envelope/v2"
+    }
+  },
+  "hold": {
+    "method": "POST",
+    "path": "/api/v1/assistant/legal-holds",
+    "status": 403,
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "investigation request rejected",
+      "requestId": "01a1bf34-79e6-7c78-bf18-5667cc7c38aa",
+      "retryable": false,
+      "schemaVersion": "error-envelope/v2"
+    }
+  },
+  "releaseHold": {
+    "method": "POST",
+    "path": "/api/v1/assistant/legal-holds",
+    "status": 403,
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "investigation request rejected",
+      "requestId": "01a1bf34-7a07-726a-aa2e-3330065f0b57",
+      "retryable": false,
+      "schemaVersion": "error-envelope/v2"
+    }
+  },
+  "anonymous": {
+    "path": "/api/v1/assistant/turns/01a1bf2e-8baa-77ab-be09-044dc1c5b03d/formal-references?index=0",
+    "status": 401,
+    "body": {
+      "code": "UNAUTHENTICATED",
+      "message": "a native session cookie is required",
+      "requestId": "01a1bf35-27c3-7d79-97ec-6a01de4e3928",
+      "retryable": false
+    }
+  }
+}

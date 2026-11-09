@@ -1,0 +1,750 @@
+[
+  {
+    "method": "POST",
+    "path": "/api/v1/assistant/conversations",
+    "request": {
+      "title": "资源排查",
+      "mode": "troubleshoot",
+      "authorizationDomain": "operational",
+      "timezone": "Asia/Shanghai",
+      "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+      "namespaceSelection": [],
+      "includeClusterScoped": false,
+      "symptom": "",
+      "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4"
+    },
+    "status": 201,
+    "body": {
+      "data": {
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "conversationId": "01a1bf2d-f9dc-7047-8dd9-0359309d184f",
+        "ownerSubject": "native:01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f",
+        "title": "资源排查",
+        "mode": "troubleshoot",
+        "authorizationDomain": "operational",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "binding": {
+          "grantSnapshot": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "selection": {
+            "Namespaces": [],
+            "IncludeClusterScoped": false,
+            "CanonicalIDs": null
+          },
+          "executionScope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "timezone": "Asia/Shanghai",
+          "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4"
+        },
+        "revision": 1,
+        "createdAt": "2026-11-09T07:20:23.775399Z",
+        "updatedAt": "2026-11-09T07:20:23.775399Z"
+      },
+      "requestId": "01a1bf2d-f9d9-71ef-8328-3edaf4e6252a"
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/assistant/conversations/01a1bf2d-f9dc-7047-8dd9-0359309d184f",
+    "request": {
+      "title": "P5-02 验收 100%_\\ 会话A",
+      "expectedConversationRevision": 1
+    },
+    "status": 200,
+    "body": {
+      "data": {
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "conversationId": "01a1bf2d-f9dc-7047-8dd9-0359309d184f",
+        "ownerSubject": "native:01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f",
+        "title": "P5-02 验收 100%_\\ 会话A",
+        "mode": "troubleshoot",
+        "authorizationDomain": "operational",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "binding": {
+          "grantSnapshot": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "selection": {
+            "Namespaces": [],
+            "IncludeClusterScoped": false,
+            "CanonicalIDs": null
+          },
+          "executionScope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "timezone": "Asia/Shanghai",
+          "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4"
+        },
+        "revision": 2,
+        "createdAt": "2026-11-09T07:20:23.775399Z",
+        "updatedAt": "2026-11-09T07:20:49.711248Z"
+      },
+      "requestId": "01a1bf2e-5f2a-702c-8066-a2daf6c2b3d0"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/assistant/conversations/01a1bf2d-f9dc-7047-8dd9-0359309d184f/messages",
+    "request": {
+      "message": "仅复盘故障 01a1ae2d-eff0-7664-a10e-d02a701023f4 的冻结 RCA 第 1 版。实际调用 get_formal_references，rcaRevision=1，说明归档的 FailedMount 与 resourceVersion，引用固定 RCA 1 和两条来源版本1证据。当前来源注册版本2。禁止新指标日志查询、刷新 RCA、执行命令。",
+      "expectedConversationRevision": 2
+    },
+    "status": 202,
+    "body": {
+      "data": {
+        "turnId": "01a1bf2e-8baa-77ab-be09-044dc1c5b03d",
+        "conversationId": "01a1bf2d-f9dc-7047-8dd9-0359309d184f",
+        "jobId": "01a1bf2e-8baa-77ac-860c-17a519ceb042",
+        "state": "queued",
+        "createdAt": "2026-11-09T07:21:01.105495Z",
+        "conversationRevision": 3
+      },
+      "requestId": "01a1bf2e-8b9d-74d2-9694-02c1a5d6e025"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/assistant/conversations/01a1bf2d-f9dc-7047-8dd9-0359309d184f:archive",
+    "request": {},
+    "status": 200,
+    "body": {
+      "data": {
+        "archived": true
+      },
+      "requestId": "01a1bf31-9175-78ff-a8bb-acdbd592b677"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/assistant/conversations",
+    "request": {
+      "title": "P5-02 验收 100%_\\ 会话B",
+      "mode": "data_query",
+      "authorizationDomain": "operational",
+      "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+      "timezone": "Asia/Shanghai",
+      "namespaceSelection": [
+        "ops-current"
+      ],
+      "includeClusterScoped": false
+    },
+    "status": 201,
+    "body": {
+      "data": {
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "conversationId": "01a1bf32-3f75-7b5d-b6c2-9b6ac5eca55d",
+        "ownerSubject": "native:01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f",
+        "title": "P5-02 验收 100%_\\ 会话B",
+        "mode": "data_query",
+        "authorizationDomain": "operational",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "binding": {
+          "grantSnapshot": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "selection": {
+            "Namespaces": [
+              "ops-current"
+            ],
+            "IncludeClusterScoped": false,
+            "CanonicalIDs": null
+          },
+          "executionScope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "timezone": "Asia/Shanghai",
+          "incidentId": "00000000-0000-0000-0000-000000000000"
+        },
+        "revision": 1,
+        "createdAt": "2026-11-09T07:25:03.735318Z",
+        "updatedAt": "2026-11-09T07:25:03.735318Z"
+      },
+      "requestId": "01a1bf32-3f72-7eea-9aa1-b52408e357ed"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/assistant/conversations",
+    "request": {
+      "title": "P5-02 验收 100%_\\ 会话C",
+      "mode": "data_query",
+      "authorizationDomain": "operational",
+      "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+      "timezone": "Asia/Shanghai",
+      "namespaceSelection": [
+        "ops-current"
+      ],
+      "includeClusterScoped": false
+    },
+    "status": 201,
+    "body": {
+      "data": {
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "conversationId": "01a1bf32-3f82-787b-9dbe-6380f9173331",
+        "ownerSubject": "native:01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f",
+        "title": "P5-02 验收 100%_\\ 会话C",
+        "mode": "data_query",
+        "authorizationDomain": "operational",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "binding": {
+          "grantSnapshot": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "selection": {
+            "Namespaces": [
+              "ops-current"
+            ],
+            "IncludeClusterScoped": false,
+            "CanonicalIDs": null
+          },
+          "executionScope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "timezone": "Asia/Shanghai",
+          "incidentId": "00000000-0000-0000-0000-000000000000"
+        },
+        "revision": 1,
+        "createdAt": "2026-11-09T07:25:03.747672Z",
+        "updatedAt": "2026-11-09T07:25:03.747672Z"
+      },
+      "requestId": "01a1bf32-3f80-7c89-b234-2bffd59c4489"
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/assistant/conversations/01a1bf32-3f75-7b5d-b6c2-9b6ac5eca55d",
+    "request": {
+      "title": "P5-02 验收 100%_\\ 会话B 已改名",
+      "expectedConversationRevision": 1
+    },
+    "status": 200,
+    "body": {
+      "data": {
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "conversationId": "01a1bf32-3f75-7b5d-b6c2-9b6ac5eca55d",
+        "ownerSubject": "native:01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f",
+        "title": "P5-02 验收 100%_\\ 会话B 已改名",
+        "mode": "data_query",
+        "authorizationDomain": "operational",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "binding": {
+          "grantSnapshot": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "selection": {
+            "Namespaces": [
+              "ops-current"
+            ],
+            "IncludeClusterScoped": false,
+            "CanonicalIDs": null
+          },
+          "executionScope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "timezone": "Asia/Shanghai",
+          "incidentId": "00000000-0000-0000-0000-000000000000"
+        },
+        "revision": 2,
+        "createdAt": "2026-11-09T07:25:03.735318Z",
+        "updatedAt": "2026-11-09T07:25:14.050354Z"
+      },
+      "requestId": "01a1bf32-67bf-7726-966b-e87321193e89"
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/assistant/conversations/01a1bf32-3f75-7b5d-b6c2-9b6ac5eca55d",
+    "request": {
+      "title": "P5-02 验收 100%_\\ 会话B 已改名",
+      "expectedConversationRevision": 1
+    },
+    "status": 200,
+    "body": {
+      "data": {
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "conversationId": "01a1bf32-3f75-7b5d-b6c2-9b6ac5eca55d",
+        "ownerSubject": "native:01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f",
+        "title": "P5-02 验收 100%_\\ 会话B 已改名",
+        "mode": "data_query",
+        "authorizationDomain": "operational",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "binding": {
+          "grantSnapshot": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "selection": {
+            "Namespaces": [
+              "ops-current"
+            ],
+            "IncludeClusterScoped": false,
+            "CanonicalIDs": null
+          },
+          "executionScope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "timezone": "Asia/Shanghai",
+          "incidentId": "00000000-0000-0000-0000-000000000000"
+        },
+        "revision": 2,
+        "createdAt": "2026-11-09T07:25:03.735318Z",
+        "updatedAt": "2026-11-09T07:25:14.050354Z"
+      },
+      "requestId": "01a1bf32-67cc-7b09-ac8a-ef88fe4649bc"
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/assistant/conversations/01a1bf32-3f75-7b5d-b6c2-9b6ac5eca55d",
+    "request": {
+      "title": "异载荷",
+      "expectedConversationRevision": 1
+    },
+    "status": 409,
+    "body": {
+      "code": "IDEMPOTENCY_CONFLICT",
+      "message": "investigation request rejected",
+      "requestId": "01a1bf32-67d7-7ae5-83ab-1f8660bab599",
+      "retryable": false,
+      "schemaVersion": "error-envelope/v2"
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/assistant/conversations/01a1bf32-3f75-7b5d-b6c2-9b6ac5eca55d",
+    "request": {
+      "title": "P5-02 验收 100%_\\ 会话B 已改名",
+      "expectedConversationRevision": 1
+    },
+    "status": 409,
+    "body": {
+      "code": "STALE_CONVERSATION",
+      "message": "conversation cannot accept this operation",
+      "requestId": "01a1bf32-67e1-71bf-b35f-fd73c94d3321",
+      "retryable": false,
+      "schemaVersion": "error-envelope/v2"
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/assistant/conversations/01a1bf32-3f75-7b5d-b6c2-9b6ac5eca55d",
+    "request": {
+      "title": "拒绝无CSRF",
+      "expectedConversationRevision": 2
+    },
+    "status": 403,
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "a valid native CSRF token is required",
+      "requestId": "01a1bf32-b30e-7102-88bf-c1ae54fe7a44",
+      "retryable": false
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/assistant/legal-holds",
+    "request": {
+      "turnId": "01a1bf2e-8baa-77ab-be09-044dc1c5b03d",
+      "held": true,
+      "reason": "P5-02 QA operator拒绝"
+    },
+    "status": 403,
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "investigation request rejected",
+      "requestId": "01a1bf32-b315-79bf-91d9-2d02548593e0",
+      "retryable": false,
+      "schemaVersion": "error-envelope/v2"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/assistant/conversations/01a1bf32-3f75-7b5d-b6c2-9b6ac5eca55d/binding",
+    "request": {
+      "expectedConversationRevision": 2,
+      "namespaceSelection": [
+        "kube-system"
+      ],
+      "includeClusterScoped": false
+    },
+    "status": 403,
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "investigation request rejected",
+      "requestId": "01a1bf32-b31c-7a7f-8d92-9c89fd9261a1",
+      "retryable": false,
+      "schemaVersion": "error-envelope/v2"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/assistant/conversations/01a1bf32-3f75-7b5d-b6c2-9b6ac5eca55d/binding",
+    "request": {
+      "expectedConversationRevision": 2,
+      "namespaceSelection": [
+        "ops-current"
+      ],
+      "includeClusterScoped": false
+    },
+    "status": 200,
+    "body": {
+      "data": {
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "conversationId": "01a1bf32-3f75-7b5d-b6c2-9b6ac5eca55d",
+        "ownerSubject": "native:01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f",
+        "title": "P5-02 验收 100%_\\ 会话B 已改名",
+        "mode": "data_query",
+        "authorizationDomain": "operational",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "binding": {
+          "grantSnapshot": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "selection": {
+            "Namespaces": [
+              "ops-current"
+            ],
+            "IncludeClusterScoped": false,
+            "CanonicalIDs": null
+          },
+          "executionScope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "timezone": "Asia/Shanghai",
+          "incidentId": "00000000-0000-0000-0000-000000000000"
+        },
+        "revision": 3,
+        "createdAt": "2026-11-09T07:25:03.735318Z",
+        "updatedAt": "2026-11-09T07:26:18.892747Z"
+      },
+      "requestId": "01a1bf33-6507-7464-a5b2-f5c6fd5ad2ec"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/assistant/conversations/01a1bf32-3f75-7b5d-b6c2-9b6ac5eca55d/messages",
+    "request": {
+      "message": "仅调用 get_assistant_context 说明当前绑定命名空间，不读取资源指标日志，不执行命令。",
+      "expectedConversationRevision": 3
+    },
+    "status": 202,
+    "body": {
+      "data": {
+        "turnId": "01a1bf33-6544-70e8-b380-346b535b001f",
+        "conversationId": "01a1bf32-3f75-7b5d-b6c2-9b6ac5eca55d",
+        "jobId": "01a1bf33-6544-70e9-b246-2c33a73dfe86",
+        "state": "queued",
+        "createdAt": "2026-11-09T07:26:18.954056Z",
+        "conversationRevision": 4
+      },
+      "requestId": "01a1bf33-653a-72c2-b71d-3a42c5ed9b00"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/assistant/conversations",
+    "request": {
+      "title": "P5-02 停止与恢复专用",
+      "mode": "troubleshoot",
+      "authorizationDomain": "operational",
+      "timezone": "Asia/Shanghai",
+      "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+      "namespaceSelection": [],
+      "includeClusterScoped": false,
+      "symptom": "",
+      "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4"
+    },
+    "status": 201,
+    "body": {
+      "data": {
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "conversationId": "01a1bf33-f7fd-7124-b954-8fa271850887",
+        "ownerSubject": "native:01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f",
+        "title": "P5-02 停止与恢复专用",
+        "mode": "troubleshoot",
+        "authorizationDomain": "operational",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "binding": {
+          "grantSnapshot": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "selection": {
+            "Namespaces": [],
+            "IncludeClusterScoped": false,
+            "CanonicalIDs": null
+          },
+          "executionScope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "timezone": "Asia/Shanghai",
+          "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4"
+        },
+        "revision": 1,
+        "createdAt": "2026-11-09T07:26:56.512355Z",
+        "updatedAt": "2026-11-09T07:26:56.512355Z"
+      },
+      "requestId": "01a1bf33-f7f9-75da-bc7b-b1797c72fcd9"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/assistant/conversations/01a1bf33-f7fd-7124-b954-8fa271850887/messages",
+    "request": {
+      "message": "仅复盘冻结 RCA 第1版，调用 get_formal_references，rcaRevision=1，解释两条历史 FailedMount 证据，禁止新查询和命令。",
+      "expectedConversationRevision": 1
+    },
+    "status": 202,
+    "body": {
+      "data": {
+        "turnId": "01a1bf33-f90c-70a8-8966-f4bd0a829931",
+        "conversationId": "01a1bf33-f7fd-7124-b954-8fa271850887",
+        "jobId": "01a1bf33-f90c-70a9-9355-f4b6885dad4f",
+        "state": "queued",
+        "createdAt": "2026-11-09T07:26:56.784255Z",
+        "conversationRevision": 2
+      },
+      "requestId": "01a1bf33-f900-72be-ba46-154dc6e1f6c2"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/assistant/conversations/01a1bf33-f7fd-7124-b954-8fa271850887/messages",
+    "request": {
+      "message": "请基于冻结 RCA 第1版详细复盘，实际调用 get_formal_references 的 rcaRevision=1，不查询新数据，不执行命令。",
+      "expectedConversationRevision": 2,
+      "parentTurnId": "01a1bf33-f90c-70a8-8966-f4bd0a829931"
+    },
+    "status": 202,
+    "body": {
+      "data": {
+        "turnId": "01a1bf34-ae03-70c5-aac0-fca67d146f59",
+        "conversationId": "01a1bf33-f7fd-7124-b954-8fa271850887",
+        "jobId": "01a1bf34-ae03-70c6-a408-18380f090b1c",
+        "parentTurnId": "01a1bf33-f90c-70a8-8966-f4bd0a829931",
+        "state": "queued",
+        "createdAt": "2026-11-09T07:27:43.111773Z",
+        "conversationRevision": 3
+      },
+      "requestId": "01a1bf34-ade9-734e-b876-020e1368e51b"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/assistant/turns/01a1bf34-ae03-70c5-aac0-fca67d146f59:cancel",
+    "request": {},
+    "status": 200,
+    "body": {
+      "data": {
+        "cancelled": true
+      },
+      "requestId": "01a1bf34-ae5f-7128-87cd-9ac8f6a66b55"
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/assistant/conversations/01a1bf32-3f82-787b-9dbe-6380f9173331",
+    "request": {
+      "title": "P5-02 token=synthetic-qa-secret",
+      "expectedConversationRevision": 1
+    },
+    "status": 200,
+    "body": {
+      "data": {
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "conversationId": "01a1bf32-3f82-787b-9dbe-6380f9173331",
+        "ownerSubject": "native:01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f",
+        "title": "P5-02 [REDACTED]",
+        "mode": "data_query",
+        "authorizationDomain": "operational",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "binding": {
+          "grantSnapshot": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "selection": {
+            "Namespaces": [
+              "ops-current"
+            ],
+            "IncludeClusterScoped": false,
+            "CanonicalIDs": null
+          },
+          "executionScope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "timezone": "Asia/Shanghai",
+          "incidentId": "00000000-0000-0000-0000-000000000000"
+        },
+        "revision": 2,
+        "createdAt": "2026-11-09T07:25:03.747672Z",
+        "updatedAt": "2026-11-09T07:28:39.766522Z"
+      },
+      "requestId": "01a1bf35-8b52-7cf5-80ee-75041f7380db"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/assistant/conversations/01a1bf33-f7fd-7124-b954-8fa271850887/messages",
+    "request": {
+      "message": "仅再次读取冻结 RCA 第1版和两条历史证据；调用 get_formal_references，rcaRevision=1，不做新查询或命令。",
+      "expectedConversationRevision": 3,
+      "parentTurnId": "01a1bf34-ae03-70c5-aac0-fca67d146f59"
+    },
+    "status": 202,
+    "body": {
+      "data": {
+        "turnId": "01a1bf36-1c75-7bed-bfde-0862c5de8423",
+        "conversationId": "01a1bf33-f7fd-7124-b954-8fa271850887",
+        "jobId": "01a1bf36-1c75-7bef-8aee-10386a72f79a",
+        "parentTurnId": "01a1bf34-ae03-70c5-aac0-fca67d146f59",
+        "state": "queued",
+        "createdAt": "2026-11-09T07:29:16.922867Z",
+        "conversationRevision": 4
+      },
+      "requestId": "01a1bf36-1c60-71b3-9076-22868966b804"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/assistant/legal-holds",
+    "request": {
+      "turnId": "01a1bf2e-8baa-77ab-be09-044dc1c5b03d",
+      "held": true,
+      "reason": "P5-02 普通账号拒绝回归"
+    },
+    "status": 403,
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "investigation request rejected",
+      "requestId": "01a1bf4a-e213-798f-830d-4ac3205b9b25",
+      "retryable": false,
+      "schemaVersion": "error-envelope/v2"
+    }
+  }
+]
