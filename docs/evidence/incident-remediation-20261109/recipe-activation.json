@@ -1,0 +1,209 @@
+{
+  "draft": {
+    "status": 201,
+    "body": {
+      "data": {
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "draftId": "01a1bdad-2a54-7c89-b24d-d4c1b388be2a",
+        "kind": "recipe",
+        "logicalName": "deployment-health",
+        "revision": 1,
+        "content": {
+          "name": "deployment-health",
+          "entry": [
+            "Deployment"
+          ],
+          "budget": {
+            "maxEdges": 40,
+            "maxNodes": 40,
+            "timeoutMs": 3000,
+            "maxEvidence": 40
+          },
+          "confirm": [
+            "target-state",
+            "related-state",
+            "recent-warnings"
+          ],
+          "exclude": [
+            "incomplete-snapshot",
+            "identity-changed",
+            "unreliable-clock"
+          ],
+          "version": "v1",
+          "graphPlan": "single-query/v1",
+          "postCheck": "native-related-health/v1",
+          "graphDepth": 1,
+          "candidateType": "native_post_check",
+          "schemaVersion": "recipe-registry/v2",
+          "toolAllowlist": [
+            "read_evidence"
+          ],
+          "optionalEvidence": [],
+          "requiredEvidence": [
+            {
+              "key": "target-state",
+              "required": true,
+              "predicate": "native-target/v1",
+              "maxAgeSeconds": 300
+            },
+            {
+              "key": "related-state",
+              "required": true,
+              "predicate": "native-relations/v1",
+              "maxAgeSeconds": 300
+            },
+            {
+              "key": "recent-warnings",
+              "required": true,
+              "predicate": "native-warnings/v1",
+              "maxAgeSeconds": 300
+            }
+          ]
+        },
+        "status": "draft",
+        "updatedBy": "user:01a1ab0b-3e7a-7160-926d-891871ad3d1e",
+        "createdAt": "2026-11-09T00:20:04.8211Z",
+        "updatedAt": "2026-11-09T00:20:04.8211Z"
+      },
+      "requestId": "01a1bdad-2a50-743a-a5af-51e24b68c694"
+    },
+    "methods": [
+      {
+        "method": "password",
+        "status": 200,
+        "verified": false,
+        "failureCode": null
+      },
+      {
+        "method": "totp",
+        "status": 200,
+        "verified": true,
+        "failureCode": null
+      }
+    ]
+  },
+  "published": {
+    "status": 201,
+    "body": {
+      "data": {
+        "referenceCount": 0,
+        "referenceCountScope": "",
+        "signatureVerified": false,
+        "digestVerified": false,
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "versionId": "01a1bdad-eaf3-7214-8cbd-c40c16f46487",
+        "draftId": "01a1bdad-2a54-7c89-b24d-d4c1b388be2a",
+        "kind": "recipe",
+        "logicalName": "deployment-health",
+        "versionNumber": 1,
+        "content": {
+          "name": "deployment-health",
+          "entry": [
+            "Deployment"
+          ],
+          "budget": {
+            "maxEdges": 40,
+            "maxNodes": 40,
+            "timeoutMs": 3000,
+            "maxEvidence": 40
+          },
+          "confirm": [
+            "target-state",
+            "related-state",
+            "recent-warnings"
+          ],
+          "exclude": [
+            "incomplete-snapshot",
+            "identity-changed",
+            "unreliable-clock"
+          ],
+          "version": "v1",
+          "graphPlan": "single-query/v1",
+          "postCheck": "native-related-health/v1",
+          "graphDepth": 1,
+          "candidateType": "native_post_check",
+          "schemaVersion": "recipe-registry/v2",
+          "toolAllowlist": [
+            "read_evidence"
+          ],
+          "optionalEvidence": [],
+          "requiredEvidence": [
+            {
+              "key": "target-state",
+              "required": true,
+              "predicate": "native-target/v1",
+              "maxAgeSeconds": 300
+            },
+            {
+              "key": "related-state",
+              "required": true,
+              "predicate": "native-relations/v1",
+              "maxAgeSeconds": 300
+            },
+            {
+              "key": "recent-warnings",
+              "required": true,
+              "predicate": "native-warnings/v1",
+              "maxAgeSeconds": 300
+            }
+          ]
+        },
+        "digest": "sha256:d4716f37c78234258cd683d4ed36f7ce394a06bd67807e48f12208c5921b961c",
+        "signature": "tqI7JfmxBAF23pQsVU3dnjlje5AjNIBx6/JG6izCmgADxzR4BjYfWVkAF3S/IVLyXdt9sTlc2TpGLRO1Sat1DA==",
+        "signerKeyId": "current-registry",
+        "publishedBy": "user:01a1ab0b-3e7a-7160-926d-891871ad3d1e",
+        "publishedAt": "2026-11-09T00:20:54.131323Z"
+      },
+      "requestId": "01a1bdad-eaeb-75b7-8b14-411c66a739cd"
+    },
+    "methods": [
+      {
+        "method": "password",
+        "status": 200,
+        "verified": false,
+        "failureCode": null
+      },
+      {
+        "method": "totp",
+        "status": 200,
+        "verified": true,
+        "failureCode": null
+      }
+    ]
+  },
+  "activation": {
+    "status": 200,
+    "body": {
+      "data": {
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "activationId": "01a1bdae-7778-71d1-a819-7e35f0fb57ed",
+        "kind": "recipe",
+        "logicalName": "deployment-health",
+        "scope": {
+          "type": "namespace",
+          "clusterId": "01a1ab37-9b02-708e-85c3-680c6137a0eb",
+          "namespace": "ops-current"
+        },
+        "versionId": "01a1bdad-eaf3-7214-8cbd-c40c16f46487",
+        "revision": 1,
+        "activatedBy": "user:01a1ab0b-3e7a-7160-926d-891871ad3d1e",
+        "activatedAt": "2026-11-09T00:21:30.104285Z"
+      },
+      "requestId": "01a1bdae-776c-7c7a-b169-a01ef5d0adea"
+    },
+    "methods": [
+      {
+        "method": "password",
+        "status": 200,
+        "verified": false,
+        "failureCode": null
+      },
+      {
+        "method": "totp",
+        "status": 200,
+        "verified": true,
+        "failureCode": null
+      }
+    ]
+  }
+}

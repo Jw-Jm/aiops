@@ -1,0 +1,188 @@
+{
+  "status": 200,
+  "body": {
+    "data": [
+      {
+        "messageId": "01a1bdae-c024-7a2a-8651-0cb99659abc3",
+        "turnId": "01a1bdae-c021-784d-bd38-7c3355f189fe",
+        "sequence": 1,
+        "role": "user",
+        "content": {
+          "text": "请调查当前绑定故障：ops-current/ops-command-closure Deployment 的 RolloutStuck。先读取该故障、已有证据和当前原生资源事实，区分已知事实与推测，解释为何未就绪并引用依据。给出可由本人审核的最小修复方向，不执行任何命令，不把没有读取的指标或日志说成已验证。"
+        },
+        "createdAt": "2026-11-09T00:21:48.725012Z"
+      },
+      {
+        "messageId": "01a1bdae-c021-784d-bd38-7c3355f189fe",
+        "turnId": "01a1bdae-c021-784d-bd38-7c3355f189fe",
+        "sequence": 2,
+        "role": "assistant",
+        "content": {
+          "asOf": "2026-11-09T00:22:01.511233865Z",
+          "partial": true,
+          "summary": "已确认的已知事实：Incident 01a1bdac-eaef-7730-a73a-90738956cc96（ops-current，open，revision 2）由 Finding 01a1bdac-e8f3-74f7-9ebd-f96d9f6bdcb1 触发，规则 kubernetes/RolloutStuck/v1，payload 中 rolloutStuck=true、nativeKind=Deployment、nativeUID=704b8cfa-d86a-42e7-828d-413f8925bb02、resourceVersion=2759006，startsAt 2026-11-09T00:19:48.011396Z，时间可靠。本轮未成功读取该 Deployment 的原生对象、Pod 状态、事件、指标或日志（get_formal_references 因 max_result_bytes 截断为 partial），因此“为何未就绪”的具体原因仍属推测，不能声称已验证。",
+          "factRefs": [],
+          "warnings": [
+            "get_formal_references 结果被截断（max_result_bytes），仅返回部分 evidenceRefs，未获得可引用的 RCA/ActionPlan 版本与 contentDigest",
+            "RolloutStuck 是控制面规则判定，本身不指明根因；未读取的指标/日志不得视为已验证或正常",
+            "source_read_partial:get_formal_references"
+          ],
+          "answerKind": "diagnosis",
+          "entityRefs": [],
+          "hypotheses": [
+            {
+              "key": "image-or-config-pull-failure",
+              "summary": "推测：新 ReplicaSet 的 Pod 因镜像拉取或配置引用（ConfigMap/Secret）失败而无法进入 Ready，导致 rollout 无法推进；目前仅有 RolloutStuck 症状，缺少 Pod 容器状态证据。",
+              "supports": [
+                "9ce2e252-d518-520d-b3b3-f3861cb88802"
+              ],
+              "conflicts": [],
+              "nextChecks": [
+                "只读查看 Pod 容器状态与事件"
+              ],
+              "missingEvidence": [
+                "Pod 容器 waiting reason 与事件",
+                "Deployment status.conditions 与 updatedReplicas/availableReplicas"
+              ]
+            },
+            {
+              "key": "readiness-probe-or-resource-shortage",
+              "summary": "推测：Pod 已创建但就绪探针持续失败或调度/资源不足（CPU、内存、节点容量），使可用副本数达不到期望；未读取任何指标，不能确认。",
+              "supports": [
+                "9ce2e252-d518-520d-b3b3-f3861cb88802"
+              ],
+              "conflicts": [],
+              "nextChecks": [
+                "在冻结窗口内读取 ops-current 的 Pod phase 与重启指标"
+              ],
+              "missingEvidence": [
+                "Pod phase/重启与 CPU/内存指标",
+                "探针配置与失败事件"
+              ]
+            }
+          ],
+          "nextChecks": [
+            "只读查看该 Deployment 的 status.conditions 与 replicas 计数，确认是 ProgressDeadlineExceeded 还是副本长期不可用",
+            "只读查看其 ReplicaSet 与 Pod 的 Ready 条件、容器 waiting/terminated reason 及最近事件",
+            "在冻结窗口内读取 ops-current 的 Pod phase/重启指标与日志样例，验证是否镜像拉取、探针或资源问题"
+          ],
+          "evidenceRefs": [
+            "9ce2e252-d518-520d-b3b3-f3861cb88802"
+          ],
+          "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+          "schemaVersion": "assistant-answer/v1",
+          "degradedSources": [],
+          "missingEvidence": [
+            "未读取 Deployment 704b8cfa-d86a-42e7-828d-413f8925bb02 的原生 spec/status（replicas、updatedReplicas、availableReplicas、conditions、progressDeadlineExceeded），无法确认卡住的具体阶段",
+            "未读取其 ReplicaSet/Pod 的 phase、Ready 条件、容器 waiting reason（如 ImagePullBackOff、CrashLoopBackOff、CreateContainerConfigError）与调度事件",
+            "未读取该 namespace 的 Pod 重启、CPU/内存、Pod phase 指标（metrics.pod-restarts/pod-cpu/pod-memory/pod-phase），不能判断是否资源不足或反复重启",
+            "未读取 ops-current 相关日志样例（logs.records samples），不能判断应用启动失败或探针失败",
+            "get_formal_references 返回 partial（reason=max_result_bytes），当前 RCA revision 4 与 ActionPlan 的完整内容未取得，无法引用其版本与 digest"
+          ],
+          "queryResultRefs": []
+        },
+        "createdAt": "2026-11-09T00:22:01.512741Z"
+      },
+      {
+        "messageId": "01a1bdb5-5209-75b3-b0c2-509974ff1c4b",
+        "turnId": "01a1bdb5-5204-75b5-91ef-0ec2cbd587ab",
+        "sequence": 3,
+        "role": "user",
+        "content": {
+          "text": "继续调查同一故障。请实际读取当前可用的正式 RCA 固定引用，说明已确认的 RolloutStuck 与恢复证据；补读 ops-current 中此 Deployment 关联 Pod 的重启指标和日志样本。找不到合格目标或窗口时明确说明，不能把未知当正常，也不要只列待办。原始故障已发生，当前读数与历史故障必须分开，不执行命令。"
+        },
+        "createdAt": "2026-11-09T00:28:59.279359Z"
+      },
+      {
+        "messageId": "01a1bdb5-5204-75b5-91ef-0ec2cbd587ab",
+        "turnId": "01a1bdb5-5204-75b5-91ef-0ec2cbd587ab",
+        "sequence": 4,
+        "role": "assistant",
+        "content": {
+          "asOf": "2026-11-09T00:29:16.304314003Z",
+          "partial": true,
+          "summary": "已实际读取正式 RCA 固定引用：Incident 01a1bdac-eaef-7730-a73a-90738956cc96 当前 RCA revision 20，contentDigest sha256:2391a259a73a158a131fbb68ba0f5f30972f41dd6cd85b0c6a706a7d57a2eef4，状态 unresolved、partial=true，candidates 为空，evidenceBundle 的 missing 为 rollout-stuck、blocking-pod、rollout-path，supporting/contradicting 均为空，且无 ActionPlan。恢复证据来自控制面：同一 Finding 01a1bdac-e8f3-74f7-9ebd-f96d9f6bdcb1（kubernetes/RolloutStuck/v1）在 sourceRevision 2 中 payload.rolloutStuck 已变为 false（resourceVersion 2759553），lifecycleState=resolved，Incident 于 2026-11-09T00:28:22.583073Z 置为 resolved（revision 6，recoveryKnownAt 2026-11-09T00:23:20.586419Z）。补读失败：Pod 重启指标查询返回 SOURCE_DEGRADED，日志样例查询返回 INVESTIGATION_NOT_AUTHORIZED，因此重启与日志仍属未知，不能视为正常。",
+          "factRefs": [],
+          "warnings": [
+            "RolloutStuck 是控制面规则判定，本身不指明根因；rolloutStuck=false 与 Incident resolved 只说明症状已解除，不等于已定位原因",
+            "未读取的重启指标与日志不得视为已验证或正常",
+            "当前读数（resolved、rolloutStuck=false）与历史故障窗口（startsAt 2026-11-09T00:19:48.011396Z）已分开陈述",
+            "RCA revision 20 为 partial 且 candidates 为空，不能据此确认 RCA",
+            "source_read_failed:execute_analysis_query:SOURCE_DEGRADED",
+            "source_read_failed:execute_analysis_query:RESULT_REJECTED"
+          ],
+          "answerKind": "diagnosis",
+          "entityRefs": [],
+          "formalRefs": [
+            {
+              "kind": "rca",
+              "revision": 20,
+              "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96",
+              "contentDigest": "sha256:2391a259a73a158a131fbb68ba0f5f30972f41dd6cd85b0c6a706a7d57a2eef4"
+            }
+          ],
+          "hypotheses": [
+            {
+              "key": "transient-rollout-blocker-now-cleared",
+              "summary": "推测：本次 rollout 曾因新 ReplicaSet 的 Pod 无法就绪而卡住，随后阻塞因素消失，Finding 的 rolloutStuck 由 true 变为 false 并 resolved；但阻塞因素的具体类型（镜像拉取、探针失败、资源不足或配置引用）无证据支持。",
+              "supports": [
+                "921d1694-f531-5dcc-b97f-26c4a607094c"
+              ],
+              "conflicts": [],
+              "nextChecks": [
+                "只读读取 Deployment status 与 Pod Ready 条件",
+                "重试重启指标与日志样例查询"
+              ],
+              "missingEvidence": [
+                "Pod 容器 waiting/terminated reason 与事件",
+                "Deployment status.conditions 与副本计数",
+                "Pod 重启增量与日志样例（两次查询均失败）"
+              ]
+            },
+            {
+              "key": "pod-restart-or-startup-failure",
+              "summary": "推测：Pod 可能经历反复重启或启动失败导致就绪延迟；由于重启指标查询返回 SOURCE_DEGRADED、日志样例未授权，该假设既无支持也无反证。",
+              "supports": [],
+              "conflicts": [],
+              "nextChecks": [
+                "在冻结窗口内重试 metrics.pod-restarts 与 logs.records samples"
+              ],
+              "missingEvidence": [
+                "metrics.pod-restarts 在故障窗口的数值",
+                "logs.records 脱敏样例",
+                "Pod phase 与重启计数"
+              ]
+            }
+          ],
+          "nextChecks": [
+            "在授权范围内按 Pod UID 维度重试 metrics.pod-restarts（窗口 2026-11-09T00:19:48Z–00:28:22Z），确认来源降级是否解除并取得具体重启增量",
+            "以合格模板重试 logs.records samples（namespace=ops-current，同一冻结窗口），确认是否仍为未授权并取得脱敏样例",
+            "只读读取该 Deployment 的 status.conditions 与 ReplicaSet/Pod Ready 条件，补齐 rollout-stuck 与 blocking-pod 证据"
+          ],
+          "evidenceRefs": [
+            "921d1694-f531-5dcc-b97f-26c4a607094c"
+          ],
+          "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+          "schemaVersion": "assistant-answer/v1",
+          "degradedSources": [
+            "victoriametrics:metrics.pod-restarts（查询返回 SOURCE_DEGRADED）",
+            "victorialogs:logs.records（查询返回 INVESTIGATION_NOT_AUTHORIZED）"
+          ],
+          "missingEvidence": [
+            "Pod 重启指标未取得：execute_analysis_query(metrics.pod-restarts, aggregate, namespace=ops-current, 窗口 2026-11-09T00:19:48Z–00:28:22Z) 返回 SOURCE_DEGRADED，无任何重启数值，不能推断为零",
+            "日志样例未取得：execute_analysis_query(logs.records, samples, namespace=ops-current, 同一窗口) 返回 INVESTIGATION_NOT_AUTHORIZED，未获得任何脱敏样例",
+            "未按 Pod UID 定位该 Deployment 关联的 ReplicaSet/Pod 集合，无法确认哪些 Pod 属于本次 rollout 路径",
+            "未读取 Deployment 704b8cfa-d86a-42e7-828d-413f8925bb02 的原生 status（updatedReplicas/availableReplicas/conditions）与 Pod 容器 waiting reason",
+            "RCA revision 20 的 evidenceBundle 缺少 rollout-stuck、blocking-pod、rollout-path 三类证据，故卡住原因与恢复机制均无因果证据"
+          ],
+          "queryResultRefs": []
+        },
+        "createdAt": "2026-11-09T00:29:16.30585Z"
+      }
+    ],
+    "meta": {
+      "nextCursor": ""
+    },
+    "requestId": "01a1bdb5-eb4b-7031-bafb-dc92d0f20a58"
+  }
+}

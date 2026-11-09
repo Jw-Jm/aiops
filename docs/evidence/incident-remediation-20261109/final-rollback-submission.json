@@ -1,0 +1,143 @@
+{
+  "label": "final-rollback",
+  "command": "kubectl --request-timeout=10s --namespace=ops-current patch deployment ops-command-closure --type=strategic -p '{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"acceptance\",\"readinessProbe\":{\"exec\":{\"command\":[\"/bin/bash\",\"-c\",\"exit 0\"]}}}]}}}}' && expected_generation=$(kubectl --request-timeout=10s --namespace=ops-current get deployment ops-command-closure -o jsonpath='{.metadata.generation}') && kubectl --request-timeout=10s --namespace=ops-current wait --for=\"jsonpath={.status.observedGeneration}=$expected_generation\" deployment/ops-command-closure --timeout=35s && kubectl --request-timeout=10s --namespace=ops-current rollout status deployment/ops-command-closure --timeout=15s",
+  "risk": {
+    "data": {
+      "postCheckApplicability": {
+        "status": "requires_qualified_source",
+        "targetKind": "Deployment",
+        "recipe": "deployment-health",
+        "reason": "native_recipe_and_evidence_required"
+      },
+      "assessmentId": "01a1bdbe-b6fc-7702-8d85-60e67285a4c3",
+      "binding": {
+        "targetRevision": 42,
+        "relatedExecutionId": "01a1bdbe-0a55-76ba-8445-81e0c0b3b9db",
+        "executionRelation": "rollback",
+        "rollbackSpecDigest": "sha256:779dcecd1aa3392718b5e2e1afa6fd64fa396db5cec4ca5b7321fc1d295e28aa",
+        "digestVersion": "execution-request/v3",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "subject": "user:01a1ab0b-3e7a-7160-926d-891871ad3d1e",
+        "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96",
+        "actionPlanId": null,
+        "targetCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/704b8cfa-d86a-42e7-828d-413f8925bb02",
+        "targetUid": "704b8cfa-d86a-42e7-828d-413f8925bb02",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "namespace": "ops-current",
+        "shell": "bash",
+        "actualCommandDigest": "sha256:f07f6ff188d611b3f79f27965eadfe4767ef05194084df00a31d6395e6bcc8ab",
+        "executionProfileId": "1ce8875e-25ac-4744-a472-3162ec89a9ed",
+        "executionProfileVersion": 2,
+        "executionOptions": {
+          "timeoutSeconds": 60,
+          "maxOutputBytes": 65536,
+          "workingDirectory": "",
+          "environment": {}
+        },
+        "policyVersion": "01a1ae2e-1f32-7277-af0d-5e1923adcf77",
+        "riskAssessmentVersion": "bash-risk/v2-mvdan-3.14.1"
+      },
+      "executionRequestDigest": "sha256:6c981820d8fc3bb451751c27fa82b056e57779c673f5bdf2c2c0396b9dc4fcd4",
+      "risk": {
+        "operationRisk": "high",
+        "dataRisk": "D3",
+        "features": [
+          "assignment",
+          "compound_command",
+          "dynamic_expansion",
+          "kubernetes_mutation",
+          "subshell"
+        ],
+        "warnings": [
+          "AST analysis is not a sandbox; target credentials and network enforce scope"
+        ],
+        "requiresStepUp": false,
+        "riskAssessmentVersion": "bash-risk/v2-mvdan-3.14.1"
+      },
+      "createdAt": "2026-11-09T00:39:14.940831Z",
+      "expiresAt": "2026-11-09T00:44:14.940831Z"
+    },
+    "requestId": "01a1bdbe-b6f2-76cd-bf84-f04f2fca6ae1"
+  },
+  "ack": {
+    "data": {
+      "acknowledgementId": "01a1bdbe-f41f-7139-ac85-a6455dda8d47",
+      "assessmentId": "01a1bdbe-b6fc-7702-8d85-60e67285a4c3",
+      "executionRequestDigest": "sha256:6c981820d8fc3bb451751c27fa82b056e57779c673f5bdf2c2c0396b9dc4fcd4",
+      "expiresAt": "2026-11-09T00:44:30.591454Z"
+    },
+    "requestId": "01a1bdbe-f415-70ec-be62-c103f2d11fe7"
+  },
+  "execution": {
+    "data": {
+      "acknowledgementId": "01a1bdbe-f41f-7139-ac85-a6455dda8d47",
+      "actionPlanId": null,
+      "actualCommandDigest": "sha256:f07f6ff188d611b3f79f27965eadfe4767ef05194084df00a31d6395e6bcc8ab",
+      "completedAt": null,
+      "executionId": "01a1bdbe-f44e-7796-9d5b-e7ab8a625eab",
+      "executionProfileId": "1ce8875e-25ac-4744-a472-3162ec89a9ed",
+      "exitCode": null,
+      "extensions": {
+        "binding": {
+          "targetRevision": 42,
+          "relatedExecutionId": "01a1bdbe-0a55-76ba-8445-81e0c0b3b9db",
+          "executionRelation": "rollback",
+          "rollbackSpecDigest": "sha256:779dcecd1aa3392718b5e2e1afa6fd64fa396db5cec4ca5b7321fc1d295e28aa",
+          "digestVersion": "execution-request/v3",
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "subject": "user:01a1ab0b-3e7a-7160-926d-891871ad3d1e",
+          "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96",
+          "actionPlanId": null,
+          "targetCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/704b8cfa-d86a-42e7-828d-413f8925bb02",
+          "targetUid": "704b8cfa-d86a-42e7-828d-413f8925bb02",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "namespace": "ops-current",
+          "shell": "bash",
+          "actualCommandDigest": "sha256:f07f6ff188d611b3f79f27965eadfe4767ef05194084df00a31d6395e6bcc8ab",
+          "executionProfileId": "1ce8875e-25ac-4744-a472-3162ec89a9ed",
+          "executionProfileVersion": 2,
+          "executionOptions": {
+            "timeoutSeconds": 60,
+            "maxOutputBytes": 65536,
+            "workingDirectory": "",
+            "environment": {}
+          },
+          "policyVersion": "01a1ae2e-1f32-7277-af0d-5e1923adcf77",
+          "riskAssessmentVersion": "bash-risk/v2-mvdan-3.14.1"
+        },
+        "createdAt": "2026-11-09T00:39:30.63968Z",
+        "executionRequestDigest": "sha256:6c981820d8fc3bb451751c27fa82b056e57779c673f5bdf2c2c0396b9dc4fcd4",
+        "outputBytes": 0,
+        "outputComplete": false,
+        "outputFormat": "ordered-mixed-stream/v1",
+        "outputPreviews": null,
+        "postCheck": "inconclusive",
+        "postCheckApplicability": {
+          "status": "requires_qualified_source",
+          "targetKind": "Deployment",
+          "recipe": "deployment-health",
+          "reason": "native_recipe_and_evidence_required"
+        },
+        "postCheckedAt": null
+      },
+      "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96",
+      "iteration": 1,
+      "outputDigest": null,
+      "outputTruncated": false,
+      "policyDecisionId": "sha256:6abee968ac50f2f54b419757d4342e34019d8f7aa672dcefa0783de930599aab",
+      "schemaVersion": "command-execution/v1",
+      "shell": "bash",
+      "startedAt": null,
+      "state": "prepared",
+      "stderrObjectRef": null,
+      "stdoutObjectRef": null,
+      "subject": "user:01a1ab0b-3e7a-7160-926d-891871ad3d1e",
+      "suggestedCommandDigest": null,
+      "suggestionMatch": "not_applicable",
+      "suggestionMatchVersion": "bash-target-v1-mvdan-3.14.1",
+      "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3"
+    },
+    "requestId": "01a1bdbe-f446-7303-a25b-127441755d07"
+  },
+  "candidate": "c951824b25238b54729d3039cfb3e526bf43128e"
+}

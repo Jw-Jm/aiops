@@ -1,3 +1,11 @@
+## 2026-11-09 当前接续：第 2 项完整收口
+
+“智能调查与人工处置”按 [七条固定标准](../../evidence/incident-remediation-20261109/closure-criteria.md) 完整验收，详见 [实际故障、修改、回退及失败路径证据](../../evidence/incident-remediation-20261109/README.md)。最终应用候选 `c951824b25238b54729d3039cfb3e526bf43128e`，部署检查脚本补丁 `1854ed56199fde8ac72861c0f07263661a954143`；namespace、端口和 schema 74 沿用 ops-current。已修复大 RCA 引用截断、JSON 日志摘要失配、命令能力文案及 Worker 服务回环监听问题。
+
+真实 Deployment 就绪故障自动生成 Incident，统一页面调查和精确 Pod 指标/日志已实际读取。本人实际命令、密码/TOTP、确认、Runner、输出归档、未恢复判定、独立恢复及人工回退完成。9 条执行中 7 条各一次尝试，派发前取消和配置撤销各一条零尝试；真实修改回报丢失的历史记录有意保持未知，重启后未重发。最终回退执行 `01a1bdbe-f44e-7796-9d5b-e7ab8a625eab` 达到预先记录的配置摘要并通过原生健康检查。
+
+用户明确要求后续各项也完整收口：开始前固定完整完成标准，对照已有证据复用，范围内问题继续产品级修复；不得自行缩小范围或用部分机制通过宣称整项完成。后续从 22 菜单及对应 HTML 1:1 继续，原 tasks.csv/acceptance.csv 不因本项提升状态。签名审计归档链的附加读取没有通过，不冒称已验证；SP-08、虚拟化和 Trace 的既有边界仍按 AGENTS/ADR 执行，不自动恢复专项。
+
 ## 2026-11-08 当前接续：调查与受控只读命令闭环
 
 当前实际环境以 `mssc-direct` 的 `/data/ops-current`、namespace `ops-current`、`ops_current` schema 74 为准，页面仍为 `https://192.168.0.63:30471`。应用接受版本为 `0d19b045f979af1fb47155e450dc8d2145ef27a7`，具体不可变镜像和复用来源见 [受控命令验收材料](../../evidence/controlled-command-20261108/README.md)。下方旧预览端口、数据库及运行版本仅是历史记录，不作为当前部署依据。

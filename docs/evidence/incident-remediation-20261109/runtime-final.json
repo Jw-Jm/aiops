@@ -1,0 +1,253 @@
+{
+  "role/ops-command-mutate-closure": {
+    "apiVersion": "rbac.authorization.k8s.io/v1",
+    "kind": "Role",
+    "metadata": {
+      "name": "ops-command-mutate-closure",
+      "namespace": "ops-current",
+      "uid": "7316cfff-dee7-4312-9207-ee57eb792ed4"
+    },
+    "rules": [
+      {
+        "apiGroups": [
+          "apps"
+        ],
+        "resourceNames": [
+          "ops-command-closure"
+        ],
+        "resources": [
+          "deployments"
+        ],
+        "verbs": [
+          "get",
+          "patch",
+          "list",
+          "watch"
+        ]
+      }
+    ]
+  },
+  "role/ops-command-mutate-closure-token": {
+    "apiVersion": "rbac.authorization.k8s.io/v1",
+    "kind": "Role",
+    "metadata": {
+      "name": "ops-command-mutate-closure-token",
+      "namespace": "ops-current",
+      "uid": "af07ea4f-da10-4491-9066-48929c2c2ff9"
+    },
+    "rules": [
+      {
+        "apiGroups": [
+          ""
+        ],
+        "resourceNames": [
+          "ops-command-mutate-closure"
+        ],
+        "resources": [
+          "serviceaccounts/token"
+        ],
+        "verbs": [
+          "create"
+        ]
+      }
+    ]
+  },
+  "networkpolicy/ops-command-mutate-closure": {
+    "apiVersion": "networking.k8s.io/v1",
+    "kind": "NetworkPolicy",
+    "metadata": {
+      "name": "ops-command-mutate-closure",
+      "namespace": "ops-current",
+      "uid": "74d89aee-0e2c-4ff1-96e7-1c8d8dc49579"
+    },
+    "spec": {
+      "egress": [
+        {
+          "ports": [
+            {
+              "port": 18595,
+              "protocol": "TCP"
+            },
+            {
+              "port": 6443,
+              "protocol": "TCP"
+            }
+          ],
+          "to": [
+            {
+              "ipBlock": {
+                "cidr": "192.168.0.63/32"
+              }
+            }
+          ]
+        },
+        {
+          "ports": [
+            {
+              "port": 8200,
+              "protocol": "TCP"
+            }
+          ],
+          "to": [
+            {
+              "podSelector": {
+                "matchLabels": {
+                  "app.kubernetes.io/name": "ops-openbao"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ports": [
+            {
+              "port": 53,
+              "protocol": "UDP"
+            },
+            {
+              "port": 53,
+              "protocol": "TCP"
+            }
+          ],
+          "to": [
+            {
+              "namespaceSelector": {
+                "matchLabels": {
+                  "kubernetes.io/metadata.name": "kube-system"
+                }
+              },
+              "podSelector": {
+                "matchLabels": {
+                  "k8s-app": "kube-dns"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "podSelector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "ops-command-runner",
+          "ops.platform/network-profile": "ops-command-mutate-closure"
+        }
+      },
+      "policyTypes": [
+        "Ingress",
+        "Egress"
+      ]
+    }
+  },
+  "canPatch/ops-command-closure": "yes",
+  "canPatch/ops-api": "no",
+  "ops-api": {
+    "image": "ops.local/current/platform-api@sha256:d33309a1bc55e1ce1c8d0c7332fc84b160632941db8b0f8f2b0450cb5743960f",
+    "available": 1
+  },
+  "ops-worker": {
+    "image": "ops.local/current/platform-worker@sha256:f54cfb69a57464c833323865ef092e00db5680d0d02522f928f36fc5b8d4ebbc",
+    "available": 1
+  },
+  "ops-investigator": {
+    "image": "ops.local/current/investigator@sha256:7aab4e095d41d520d62918af3be0926e7910ec6c9eae75bbcb8df1cbfb858310",
+    "available": 1
+  },
+  "sp07": {
+    "schemaVersion": "sp07-runtime/v1",
+    "namespace": "ops-current",
+    "listenAddress": "0.0.0.0:18595",
+    "apiEndpoint": "https://ops-api.ops-current.svc.cluster.local:18595",
+    "workloadCAFile": "/etc/ops/runtime/workload-ca.pem",
+    "policyName": "current-read-only",
+    "kubernetesEndpoint": "https://192.168.0.63:6443",
+    "kubernetesCAFile": "/var/run/secrets/ops-platform/execution/ca.pem",
+    "kubernetesTokenFile": "/var/run/secrets/ops-platform/execution/token",
+    "trustConfigMap": "ops-command-runner-trust",
+    "identitySecret": "ops-command-runner-ca",
+    "tenants": [
+      "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3"
+    ],
+    "admittedProfiles": [
+      {
+        "schemaVersion": "execution-profile/v2",
+        "executionProfileId": "4ce9b2d0-7260-4e84-9bd6-bc9bd5a174bc",
+        "version": 1,
+        "name": "current-metrics-pod-read",
+        "type": "k8s_namespace",
+        "allowedTargets": [
+          "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc"
+        ],
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "namespace": "ops-current",
+        "toolImageDigest": "ops.local/current/command-runner@sha256:bef1188002556accd30604c18a0e57c27bd0afe8b0168bc216421d3b8486f310",
+        "tools": [
+          "kubectl"
+        ],
+        "networkPolicyRef": "ops-command-read-metrics",
+        "credentialRef": "serviceaccount:/ops-current/ops-command-read-metrics",
+        "timeoutSeconds": 60,
+        "maxOutputBytes": 65536,
+        "principal": "",
+        "hostOnboardingRef": "",
+        "developmentFallback": false
+      },
+      {
+        "schemaVersion": "execution-profile/v2",
+        "executionProfileId": "1ce8875e-25ac-4744-a472-3162ec89a9ed",
+        "version": 1,
+        "name": "current-remediation-target",
+        "type": "k8s_namespace",
+        "allowedTargets": [
+          "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/704b8cfa-d86a-42e7-828d-413f8925bb02"
+        ],
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "namespace": "ops-current",
+        "toolImageDigest": "ops.local/current/command-runner@sha256:bef1188002556accd30604c18a0e57c27bd0afe8b0168bc216421d3b8486f310",
+        "tools": [
+          "kubectl"
+        ],
+        "networkPolicyRef": "ops-command-mutate-closure",
+        "credentialRef": "serviceaccount:/ops-current/ops-command-mutate-closure",
+        "timeoutSeconds": 60,
+        "maxOutputBytes": 65536,
+        "principal": "",
+        "hostOnboardingRef": "",
+        "developmentFallback": false
+      },
+      {
+        "schemaVersion": "execution-profile/v2",
+        "executionProfileId": "1ce8875e-25ac-4744-a472-3162ec89a9ed",
+        "version": 2,
+        "name": "current-remediation-target",
+        "type": "k8s_namespace",
+        "allowedTargets": [
+          "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/704b8cfa-d86a-42e7-828d-413f8925bb02"
+        ],
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "namespace": "ops-current",
+        "toolImageDigest": "ops.local/current/command-runner@sha256:bef1188002556accd30604c18a0e57c27bd0afe8b0168bc216421d3b8486f310",
+        "tools": [
+          "kubectl"
+        ],
+        "networkPolicyRef": "ops-command-mutate-closure",
+        "credentialRef": "serviceaccount:/ops-current/ops-command-mutate-closure",
+        "timeoutSeconds": 60,
+        "maxOutputBytes": 65536,
+        "principal": "",
+        "hostOnboardingRef": "",
+        "developmentFallback": false
+      }
+    ]
+  },
+  "workerRPC": {
+    "listen": "0.0.0.0:18282",
+    "service": [
+      {
+        "name": "rpc",
+        "port": 8082,
+        "protocol": "TCP",
+        "targetPort": 18282
+      }
+    ]
+  },
+  "at": "2026-11-09T00:47:53.848654+00:00"
+}

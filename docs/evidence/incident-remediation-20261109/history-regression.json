@@ -1,0 +1,2439 @@
+[
+  {
+    "path": "/api/v1/assistant/conversations/01a1bdae-03d4-7b55-8bce-f24cebc0f57b/messages?limit=20",
+    "status": 200,
+    "body": {
+      "data": [
+        {
+          "messageId": "01a1bdae-c024-7a2a-8651-0cb99659abc3",
+          "turnId": "01a1bdae-c021-784d-bd38-7c3355f189fe",
+          "sequence": 1,
+          "role": "user",
+          "content": {
+            "text": "请调查当前绑定故障：ops-current/ops-command-closure Deployment 的 RolloutStuck。先读取该故障、已有证据和当前原生资源事实，区分已知事实与推测，解释为何未就绪并引用依据。给出可由本人审核的最小修复方向，不执行任何命令，不把没有读取的指标或日志说成已验证。"
+          },
+          "createdAt": "2026-11-09T00:21:48.725012Z"
+        },
+        {
+          "messageId": "01a1bdae-c021-784d-bd38-7c3355f189fe",
+          "turnId": "01a1bdae-c021-784d-bd38-7c3355f189fe",
+          "sequence": 2,
+          "role": "assistant",
+          "content": {
+            "asOf": "2026-11-09T00:22:01.511233865Z",
+            "partial": true,
+            "summary": "已确认的已知事实：Incident 01a1bdac-eaef-7730-a73a-90738956cc96（ops-current，open，revision 2）由 Finding 01a1bdac-e8f3-74f7-9ebd-f96d9f6bdcb1 触发，规则 kubernetes/RolloutStuck/v1，payload 中 rolloutStuck=true、nativeKind=Deployment、nativeUID=704b8cfa-d86a-42e7-828d-413f8925bb02、resourceVersion=2759006，startsAt 2026-11-09T00:19:48.011396Z，时间可靠。本轮未成功读取该 Deployment 的原生对象、Pod 状态、事件、指标或日志（get_formal_references 因 max_result_bytes 截断为 partial），因此“为何未就绪”的具体原因仍属推测，不能声称已验证。",
+            "factRefs": [],
+            "warnings": [
+              "get_formal_references 结果被截断（max_result_bytes），仅返回部分 evidenceRefs，未获得可引用的 RCA/ActionPlan 版本与 contentDigest",
+              "RolloutStuck 是控制面规则判定，本身不指明根因；未读取的指标/日志不得视为已验证或正常",
+              "source_read_partial:get_formal_references"
+            ],
+            "answerKind": "diagnosis",
+            "entityRefs": [],
+            "hypotheses": [
+              {
+                "key": "image-or-config-pull-failure",
+                "summary": "推测：新 ReplicaSet 的 Pod 因镜像拉取或配置引用（ConfigMap/Secret）失败而无法进入 Ready，导致 rollout 无法推进；目前仅有 RolloutStuck 症状，缺少 Pod 容器状态证据。",
+                "supports": [
+                  "9ce2e252-d518-520d-b3b3-f3861cb88802"
+                ],
+                "conflicts": [],
+                "nextChecks": [
+                  "只读查看 Pod 容器状态与事件"
+                ],
+                "missingEvidence": [
+                  "Pod 容器 waiting reason 与事件",
+                  "Deployment status.conditions 与 updatedReplicas/availableReplicas"
+                ]
+              },
+              {
+                "key": "readiness-probe-or-resource-shortage",
+                "summary": "推测：Pod 已创建但就绪探针持续失败或调度/资源不足（CPU、内存、节点容量），使可用副本数达不到期望；未读取任何指标，不能确认。",
+                "supports": [
+                  "9ce2e252-d518-520d-b3b3-f3861cb88802"
+                ],
+                "conflicts": [],
+                "nextChecks": [
+                  "在冻结窗口内读取 ops-current 的 Pod phase 与重启指标"
+                ],
+                "missingEvidence": [
+                  "Pod phase/重启与 CPU/内存指标",
+                  "探针配置与失败事件"
+                ]
+              }
+            ],
+            "nextChecks": [
+              "只读查看该 Deployment 的 status.conditions 与 replicas 计数，确认是 ProgressDeadlineExceeded 还是副本长期不可用",
+              "只读查看其 ReplicaSet 与 Pod 的 Ready 条件、容器 waiting/terminated reason 及最近事件",
+              "在冻结窗口内读取 ops-current 的 Pod phase/重启指标与日志样例，验证是否镜像拉取、探针或资源问题"
+            ],
+            "evidenceRefs": [
+              "9ce2e252-d518-520d-b3b3-f3861cb88802"
+            ],
+            "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+            "schemaVersion": "assistant-answer/v1",
+            "degradedSources": [],
+            "missingEvidence": [
+              "未读取 Deployment 704b8cfa-d86a-42e7-828d-413f8925bb02 的原生 spec/status（replicas、updatedReplicas、availableReplicas、conditions、progressDeadlineExceeded），无法确认卡住的具体阶段",
+              "未读取其 ReplicaSet/Pod 的 phase、Ready 条件、容器 waiting reason（如 ImagePullBackOff、CrashLoopBackOff、CreateContainerConfigError）与调度事件",
+              "未读取该 namespace 的 Pod 重启、CPU/内存、Pod phase 指标（metrics.pod-restarts/pod-cpu/pod-memory/pod-phase），不能判断是否资源不足或反复重启",
+              "未读取 ops-current 相关日志样例（logs.records samples），不能判断应用启动失败或探针失败",
+              "get_formal_references 返回 partial（reason=max_result_bytes），当前 RCA revision 4 与 ActionPlan 的完整内容未取得，无法引用其版本与 digest"
+            ],
+            "queryResultRefs": []
+          },
+          "createdAt": "2026-11-09T00:22:01.512741Z"
+        },
+        {
+          "messageId": "01a1bdb5-5209-75b3-b0c2-509974ff1c4b",
+          "turnId": "01a1bdb5-5204-75b5-91ef-0ec2cbd587ab",
+          "sequence": 3,
+          "role": "user",
+          "content": {
+            "text": "继续调查同一故障。请实际读取当前可用的正式 RCA 固定引用，说明已确认的 RolloutStuck 与恢复证据；补读 ops-current 中此 Deployment 关联 Pod 的重启指标和日志样本。找不到合格目标或窗口时明确说明，不能把未知当正常，也不要只列待办。原始故障已发生，当前读数与历史故障必须分开，不执行命令。"
+          },
+          "createdAt": "2026-11-09T00:28:59.279359Z"
+        },
+        {
+          "messageId": "01a1bdb5-5204-75b5-91ef-0ec2cbd587ab",
+          "turnId": "01a1bdb5-5204-75b5-91ef-0ec2cbd587ab",
+          "sequence": 4,
+          "role": "assistant",
+          "content": {
+            "asOf": "2026-11-09T00:29:16.304314003Z",
+            "partial": true,
+            "summary": "已实际读取正式 RCA 固定引用：Incident 01a1bdac-eaef-7730-a73a-90738956cc96 当前 RCA revision 20，contentDigest sha256:2391a259a73a158a131fbb68ba0f5f30972f41dd6cd85b0c6a706a7d57a2eef4，状态 unresolved、partial=true，candidates 为空，evidenceBundle 的 missing 为 rollout-stuck、blocking-pod、rollout-path，supporting/contradicting 均为空，且无 ActionPlan。恢复证据来自控制面：同一 Finding 01a1bdac-e8f3-74f7-9ebd-f96d9f6bdcb1（kubernetes/RolloutStuck/v1）在 sourceRevision 2 中 payload.rolloutStuck 已变为 false（resourceVersion 2759553），lifecycleState=resolved，Incident 于 2026-11-09T00:28:22.583073Z 置为 resolved（revision 6，recoveryKnownAt 2026-11-09T00:23:20.586419Z）。补读失败：Pod 重启指标查询返回 SOURCE_DEGRADED，日志样例查询返回 INVESTIGATION_NOT_AUTHORIZED，因此重启与日志仍属未知，不能视为正常。",
+            "factRefs": [],
+            "warnings": [
+              "RolloutStuck 是控制面规则判定，本身不指明根因；rolloutStuck=false 与 Incident resolved 只说明症状已解除，不等于已定位原因",
+              "未读取的重启指标与日志不得视为已验证或正常",
+              "当前读数（resolved、rolloutStuck=false）与历史故障窗口（startsAt 2026-11-09T00:19:48.011396Z）已分开陈述",
+              "RCA revision 20 为 partial 且 candidates 为空，不能据此确认 RCA",
+              "source_read_failed:execute_analysis_query:SOURCE_DEGRADED",
+              "source_read_failed:execute_analysis_query:RESULT_REJECTED"
+            ],
+            "answerKind": "diagnosis",
+            "entityRefs": [],
+            "formalRefs": [
+              {
+                "kind": "rca",
+                "revision": 20,
+                "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96",
+                "contentDigest": "sha256:2391a259a73a158a131fbb68ba0f5f30972f41dd6cd85b0c6a706a7d57a2eef4"
+              }
+            ],
+            "hypotheses": [
+              {
+                "key": "transient-rollout-blocker-now-cleared",
+                "summary": "推测：本次 rollout 曾因新 ReplicaSet 的 Pod 无法就绪而卡住，随后阻塞因素消失，Finding 的 rolloutStuck 由 true 变为 false 并 resolved；但阻塞因素的具体类型（镜像拉取、探针失败、资源不足或配置引用）无证据支持。",
+                "supports": [
+                  "921d1694-f531-5dcc-b97f-26c4a607094c"
+                ],
+                "conflicts": [],
+                "nextChecks": [
+                  "只读读取 Deployment status 与 Pod Ready 条件",
+                  "重试重启指标与日志样例查询"
+                ],
+                "missingEvidence": [
+                  "Pod 容器 waiting/terminated reason 与事件",
+                  "Deployment status.conditions 与副本计数",
+                  "Pod 重启增量与日志样例（两次查询均失败）"
+                ]
+              },
+              {
+                "key": "pod-restart-or-startup-failure",
+                "summary": "推测：Pod 可能经历反复重启或启动失败导致就绪延迟；由于重启指标查询返回 SOURCE_DEGRADED、日志样例未授权，该假设既无支持也无反证。",
+                "supports": [],
+                "conflicts": [],
+                "nextChecks": [
+                  "在冻结窗口内重试 metrics.pod-restarts 与 logs.records samples"
+                ],
+                "missingEvidence": [
+                  "metrics.pod-restarts 在故障窗口的数值",
+                  "logs.records 脱敏样例",
+                  "Pod phase 与重启计数"
+                ]
+              }
+            ],
+            "nextChecks": [
+              "在授权范围内按 Pod UID 维度重试 metrics.pod-restarts（窗口 2026-11-09T00:19:48Z–00:28:22Z），确认来源降级是否解除并取得具体重启增量",
+              "以合格模板重试 logs.records samples（namespace=ops-current，同一冻结窗口），确认是否仍为未授权并取得脱敏样例",
+              "只读读取该 Deployment 的 status.conditions 与 ReplicaSet/Pod Ready 条件，补齐 rollout-stuck 与 blocking-pod 证据"
+            ],
+            "evidenceRefs": [
+              "921d1694-f531-5dcc-b97f-26c4a607094c"
+            ],
+            "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+            "schemaVersion": "assistant-answer/v1",
+            "degradedSources": [
+              "victoriametrics:metrics.pod-restarts（查询返回 SOURCE_DEGRADED）",
+              "victorialogs:logs.records（查询返回 INVESTIGATION_NOT_AUTHORIZED）"
+            ],
+            "missingEvidence": [
+              "Pod 重启指标未取得：execute_analysis_query(metrics.pod-restarts, aggregate, namespace=ops-current, 窗口 2026-11-09T00:19:48Z–00:28:22Z) 返回 SOURCE_DEGRADED，无任何重启数值，不能推断为零",
+              "日志样例未取得：execute_analysis_query(logs.records, samples, namespace=ops-current, 同一窗口) 返回 INVESTIGATION_NOT_AUTHORIZED，未获得任何脱敏样例",
+              "未按 Pod UID 定位该 Deployment 关联的 ReplicaSet/Pod 集合，无法确认哪些 Pod 属于本次 rollout 路径",
+              "未读取 Deployment 704b8cfa-d86a-42e7-828d-413f8925bb02 的原生 status（updatedReplicas/availableReplicas/conditions）与 Pod 容器 waiting reason",
+              "RCA revision 20 的 evidenceBundle 缺少 rollout-stuck、blocking-pod、rollout-path 三类证据，故卡住原因与恢复机制均无因果证据"
+            ],
+            "queryResultRefs": []
+          },
+          "createdAt": "2026-11-09T00:29:16.30585Z"
+        },
+        {
+          "messageId": "01a1bdb8-50a5-7d08-98cf-c8125a7c8ee8",
+          "turnId": "01a1bdb8-50a2-7e81-8678-ce150389a6fb",
+          "sequence": 5,
+          "role": "user",
+          "content": {
+            "text": "请按当前允许的数据集定义补读，使用 metric=restart_increase、datasetId=metrics.pod-restarts、operation=aggregate、dimensions=[]、filters=[{field:namespace,operator:eq,value:ops-current}]；日志用 datasetId=logs.records、metric=log_count、operation=samples、dimensions=[]、limit=5。窗口请取 2026-11-09T00:19:48Z 至 2026-11-09T00:28:22Z，时区 Asia/Shanghai。先检查真实范围和来源资格，成功提交后引用结果；若仍失败，说明具体阶段，不得声称已读到。"
+          },
+          "createdAt": "2026-11-09T00:32:15.529345Z"
+        },
+        {
+          "messageId": "01a1bdb8-50a2-7e81-8678-ce150389a6fb",
+          "turnId": "01a1bdb8-50a2-7e81-8678-ce150389a6fb",
+          "sequence": 6,
+          "role": "assistant",
+          "content": {
+            "asOf": "2026-11-09T00:32:33.4940927Z",
+            "partial": true,
+            "summary": "本轮按指定参数实际提交了两次查询：重启指标查询成功提交并返回 ops-current 在 2026-11-09T00:19:48Z–00:28:22Z 的 restart_increase=0（restarts），但该结果 exact=false、status=partial 且带 collection_coverage_unknown 警告，因此不能当作“无重启”的精确结论；日志 samples 查询在提交阶段即失败，错误码 INVESTIGATION_NOT_AUTHORIZED，未取得任何样例。",
+            "factRefs": [
+              {
+                "factId": "sha256:7dd6a846837673ead2b200750c088e9c06a411d141d76e2b33018ab81dfcebf5",
+                "queryResultId": "01a1bdb8-7459-7cb0-bce8-164df7790ff0"
+              }
+            ],
+            "warnings": [
+              "重启指标结果 exact=false 且 status=partial，warnings 含 collection_coverage_unknown；数值 0 不是精确零，不能推断正常",
+              "RolloutStuck 是控制面规则判定，rolloutStuck=false 与 Incident resolved 只说明症状解除，不等于已定位原因",
+              "当前读数（Incident resolved、revision 6）与历史故障窗口（startsAt 2026-11-09T00:19:48.011396Z）已分开陈述",
+              "source_read_failed:execute_analysis_query:INVESTIGATION_NOT_AUTHORIZED",
+              "source_read_failed:execute_analysis_query:RESULT_REJECTED",
+              "source_read_partial:execute_analysis_query",
+              "query_result_incomplete"
+            ],
+            "answerKind": "diagnosis",
+            "entityRefs": [],
+            "formalRefs": [
+              {
+                "kind": "rca",
+                "revision": 26,
+                "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96",
+                "contentDigest": "sha256:9c397faa1a3c437207da010ab5df780e1c89d21715a3e86fdc68202c871e29b6"
+              }
+            ],
+            "hypotheses": [
+              {
+                "key": "no-restart-observed-but-coverage-unverified",
+                "summary": "推测：故障窗口内 ops-current 的 Pod 重启增量为 0，提示卡住可能不是由反复重启引起；但该结果 exact=false 且覆盖未知，日志样例缺失，故既不能确认也不能排除重启/启动失败。",
+                "supports": [
+                  "921d1694-f531-5dcc-b97f-26c4a607094c"
+                ],
+                "conflicts": [],
+                "nextChecks": [
+                  "按 uid 维度重试重启指标",
+                  "解决日志读取授权后取样例"
+                ],
+                "missingEvidence": [
+                  "重启指标的完整覆盖验证（collection_coverage_unknown）",
+                  "Pod 级 uid 维度重启增量",
+                  "日志脱敏样例（查询未授权）"
+                ]
+              },
+              {
+                "key": "rollout-blocker-now-cleared",
+                "summary": "推测：rollout 曾因新 ReplicaSet 的 Pod 无法就绪而卡住，随后阻塞因素消失（Finding rolloutStuck 由 true 变 false 并 resolved）；阻塞因素类型仍无证据。",
+                "supports": [
+                  "921d1694-f531-5dcc-b97f-26c4a607094c"
+                ],
+                "conflicts": [],
+                "nextChecks": [
+                  "只读读取 Deployment status 与 Pod Ready 条件"
+                ],
+                "missingEvidence": [
+                  "Deployment status.conditions 与副本计数",
+                  "Pod 容器 waiting/terminated reason 与事件"
+                ]
+              }
+            ],
+            "nextChecks": [
+              "以 Pod UID 维度（dimensions=[\"uid\"]）重试 metrics.pod-restarts，确认覆盖完整性并定位具体 Pod 的重启增量",
+              "确认 logs.records samples 的授权范围（当前返回 INVESTIGATION_NOT_AUTHORIZED），或改用 query_logs 的 resource-logs/v1 模板按资源读取",
+              "只读读取该 Deployment 的 status.conditions 与 ReplicaSet/Pod Ready 条件，补齐 rollout-stuck 与 blocking-pod 证据"
+            ],
+            "evidenceRefs": [
+              "921d1694-f531-5dcc-b97f-26c4a607094c"
+            ],
+            "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+            "schemaVersion": "assistant-answer/v1",
+            "degradedSources": [
+              "victorialogs:logs.records（samples 返回 INVESTIGATION_NOT_AUTHORIZED）"
+            ],
+            "missingEvidence": [
+              "重启指标虽返回 0，但 exact=false、status=partial、warnings=[collection_coverage_unknown]，覆盖完整性未验证，不能据此断言故障窗口内零重启",
+              "日志样例未取得：execute_analysis_query(logs.records, samples, namespace=ops-current, limit=5, 窗口 2026-11-09T00:19:48Z–00:28:22Z) 返回 INVESTIGATION_NOT_AUTHORIZED，无任何脱敏样例",
+              "未按 Pod UID 定位该 Deployment 关联的 ReplicaSet/Pod 集合，重启聚合为 namespace 级，无法归属到本次 rollout 路径",
+              "未读取 Deployment 704b8cfa-d86a-42e7-828d-413f8925bb02 的原生 status（updatedReplicas/availableReplicas/conditions）与 Pod 容器 waiting reason",
+              "RCA revision 26 的 evidenceBundle 仍缺 rollout-stuck、blocking-pod、rollout-path，卡住原因与恢复机制无因果证据"
+            ],
+            "queryResultRefs": [
+              "01a1bdb8-7459-7cb0-bce8-164df7790ff0"
+            ]
+          },
+          "createdAt": "2026-11-09T00:32:33.495393Z"
+        },
+        {
+          "messageId": "01a1bdbd-54ca-7079-8074-2f1a4fdd8dbc",
+          "turnId": "01a1bdbd-54c6-75de-9832-f95e01aae724",
+          "sequence": 7,
+          "role": "user",
+          "content": {
+            "text": "请重试上一轮相同窗口和参数的日志 samples 查询（logs.records / log_count，namespace=ops-current，2026-11-09T00:19:48Z 至 00:28:22Z，Asia/Shanghai，limit=5），并引用成功持久化的结果；同时复用上一轮已提交的重启指标结果，区分不完整覆盖与未知因果。不要扩大窗口或权限。"
+          },
+          "createdAt": "2026-11-09T00:37:44.27279Z"
+        },
+        {
+          "messageId": "01a1bdbd-54c6-75de-9832-f95e01aae724",
+          "turnId": "01a1bdbd-54c6-75de-9832-f95e01aae724",
+          "sequence": 8,
+          "role": "assistant",
+          "content": {
+            "asOf": "2026-11-09T00:38:00.297776566Z",
+            "partial": true,
+            "summary": "本轮按同一冻结窗口（2026-11-09T00:19:48Z–00:28:22Z，Asia/Shanghai）与相同参数重试 logs.records samples 查询，已成功提交并持久化（queryResultId 01a1bdbd-6d37-75a8-8895-ee806eecda10），返回 5 条脱敏样例（value=5 仅表示本次返回样例数，不是日志总数，结果 status=partial、truncated=true）；样例来自 ops-api-799676d964-sf5xr、ops-seaweedfs-0、ops-worker-5c747fcb9b-2479r，未见该 Deployment 关联 Pod 的启动失败或探针失败日志。重启指标沿用上一轮已提交结果（queryResultId 01a1bdb8-7459-7cb0-bce8-164df7790ff0，restart_increase=0，exact=false、status=partial、collection_coverage_unknown），只能说明该窗口内未观测到重启增量，覆盖不完整，不能推断为零，也不能据此确认或排除因果。",
+            "factRefs": [
+              {
+                "factId": "sha256:21afb612ad63d912e2cc22daa8175f90c6c58224fa705a21c4cec5000c6f3af0",
+                "queryResultId": "01a1bdbd-6d37-75a8-8895-ee806eecda10"
+              },
+              {
+                "factId": "sha256:7dd6a846837673ead2b200750c088e9c06a411d141d76e2b33018ab81dfcebf5",
+                "queryResultId": "01a1bdb8-7459-7cb0-bce8-164df7790ff0"
+              }
+            ],
+            "warnings": [
+              "logs.records samples 结果 status=partial、truncated=true，warnings=[bounded_sanitized_samples_not_total_count]；value 仅表示本次返回样例数",
+              "重启指标结果 exact=false、status=partial，warnings 含 collection_coverage_unknown；数值 0 不是精确零",
+              "RolloutStuck 是控制面规则判定；Finding 01a1bdac-e8f3-74f7-9ebd-f96d9f6bdcb1 的 rolloutStuck=false（sourceRevision 2）与 Incident resolved（revision 6，resolvedAt 2026-11-09T00:28:22.583073Z）只说明症状解除，不等于已定位原因",
+              "当前读数（resolved）与历史故障窗口（startsAt 2026-11-09T00:19:48.011396Z）已分开陈述",
+              "本轮未扩大窗口或权限，仅重试同一冻结窗口的 samples 查询",
+              "source_read_partial:execute_analysis_query",
+              "query_result_incomplete",
+              "query_result_incomplete"
+            ],
+            "answerKind": "diagnosis",
+            "entityRefs": [],
+            "formalRefs": [
+              {
+                "kind": "rca",
+                "revision": 32,
+                "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96",
+                "contentDigest": "sha256:6490f74bdd5c00beb20f1de9b10266456c7f07de5a40a993684223c76e9cf519"
+              }
+            ],
+            "hypotheses": [
+              {
+                "key": "rollout-blocker-now-cleared-no-restart-observed",
+                "summary": "推测：rollout 曾因新 ReplicaSet 的 Pod 无法就绪而卡住，随后阻塞因素消失（rolloutStuck 由 true 变 false 并 resolved）；冻结窗口内重启增量为 0 且样例日志未见启动失败，提示卡住可能不是由反复重启引起，但覆盖不完整、样例有界，不能确认。",
+                "supports": [
+                  "921d1694-f531-5dcc-b97f-26c4a607094c",
+                  "01a1bdbc-10af-782c-abd0-073a6932cbbb"
+                ],
+                "conflicts": [],
+                "nextChecks": [
+                  "按 uid 维度重试重启指标",
+                  "只读读取 Deployment status 与 Pod Ready 条件"
+                ],
+                "missingEvidence": [
+                  "重启指标覆盖完整性（collection_coverage_unknown）",
+                  "该 Deployment 关联 Pod 的容器 waiting/terminated reason 与事件",
+                  "Deployment status.conditions 与副本计数"
+                ]
+              },
+              {
+                "key": "startup-or-probe-failure-not-observed-in-samples",
+                "summary": "推测：Pod 可能因启动失败或就绪探针失败而延迟就绪；本轮 5 条样例中未出现此类记录，但样例有界且 truncated，既不能支持也不能排除该假设。",
+                "supports": [],
+                "conflicts": [],
+                "nextChecks": [
+                  "按资源模板读取该 Deployment 关联 Pod 日志",
+                  "读取 Pod phase 指标"
+                ],
+                "missingEvidence": [
+                  "该 Deployment 关联 Pod 的完整日志（仅 5 条样例）",
+                  "探针配置与失败事件",
+                  "Pod phase 与重启计数"
+                ]
+              }
+            ],
+            "nextChecks": [
+              "以 dimensions=[\"uid\"] 在冻结窗口内重试 metrics.pod-restarts，确认覆盖完整性并定位具体 Pod 的重启增量",
+              "只读读取该 Deployment 的 status.conditions 与 ReplicaSet/Pod Ready 条件，补齐 rollout-stuck 与 blocking-pod 证据",
+              "在授权范围内按资源模板（query_logs resource-logs/v1）读取该 Deployment 关联 Pod 的日志，验证是否存在启动或探针失败"
+            ],
+            "evidenceRefs": [
+              "921d1694-f531-5dcc-b97f-26c4a607094c",
+              "01a1bdbc-10af-782c-abd0-073a6932cbbb"
+            ],
+            "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+            "schemaVersion": "assistant-answer/v1",
+            "degradedSources": [],
+            "missingEvidence": [
+              "日志 samples 仅返回 5 条脱敏样例且 truncated=true、status=partial，value=5 不是日志总数，无法据此判断该窗口内日志总体规模或是否存在未返回的失败日志",
+              "样例中未出现 Deployment 704b8cfa-d86a-42e7-828d-413f8925bb02 关联新 ReplicaSet Pod 的容器启动/探针失败记录，但样例有界，缺失不等于不存在",
+              "重启指标 restart_increase=0 的 exact=false、status=partial、warnings=[collection_coverage_unknown]，覆盖完整性未验证，不能断言故障窗口内零重启",
+              "未按 Pod UID 维度读取重启增量，namespace 级聚合无法归属到本次 rollout 路径的具体 Pod",
+              "未读取 Deployment 原生 status（updatedReplicas/availableReplicas/conditions）与 Pod 容器 waiting/terminated reason",
+              "RCA revision 32 的 evidenceBundle 仍缺 rollout-stuck、blocking-pod、rollout-path，且 degradedSources 含 graph，卡住原因与恢复机制无因果证据"
+            ],
+            "queryResultRefs": [
+              "01a1bdbd-6d37-75a8-8895-ee806eecda10",
+              "01a1bdb8-7459-7cb0-bce8-164df7790ff0"
+            ]
+          },
+          "createdAt": "2026-11-09T00:38:00.299061Z"
+        },
+        {
+          "messageId": "01a1bdbe-f4de-73d3-8897-25b0a096b20f",
+          "turnId": "01a1bdbe-f4db-74db-b946-e94f103fae57",
+          "sequence": 9,
+          "role": "user",
+          "content": {
+            "text": "只复盘本会话已经提交的故障、正式引用、重启指标与日志样本，不读取任何新来源，不重新查询，不刷新正式 RCA。说明哪些事实支持症状恢复、哪些不能证明历史根因，并引用已有 QueryResult 和固定版本。"
+          },
+          "createdAt": "2026-11-09T00:39:30.78576Z"
+        },
+        {
+          "messageId": "01a1bdbe-f4db-74db-b946-e94f103fae57",
+          "turnId": "01a1bdbe-f4db-74db-b946-e94f103fae57",
+          "sequence": 10,
+          "role": "assistant",
+          "content": {
+            "asOf": "2026-11-09T00:38:00.297776566Z",
+            "partial": true,
+            "summary": "本会话已提交的读取显示：症状恢复由控制面事实支持——Finding 01a1bdac-e8f3-74f7-9ebd-f96d9f6bdcb1（kubernetes/RolloutStuck/v1）在 sourceRevision 2 中 payload.rolloutStuck 变为 false，Incident 01a1bdac-eaef-7730-a73a-90738956cc96 于 2026-11-09T00:28:22.583073Z 置为 resolved（revision 6）；但历史根因仍无证据：重启指标 restart_increase=0 为 exact=false、status=partial、collection_coverage_unknown，日志 samples 仅 5 条脱敏样例且 truncated=true，RCA revision 32 的 evidenceBundle 仍缺 rollout-stuck、blocking-pod、rollout-path。",
+            "factRefs": [
+              {
+                "factId": "sha256:7dd6a846837673ead2b200750c088e9c06a411d141d76e2b33018ab81dfcebf5",
+                "queryResultId": "01a1bdb8-7459-7cb0-bce8-164df7790ff0"
+              },
+              {
+                "factId": "sha256:21afb612ad63d912e2cc22daa8175f90c6c58224fa705a21c4cec5000c6f3af0",
+                "queryResultId": "01a1bdbd-6d37-75a8-8895-ee806eecda10"
+              }
+            ],
+            "warnings": [
+              "本轮按要求未读取任何新来源、未重新查询、未刷新正式 RCA，仅复盘已提交结果",
+              "RolloutStuck 是控制面规则判定；rolloutStuck=false 与 Incident resolved 只说明症状解除，不等于已定位原因",
+              "重启指标数值 0 不是精确零，不能推断正常",
+              "当前读数（resolved、revision 6）与历史故障窗口（startsAt 2026-11-09T00:19:48.011396Z）已分开陈述",
+              "RCA revision 20/26/32 均为 partial 且 candidates 为空，不能据此确认 RCA",
+              "query_result_incomplete",
+              "query_result_incomplete"
+            ],
+            "answerKind": "diagnosis",
+            "entityRefs": [],
+            "formalRefs": [
+              {
+                "kind": "rca",
+                "revision": 20,
+                "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96",
+                "contentDigest": "sha256:2391a259a73a158a131fbb68ba0f5f30972f41dd6cd85b0c6a706a7d57a2eef4"
+              },
+              {
+                "kind": "rca",
+                "revision": 26,
+                "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96",
+                "contentDigest": "sha256:9c397faa1a3c437207da010ab5df780e1c89d21715a3e86fdc68202c871e29b6"
+              },
+              {
+                "kind": "rca",
+                "revision": 32,
+                "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96",
+                "contentDigest": "sha256:6490f74bdd5c00beb20f1de9b10266456c7f07de5a40a993684223c76e9cf519"
+              }
+            ],
+            "hypotheses": [
+              {
+                "key": "rollout-blocker-now-cleared-no-restart-observed",
+                "summary": "推测：rollout 曾因新 ReplicaSet 的 Pod 无法就绪而卡住，随后阻塞因素消失（rolloutStuck 由 true 变 false 并 resolved）；冻结窗口内重启增量为 0 且样例日志未见启动失败，提示卡住可能不是由反复重启引起，但覆盖不完整、样例有界，不能确认。",
+                "supports": [
+                  "921d1694-f531-5dcc-b97f-26c4a607094c",
+                  "01a1bdbc-10af-782c-abd0-073a6932cbbb"
+                ],
+                "conflicts": [],
+                "nextChecks": [
+                  "以 dimensions=[\"uid\"] 重试 metrics.pod-restarts",
+                  "只读读取 Deployment status 与 Pod Ready 条件"
+                ],
+                "missingEvidence": [
+                  "重启指标覆盖完整性（collection_coverage_unknown）",
+                  "该 Deployment 关联 Pod 的容器 waiting/terminated reason 与事件",
+                  "Deployment status.conditions 与副本计数"
+                ]
+              },
+              {
+                "key": "startup-or-probe-failure-not-observed-in-samples",
+                "summary": "推测：Pod 可能因启动失败或就绪探针失败而延迟就绪；本轮 5 条样例中未出现此类记录，但样例有界且 truncated，既不能支持也不能排除该假设。",
+                "supports": [],
+                "conflicts": [],
+                "nextChecks": [
+                  "按资源模板读取该 Deployment 关联 Pod 日志",
+                  "读取 Pod phase 指标"
+                ],
+                "missingEvidence": [
+                  "该 Deployment 关联 Pod 的完整日志（仅 5 条样例）",
+                  "探针配置与失败事件",
+                  "Pod phase 与重启计数"
+                ]
+              }
+            ],
+            "nextChecks": [
+              "以 dimensions=[\"uid\"] 在冻结窗口 2026-11-09T00:19:48Z–00:28:22Z 重试 metrics.pod-restarts，确认覆盖完整性并定位具体 Pod 的重启增量",
+              "只读读取该 Deployment 的 status.conditions 与 ReplicaSet/Pod Ready 条件，补齐 rollout-stuck 与 blocking-pod 证据",
+              "在授权范围内按资源模板读取该 Deployment 关联 Pod 的日志，验证是否存在启动或探针失败"
+            ],
+            "evidenceRefs": [
+              "921d1694-f531-5dcc-b97f-26c4a607094c",
+              "01a1bdbc-10af-782c-abd0-073a6932cbbb"
+            ],
+            "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+            "schemaVersion": "assistant-answer/v1",
+            "degradedSources": [],
+            "missingEvidence": [
+              "重启指标 restart_increase=0 的 exact=false、status=partial、warnings=[collection_coverage_unknown]，覆盖完整性未验证，不能断言故障窗口内零重启",
+              "日志 samples 仅返回 5 条脱敏样例，status=partial、truncated=true，value=5 不是日志总数，未返回部分不能视为不存在",
+              "未按 Pod UID 维度读取重启增量，namespace 级聚合无法归属到本次 rollout 路径的具体 Pod",
+              "未读取 Deployment 704b8cfa-d86a-42e7-828d-413f8925bb02 原生 status（updatedReplicas/availableReplicas/conditions）与 Pod 容器 waiting/terminated reason",
+              "RCA revision 32 的 evidenceBundle 仍缺 rollout-stuck、blocking-pod、rollout-path，卡住原因与恢复机制无因果证据"
+            ],
+            "queryResultRefs": [
+              "01a1bdb8-7459-7cb0-bce8-164df7790ff0",
+              "01a1bdbd-6d37-75a8-8895-ee806eecda10"
+            ]
+          },
+          "createdAt": "2026-11-09T00:39:40.329516Z"
+        },
+        {
+          "messageId": "01a1bdc5-4c83-759c-8f6f-fe6dd31c4d16",
+          "turnId": "01a1bdc5-4c80-779a-9299-7034308d692d",
+          "sequence": 11,
+          "role": "user",
+          "content": {
+            "text": "请补读同一故障修复后的精确关联 Pod，不要把整个命名空间样例当作目标日志。目标 ops-current/ops-command-closure-8445fddff-2mbdb，UID 49224918-5319-4743-b3ce-1c6473066e27，canonicalId k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/49224918-5319-4743-b3ce-1c6473066e27。请先 resolve_resources 核对当前授权身份，再用 execute_analysis_query 的 canonicalId 参数收窄到该 Pod，读取 metrics.pod-restarts/restart_increase aggregate 和 logs.records/log_count samples（limit=5）。窗口 2026-11-09T00:39:30Z 至 2026-11-09T00:44:20.000Z，Asia/Shanghai。明确这是修复后的证据，不能替代历史故障根因。"
+          },
+          "createdAt": "2026-11-09T00:46:26.439349Z"
+        },
+        {
+          "messageId": "01a1bdc5-4c80-779a-9299-7034308d692d",
+          "turnId": "01a1bdc5-4c80-779a-9299-7034308d692d",
+          "sequence": 12,
+          "role": "assistant",
+          "content": {
+            "asOf": "2026-11-09T00:46:45.125560734Z",
+            "partial": true,
+            "summary": "本轮按指定 canonicalId 收窄到 Pod ops-current/ops-command-closure-8445fddff-2mbdb（UID 49224918-5319-4743-b3ce-1c6473066e27），在修复后窗口 2026-11-09T00:39:30Z–00:44:20Z（Asia/Shanghai）成功提交两次查询：restart_increase=0（exact=false、status=partial、collection_coverage_unknown），日志 samples 返回 1 条脱敏样例（container=acceptance，message=\"remediation acceptance target started\"，2026-11-09T00:39:33.254479245Z），value=1 仅为样例数不是日志总数。这些是修复后证据，不能替代历史故障根因；历史窗口的重启与日志仍为不完整覆盖。",
+            "factRefs": [
+              {
+                "factId": "sha256:c48ff4ec6a2a228a9457cd3f4f940ca5730d07f900e6cea98e9826c393d68217",
+                "queryResultId": "01a1bdc5-6bbe-79f8-8e43-d05817789c1f"
+              },
+              {
+                "factId": "sha256:42e5cf2a9799709adf47214b3f0bca968994853f822de2fa22c6be07b5b74696",
+                "queryResultId": "01a1bdc5-6cb6-794d-a7f6-fb4ffe21f2c7"
+              },
+              {
+                "factId": "sha256:7dd6a846837673ead2b200750c088e9c06a411d141d76e2b33018ab81dfcebf5",
+                "queryResultId": "01a1bdb8-7459-7cb0-bce8-164df7790ff0"
+              },
+              {
+                "factId": "sha256:21afb612ad63d912e2cc22daa8175f90c6c58224fa705a21c4cec5000c6f3af0",
+                "queryResultId": "01a1bdbd-6d37-75a8-8895-ee806eecda10"
+              }
+            ],
+            "warnings": [
+              "本轮读取的是修复后窗口（2026-11-09T00:39:30Z–00:44:20Z）证据，不能替代历史故障根因",
+              "RolloutStuck 是控制面规则判定；Finding 01a1bdac-e8f3-74f7-9ebd-f96d9f6bdcb1 的 rolloutStuck=false（sourceRevision 2）与 Incident resolved（revision 6，resolvedAt 2026-11-09T00:28:22.583073Z）只说明症状解除",
+              "重启指标数值 0 不是精确零（exact=false、collection_coverage_unknown）",
+              "日志 samples 的 value 仅表示本次返回样例数，样例始终 partial",
+              "当前读数（resolved）与历史故障窗口已分开陈述",
+              "query_result_incomplete",
+              "query_result_incomplete",
+              "source_read_partial:execute_analysis_query",
+              "query_result_incomplete",
+              "query_result_incomplete",
+              "query_result_incomplete",
+              "query_result_incomplete"
+            ],
+            "answerKind": "diagnosis",
+            "entityRefs": [],
+            "formalRefs": [
+              {
+                "kind": "rca",
+                "revision": 47,
+                "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96",
+                "contentDigest": "sha256:0ec1f624910e0d0159c44b862a28124fe6ad034eeb6dc60269e36fcb0ce3a59b"
+              }
+            ],
+            "hypotheses": [
+              {
+                "key": "post-remediation-pod-started-without-observed-restarts",
+                "summary": "推测：修复后该 Pod 在 00:39:33Z 记录到 \"remediation acceptance target started\"，且窗口内未观测到重启增量，提示修复动作已生效；但重启覆盖未知、日志仅 1 条样例，不能确认其稳定就绪。",
+                "supports": [
+                  "921d1694-f531-5dcc-b97f-26c4a607094c"
+                ],
+                "conflicts": [],
+                "nextChecks": [
+                  "按 uid 维度重试重启指标",
+                  "只读读取 Pod 状态与事件"
+                ],
+                "missingEvidence": [
+                  "该 Pod 的 Ready 条件与容器状态",
+                  "重启指标的完整覆盖验证",
+                  "该 Pod 的完整日志（仅 1 条样例）"
+                ]
+              },
+              {
+                "key": "historical-root-cause-still-unproven",
+                "summary": "推测：历史 rollout 卡住可能由新 ReplicaSet Pod 无法就绪引起，但历史窗口内该 Pod 集合的重启与日志未按 Pod 维度取得，RCA revision 47 仍缺 rollout-stuck、blocking-pod、rollout-path 证据，故根因既无支持也无反证。",
+                "supports": [],
+                "conflicts": [],
+                "nextChecks": [
+                  "在历史故障窗口内按 Pod 维度读取重启与日志",
+                  "只读读取 Deployment status 与 ReplicaSet 条件"
+                ],
+                "missingEvidence": [
+                  "历史窗口内该 Deployment 关联 Pod 的重启增量与日志",
+                  "Deployment status.conditions 与副本计数",
+                  "Pod 容器 waiting/terminated reason 与事件"
+                ]
+              }
+            ],
+            "nextChecks": [
+              "在修复后窗口内按 uid 维度读取 metrics.pod-restarts，验证该 Pod 覆盖完整性并确认重启增量",
+              "只读读取该 Pod 的 phase/Ready 条件与容器状态，确认修复后是否真正就绪",
+              "如需历史根因，需在历史故障窗口内按该 Deployment 的 ReplicaSet/Pod 集合读取重启与日志，而非复用修复后样例"
+            ],
+            "evidenceRefs": [
+              "921d1694-f531-5dcc-b97f-26c4a607094c",
+              "01a1bdbc-10af-782c-abd0-073a6932cbbb"
+            ],
+            "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+            "schemaVersion": "assistant-answer/v1",
+            "degradedSources": [],
+            "missingEvidence": [
+              "修复后窗口的重启指标 restart_increase=0 为 exact=false、status=partial、warnings=[collection_coverage_unknown]，覆盖完整性未验证，不能断言该 Pod 零重启",
+              "修复后日志仅 1 条脱敏样例（status=partial、bounded_sanitized_samples_not_total_count），value=1 不是日志总数，未返回部分不能视为不存在",
+              "未读取该 Pod 的 phase/Ready 条件、容器 waiting/terminated reason 与事件，无法确认其就绪过程",
+              "历史故障窗口（startsAt 2026-11-09T00:19:48.011396Z）内该 Deployment 关联 Pod 的重启与日志仍未按 Pod 维度取得，历史根因无因果证据",
+              "RCA revision 47 的 evidenceBundle 仍缺 rollout-stuck、blocking-pod、rollout-path，且 degradedSources 含两个来源的 proof"
+            ],
+            "queryResultRefs": [
+              "01a1bdc5-6bbe-79f8-8e43-d05817789c1f",
+              "01a1bdc5-6cb6-794d-a7f6-fb4ffe21f2c7",
+              "01a1bdb8-7459-7cb0-bce8-164df7790ff0",
+              "01a1bdbd-6d37-75a8-8895-ee806eecda10"
+            ]
+          },
+          "createdAt": "2026-11-09T00:46:45.12759Z"
+        }
+      ],
+      "meta": {
+        "nextCursor": ""
+      },
+      "requestId": "01a1bdc5-ab1c-72b6-89f4-15bc94b8f2b4"
+    }
+  },
+  {
+    "path": "/api/v1/assistant/query-results/01a1bab6-0896-79a1-908d-6ee21dba9e93",
+    "status": 200,
+    "body": {
+      "data": {
+        "queryResultId": "01a1bab6-0896-79a1-908d-6ee21dba9e93",
+        "result": {
+          "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+          "datasetId": "metrics.pod-cpu",
+          "degradedSources": [],
+          "dimension": "time",
+          "exact": false,
+          "freshness": "fresh",
+          "planDigest": "sha256:b034458a7bac774347716c0dfa8ff83dbbb00ce0d348d95f03d5819837c2e655",
+          "rows": [
+            {
+              "dimension": "2026-11-08T10:25:43Z",
+              "value": 0.00130132222222217
+            },
+            {
+              "dimension": "2026-11-08T10:26:43Z",
+              "value": 0.0013399266666666658
+            },
+            {
+              "dimension": "2026-11-08T10:27:43Z",
+              "value": 0.0014079238095237858
+            },
+            {
+              "dimension": "2026-11-08T10:28:43Z",
+              "value": 0.0013974851851851664
+            },
+            {
+              "dimension": "2026-11-08T10:29:43Z",
+              "value": 0.0013955466666666658
+            }
+          ],
+          "schemaVersion": "query-result/v1",
+          "scopeDigest": "sha256:3497b1242b1e6a3ae918a92385a065799decde922ab372b8c2159f1d625ff774",
+          "snapshotReadAt": "2026-11-08T10:30:54.26086274Z",
+          "sourceManifest": {
+            "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+            "revision": 2,
+            "bindingDigest": "sha256:ed271348d80ee0fa94d1a8d97e0019a7709a8cc0613b2c5155ff1b6327c70d7d",
+            "qualificationDigest": "sha256:f7cea064a741679a63a86c1204f5e335a3bf2ac2ca30b0c74bd18fe1c57fcec5",
+            "queryHash": "sha256:341c1e8e366680260c205bba317a0c7db3f4fda7e56140eda3ae79fa7d7c16ba",
+            "templateVersion": "metrics.pod-cpu-trend/v1",
+            "coverageFrom": "2026-11-08T10:25:43Z",
+            "coverageTo": "2026-11-08T10:29:43Z"
+          },
+          "status": "partial",
+          "stepSeconds": 60,
+          "timeRange": {
+            "from": "2026-11-08T10:25:43Z",
+            "to": "2026-11-08T10:29:43Z",
+            "timezone": "Asia/Shanghai"
+          },
+          "truncated": false,
+          "unit": "cores",
+          "warnings": [
+            "collection_coverage_unknown"
+          ]
+        },
+        "facts": [
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:37a9a497f53e7b726bcec8aed4924b94c8e47a4b13e726c77c9d50e9e17dceaa",
+            "row": 0,
+            "column": "value",
+            "value": 0.00130132222222217,
+            "unit": "cores",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:8726aa5607bc5add3df5c00c01425b132787fbe67d5482cccb38628a6bbb6699",
+            "row": 1,
+            "column": "value",
+            "value": 0.0013399266666666658,
+            "unit": "cores",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:bebd5364ec46e7ae45fa782d4a80923445bfd562fe7e5e2a689cc1b381af1a93",
+            "row": 2,
+            "column": "value",
+            "value": 0.0014079238095237858,
+            "unit": "cores",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:2b26d2da428843ca1cd085282b89d5ad00c13e26192052f584638900634474a9",
+            "row": 3,
+            "column": "value",
+            "value": 0.0013974851851851664,
+            "unit": "cores",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:fdee52c34d56599a15ca106ab4c9d9518198d3e44c1daa851eaffae2fc131af0",
+            "row": 4,
+            "column": "value",
+            "value": 0.0013955466666666658,
+            "unit": "cores",
+            "exact": false
+          }
+        ],
+        "contentDigest": "sha256:cd9a5e09f00a793fb90643ae376b672dc43163f7aea4ea1a36af007fad8a2637"
+      },
+      "requestId": "01a1bdc5-ab73-79a4-8d80-21fc0087d28d"
+    }
+  },
+  {
+    "path": "/api/v1/assistant/query-results/01a1bab6-0b57-7cf1-b564-a6b3fe2397dd",
+    "status": 200,
+    "body": {
+      "data": {
+        "queryResultId": "01a1bab6-0b57-7cf1-b564-a6b3fe2397dd",
+        "result": {
+          "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+          "datasetId": "metrics.pod-memory",
+          "degradedSources": [],
+          "dimension": "time",
+          "exact": false,
+          "freshness": "fresh",
+          "planDigest": "sha256:13f9399b8c97c49bb67c8d88a62396f60c274f7c045473a867531cd505294de9",
+          "rows": [
+            {
+              "dimension": "2026-11-08T10:25:43Z",
+              "value": 32079872
+            },
+            {
+              "dimension": "2026-11-08T10:26:43Z",
+              "value": 31678464
+            },
+            {
+              "dimension": "2026-11-08T10:27:43Z",
+              "value": 37232640
+            },
+            {
+              "dimension": "2026-11-08T10:28:43Z",
+              "value": 38047744
+            },
+            {
+              "dimension": "2026-11-08T10:29:43Z",
+              "value": 38113280
+            }
+          ],
+          "schemaVersion": "query-result/v1",
+          "scopeDigest": "sha256:3497b1242b1e6a3ae918a92385a065799decde922ab372b8c2159f1d625ff774",
+          "snapshotReadAt": "2026-11-08T10:30:54.964375044Z",
+          "sourceManifest": {
+            "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+            "revision": 2,
+            "bindingDigest": "sha256:ed271348d80ee0fa94d1a8d97e0019a7709a8cc0613b2c5155ff1b6327c70d7d",
+            "qualificationDigest": "sha256:8a51cbca316d47f74ebf3ca02864a6a3f39281d07c72a3526547a19cad2b3946",
+            "queryHash": "sha256:1a56ca9d305c84d187bd09dbd02dc8c5703c6204035eb7a437986a00aa9b1029",
+            "templateVersion": "metrics.pod-memory-trend/v1",
+            "coverageFrom": "2026-11-08T10:25:43Z",
+            "coverageTo": "2026-11-08T10:29:43Z"
+          },
+          "status": "partial",
+          "stepSeconds": 60,
+          "timeRange": {
+            "from": "2026-11-08T10:25:43Z",
+            "to": "2026-11-08T10:29:43Z",
+            "timezone": "Asia/Shanghai"
+          },
+          "truncated": false,
+          "unit": "bytes",
+          "warnings": [
+            "collection_coverage_unknown"
+          ]
+        },
+        "facts": [
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:4eb488ace9335d7dfd44ecfb3a116117d95174849cf0fd563be1c26d521e35c4",
+            "row": 0,
+            "column": "value",
+            "value": 32079872,
+            "unit": "bytes",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:3f91d303010ad84d3f08cea99e482c61bd858e9f588053a0d66adfe064c09566",
+            "row": 1,
+            "column": "value",
+            "value": 31678464,
+            "unit": "bytes",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:8e90be31c2516d8bae5926b9b5415de2c2b6fbd43f613909a255c80ffa6f3ee6",
+            "row": 2,
+            "column": "value",
+            "value": 37232640,
+            "unit": "bytes",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:c872d2416395c31a49a4d01f6271b9477cf1eaee6482faa4772993474b01c0be",
+            "row": 3,
+            "column": "value",
+            "value": 38047744,
+            "unit": "bytes",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:87a397cae01b1992e44089a87dbef8ac25277fb6fba29214f2e5a7748a3510da",
+            "row": 4,
+            "column": "value",
+            "value": 38113280,
+            "unit": "bytes",
+            "exact": false
+          }
+        ],
+        "contentDigest": "sha256:335b852c9efa8a210070e04531657b506d204d832e10d0bf0a0600c518b136dd"
+      },
+      "requestId": "01a1bdc5-ab7f-7279-ab3d-88a23f486b16"
+    }
+  },
+  {
+    "path": "/api/v1/assistant/query-results/01a1bab6-0a6f-7643-b506-4f42473c16b2",
+    "status": 200,
+    "body": {
+      "data": {
+        "queryResultId": "01a1bab6-0a6f-7643-b506-4f42473c16b2",
+        "result": {
+          "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+          "datasetId": "metrics.pod-restarts",
+          "degradedSources": [],
+          "dimension": "time",
+          "exact": false,
+          "freshness": "fresh",
+          "planDigest": "sha256:1849d44806b9d9f13e2da561d225dd2dd4b1a8f4056e4b392db83986d77bac99",
+          "rows": [
+            {
+              "dimension": "2026-11-08T10:25:43Z",
+              "value": 0
+            },
+            {
+              "dimension": "2026-11-08T10:26:43Z",
+              "value": 0
+            },
+            {
+              "dimension": "2026-11-08T10:27:43Z",
+              "value": 0
+            },
+            {
+              "dimension": "2026-11-08T10:28:43Z",
+              "value": 0
+            },
+            {
+              "dimension": "2026-11-08T10:29:43Z",
+              "value": 0
+            }
+          ],
+          "schemaVersion": "query-result/v1",
+          "scopeDigest": "sha256:3497b1242b1e6a3ae918a92385a065799decde922ab372b8c2159f1d625ff774",
+          "snapshotReadAt": "2026-11-08T10:30:54.731819526Z",
+          "sourceManifest": {
+            "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+            "revision": 2,
+            "bindingDigest": "sha256:ed271348d80ee0fa94d1a8d97e0019a7709a8cc0613b2c5155ff1b6327c70d7d",
+            "qualificationDigest": "sha256:d62e56c015f1d02bd660a12161a7746218524eef2f373ddcefb831469bf7f332",
+            "queryHash": "sha256:be3b43ffdbacd475437d0dbb330d4926d52dfaa148bdaaf253af6ee770cedaaa",
+            "templateVersion": "metrics.pod-restarts-trend/v1",
+            "coverageFrom": "2026-11-08T10:25:43Z",
+            "coverageTo": "2026-11-08T10:29:43Z"
+          },
+          "status": "partial",
+          "stepSeconds": 60,
+          "timeRange": {
+            "from": "2026-11-08T10:25:43Z",
+            "to": "2026-11-08T10:29:43Z",
+            "timezone": "Asia/Shanghai"
+          },
+          "truncated": false,
+          "unit": "restarts",
+          "warnings": [
+            "collection_coverage_unknown"
+          ]
+        },
+        "facts": [
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:39038895b1803f7bc25f0c15c73110817544ccf4839d4047d02f29d4895e59af",
+            "row": 0,
+            "column": "value",
+            "value": 0,
+            "unit": "restarts",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:7447e0013d44c24f383bd5c608f15b43c7e41230dd296639a9764241ed5809ec",
+            "row": 1,
+            "column": "value",
+            "value": 0,
+            "unit": "restarts",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:8303144797e41536ef6a35a3a9462cacc9f575c6504f57b69e44a28fe70b3373",
+            "row": 2,
+            "column": "value",
+            "value": 0,
+            "unit": "restarts",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:a44e49e954d3a74b848a922ee70bce02b1baeb834d30328f04df19ec9c73f51c",
+            "row": 3,
+            "column": "value",
+            "value": 0,
+            "unit": "restarts",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:343cca13506843938d4d98cf262eb8af2f467e4c3406fa04184f2425d1275bc0",
+            "row": 4,
+            "column": "value",
+            "value": 0,
+            "unit": "restarts",
+            "exact": false
+          }
+        ],
+        "contentDigest": "sha256:b08537a588920bedf4ae1c9f8300c50096f40aec9c7563edd2fa890eb3e85afd"
+      },
+      "requestId": "01a1bdc5-ab8e-7a3b-bd22-f859d70fb7f6"
+    }
+  },
+  {
+    "path": "/api/v1/assistant/query-results/01a1bab6-098c-7cd3-a450-b31e08b6e7c5",
+    "status": 200,
+    "body": {
+      "data": {
+        "queryResultId": "01a1bab6-098c-7cd3-a450-b31e08b6e7c5",
+        "result": {
+          "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+          "datasetId": "logs.records",
+          "degradedSources": [],
+          "dimension": "",
+          "exact": false,
+          "freshness": "fresh",
+          "planDigest": "sha256:3ddc17b88818077c1669cc04ff9217a98f8e1e6b4f54c04ef236ee97f5c4c185",
+          "rows": [],
+          "schemaVersion": "query-result/v1",
+          "scopeDigest": "sha256:3497b1242b1e6a3ae918a92385a065799decde922ab372b8c2159f1d625ff774",
+          "snapshotReadAt": "2026-11-08T10:30:54.505051073Z",
+          "sourceManifest": {
+            "sourceId": "01a1ae32-b7a2-7987-bc83-9a7d8855093d",
+            "revision": 2,
+            "bindingDigest": "sha256:48baa9f2207e2bf697063e01a7fb57f34c1072a67386d0c87e53cbac3be03631",
+            "qualificationDigest": "sha256:37daf6e5f4b1715c5e0a76603f4d099898fff7fa0760350539944e55b9a0c091",
+            "queryHash": "sha256:e26b6ce3a8954ee36a2bcdf5b65e1c99f5e4e31d3051c6cdc49b657576802236",
+            "templateVersion": "logs.records-samples/v1",
+            "coverageFrom": "2026-11-08T10:25:43Z",
+            "coverageTo": "2026-11-08T10:30:33Z"
+          },
+          "status": "no_data",
+          "timeRange": {
+            "from": "2026-11-08T10:25:43Z",
+            "to": "2026-11-08T10:30:33Z",
+            "timezone": "Asia/Shanghai"
+          },
+          "truncated": false,
+          "unit": "logs",
+          "warnings": [
+            "bounded_sanitized_samples_not_total_count",
+            "no_observations"
+          ]
+        },
+        "facts": [],
+        "contentDigest": "sha256:cfbf4e9c6034b83e758a4e143776c45008918ce74bb86ba78322b498f5f7e679"
+      },
+      "requestId": "01a1bdc5-ab9a-7786-a852-5f557f706aec"
+    }
+  },
+  {
+    "path": "/api/v1/assistant/query-results/01a1b96d-5116-7537-bb16-c568471253c7",
+    "status": 200,
+    "body": {
+      "data": {
+        "queryResultId": "01a1b96d-5116-7537-bb16-c568471253c7",
+        "result": {
+          "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+          "datasetId": "logs.records",
+          "degradedSources": [],
+          "dimension": "",
+          "exact": false,
+          "freshness": "fresh",
+          "planDigest": "sha256:f8c02b12a2dd170dc456f038aeae464f225072e4f7a92cfc9ca6a2733f1c2df3",
+          "rows": [
+            {
+              "dimension": "",
+              "value": 20
+            }
+          ],
+          "samples": [
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.839086195Z",
+              "message": "I1108 03:05:24.838995       1 shared_informer.go:357] \"Caches are synced\" controller=\"client-ca::kube-system::extension-apiserver-authentication::requestheader-client-ca-file\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.839084927Z",
+              "message": "I1108 03:05:24.839000       1 shared_informer.go:357] \"Caches are synced\" controller=\"client-ca::kube-system::extension-apiserver-authentication::client-ca-file\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.839070012Z",
+              "message": "I1108 03:05:24.838994       1 shared_informer.go:357] \"Caches are synced\" controller=\"RequestHeaderAuthRequestController\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.739144571Z",
+              "message": "I1108 03:05:24.738936       1 tlsconfig.go:243] \"Starting DynamicServingCertificateController\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.738934584Z",
+              "message": "I1108 03:05:24.738872       1 secure_serving.go:211] Serving securely on [::]:10250",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.73835695Z",
+              "message": "I1108 03:05:24.738324       1 dynamic_serving_content.go:135] \"Starting controller\" name=\"serving-cert::/etc/metrics-serving/tls.crt::/etc/metrics-serving/tls.key\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.738187338Z",
+              "message": "I1108 03:05:24.738128       1 shared_informer.go:350] \"Waiting for caches to sync\" controller=\"client-ca::kube-system::extension-apiserver-authentication::requestheader-client-ca-file\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.738186141Z",
+              "message": "I1108 03:05:24.738065       1 configmap_cafile_content.go:205] \"Starting controller\" name=\"client-ca::kube-system::extension-apiserver-authentication::requestheader-client-ca-file\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.738182071Z",
+              "message": "I1108 03:05:24.738083       1 shared_informer.go:350] \"Waiting for caches to sync\" controller=\"client-ca::kube-system::extension-apiserver-authentication::client-ca-file\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.738169022Z",
+              "message": "I1108 03:05:24.738083       1 shared_informer.go:350] \"Waiting for caches to sync\" controller=\"RequestHeaderAuthRequestController\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.738165417Z",
+              "message": "I1108 03:05:24.738059       1 configmap_cafile_content.go:205] \"Starting controller\" name=\"client-ca::kube-system::extension-apiserver-authentication::client-ca-file\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.738112947Z",
+              "message": "I1108 03:05:24.738065       1 requestheader_controller.go:180] Starting RequestHeaderAuthRequestController",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.631004924Z",
+              "message": "I1108 03:05:24.630918       1 handler.go:288] Adding GroupVersion metrics.k8s.io v1beta1 to ResourceManager",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://b4a7d397aa8b745e167ec66b029572d65134857aa89a3474e348abc5261fda73",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:21.731680605Z",
+              "message": "I1108 03:05:21.731595       1 dynamic_serving_content.go:149] \"Shutting down controller\" name=\"serving-cert::/etc/metrics-serving/tls.crt::/etc/metrics-serving/tls.key\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://b4a7d397aa8b745e167ec66b029572d65134857aa89a3474e348abc5261fda73",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:21.731675313Z",
+              "message": "I1108 03:05:21.731597       1 configmap_cafile_content.go:226] \"Shutting down controller\" name=\"client-ca::kube-system::extension-apiserver-authentication::client-ca-file\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://b4a7d397aa8b745e167ec66b029572d65134857aa89a3474e348abc5261fda73",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:21.731673846Z",
+              "message": "I1108 03:05:21.731606       1 object_count_tracker.go:151] \"StorageObjectCountTracker pruner is exiting\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://b4a7d397aa8b745e167ec66b029572d65134857aa89a3474e348abc5261fda73",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:21.731672477Z",
+              "message": "I1108 03:05:21.731598       1 configmap_cafile_content.go:226] \"Shutting down controller\" name=\"client-ca::kube-system::extension-apiserver-authentication::requestheader-client-ca-file\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://b4a7d397aa8b745e167ec66b029572d65134857aa89a3474e348abc5261fda73",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:21.731654447Z",
+              "message": "I1108 03:05:21.731595       1 tlsconfig.go:258] \"Shutting down DynamicServingCertificateController\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://b4a7d397aa8b745e167ec66b029572d65134857aa89a3474e348abc5261fda73",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:21.722616126Z",
+              "message": "I1108 03:05:21.722585       1 secure_serving.go:259] Stopped listening on [::]:10250",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://b4a7d397aa8b745e167ec66b029572d65134857aa89a3474e348abc5261fda73",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:21.72046222Z",
+              "message": "I1108 03:05:21.717574       1 requestheader_controller.go:194] Shutting down RequestHeaderAuthRequestController",
+              "level": "info"
+            }
+          ],
+          "schemaVersion": "query-result/v1",
+          "scopeDigest": "sha256:3497b1242b1e6a3ae918a92385a065799decde922ab372b8c2159f1d625ff774",
+          "snapshotReadAt": "2026-11-08T04:31:51.467479606Z",
+          "sourceManifest": {
+            "sourceId": "01a1ae32-b7a2-7987-bc83-9a7d8855093d",
+            "revision": 2,
+            "bindingDigest": "sha256:48baa9f2207e2bf697063e01a7fb57f34c1072a67386d0c87e53cbac3be03631",
+            "qualificationDigest": "sha256:37daf6e5f4b1715c5e0a76603f4d099898fff7fa0760350539944e55b9a0c091",
+            "queryHash": "sha256:a03d7e2e8d3807dce2e30062b5272a4c8e95a97f7610c14df66cd07cd8327d65",
+            "templateVersion": "logs.records-samples/v1",
+            "coverageFrom": "2026-11-08T03:03:00Z",
+            "coverageTo": "2026-11-08T03:08:00Z"
+          },
+          "status": "partial",
+          "timeRange": {
+            "from": "2026-11-08T03:03:00Z",
+            "to": "2026-11-08T03:08:00Z",
+            "timezone": "Asia/Shanghai"
+          },
+          "truncated": false,
+          "unit": "logs",
+          "warnings": [
+            "bounded_sanitized_samples_not_total_count"
+          ]
+        },
+        "facts": [
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:bd87a5c44db926b4d2ef8d79ffda127fbefd286d6a85704092a24d360017adb4",
+            "row": 0,
+            "column": "value",
+            "value": 20,
+            "unit": "logs",
+            "exact": false
+          }
+        ],
+        "contentDigest": "sha256:38cd424e34b2de60972e8ce726f7d63c1c03721d63773978baaa33973df855fb"
+      },
+      "requestId": "01a1bdc5-aba1-7790-8085-c8993a5f635b"
+    }
+  },
+  {
+    "path": "/api/v1/assistant/query-results/01a1b96d-dfb0-746d-9928-8cbd9484d573",
+    "status": 200,
+    "body": {
+      "data": {
+        "queryResultId": "01a1b96d-dfb0-746d-9928-8cbd9484d573",
+        "result": {
+          "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+          "datasetId": "logs.records",
+          "degradedSources": [],
+          "dimension": "",
+          "exact": false,
+          "freshness": "fresh",
+          "planDigest": "sha256:62071b4941f002be6bb22815b5fadb7b603dd254cd67ad0cc9dba3741b2edd0a",
+          "rows": [
+            {
+              "dimension": "",
+              "value": 20
+            }
+          ],
+          "samples": [
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.839086195Z",
+              "message": "I1108 03:05:24.838995       1 shared_informer.go:357] \"Caches are synced\" controller=\"client-ca::kube-system::extension-apiserver-authentication::requestheader-client-ca-file\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.839084927Z",
+              "message": "I1108 03:05:24.839000       1 shared_informer.go:357] \"Caches are synced\" controller=\"client-ca::kube-system::extension-apiserver-authentication::client-ca-file\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.839070012Z",
+              "message": "I1108 03:05:24.838994       1 shared_informer.go:357] \"Caches are synced\" controller=\"RequestHeaderAuthRequestController\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.739144571Z",
+              "message": "I1108 03:05:24.738936       1 tlsconfig.go:243] \"Starting DynamicServingCertificateController\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.738934584Z",
+              "message": "I1108 03:05:24.738872       1 secure_serving.go:211] Serving securely on [::]:10250",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.73835695Z",
+              "message": "I1108 03:05:24.738324       1 dynamic_serving_content.go:135] \"Starting controller\" name=\"serving-cert::/etc/metrics-serving/tls.crt::/etc/metrics-serving/tls.key\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.738187338Z",
+              "message": "I1108 03:05:24.738128       1 shared_informer.go:350] \"Waiting for caches to sync\" controller=\"client-ca::kube-system::extension-apiserver-authentication::requestheader-client-ca-file\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.738186141Z",
+              "message": "I1108 03:05:24.738065       1 configmap_cafile_content.go:205] \"Starting controller\" name=\"client-ca::kube-system::extension-apiserver-authentication::requestheader-client-ca-file\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.738182071Z",
+              "message": "I1108 03:05:24.738083       1 shared_informer.go:350] \"Waiting for caches to sync\" controller=\"client-ca::kube-system::extension-apiserver-authentication::client-ca-file\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.738169022Z",
+              "message": "I1108 03:05:24.738083       1 shared_informer.go:350] \"Waiting for caches to sync\" controller=\"RequestHeaderAuthRequestController\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.738165417Z",
+              "message": "I1108 03:05:24.738059       1 configmap_cafile_content.go:205] \"Starting controller\" name=\"client-ca::kube-system::extension-apiserver-authentication::client-ca-file\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.738112947Z",
+              "message": "I1108 03:05:24.738065       1 requestheader_controller.go:180] Starting RequestHeaderAuthRequestController",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:24.631004924Z",
+              "message": "I1108 03:05:24.630918       1 handler.go:288] Adding GroupVersion metrics.k8s.io v1beta1 to ResourceManager",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://b4a7d397aa8b745e167ec66b029572d65134857aa89a3474e348abc5261fda73",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:21.731680605Z",
+              "message": "I1108 03:05:21.731595       1 dynamic_serving_content.go:149] \"Shutting down controller\" name=\"serving-cert::/etc/metrics-serving/tls.crt::/etc/metrics-serving/tls.key\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://b4a7d397aa8b745e167ec66b029572d65134857aa89a3474e348abc5261fda73",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:21.731675313Z",
+              "message": "I1108 03:05:21.731597       1 configmap_cafile_content.go:226] \"Shutting down controller\" name=\"client-ca::kube-system::extension-apiserver-authentication::client-ca-file\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://b4a7d397aa8b745e167ec66b029572d65134857aa89a3474e348abc5261fda73",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:21.731673846Z",
+              "message": "I1108 03:05:21.731606       1 object_count_tracker.go:151] \"StorageObjectCountTracker pruner is exiting\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://b4a7d397aa8b745e167ec66b029572d65134857aa89a3474e348abc5261fda73",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:21.731672477Z",
+              "message": "I1108 03:05:21.731598       1 configmap_cafile_content.go:226] \"Shutting down controller\" name=\"client-ca::kube-system::extension-apiserver-authentication::requestheader-client-ca-file\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://b4a7d397aa8b745e167ec66b029572d65134857aa89a3474e348abc5261fda73",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:21.731654447Z",
+              "message": "I1108 03:05:21.731595       1 tlsconfig.go:258] \"Shutting down DynamicServingCertificateController\"",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://b4a7d397aa8b745e167ec66b029572d65134857aa89a3474e348abc5261fda73",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:21.722616126Z",
+              "message": "I1108 03:05:21.722585       1 secure_serving.go:259] Stopped listening on [::]:10250",
+              "level": "info"
+            },
+            {
+              "fields": {
+                "container": "metrics-server",
+                "containerId": "containerd://b4a7d397aa8b745e167ec66b029572d65134857aa89a3474e348abc5261fda73",
+                "namespaceUid": "c4dc825f-0897-417b-a876-f151e7783629",
+                "pod": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn"
+              },
+              "timestamp": "2026-11-08T03:05:21.72046222Z",
+              "message": "I1108 03:05:21.717574       1 requestheader_controller.go:194] Shutting down RequestHeaderAuthRequestController",
+              "level": "info"
+            }
+          ],
+          "schemaVersion": "query-result/v1",
+          "scopeDigest": "sha256:3497b1242b1e6a3ae918a92385a065799decde922ab372b8c2159f1d625ff774",
+          "snapshotReadAt": "2026-11-08T04:32:27.980903396Z",
+          "sourceManifest": {
+            "sourceId": "01a1ae32-b7a2-7987-bc83-9a7d8855093d",
+            "revision": 2,
+            "bindingDigest": "sha256:48baa9f2207e2bf697063e01a7fb57f34c1072a67386d0c87e53cbac3be03631",
+            "qualificationDigest": "sha256:37daf6e5f4b1715c5e0a76603f4d099898fff7fa0760350539944e55b9a0c091",
+            "queryHash": "sha256:a03d7e2e8d3807dce2e30062b5272a4c8e95a97f7610c14df66cd07cd8327d65",
+            "templateVersion": "logs.records-samples/v1",
+            "coverageFrom": "2026-11-08T03:03:00Z",
+            "coverageTo": "2026-11-08T03:08:00Z"
+          },
+          "status": "partial",
+          "timeRange": {
+            "from": "2026-11-08T03:03:00Z",
+            "to": "2026-11-08T03:08:00Z",
+            "timezone": "Asia/Shanghai"
+          },
+          "truncated": false,
+          "unit": "logs",
+          "warnings": [
+            "bounded_sanitized_samples_not_total_count"
+          ]
+        },
+        "facts": [
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:e66240771e6c7a2d290a55a538b59c1311df58ac8d691c5e81cb0a24b4257c54",
+            "row": 0,
+            "column": "value",
+            "value": 20,
+            "unit": "logs",
+            "exact": false
+          }
+        ],
+        "contentDigest": "sha256:f78551c4722794f82b2d8b110edbba750068eb56731733992ebf2aabeb7b06de"
+      },
+      "requestId": "01a1bdc5-aba8-74c3-bd4e-c939fec42de3"
+    }
+  },
+  {
+    "path": "/api/v1/assistant/query-results/01a1b967-532e-7dd4-acdb-50d943cc6fb1",
+    "status": 200,
+    "body": {
+      "data": {
+        "queryResultId": "01a1b967-532e-7dd4-acdb-50d943cc6fb1",
+        "result": {
+          "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+          "datasetId": "metrics.pod-cpu",
+          "degradedSources": [],
+          "dimension": "time",
+          "exact": false,
+          "freshness": "fresh",
+          "planDigest": "sha256:3a5e6f84fcfff3ae3866d0eabf88648f95c8221bfd142c0ccb3dcf7fd260f439",
+          "rows": [
+            {
+              "dimension": "2026-11-08T04:20:08Z",
+              "value": 0.001328906666666665
+            },
+            {
+              "dimension": "2026-11-08T04:21:08Z",
+              "value": 0.0013503800000000006
+            },
+            {
+              "dimension": "2026-11-08T04:22:08Z",
+              "value": 0.0013226200000000018
+            },
+            {
+              "dimension": "2026-11-08T04:23:08Z",
+              "value": 0.0013130466666666685
+            },
+            {
+              "dimension": "2026-11-08T04:24:08Z",
+              "value": 0.0013408733333333314
+            }
+          ],
+          "schemaVersion": "query-result/v1",
+          "scopeDigest": "sha256:3497b1242b1e6a3ae918a92385a065799decde922ab372b8c2159f1d625ff774",
+          "snapshotReadAt": "2026-11-08T04:25:18.797372998Z",
+          "sourceManifest": {
+            "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+            "revision": 2,
+            "bindingDigest": "sha256:ed271348d80ee0fa94d1a8d97e0019a7709a8cc0613b2c5155ff1b6327c70d7d",
+            "qualificationDigest": "sha256:f7cea064a741679a63a86c1204f5e335a3bf2ac2ca30b0c74bd18fe1c57fcec5",
+            "queryHash": "sha256:341c1e8e366680260c205bba317a0c7db3f4fda7e56140eda3ae79fa7d7c16ba",
+            "templateVersion": "metrics.pod-cpu-trend/v1",
+            "coverageFrom": "2026-11-08T04:20:08Z",
+            "coverageTo": "2026-11-08T04:24:08Z"
+          },
+          "status": "partial",
+          "stepSeconds": 60,
+          "timeRange": {
+            "from": "2026-11-08T04:20:08Z",
+            "to": "2026-11-08T04:24:08Z",
+            "timezone": "Asia/Shanghai"
+          },
+          "truncated": false,
+          "unit": "cores",
+          "warnings": [
+            "collection_coverage_unknown"
+          ]
+        },
+        "facts": [
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:ceeacac35c51bb38d618d71bad74a036ef7ad834806bbe8ed14cf44e094f18f2",
+            "row": 0,
+            "column": "value",
+            "value": 0.001328906666666665,
+            "unit": "cores",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:3607c3c8a09e5377331ba11334211f4db3a4d77424fddb914f4b3e2434196ba7",
+            "row": 1,
+            "column": "value",
+            "value": 0.0013503800000000006,
+            "unit": "cores",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:152a473a41b123d759b846713924169f3e8a3b5140656b38d29b766df1ef0afc",
+            "row": 2,
+            "column": "value",
+            "value": 0.0013226200000000018,
+            "unit": "cores",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:3862cbd6cd86252cef0f8f54a797b6d1a8d315dff0658030d83e79dd6ee6ad92",
+            "row": 3,
+            "column": "value",
+            "value": 0.0013130466666666685,
+            "unit": "cores",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:221c6d0b9098843e3c7222c6e7829e0eea17039a6a3e809c37fb1374a109e0e9",
+            "row": 4,
+            "column": "value",
+            "value": 0.0013408733333333314,
+            "unit": "cores",
+            "exact": false
+          }
+        ],
+        "contentDigest": "sha256:357cf293df5f2888c55e18e2dca962c2f06e932b0e6cad92394af1009c40fb09"
+      },
+      "requestId": "01a1bdc5-abb1-7c90-b076-5a3e18f9a064"
+    }
+  },
+  {
+    "path": "/api/v1/assistant/query-results/01a1b967-55ed-702f-b291-c1d4e6ef8b76",
+    "status": 200,
+    "body": {
+      "data": {
+        "queryResultId": "01a1b967-55ed-702f-b291-c1d4e6ef8b76",
+        "result": {
+          "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+          "datasetId": "metrics.pod-memory",
+          "degradedSources": [],
+          "dimension": "time",
+          "exact": false,
+          "freshness": "fresh",
+          "planDigest": "sha256:0373cc53241c1f4bfe5e200a434d6c36d5081819938047070f2abc381b3f61eb",
+          "rows": [
+            {
+              "dimension": "2026-11-08T04:20:08Z",
+              "value": 38502400
+            },
+            {
+              "dimension": "2026-11-08T04:21:08Z",
+              "value": 39706624
+            },
+            {
+              "dimension": "2026-11-08T04:22:08Z",
+              "value": 34885632
+            },
+            {
+              "dimension": "2026-11-08T04:23:08Z",
+              "value": 34390016
+            },
+            {
+              "dimension": "2026-11-08T04:24:08Z",
+              "value": 34639872
+            }
+          ],
+          "schemaVersion": "query-result/v1",
+          "scopeDigest": "sha256:3497b1242b1e6a3ae918a92385a065799decde922ab372b8c2159f1d625ff774",
+          "snapshotReadAt": "2026-11-08T04:25:19.393398436Z",
+          "sourceManifest": {
+            "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+            "revision": 2,
+            "bindingDigest": "sha256:ed271348d80ee0fa94d1a8d97e0019a7709a8cc0613b2c5155ff1b6327c70d7d",
+            "qualificationDigest": "sha256:8a51cbca316d47f74ebf3ca02864a6a3f39281d07c72a3526547a19cad2b3946",
+            "queryHash": "sha256:1a56ca9d305c84d187bd09dbd02dc8c5703c6204035eb7a437986a00aa9b1029",
+            "templateVersion": "metrics.pod-memory-trend/v1",
+            "coverageFrom": "2026-11-08T04:20:08Z",
+            "coverageTo": "2026-11-08T04:24:08Z"
+          },
+          "status": "partial",
+          "stepSeconds": 60,
+          "timeRange": {
+            "from": "2026-11-08T04:20:08Z",
+            "to": "2026-11-08T04:24:08Z",
+            "timezone": "Asia/Shanghai"
+          },
+          "truncated": false,
+          "unit": "bytes",
+          "warnings": [
+            "collection_coverage_unknown"
+          ]
+        },
+        "facts": [
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:b6e08cd7769d50053b255f32973c53d1ec63be5203bc8b31ad2b1a443265df14",
+            "row": 0,
+            "column": "value",
+            "value": 38502400,
+            "unit": "bytes",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:f03fbf1d3447d1b7bf8509e1261fcb18ec34ac81c1c2da0a6401e74838765acf",
+            "row": 1,
+            "column": "value",
+            "value": 39706624,
+            "unit": "bytes",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:025459eb7765ad1bbabb718ca282e5371d7d228d6b1cfbf1ef10ed2948abf95d",
+            "row": 2,
+            "column": "value",
+            "value": 34885632,
+            "unit": "bytes",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:ecb55cbf0f8bc21c5210ed89476a5bc10182b05b7af7da84b5f98465ab900742",
+            "row": 3,
+            "column": "value",
+            "value": 34390016,
+            "unit": "bytes",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:00f44794f4777c47329eea1221c2a8b6ee94ec4be11bbeee73025303f7e846ce",
+            "row": 4,
+            "column": "value",
+            "value": 34639872,
+            "unit": "bytes",
+            "exact": false
+          }
+        ],
+        "contentDigest": "sha256:abf676a6ce8b6fd26e30b768020294913e7d4e6d736a3a406a3a730b2b860b04"
+      },
+      "requestId": "01a1bdc5-abb8-76f9-9d7f-03c796baccfe"
+    }
+  },
+  {
+    "path": "/api/v1/assistant/query-results/01a1b967-5717-7ba3-a09f-77b05a7b4ac3",
+    "status": 200,
+    "body": {
+      "data": {
+        "queryResultId": "01a1b967-5717-7ba3-a09f-77b05a7b4ac3",
+        "result": {
+          "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+          "datasetId": "metrics.pod-restarts",
+          "degradedSources": [],
+          "dimension": "time",
+          "exact": false,
+          "freshness": "fresh",
+          "planDigest": "sha256:aead7ba1a287b1463a8be07efad69dc1d8062da34d2bbe7f6a2f91549fb76521",
+          "rows": [
+            {
+              "dimension": "2026-11-08T04:20:08Z",
+              "value": 0
+            },
+            {
+              "dimension": "2026-11-08T04:21:08Z",
+              "value": 0
+            },
+            {
+              "dimension": "2026-11-08T04:22:08Z",
+              "value": 0
+            },
+            {
+              "dimension": "2026-11-08T04:23:08Z",
+              "value": 0
+            },
+            {
+              "dimension": "2026-11-08T04:24:08Z",
+              "value": 0
+            }
+          ],
+          "schemaVersion": "query-result/v1",
+          "scopeDigest": "sha256:3497b1242b1e6a3ae918a92385a065799decde922ab372b8c2159f1d625ff774",
+          "snapshotReadAt": "2026-11-08T04:25:19.796152109Z",
+          "sourceManifest": {
+            "sourceId": "01a1ae32-5595-7eea-aa8a-ac0ff097c123",
+            "revision": 2,
+            "bindingDigest": "sha256:ed271348d80ee0fa94d1a8d97e0019a7709a8cc0613b2c5155ff1b6327c70d7d",
+            "qualificationDigest": "sha256:d62e56c015f1d02bd660a12161a7746218524eef2f373ddcefb831469bf7f332",
+            "queryHash": "sha256:be3b43ffdbacd475437d0dbb330d4926d52dfaa148bdaaf253af6ee770cedaaa",
+            "templateVersion": "metrics.pod-restarts-trend/v1",
+            "coverageFrom": "2026-11-08T04:20:08Z",
+            "coverageTo": "2026-11-08T04:24:08Z"
+          },
+          "status": "partial",
+          "stepSeconds": 60,
+          "timeRange": {
+            "from": "2026-11-08T04:20:08Z",
+            "to": "2026-11-08T04:24:08Z",
+            "timezone": "Asia/Shanghai"
+          },
+          "truncated": false,
+          "unit": "restarts",
+          "warnings": [
+            "collection_coverage_unknown"
+          ]
+        },
+        "facts": [
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:3c5048055337a598a426055e486a864294fa98b3211ccc7d5ff2a8fdee7278df",
+            "row": 0,
+            "column": "value",
+            "value": 0,
+            "unit": "restarts",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:a5bf36927759a675c890cab9e1b78725e0c8b29375e2b7c5ae24b0b7cdcaa3a8",
+            "row": 1,
+            "column": "value",
+            "value": 0,
+            "unit": "restarts",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:8f3188fd6b16515c4132bf0b09369c665f6855bfbe19abe693468248e8e1a972",
+            "row": 2,
+            "column": "value",
+            "value": 0,
+            "unit": "restarts",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:9e99e31899e17fdb8fba6ee124db7e3ea6ca138bcd328532771db5c84d603818",
+            "row": 3,
+            "column": "value",
+            "value": 0,
+            "unit": "restarts",
+            "exact": false
+          },
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:40f52345c0a59bdd51fab9c621673a42e6115002dd855db4844bb510145b03a3",
+            "row": 4,
+            "column": "value",
+            "value": 0,
+            "unit": "restarts",
+            "exact": false
+          }
+        ],
+        "contentDigest": "sha256:e2d0050e08b3be7323e32317639096a7e66623143d51aa8406eaf346aeeb9db7"
+      },
+      "requestId": "01a1bdc5-abbf-7602-8d77-d5d710b3677b"
+    }
+  },
+  {
+    "path": "/api/v1/assistant/query-results/01a1b967-5456-7d8f-b76e-54038a61eabb",
+    "status": 200,
+    "body": {
+      "data": {
+        "queryResultId": "01a1b967-5456-7d8f-b76e-54038a61eabb",
+        "result": {
+          "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+          "datasetId": "logs.records",
+          "degradedSources": [],
+          "dimension": "",
+          "exact": false,
+          "freshness": "fresh",
+          "planDigest": "sha256:591aaa8288d13458ee3b86abe6d09d0998f4616b59852a0ff47dcbf420434725",
+          "rows": [],
+          "schemaVersion": "query-result/v1",
+          "scopeDigest": "sha256:3497b1242b1e6a3ae918a92385a065799decde922ab372b8c2159f1d625ff774",
+          "snapshotReadAt": "2026-11-08T04:25:19.092985009Z",
+          "sourceManifest": {
+            "sourceId": "01a1ae32-b7a2-7987-bc83-9a7d8855093d",
+            "revision": 2,
+            "bindingDigest": "sha256:48baa9f2207e2bf697063e01a7fb57f34c1072a67386d0c87e53cbac3be03631",
+            "qualificationDigest": "sha256:37daf6e5f4b1715c5e0a76603f4d099898fff7fa0760350539944e55b9a0c091",
+            "queryHash": "sha256:f02713625445faed776f20422300584f8f4717c1876edf5eb123ab87545409c7",
+            "templateVersion": "logs.records-samples/v1",
+            "coverageFrom": "2026-11-08T04:20:08Z",
+            "coverageTo": "2026-11-08T04:25:02Z"
+          },
+          "status": "no_data",
+          "timeRange": {
+            "from": "2026-11-08T04:20:08Z",
+            "to": "2026-11-08T04:25:02Z",
+            "timezone": "Asia/Shanghai"
+          },
+          "truncated": false,
+          "unit": "logs",
+          "warnings": [
+            "bounded_sanitized_samples_not_total_count",
+            "no_observations"
+          ]
+        },
+        "facts": [],
+        "contentDigest": "sha256:bd8efe4935eef3e5ca1ffc186fcc363b0d947b4dc6716b72f4db13f2fca36a0a"
+      },
+      "requestId": "01a1bdc5-abc5-7d15-a798-867298aae3c3"
+    }
+  },
+  {
+    "path": "/api/v1/evidence/b96ae5bf-c41f-5243-88ed-dba5edbd3dbb",
+    "status": 200,
+    "body": {
+      "data": {
+        "sourceScopeDigest": "sha256:67eb23c92a1d76647ca1b3f210cd6cb1f622dc6b7dd496e2cfe343236513d7e9",
+        "schemaVersion": "evidence/v2",
+        "evidenceId": "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+        "type": "resource_state",
+        "dataClass": "D0",
+        "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "sourceRevision": 2,
+        "sourceSystem": "kubernetes",
+        "backendLogicalId": "current-native-cluster",
+        "queryTemplateVersion": "sp05-k8sgpt/v1",
+        "queryHash": "sha256:26a6c8721e1aa38f04063b96b840d1f070d4108e315ba8e88c8a4f6cd631d821",
+        "effectiveScope": {
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "namespaces": [
+            "ops-current"
+          ],
+          "resources": [],
+          "clusterScoped": false,
+          "authorizationRevision": "collector/01a1ab38-fbeb-79be-91c0-8823152c8c9d/2"
+        },
+        "evaluatedAt": "2026-11-08T03:27:56.689648928Z",
+        "observedFrom": "2026-11-08T03:27:56.689648928Z",
+        "observedTo": "2026-11-08T03:27:56.689648928Z",
+        "sourceRetentionUntil": "2026-11-08T03:27:56.689648928Z",
+        "timeReliable": true,
+        "replayState": "archived_verified",
+        "contentDigest": "sha256:be6afadfe8c934fcc0e2ac8098d1c74adca6c6cc21224bd0b4cef9f211c206fb",
+        "derivationEvidenceRefs": [],
+        "independenceGroup": "01a1ab38-fbeb-79be-91c0-8823152c8c9d/9d925158-f0c9-4ce5-84b8-830959e148dc",
+        "archiveRef": {
+          "backendLogicalId": "current-archive",
+          "object": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "objectId": "b96ae5bf-c41f-5243-88ed-dba5edbd3dbb",
+            "category": "evidence",
+            "key": "tenants/c784249324387d29b3d8174c7dfd97393ba6f1b5496943136d90e83e33f35832/evidence/b96ae5bf-c41f-5243-88ed-dba5edbd3dbb",
+            "digest": "sha256:c4720d61a672a1c9b1ae971de5873ff120f0cf163085dc1d194b3c3db42dd80a",
+            "size": 576,
+            "contentType": "application/vnd.ops.transit-envelope+json",
+            "versionId": "671a0bd78d194f7a25a60642244c74e0",
+            "etag": "\"9769104f3934c1a92cf5494bfd113919\"",
+            "retainUntil": "2027-11-09T03:28:02Z"
+          },
+          "encryptionKeyVersion": "1",
+          "plaintextDigest": "sha256:be6afadfe8c934fcc0e2ac8098d1c74adca6c6cc21224bd0b4cef9f211c206fb",
+          "ciphertextDigest": "sha256:c4720d61a672a1c9b1ae971de5873ff120f0cf163085dc1d194b3c3db42dd80a"
+        },
+        "factSlice": {
+          "analyzer": "k8sgpt/v0.3.41/f071b32aa85d77b197cd2d0f9868294f7b55c5eb",
+          "fault": false,
+          "nativeKind": "Pod",
+          "nativeUID": "9d925158-f0c9-4ce5-84b8-830959e148dc",
+          "symptom": "PodRuntimeFault"
+        }
+      },
+      "meta": {
+        "degradedSources": [],
+        "freshness": "archived",
+        "partial": false,
+        "warnings": []
+      },
+      "requestId": "01a1bdc5-abcc-7503-b2db-fe0df06d8941"
+    }
+  },
+  {
+    "path": "/api/v1/evidence/6bb52038-5afa-5d0e-99c7-4514986b55db",
+    "status": 200,
+    "body": {
+      "data": {
+        "sourceScopeDigest": "sha256:67eb23c92a1d76647ca1b3f210cd6cb1f622dc6b7dd496e2cfe343236513d7e9",
+        "schemaVersion": "evidence/v2",
+        "evidenceId": "6bb52038-5afa-5d0e-99c7-4514986b55db",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+        "type": "resource_state",
+        "dataClass": "D0",
+        "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "sourceRevision": 2,
+        "sourceSystem": "kubernetes",
+        "backendLogicalId": "current-native-cluster",
+        "queryTemplateVersion": "sp05-signal/v1",
+        "queryHash": "sha256:b61d94523b2702653cca295664b942aed7ccb7a57b520519c8c27d7b9b439f63",
+        "effectiveScope": {
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "namespaces": [
+            "ops-current"
+          ],
+          "resources": [],
+          "clusterScoped": false,
+          "authorizationRevision": "collector/01a1ab38-fbeb-79be-91c0-8823152c8c9d/2"
+        },
+        "evaluatedAt": "2026-11-08T04:07:34.808827482Z",
+        "observedFrom": "2026-11-08T04:07:34.808827482Z",
+        "observedTo": "2026-11-08T04:07:34.808827482Z",
+        "sourceRetentionUntil": "2026-11-08T04:07:34.808827482Z",
+        "timeReliable": true,
+        "replayState": "archived_verified",
+        "contentDigest": "sha256:43495e75fb2b10107099781446da9e26121fa69fffded2ac03aed0e57f9d42ec",
+        "derivationEvidenceRefs": [],
+        "independenceGroup": "01a1ab38-fbeb-79be-91c0-8823152c8c9d/9d925158-f0c9-4ce5-84b8-830959e148dc",
+        "archiveRef": {
+          "backendLogicalId": "current-archive",
+          "object": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "objectId": "6bb52038-5afa-5d0e-99c7-4514986b55db",
+            "category": "evidence",
+            "key": "tenants/c784249324387d29b3d8174c7dfd97393ba6f1b5496943136d90e83e33f35832/evidence/6bb52038-5afa-5d0e-99c7-4514986b55db",
+            "digest": "sha256:d49373ef01903e4a1c6d3a5225214a350a994752a61be6cfd6436e195b429048",
+            "size": 528,
+            "contentType": "application/vnd.ops.transit-envelope+json",
+            "versionId": "671a09ac556c60e5d13aae184000217b",
+            "etag": "\"67cb03597ce688213d545e2491c5f213\"",
+            "retainUntil": "2027-11-09T04:07:46Z"
+          },
+          "encryptionKeyVersion": "1",
+          "plaintextDigest": "sha256:43495e75fb2b10107099781446da9e26121fa69fffded2ac03aed0e57f9d42ec",
+          "ciphertextDigest": "sha256:d49373ef01903e4a1c6d3a5225214a350a994752a61be6cfd6436e195b429048"
+        },
+        "factSlice": {
+          "nativeKind": "Pod",
+          "nativeUID": "9d925158-f0c9-4ce5-84b8-830959e148dc",
+          "probeFailing": false,
+          "reason": "ProbeFailure",
+          "resourceVersion": "2704966"
+        }
+      },
+      "meta": {
+        "degradedSources": [],
+        "freshness": "archived",
+        "partial": false,
+        "warnings": []
+      },
+      "requestId": "01a1bdc5-abda-7946-b4b0-ebcd53d690c8"
+    }
+  },
+  {
+    "path": "/api/v1/evidence/98fe20f4-b93c-572a-8749-229797559069",
+    "status": 200,
+    "body": {
+      "data": {
+        "sourceScopeDigest": "sha256:67eb23c92a1d76647ca1b3f210cd6cb1f622dc6b7dd496e2cfe343236513d7e9",
+        "schemaVersion": "evidence/v2",
+        "evidenceId": "98fe20f4-b93c-572a-8749-229797559069",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+        "type": "resource_state",
+        "dataClass": "D0",
+        "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "sourceRevision": 2,
+        "sourceSystem": "kubernetes",
+        "backendLogicalId": "current-native-cluster",
+        "queryTemplateVersion": "sp05-signal/v1",
+        "queryHash": "sha256:e592043b6a39fa3d167405a356fc295bd433938d15ffbccc80e907830ff67521",
+        "effectiveScope": {
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "namespaces": [
+            "ops-current"
+          ],
+          "resources": [],
+          "clusterScoped": false,
+          "authorizationRevision": "collector/01a1ab38-fbeb-79be-91c0-8823152c8c9d/2"
+        },
+        "evaluatedAt": "2026-11-08T10:30:05.570487504Z",
+        "observedFrom": "2026-11-08T10:30:05.570487504Z",
+        "observedTo": "2026-11-08T10:30:05.570487504Z",
+        "sourceRetentionUntil": "2026-11-08T10:30:05.570487504Z",
+        "timeReliable": true,
+        "replayState": "archived_verified",
+        "contentDigest": "sha256:ad5db7f276cbb4711b0781b4fff6380ca3cb3652a43e382d450b5923dd4e8242",
+        "derivationEvidenceRefs": [],
+        "independenceGroup": "01a1ab38-fbeb-79be-91c0-8823152c8c9d/9d925158-f0c9-4ce5-84b8-830959e148dc",
+        "archiveRef": {
+          "backendLogicalId": "current-archive",
+          "object": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "objectId": "98fe20f4-b93c-572a-8749-229797559069",
+            "category": "evidence",
+            "key": "tenants/c784249324387d29b3d8174c7dfd97393ba6f1b5496943136d90e83e33f35832/evidence/98fe20f4-b93c-572a-8749-229797559069",
+            "digest": "sha256:208d01c082b206a4738b75fe3bfea33fa95f5902c6f421355e61c872ce2509d2",
+            "size": 528,
+            "contentType": "application/vnd.ops.transit-envelope+json",
+            "versionId": "6719f4cc8b07f5874ebe225bc801cbd9",
+            "etag": "\"417d839733d249e04da27222d59a1be6\"",
+            "retainUntil": "2027-11-09T10:30:18Z"
+          },
+          "encryptionKeyVersion": "1",
+          "plaintextDigest": "sha256:ad5db7f276cbb4711b0781b4fff6380ca3cb3652a43e382d450b5923dd4e8242",
+          "ciphertextDigest": "sha256:208d01c082b206a4738b75fe3bfea33fa95f5902c6f421355e61c872ce2509d2"
+        },
+        "factSlice": {
+          "nativeKind": "Pod",
+          "nativeUID": "9d925158-f0c9-4ce5-84b8-830959e148dc",
+          "probeFailing": false,
+          "reason": "ProbeFailure",
+          "resourceVersion": "2727886"
+        }
+      },
+      "meta": {
+        "degradedSources": [],
+        "freshness": "archived",
+        "partial": false,
+        "warnings": []
+      },
+      "requestId": "01a1bdc5-abe7-7986-934c-18b91dca4973"
+    }
+  },
+  {
+    "path": "/api/v1/evidence/9938c916-b44d-572e-8603-2fef9984b4b7",
+    "status": 200,
+    "body": {
+      "data": {
+        "sourceScopeDigest": "sha256:ad132639d07561315f080a01a9c456b98f94bebd30b8b97643eb1ca3507d7fb8",
+        "schemaVersion": "evidence/v2",
+        "evidenceId": "9938c916-b44d-572e-8603-2fef9984b4b7",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/867fdbee-d0d8-4ad3-87a1-13d279d65c1a",
+        "type": "resource_state",
+        "dataClass": "D0",
+        "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "sourceRevision": 1,
+        "sourceSystem": "kubernetes",
+        "backendLogicalId": "current-native-cluster",
+        "queryTemplateVersion": "kubernetes-projection/v3",
+        "queryHash": "sha256:aaf480449a56ccc2e213fb671e6fd5d8a8510e78a6ce80012f4f2738ebf6a404",
+        "effectiveScope": {
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "namespaces": [
+            "ops-current"
+          ],
+          "resources": [],
+          "clusterScoped": true,
+          "authorizationRevision": "collector/01a1ab38-fbeb-79be-91c0-8823152c8c9d/1"
+        },
+        "evaluatedAt": "2026-11-06T00:32:43.646735166Z",
+        "observedFrom": "2026-11-06T00:32:43.646735166Z",
+        "observedTo": "2026-11-06T00:32:43.646735166Z",
+        "sourceRetentionUntil": "2026-11-06T00:32:43.646735166Z",
+        "timeReliable": true,
+        "replayState": "archived_verified",
+        "contentDigest": "sha256:b3afe78cc11ee770ab6ee5d7960e71f8fba42232b66b7032e6f99f38ff5fc6f0",
+        "derivationEvidenceRefs": [],
+        "independenceGroup": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+        "archiveRef": {
+          "backendLogicalId": "current-archive",
+          "object": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "objectId": "9938c916-b44d-572e-8603-2fef9984b4b7",
+            "category": "evidence",
+            "key": "tenants/c784249324387d29b3d8174c7dfd97393ba6f1b5496943136d90e83e33f35832/evidence/9938c916-b44d-572e-8603-2fef9984b4b7",
+            "digest": "sha256:8ecbdaa3523cd372a9825d2dd20c1f9af389402f2c243253886365e1aedd3580",
+            "size": 2880,
+            "contentType": "application/vnd.ops.transit-envelope+json",
+            "versionId": "671ab291774838189dac74763459132f",
+            "etag": "\"58a311d537727a71fc12c9cc11fd3cf5\"",
+            "retainUntil": "2027-11-07T00:32:44Z"
+          },
+          "encryptionKeyVersion": "1",
+          "plaintextDigest": "sha256:b3afe78cc11ee770ab6ee5d7960e71f8fba42232b66b7032e6f99f38ff5fc6f0",
+          "ciphertextDigest": "sha256:8ecbdaa3523cd372a9825d2dd20c1f9af389402f2c243253886365e1aedd3580"
+        },
+        "factSlice": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "creationTimestamp": "2026-11-06T00:31:34Z",
+            "labels": {
+              "app": "ops-worker",
+              "pod-template-hash": "857b4d57f4"
+            },
+            "name": "ops-worker-857b4d57f4-px6wq",
+            "namespace": "ops-current",
+            "ownerReferences": [
+              {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "ReplicaSet",
+                "name": "ops-worker-857b4d57f4",
+                "uid": "c31cdde0-2216-4698-8aea-7b50672045a8"
+              }
+            ],
+            "resourceVersion": "2532128",
+            "uid": "867fdbee-d0d8-4ad3-87a1-13d279d65c1a"
+          },
+          "spec": {
+            "containers": [
+              {
+                "image": "ops.local/current/platform-worker@sha256:a2828f57c0936083e9abb935c752bffb3b5c43721164306928d94403285990d2",
+                "name": "worker"
+              }
+            ],
+            "nodeName": "mssc",
+            "serviceAccountName": "ops-worker",
+            "volumes": [
+              {
+                "configMap": {
+                  "name": "ops-runtime"
+                },
+                "name": "runtime"
+              },
+              {
+                "name": "identity",
+                "secret": {
+                  "secretName": "ops-context-signing"
+                }
+              },
+              {
+                "name": "bao-token"
+              },
+              {
+                "name": "tmp"
+              },
+              {
+                "name": "archive",
+                "secret": {
+                  "secretName": "ops-archive-credentials"
+                }
+              },
+              {
+                "name": "kubernetes-token"
+              },
+              {
+                "name": "metrics-source",
+                "secret": {
+                  "secretName": "ops-metrics-source"
+                }
+              },
+              {
+                "name": "logs-source",
+                "secret": {
+                  "secretName": "ops-logs-source"
+                }
+              }
+            ]
+          },
+          "status": {
+            "conditions": [
+              {
+                "lastTransitionTime": "2026-11-06T00:31:36Z",
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastTransitionTime": "2026-11-06T00:31:34Z",
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastTransitionTime": "2026-11-06T00:31:38Z",
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastTransitionTime": "2026-11-06T00:31:38Z",
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastTransitionTime": "2026-11-06T00:31:34Z",
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "containerID": "containerd://7e84c97f5107708d17c91148f8f7d16536b2596b59bba788387bb7c11a22e8bb",
+                "imageID": "ops.local/current/platform-worker@sha256:a2828f57c0936083e9abb935c752bffb3b5c43721164306928d94403285990d2",
+                "lastState": {},
+                "name": "worker",
+                "ready": true,
+                "restartCount": 0,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-11-06T00:31:38Z"
+                  }
+                }
+              }
+            ],
+            "phase": "Running"
+          }
+        }
+      },
+      "meta": {
+        "degradedSources": [],
+        "freshness": "archived",
+        "partial": false,
+        "warnings": []
+      },
+      "requestId": "01a1bdc5-abf4-72a5-b495-09bdc2ab9f9e"
+    }
+  },
+  {
+    "path": "/api/v1/assistant/turns/01a1bab6-8180-7756-9d3e-cc8196ca77b1/formal-references?index=0",
+    "status": 200,
+    "body": {
+      "data": {
+        "metadata": {
+          "candidates": [],
+          "createdAt": "2026-11-08T10:30:17.420260056Z",
+          "evidenceRefs": [
+            "98fe20f4-b93c-572a-8749-229797559069",
+            "e57de2ad-3684-5d01-802f-6cb5f639cc8c"
+          ],
+          "missingEvidence": [
+            "pod-crash-failing",
+            "container-backoff-error",
+            "pod-path"
+          ],
+          "revision": 811,
+          "source": "deterministic",
+          "status": "unresolved",
+          "superseded": false
+        },
+        "reference": {
+          "kind": "rca",
+          "incidentId": "01a1b3b6-7b32-7eb2-a67f-4c5e6a0384ad",
+          "revision": 811,
+          "contentDigest": "sha256:7082b332f1e4a194989423ffd244b71880c22effebf807042ffc92f89b217144"
+        }
+      },
+      "requestId": "01a1bdc5-ac02-7a5d-8516-45d274e96bdb"
+    }
+  },
+  {
+    "path": "/api/v1/incidents?clusterUid=00000000-0000-4000-8000-000000000099",
+    "status": 403,
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "SP05 request failed",
+      "requestId": "01a1bdc5-ac18-7b00-92f6-43927267ef27",
+      "retryable": false,
+      "schemaVersion": "error-envelope/v2"
+    }
+  }
+]

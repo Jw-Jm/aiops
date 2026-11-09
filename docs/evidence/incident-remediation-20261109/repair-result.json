@@ -1,0 +1,142 @@
+{
+  "execution": {
+    "data": {
+      "acknowledgementId": "01a1bdb0-15e5-7535-9293-a9a0c2585d21",
+      "actionPlanId": null,
+      "actualCommandDigest": "sha256:2e3a29a883e3b0f288e7c290e19efe50129a4908060e7997c1c10c7b6b044d5a",
+      "completedAt": "2026-11-09T00:23:17.340213Z",
+      "executionId": "01a1bdb0-166a-7d24-848a-3d0fb99a6d94",
+      "executionProfileId": "1ce8875e-25ac-4744-a472-3162ec89a9ed",
+      "exitCode": 1,
+      "extensions": {
+        "binding": {
+          "targetRevision": 9,
+          "relatedExecutionId": "01a1bdaf-5c70-74ae-825a-ce8adc6082bd",
+          "executionRelation": "follow_up",
+          "digestVersion": "execution-request/v2",
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "subject": "user:01a1ab0b-3e7a-7160-926d-891871ad3d1e",
+          "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96",
+          "actionPlanId": null,
+          "targetCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/704b8cfa-d86a-42e7-828d-413f8925bb02",
+          "targetUid": "704b8cfa-d86a-42e7-828d-413f8925bb02",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "namespace": "ops-current",
+          "shell": "bash",
+          "actualCommandDigest": "sha256:2e3a29a883e3b0f288e7c290e19efe50129a4908060e7997c1c10c7b6b044d5a",
+          "executionProfileId": "1ce8875e-25ac-4744-a472-3162ec89a9ed",
+          "executionProfileVersion": 1,
+          "executionOptions": {
+            "timeoutSeconds": 60,
+            "maxOutputBytes": 65536,
+            "workingDirectory": "",
+            "environment": {}
+          },
+          "policyVersion": "01a1ae2e-1f32-7277-af0d-5e1923adcf77",
+          "riskAssessmentVersion": "bash-risk/v2-mvdan-3.14.1"
+        },
+        "createdAt": "2026-11-09T00:23:16.331832Z",
+        "executionRequestDigest": "sha256:9eb2b81fdab2fcb38ccad85b4854627e25bc613d75aba532406291a56bc62181",
+        "outputBytes": 115,
+        "outputComplete": true,
+        "outputFormat": "ordered-mixed-stream/v1",
+        "outputPreviews": {
+          "stderr": {
+            "last": "ZXJyb3I6IGRlcGxveW1lbnQgIm9wcy1jb21tYW5kLWNsb3N1cmUiIGV4Y2VlZGVkIGl0cyBwcm9ncmVzcyBkZWFkbGluZQo=",
+            "first": "ZXJyb3I6IGRlcGxveW1lbnQgIm9wcy1jb21tYW5kLWNsb3N1cmUiIGV4Y2VlZGVkIGl0cyBwcm9ncmVzcyBkZWFkbGluZQo=",
+            "encoding": "base64"
+          },
+          "stdout": {
+            "last": "ZGVwbG95bWVudC5hcHBzL29wcy1jb21tYW5kLWNsb3N1cmUgcGF0Y2hlZAo=",
+            "first": "ZGVwbG95bWVudC5hcHBzL29wcy1jb21tYW5kLWNsb3N1cmUgcGF0Y2hlZAo=",
+            "encoding": "base64"
+          }
+        },
+        "postCheck": "resolved",
+        "postCheckApplicability": {
+          "status": "requires_qualified_source",
+          "targetKind": "Deployment",
+          "recipe": "deployment-health",
+          "reason": "native_recipe_and_evidence_required"
+        },
+        "postCheckedAt": "2026-11-09T00:23:20.282312Z"
+      },
+      "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96",
+      "iteration": 1,
+      "outputDigest": "sha256:775bab2d6f48e4190e311b62563664ff5b8ccb616ece1583240578a27c298f24",
+      "outputTruncated": false,
+      "policyDecisionId": "sha256:084b24d2cbaa3c382a0448a2aba0f6f590b5ef849c71909c8b335aea6ae7cfa7",
+      "schemaVersion": "command-execution/v1",
+      "shell": "bash",
+      "startedAt": "2026-11-09T00:23:17.222194Z",
+      "state": "failed",
+      "stderrObjectRef": "{\"category\":\"command-output\",\"contentType\":\"application/json\",\"digest\":\"sha256:918d2156bbaf4673dcaf7fbebae206d739b95be8773f79de23c2a4ffa5631006\",\"etag\":\"\\\"553c93b9783f7eec8703d7078067aada\\\"\",\"key\":\"tenants/c784249324387d29b3d8174c7dfd97393ba6f1b5496943136d90e83e33f35832/command-output/01a1bdb0-166a-7d24-848a-3d0fb99a6d94\",\"objectId\":\"01a1bdb0-166a-7d24-848a-3d0fb99a6d94\",\"retainUntil\":\"2027-11-09T00:23:19Z\",\"size\":904,\"tenantId\":\"01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3\",\"versionId\":\"6719c757542410e6479b82b0b8367a24\"}",
+      "stdoutObjectRef": "{\"category\":\"command-output\",\"contentType\":\"application/json\",\"digest\":\"sha256:918d2156bbaf4673dcaf7fbebae206d739b95be8773f79de23c2a4ffa5631006\",\"etag\":\"\\\"553c93b9783f7eec8703d7078067aada\\\"\",\"key\":\"tenants/c784249324387d29b3d8174c7dfd97393ba6f1b5496943136d90e83e33f35832/command-output/01a1bdb0-166a-7d24-848a-3d0fb99a6d94\",\"objectId\":\"01a1bdb0-166a-7d24-848a-3d0fb99a6d94\",\"retainUntil\":\"2027-11-09T00:23:19Z\",\"size\":904,\"tenantId\":\"01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3\",\"versionId\":\"6719c757542410e6479b82b0b8367a24\"}",
+      "subject": "user:01a1ab0b-3e7a-7160-926d-891871ad3d1e",
+      "suggestedCommandDigest": null,
+      "suggestionMatch": "not_applicable",
+      "suggestionMatchVersion": "bash-target-v1-mvdan-3.14.1",
+      "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3"
+    },
+    "requestId": "01a1bdb0-3a45-7ac9-b557-215c7d09f491"
+  },
+  "post": {
+    "data": {
+      "executionId": "01a1bdb0-166a-7d24-848a-3d0fb99a6d94",
+      "executionState": "failed",
+      "verdict": "resolved",
+      "status": "completed",
+      "checkedAt": "2026-11-09T00:23:20.282312Z",
+      "applicability": {
+        "status": "requires_qualified_source",
+        "targetKind": "Deployment",
+        "recipe": "deployment-health",
+        "reason": "native_recipe_and_evidence_required"
+      },
+      "report": {
+        "schemaVersion": "command-post-check/v1",
+        "executionId": "01a1bdb0-166a-7d24-848a-3d0fb99a6d94",
+        "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96",
+        "targetCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/704b8cfa-d86a-42e7-828d-413f8925bb02",
+        "targetUid": "704b8cfa-d86a-42e7-828d-413f8925bb02",
+        "completedAt": "2026-11-09T00:23:17.340213Z",
+        "verdict": "resolved",
+        "reason": "recipe_fault_absent",
+        "coverage": "native_related_health",
+        "facts": {
+          "observedSpecDigest": "sha256:779dcecd1aa3392718b5e2e1afa6fd64fa396db5cec4ca5b7321fc1d295e28aa",
+          "adapter": "native-related-health/v1",
+          "recipeVersion": "01a1bdad-eaf3-7214-8cbd-c40c16f46487",
+          "recipeName": "deployment-health",
+          "collectedAfter": "2026-11-09T00:23:20.188288895Z",
+          "checkedAt": "2026-11-09T00:23:20.276513844Z",
+          "authorized": true,
+          "sourceAvailable": true,
+          "complete": true,
+          "faultPresent": false,
+          "evidenceRefs": [
+            "01a1bdb0-257c-74a7-9ef3-208b6d3d82c2",
+            "01a1bdb0-2587-7a08-9a51-665d357d40b1",
+            "01a1bdb0-2592-78bf-bd0c-90bba5cc2a73",
+            "01a1bdb0-25ab-7679-b1f1-a609f86c9985",
+            "01a1bdb0-25b5-7c87-b577-29bd653e9a6b",
+            "01a1bdb0-25c4-7bd2-92e5-18c4926e14b9"
+          ]
+        }
+      },
+      "reportDigest": "sha256:1a629adb65a2b4ea188bd324c896d520dd135de73be77296644316f8dadac6e8",
+      "detailStatus": "recorded",
+      "relatedExecutions": [
+        {
+          "executionId": "01a1bdaf-5c70-74ae-825a-ce8adc6082bd",
+          "relation": "follow_up",
+          "direction": "parent",
+          "state": "succeeded",
+          "createdAt": "2026-11-09T00:22:28.735331Z"
+        }
+      ],
+      "linksTruncated": false
+    },
+    "requestId": "01a1bdb0-3a4a-7b98-8efa-bd8b092e10e8"
+  }
+}

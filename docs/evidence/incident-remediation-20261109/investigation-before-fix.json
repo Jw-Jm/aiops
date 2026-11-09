@@ -1,0 +1,92 @@
+{
+  "status": 200,
+  "body": {
+    "data": [
+      {
+        "messageId": "01a1bdae-c024-7a2a-8651-0cb99659abc3",
+        "turnId": "01a1bdae-c021-784d-bd38-7c3355f189fe",
+        "sequence": 1,
+        "role": "user",
+        "content": {
+          "text": "请调查当前绑定故障：ops-current/ops-command-closure Deployment 的 RolloutStuck。先读取该故障、已有证据和当前原生资源事实，区分已知事实与推测，解释为何未就绪并引用依据。给出可由本人审核的最小修复方向，不执行任何命令，不把没有读取的指标或日志说成已验证。"
+        },
+        "createdAt": "2026-11-09T00:21:48.725012Z"
+      },
+      {
+        "messageId": "01a1bdae-c021-784d-bd38-7c3355f189fe",
+        "turnId": "01a1bdae-c021-784d-bd38-7c3355f189fe",
+        "sequence": 2,
+        "role": "assistant",
+        "content": {
+          "asOf": "2026-11-09T00:22:01.511233865Z",
+          "partial": true,
+          "summary": "已确认的已知事实：Incident 01a1bdac-eaef-7730-a73a-90738956cc96（ops-current，open，revision 2）由 Finding 01a1bdac-e8f3-74f7-9ebd-f96d9f6bdcb1 触发，规则 kubernetes/RolloutStuck/v1，payload 中 rolloutStuck=true、nativeKind=Deployment、nativeUID=704b8cfa-d86a-42e7-828d-413f8925bb02、resourceVersion=2759006，startsAt 2026-11-09T00:19:48.011396Z，时间可靠。本轮未成功读取该 Deployment 的原生对象、Pod 状态、事件、指标或日志（get_formal_references 因 max_result_bytes 截断为 partial），因此“为何未就绪”的具体原因仍属推测，不能声称已验证。",
+          "factRefs": [],
+          "warnings": [
+            "get_formal_references 结果被截断（max_result_bytes），仅返回部分 evidenceRefs，未获得可引用的 RCA/ActionPlan 版本与 contentDigest",
+            "RolloutStuck 是控制面规则判定，本身不指明根因；未读取的指标/日志不得视为已验证或正常",
+            "source_read_partial:get_formal_references"
+          ],
+          "answerKind": "diagnosis",
+          "entityRefs": [],
+          "hypotheses": [
+            {
+              "key": "image-or-config-pull-failure",
+              "summary": "推测：新 ReplicaSet 的 Pod 因镜像拉取或配置引用（ConfigMap/Secret）失败而无法进入 Ready，导致 rollout 无法推进；目前仅有 RolloutStuck 症状，缺少 Pod 容器状态证据。",
+              "supports": [
+                "9ce2e252-d518-520d-b3b3-f3861cb88802"
+              ],
+              "conflicts": [],
+              "nextChecks": [
+                "只读查看 Pod 容器状态与事件"
+              ],
+              "missingEvidence": [
+                "Pod 容器 waiting reason 与事件",
+                "Deployment status.conditions 与 updatedReplicas/availableReplicas"
+              ]
+            },
+            {
+              "key": "readiness-probe-or-resource-shortage",
+              "summary": "推测：Pod 已创建但就绪探针持续失败或调度/资源不足（CPU、内存、节点容量），使可用副本数达不到期望；未读取任何指标，不能确认。",
+              "supports": [
+                "9ce2e252-d518-520d-b3b3-f3861cb88802"
+              ],
+              "conflicts": [],
+              "nextChecks": [
+                "在冻结窗口内读取 ops-current 的 Pod phase 与重启指标"
+              ],
+              "missingEvidence": [
+                "Pod phase/重启与 CPU/内存指标",
+                "探针配置与失败事件"
+              ]
+            }
+          ],
+          "nextChecks": [
+            "只读查看该 Deployment 的 status.conditions 与 replicas 计数，确认是 ProgressDeadlineExceeded 还是副本长期不可用",
+            "只读查看其 ReplicaSet 与 Pod 的 Ready 条件、容器 waiting/terminated reason 及最近事件",
+            "在冻结窗口内读取 ops-current 的 Pod phase/重启指标与日志样例，验证是否镜像拉取、探针或资源问题"
+          ],
+          "evidenceRefs": [
+            "9ce2e252-d518-520d-b3b3-f3861cb88802"
+          ],
+          "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+          "schemaVersion": "assistant-answer/v1",
+          "degradedSources": [],
+          "missingEvidence": [
+            "未读取 Deployment 704b8cfa-d86a-42e7-828d-413f8925bb02 的原生 spec/status（replicas、updatedReplicas、availableReplicas、conditions、progressDeadlineExceeded），无法确认卡住的具体阶段",
+            "未读取其 ReplicaSet/Pod 的 phase、Ready 条件、容器 waiting reason（如 ImagePullBackOff、CrashLoopBackOff、CreateContainerConfigError）与调度事件",
+            "未读取该 namespace 的 Pod 重启、CPU/内存、Pod phase 指标（metrics.pod-restarts/pod-cpu/pod-memory/pod-phase），不能判断是否资源不足或反复重启",
+            "未读取 ops-current 相关日志样例（logs.records samples），不能判断应用启动失败或探针失败",
+            "get_formal_references 返回 partial（reason=max_result_bytes），当前 RCA revision 4 与 ActionPlan 的完整内容未取得，无法引用其版本与 digest"
+          ],
+          "queryResultRefs": []
+        },
+        "createdAt": "2026-11-09T00:22:01.512741Z"
+      }
+    ],
+    "meta": {
+      "nextCursor": ""
+    },
+    "requestId": "01a1bdb1-980d-7394-bc2c-87ba70637262"
+  }
+}

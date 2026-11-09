@@ -1,0 +1,123 @@
+{
+  "apiVersion": "apps/v1",
+  "kind": "Deployment",
+  "metadata": {
+    "annotations": {
+      "deployment.kubernetes.io/revision": "7",
+      "ops.platform.io/checked": "20261109",
+      "ops.platform.io/interruption-test": "20261109"
+    },
+    "creationTimestamp": "2026-11-09T00:18:42Z",
+    "generation": 9,
+    "labels": {
+      "ops.platform.io/acceptance": "remediation-20261109"
+    },
+    "name": "ops-command-closure",
+    "namespace": "ops-current",
+    "resourceVersion": "2762042",
+    "uid": "704b8cfa-d86a-42e7-828d-413f8925bb02"
+  },
+  "spec": {
+    "progressDeadlineSeconds": 20,
+    "replicas": 1,
+    "revisionHistoryLimit": 3,
+    "selector": {
+      "matchLabels": {
+        "app": "ops-command-closure"
+      }
+    },
+    "strategy": {
+      "type": "Recreate"
+    },
+    "template": {
+      "metadata": {
+        "labels": {
+          "app": "ops-command-closure",
+          "ops.platform.io/acceptance": "remediation-20261109"
+        }
+      },
+      "spec": {
+        "automountServiceAccountToken": false,
+        "containers": [
+          {
+            "command": [
+              "/bin/bash",
+              "-c",
+              "printf 'remediation acceptance target started\\n'; trap 'exit 0' TERM; while :; do sleep 2; done"
+            ],
+            "image": "ops.local/current/command-runner@sha256:bef1188002556accd30604c18a0e57c27bd0afe8b0168bc216421d3b8486f310",
+            "imagePullPolicy": "Never",
+            "name": "acceptance",
+            "readinessProbe": {
+              "exec": {
+                "command": [
+                  "/bin/bash",
+                  "-c",
+                  "exit 0"
+                ]
+              },
+              "failureThreshold": 1,
+              "periodSeconds": 2,
+              "successThreshold": 1,
+              "timeoutSeconds": 1
+            },
+            "resources": {
+              "limits": {
+                "cpu": "100m",
+                "memory": "64Mi"
+              },
+              "requests": {
+                "cpu": "5m",
+                "memory": "16Mi"
+              }
+            },
+            "securityContext": {
+              "allowPrivilegeEscalation": false,
+              "capabilities": {
+                "drop": [
+                  "ALL"
+                ]
+              },
+              "readOnlyRootFilesystem": true,
+              "runAsNonRoot": true,
+              "runAsUser": 65532
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File"
+          }
+        ],
+        "dnsPolicy": "ClusterFirst",
+        "restartPolicy": "Always",
+        "schedulerName": "default-scheduler",
+        "securityContext": {},
+        "terminationGracePeriodSeconds": 5
+      }
+    }
+  },
+  "status": {
+    "availableReplicas": 1,
+    "conditions": [
+      {
+        "lastTransitionTime": "2026-11-09T00:23:17Z",
+        "lastUpdateTime": "2026-11-09T00:23:18Z",
+        "message": "ReplicaSet \"ops-command-closure-8445fddff\" has successfully progressed.",
+        "reason": "NewReplicaSetAvailable",
+        "status": "True",
+        "type": "Progressing"
+      },
+      {
+        "lastTransitionTime": "2026-11-09T00:39:33Z",
+        "lastUpdateTime": "2026-11-09T00:39:33Z",
+        "message": "Deployment has minimum availability.",
+        "reason": "MinimumReplicasAvailable",
+        "status": "True",
+        "type": "Available"
+      }
+    ],
+    "observedGeneration": 9,
+    "readyReplicas": 1,
+    "replicas": 1,
+    "terminatingReplicas": 0,
+    "updatedReplicas": 1
+  }
+}
