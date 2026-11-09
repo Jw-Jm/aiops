@@ -15,7 +15,15 @@ const meanings: Record<string, string> = {
   stale: "已过期：需要新的观测",
   unavailable: "不可用：来源或能力无法提供结果",
 };
-export function Status({ value, reason }: { value: unknown; reason?: string }) {
+export function Status({
+  value,
+  reason,
+  label,
+}: {
+  value: unknown;
+  reason?: string;
+  label?: string;
+}) {
   const s = text(value);
   const good = [
     "fresh",
@@ -50,7 +58,7 @@ export function Status({ value, reason }: { value: unknown; reason?: string }) {
       )}
     >
       <span>
-        <StatusPill value={s} label={stateLabel(s)} tone={tone} />
+        <StatusPill value={s} label={label ?? stateLabel(s)} tone={tone} />
       </span>
     </Tooltip>
   );

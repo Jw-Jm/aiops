@@ -68,7 +68,19 @@ export function CapabilityStatus({ value }: { value: PlatformCapabilitiesV1 }) {
           { title: "功能", dataIndex: "name", width: 240 },
           {
             title: "当前状态",
-            render: (_, r) => <Status value={r.capability.status} />,
+            render: (_, r) => (
+              <Status
+                value={r.capability.status}
+                reason={reasons[r.capability.reason]}
+                label={
+                  r.capability.status === "unverified" &&
+                  r.capability.reason ===
+                    "SP07-configured; execution-authorization-required"
+                    ? "需逐次授权"
+                    : undefined
+                }
+              />
+            ),
             width: 150,
           },
           {

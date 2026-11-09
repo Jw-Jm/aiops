@@ -160,6 +160,8 @@ it("explains actual investigation failures and preserves their source code", () 
     pyrca: { status: "disabled", reason: "ADR0020-not-admitted" },
   };
   render(<CapabilityStatus value={value} />);
+  expect(screen.getByText("需逐次授权")).toBeVisible();
+  expect(screen.queryByText("待验收")).not.toBeInTheDocument();
   expect(
     screen.getByText("最近一次调查已用尽额度；请核对已有结果与调查预算"),
   ).toBeVisible();

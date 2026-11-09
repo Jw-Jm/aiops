@@ -253,6 +253,15 @@ export function OverviewPage() {
                 　人工命令{" "}
                 <Status
                   value={capabilities.data.data.commandExecution.status}
+                  reason="执行服务状态不代表本条命令已获授权；仍需核对目标、风险并本人确认"
+                  label={
+                    capabilities.data.data.commandExecution.status ===
+                      "unverified" &&
+                    capabilities.data.data.commandExecution.reason ===
+                      "SP07-configured; execution-authorization-required"
+                      ? "需逐次授权"
+                      : undefined
+                  }
                 />
               </p>
               <Link to="/access/readiness">查看完整能力及来源说明 →</Link>

@@ -96,9 +96,12 @@ func ReadFormalReferencesTx(ctx context.Context, tx pgx.Tx, j Job, revision int6
 	out.FormalReferences = append(out.FormalReferences, FormalReference{Kind: "rca", IncidentID: j.IncidentID, Revision: revision, ContentDigest: graph.ScopeDigest(raw)})
 	var rev rca.Revision
 	json.Unmarshal(raw, &rev)
-	out.RCA = raw
 	for _, e := range rev.InputManifest.Evidence {
 		refs = append(refs, e.EvidenceID)
+	}
+	out.RCA, err = formalRCASummary(rev, refs)
+	if err != nil {
+		return out, refs, err
 	}
 	rows, err := tx.Query(ctx, `SELECT action_plan_id,revision,content,state FROM action.plans WHERE tenant_id=$1 AND incident_id=$2 AND (content->>'rcaRevision')::bigint=$3 ORDER BY action_plan_id LIMIT 10`, j.TenantID, j.IncidentID, revision)
 	if err != nil {
@@ -145,6 +148,24 @@ func ReadFormalReferencesTx(ctx context.Context, tx pgx.Tx, j Job, revision int6
 		out.Plans = append(out.Plans, safe)
 	}
 	return out, refs, nil
+}
+
+// Full snapshots remain behind the authorized fixed-version reference reader;
+// embedding their graph and evidence payloads would exhaust the model tool budget.
+func formalRCASummary(rev rca.Revision, refs []string) (json.RawMessage, error) {
+	return json.Marshal(map[string]any{
+		"schemaVersion": "formal-rca-summary/v1", "incidentId": rev.IncidentID,
+		"revision": rev.Revision, "createdAt": rev.CreatedAt, "inputDigest": rev.InputDigest,
+		"inputManifest": map[string]any{"resourceCanonicalId": rev.InputManifest.ResourceCanonicalID,
+			"from": rev.InputManifest.From, "to": rev.InputManifest.To,
+			"evaluatedAt": rev.InputManifest.EvaluatedAt, "evidenceRefs": refs},
+		"result": map[string]any{"status": rev.Result.Status, "partial": rev.Result.Partial,
+			"candidates": rev.Result.Candidates, "recipeVersion": rev.Result.RecipeVersion,
+			"recipeDigest": rev.Result.RecipeDigest, "evidenceBundle": map[string]any{
+				"supporting": rev.Result.Bundle.Supporting, "contradicting": rev.Result.Bundle.Contradicting,
+				"missing": rev.Result.Bundle.Missing, "degradedSources": rev.Result.Bundle.DegradedSources}},
+		"fullSnapshot": "read exact formalReference; summary is not the full archived snapshot",
+	})
 }
 
 func AuthorizeFormalReferenceTx(ctx context.Context, tx pgx.Tx, j Job, ref FormalReference) error {
