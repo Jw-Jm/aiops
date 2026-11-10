@@ -1,0 +1,32 @@
+RC 1
+=====STDOUT=====
+=== RUN   TestNativePublicInvestigationProjectionBoundary
+    native_public_projection_boundary_test.go:40: read the assistant binding of the job: ERROR: column "input_digest" does not exist (SQLSTATE 42703)
+    migrations_test.go:530: retained owned integration database=sp03_mig_50b61338ceb74dd1a96b1b62220a629f test=TestNativePublicInvestigationProjectionBoundary reason=audit.records; no automatic protected cleanup
+--- FAIL: TestNativePublicInvestigationProjectionBoundary (0.69s)
+FAIL
+
+=====STDERR TAIL=====
+tration.sql (3.51ms)
+2026/11/10 08:50:17 OK   00056_native_subject_inventory.sql (5.3ms)
+2026/11/10 08:50:17 OK   00057_native_grant_scope_limits.sql (1.98ms)
+2026/11/10 08:50:17 OK   00058_native_historical_read.sql (1.02ms)
+2026/11/10 08:50:17 OK   00059_native_operator_job_authority.sql (1.95ms)
+2026/11/10 08:50:17 OK   00060_native_first_tenant.sql (721.22µs)
+2026/11/10 08:50:17 OK   00061_native_job_authority_locks.sql (1.87ms)
+2026/11/10 08:50:17 OK   00062_action_native_authority.sql (1.11ms)
+2026/11/10 08:50:17 OK   00063_native_authority_share_locks.sql (1.84ms)
+2026/11/10 08:50:17 OK   00064_native_mfa_reset_credential.sql (1.17ms)
+2026/11/10 08:50:17 OK   00065_native_stepup_budget.sql (7.87ms)
+2026/11/10 08:50:17 OK   00066_native_internal_session_scope.sql (1.27ms)
+2026/11/10 08:50:17 OK   00067_native_internal_task_authority.sql (1.5ms)
+2026/11/10 08:50:17 OK   00068_native_incident_job_authority.sql (2.93ms)
+2026/11/10 08:50:17 OK   00069_action_command_step_up_proof.sql (2.7ms)
+2026/11/10 08:50:17 OK   00070_native_stepup_budget_window.sql (974.32µs)
+2026/11/10 08:50:17 OK   00071_observation_queries.sql (4.81ms)
+2026/11/10 08:50:17 OK   00072_observation_native_pod_logs.sql (854.3µs)
+2026/11/10 08:50:17 OK   00073_incident_collaboration.sql (5.09ms)
+2026/11/10 08:50:17 OK   00074_investigation_admission.sql (2.42ms)
+2026/11/10 08:50:17 OK   00075_native_assistant_legal_hold.sql (1.35ms)
+2026/11/10 08:50:17 goose: successfully migrated database to version: 75
+

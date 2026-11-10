@@ -1,0 +1,2872 @@
+[
+  {
+    "path": "/api/v1/investigations/01a1c37c-e8bb-718d-ab08-f951b9785cf9",
+    "status": 200,
+    "body": {
+      "data": {
+        "schemaVersion": "investigation-job/v3",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "jobId": "01a1c37c-e8bb-718d-ab08-f951b9785cf9",
+        "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+        "subject": "native:01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f",
+        "triggerRevision": 11,
+        "triggerKind": "manual",
+        "policyVersion": "01a1ae2e-1f32-7277-af0d-5e1923adcf77",
+        "scope": {
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+          "namespaces": [
+            "ops-current"
+          ],
+          "resources": [],
+          "clusterScoped": false,
+          "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+        },
+        "effectiveScopeDigest": "sha256:e406234cd9d37177a3b9473394cd3ae8fec8a2541da9556c42ed794a85547664",
+        "toolCatalogDigest": "sha256:659167882bab37eed309c69554b9a50b0b1e5bebb2aee953b707f0d7aec45bf4",
+        "state": "partial",
+        "budget": {
+          "toolCalls": 6,
+          "rawQueries": 10,
+          "resultBytes": 41943040,
+          "graphNodes": 8000,
+          "evidenceItems": 4000,
+          "modelRequests": 3,
+          "inputTokens": 524288,
+          "outputTokens": 32768,
+          "modelCostMicros": 0,
+          "durationSeconds": 120,
+          "allowedDataClasses": [
+            "D0",
+            "D1"
+          ]
+        },
+        "budgetReserved": {
+          "toolCalls": 0,
+          "rawQueries": 0,
+          "resultBytes": 0,
+          "graphNodes": 0,
+          "evidenceItems": 0,
+          "modelRequests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "modelCostMicros": 0
+        },
+        "budgetConsumed": {
+          "toolCalls": 4,
+          "rawQueries": 0,
+          "resultBytes": 508865,
+          "graphNodes": 0,
+          "evidenceItems": 0,
+          "modelRequests": 3,
+          "inputTokens": 48803,
+          "outputTokens": 254,
+          "modelCostMicros": 0
+        },
+        "focus": "观察真实步骤逐项更新并核验固定RCA与归档证据，不将时序当因果。",
+        "admissionDigest": "sha256:1937242116f5762444f0bdc876a05305b31b37c101971cc886bac6033f52d90b",
+        "expiresAt": "2026-11-10T03:27:05.596907Z",
+        "eventSeq": 26,
+        "nextCallSeq": 0,
+        "result": {
+          "asOf": "2026-11-10T03:25:18.14980813Z",
+          "partial": true,
+          "summary": "本轮已停止，保留已提交的查询事实；未完成的检查没有结论。",
+          "factRefs": [],
+          "warnings": [
+            "BUDGET_EXHAUSTED"
+          ],
+          "answerKind": "unsupported",
+          "entityRefs": [],
+          "hypotheses": [],
+          "nextChecks": [
+            "缩小范围后发起新一轮检查"
+          ],
+          "evidenceRefs": [],
+          "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+          "schemaVersion": "assistant-answer/v1",
+          "degradedSources": [],
+          "missingEvidence": [
+            "remaining_checks_not_completed"
+          ],
+          "queryResultRefs": []
+        },
+        "errorCode": "BUDGET_EXHAUSTED",
+        "conversationId": "01a1bff0-b844-70c2-a4e5-32c7cc5d29af",
+        "turnId": "01a1c37c-e8bb-718c-a56d-d57b9116c746"
+      },
+      "requestId": "01a1c37d-8e6a-78e0-a9a6-a8d1310f817a"
+    }
+  },
+  {
+    "path": "/api/v1/investigations/01a1c37c-e8bb-718d-ab08-f951b9785cf9/steps",
+    "status": 200,
+    "body": {
+      "data": [
+        {
+          "argsSummary": {},
+          "stepId": "01a1c37c-eba2-77e6-b47d-e6fd1e3b5165",
+          "toolName": "get_assistant_context",
+          "argsDigest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "state": "succeeded",
+          "result": {
+            "data": {
+              "focus": "观察真实步骤逐项更新并核验固定RCA与归档证据，不将时序当因果。",
+              "binding": {
+                "timezone": "Asia/Shanghai",
+                "selection": {
+                  "Namespaces": [],
+                  "CanonicalIDs": null,
+                  "IncludeClusterScoped": false
+                },
+                "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+                "grantSnapshot": "[INTERNAL_FIELD_REDACTED_IN_PUBLIC_EVIDENCE]",
+                "executionScope": {
+                  "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                  "resources": [],
+                  "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+                  "namespaces": [
+                    "ops-current"
+                  ],
+                  "clusterScoped": false,
+                  "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+                }
+              },
+              "history": [
+                {
+                  "role": "assistant",
+                  "turnId": "01a1bff1-0338-7dc3-aaa2-c26189d7d7b0",
+                  "content": {
+                    "asOf": "2026-11-09T10:53:43.076359003Z",
+                    "partial": true,
+                    "summary": "无法完成对故障 01a1ae2d-eff0-7664-a10e-d02a701023f4 冻结 RCA 第1版的复盘：实际调用 get_formal_references（rcaRevision=1）返回失败，错误码 SOURCE_DEGRADED，因此没有取得任何 RCA 版本引用、contentDigest 或两条 FailedMount 归档证据的 resourceVersion，无法比较二者。",
+                    "factRefs": [],
+                    "warnings": [
+                      "resourceVersion 递增仅表示对象版本变化，本身不能证明因果；即使取得两条证据，也只能作为时序线索",
+                      "未取得数据不等于正常或为零，不能据此推断 FailedMount 已消失或与故障无关",
+                      "source_read_failed:get_formal_references:SOURCE_DEGRADED"
+                    ],
+                    "answerKind": "unsupported",
+                    "entityRefs": [],
+                    "hypotheses": [],
+                    "nextChecks": [
+                      "在正式引用来源恢复后，重新调用 get_formal_references(rcaRevision=1) 取得版本与 contentDigest",
+                      "取得两条 FailedMount 归档证据后，逐条比对 resourceVersion、时间戳与所属对象，判断是否同一对象、是否同一事件",
+                      "补充挂载失败与 Pod 调度/启动时间线的对照，确认是否存在可验证的因果链而非仅版本递增"
+                    ],
+                    "evidenceRefs": [],
+                    "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+                    "schemaVersion": "assistant-answer/v1",
+                    "degradedSources": [
+                      "get_formal_references：SOURCE_DEGRADED（RCA 正式引用读取失败）"
+                    ],
+                    "missingEvidence": [
+                      "get_formal_references(rcaRevision=1) 调用失败，错误码 SOURCE_DEGRADED，未返回 RCA 第1版内容与 contentDigest",
+                      "未取得两条 FailedMount 归档证据的 resourceVersion 值，无法进行递增比较",
+                      "缺少 RCA 第1版中该故障链的 supports/conflicts/coverage 说明，无法评估因果假设",
+                      "本次任务禁止新指标/日志查询与刷新 RCA，无法用其他来源补齐上述缺口"
+                    ],
+                    "queryResultRefs": []
+                  },
+                  "sequence": 2,
+                  "createdAt": "2026-11-09T10:53:43.080836Z",
+                  "messageId": "01a1bff1-0338-7dc3-aaa2-c26189d7d7b0"
+                },
+                {
+                  "role": "user",
+                  "turnId": "01a1bff5-613b-741e-9b61-873341e00f06",
+                  "content": {
+                    "text": "实际调用 get_formal_references 读取同一故障的 RCA 第1版；不要新查数据，不执行命令。"
+                  },
+                  "sequence": 3,
+                  "createdAt": "2026-11-09T10:58:11.907621Z",
+                  "messageId": "01a1bff5-613f-73df-b64e-78898c51523d"
+                },
+                {
+                  "role": "assistant",
+                  "turnId": "01a1bff5-613b-741e-9b61-873341e00f06",
+                  "content": {
+                    "asOf": "2026-11-09T10:58:12.761477624Z",
+                    "partial": true,
+                    "summary": "本轮已停止，保留已提交的查询事实；未完成的检查没有结论。",
+                    "factRefs": [],
+                    "warnings": [
+                      "BUDGET_EXHAUSTED"
+                    ],
+                    "answerKind": "unsupported",
+                    "entityRefs": [],
+                    "hypotheses": [],
+                    "nextChecks": [
+                      "缩小范围后发起新一轮检查"
+                    ],
+                    "evidenceRefs": [],
+                    "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+                    "schemaVersion": "assistant-answer/v1",
+                    "degradedSources": [],
+                    "missingEvidence": [
+                      "remaining_checks_not_completed"
+                    ],
+                    "queryResultRefs": []
+                  },
+                  "sequence": 4,
+                  "createdAt": "2026-11-09T10:58:12.762614Z",
+                  "messageId": "01a1bff5-613b-741e-9b61-873341e00f06"
+                },
+                {
+                  "role": "user",
+                  "turnId": "01a1bff9-4878-75af-8356-e2c226a2f832",
+                  "content": {
+                    "text": "仅复盘同一旧故障冻结 RCA 第1版，实际调用 get_formal_references，rcaRevision=1，按调查重点解释；禁止新指标日志查询、刷新 RCA、执行命令。"
+                  },
+                  "sequence": 5,
+                  "createdAt": "2026-11-09T11:02:27.716975Z",
+                  "messageId": "01a1bff9-487f-77ad-8e0a-efbd6b7f299b"
+                },
+                {
+                  "role": "assistant",
+                  "turnId": "01a1bff9-4878-75af-8356-e2c226a2f832",
+                  "content": {
+                    "asOf": "2026-11-09T11:02:39.133350878Z",
+                    "partial": true,
+                    "summary": "已实际调用 get_formal_references(rcaRevision=1)，取得故障 01a1ae2d-eff0-7664-a10e-d02a701023f4 的冻结 RCA 第1版（contentDigest sha256:d131fc8917122a7c9fd0ed2c661d8d47d28a0cf667ab8edb74b163f4f82f1a35，历史版本，当前为第22版）。两条 FailedMount 归档证据属于同一 Pod（6eb76263-66c2-49ce-befc-d842ef473ae2），resourceVersion 分别为 2528117 与 2528128，观测时间几乎相同（2026-11-06T00:06:44.0723Z），版本递增只说明对象被更新，不能证明挂载失败导致故障。",
+                    "factRefs": [],
+                    "warnings": [
+                      "resourceVersion 从 2528117 递增到 2528128 仅表示同一 Pod 的 Event 对象被更新，属于对象版本变化，不构成因果证据",
+                      "两条证据的 nativeUID 不同（1ec8c0c9-19bb-4eab-8027-c366c7a9a7fb 与 0e6e39f9-3818-449b-a8a5-7517c2879642），是两条独立 Event 记录，不是同一事件的两个版本",
+                      "RCA 第1版为历史版本（historical=true），当前 RCA 已到第22版，本复盘不代表当前结论",
+                      "未取得数据不等于正常或为零，不能据此推断 FailedMount 与故障无关",
+                      "model_answer_incomplete"
+                    ],
+                    "answerKind": "diagnosis",
+                    "entityRefs": [],
+                    "formalRefs": [
+                      {
+                        "kind": "rca",
+                        "revision": 1,
+                        "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+                        "contentDigest": "sha256:d131fc8917122a7c9fd0ed2c661d8d47d28a0cf667ab8edb74b163f4f82f1a35"
+                      }
+                    ],
+                    "hypotheses": [
+                      {
+                        "key": "failedmount-version-increase-not-causal",
+                        "summary": "两条 FailedMount 属于同一 Pod 的两条独立 Event，resourceVersion 2528117→2528128 的递增只反映对象版本更新，不能作为因果链；RCA 第1版也未给出任何 supporting 证据。",
+                        "supports": [
+                          "3dbe6b3d-67b1-560e-9712-a5093ce69b3b",
+                          "9f58d2ab-8723-5df5-931c-85b89676206f"
+                        ],
+                        "conflicts": [],
+                        "nextChecks": [
+                          "按 Pod 拉取 Event 时间线，比对首次出现时间与 Pod 状态变化时间"
+                        ],
+                        "missingEvidence": [
+                          "两条证据观测时间戳完全相同，无法建立先后顺序",
+                          "缺少卷名、挂载路径与节点侧证据，无法判断挂载失败是否影响 Pod 就绪"
+                        ]
+                      },
+                      {
+                        "key": "node-path-gap-blocks-root-cause",
+                        "summary": "RCA 第1版 status=unresolved 且 missing 列出 node-not-ready、node-causal-evidence、node-path，说明节点侧与挂载路径证据缺失是未定根因的主要缺口，而非已排除挂载问题。",
+                        "supports": [],
+                        "conflicts": [],
+                        "nextChecks": [
+                          "补齐节点就绪状态与挂载路径证据后再评估挂载失败的角色"
+                        ],
+                        "missingEvidence": [
+                          "node-not-ready 证据缺失",
+                          "node-causal-evidence 证据缺失",
+                          "node-path 证据缺失"
+                        ]
+                      }
+                    ],
+                    "nextChecks": [
+                      "在允许新查询的轮次中，按同一 Pod 6eb76263-66c2-49ce-befc-d842ef473ae2 拉取 Event 时间线，确认两条 FailedMount 的首次/末次出现时间与涉及卷名",
+                      "补齐 RCA 第1版 missing 中的 node-not-ready 与 node-path 证据，验证节点就绪状态与挂载路径是否构成可验证链路",
+                      "对照 Pod 调度与容器启动时间线，判断挂载失败是故障原因、并发症状还是无关噪声"
+                    ],
+                    "evidenceRefs": [
+                      "3dbe6b3d-67b1-560e-9712-a5093ce69b3b",
+                      "9f58d2ab-8723-5df5-931c-85b89676206f"
+                    ],
+                    "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+                    "schemaVersion": "assistant-answer/v1",
+                    "degradedSources": [
+                      "01a1ab38-fbeb-79be-91c0-8823152c8c9d/analyzer/ops-current（RCA 第1版记录为降级来源）",
+                      "01a1ab38-fbeb-79be-91c0-8823152c8c9d/archive（RCA 第1版记录为降级来源）"
+                    ],
+                    "missingEvidence": [
+                      "RCA 第1版 evidenceBundle 的 supporting 与 contradicting 均为空，没有任何支持或反证条目可解释因果",
+                      "RCA 第1版 missing 明确列出 node-not-ready、node-causal-evidence、node-path，缺少节点侧因果证据与路径",
+                      "两条 FailedMount 证据的 observedFrom/observedTo 完全相同（2026-11-06T00:06:44.0723Z），无法据此建立先后时序，也无法判断哪条是原因",
+                      "RCA 第1版 status=unresolved、partial=true，candidates 为空，未形成任何候选根因",
+                      "本次任务禁止新指标/日志查询与刷新 RCA，无法补齐节点状态、挂载路径与 Pod 启动时间线"
+                    ],
+                    "queryResultRefs": []
+                  },
+                  "sequence": 6,
+                  "createdAt": "2026-11-09T11:02:39.13477Z",
+                  "messageId": "01a1bff9-4878-75af-8356-e2c226a2f832"
+                },
+                {
+                  "role": "user",
+                  "turnId": "01a1bffa-f2dc-7a96-afba-c54eb0ece1d6",
+                  "content": {
+                    "text": "只说明当前冻结范围，不读取新资源或日志，不执行命令。"
+                  },
+                  "sequence": 7,
+                  "createdAt": "2026-11-09T11:04:16.866657Z",
+                  "messageId": "01a1bffa-f2df-7961-856d-78afe272f1d7"
+                },
+                {
+                  "role": "assistant",
+                  "turnId": "01a1bffa-f2dc-7a96-afba-c54eb0ece1d6",
+                  "content": {
+                    "asOf": "2026-11-09T11:04:17.916524997Z",
+                    "partial": true,
+                    "summary": "本轮已停止，保留已提交的查询事实；未完成的检查没有结论。",
+                    "factRefs": [],
+                    "warnings": [
+                      "BUDGET_EXHAUSTED"
+                    ],
+                    "answerKind": "unsupported",
+                    "entityRefs": [],
+                    "hypotheses": [],
+                    "nextChecks": [
+                      "缩小范围后发起新一轮检查"
+                    ],
+                    "evidenceRefs": [],
+                    "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+                    "schemaVersion": "assistant-answer/v1",
+                    "degradedSources": [],
+                    "missingEvidence": [
+                      "remaining_checks_not_completed"
+                    ],
+                    "queryResultRefs": []
+                  },
+                  "sequence": 8,
+                  "createdAt": "2026-11-09T11:04:17.917542Z",
+                  "messageId": "01a1bffa-f2dc-7a96-afba-c54eb0ece1d6"
+                },
+                {
+                  "role": "user",
+                  "turnId": "01a1c37c-af8a-719b-9c3a-897bef8e9d74",
+                  "content": {
+                    "text": "仅复盘同一故障冻结 RCA 第1版，实际调用 get_formal_references(rcaRevision=1)，解释证据限制；禁止刷新 RCA、新指标日志查询和执行命令。"
+                  },
+                  "sequence": 9,
+                  "createdAt": "2026-11-10T03:24:50.963637Z",
+                  "messageId": "01a1c37c-af8d-70d4-bca1-83bee0d3a34d"
+                },
+                {
+                  "role": "assistant",
+                  "turnId": "01a1c37c-af8a-719b-9c3a-897bef8e9d74",
+                  "content": {
+                    "asOf": "2026-11-10T03:24:51.64806488Z",
+                    "partial": true,
+                    "summary": "本轮已停止，保留已提交的查询事实；未完成的检查没有结论。",
+                    "factRefs": [],
+                    "warnings": [
+                      "CANCELLED"
+                    ],
+                    "answerKind": "unsupported",
+                    "entityRefs": [],
+                    "hypotheses": [],
+                    "nextChecks": [
+                      "缩小范围后发起新一轮检查"
+                    ],
+                    "evidenceRefs": [],
+                    "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+                    "schemaVersion": "assistant-answer/v1",
+                    "degradedSources": [],
+                    "missingEvidence": [
+                      "remaining_checks_not_completed"
+                    ],
+                    "queryResultRefs": []
+                  },
+                  "sequence": 10,
+                  "createdAt": "2026-11-10T03:24:51.649604Z",
+                  "messageId": "01a1c37c-af8a-719b-9c3a-897bef8e9d74"
+                }
+              ],
+              "message": "仅复盘同一故障冻结 RCA 第1版，实际调用 get_formal_references(rcaRevision=1)，解释证据限制；禁止刷新 RCA、新指标日志查询和执行命令。",
+              "requestedAt": "2026-11-10T03:25:05.594352219Z",
+              "parentTurnId": "01a1c37c-af8a-719b-9c3a-897bef8e9d74",
+              "schemaVersion": "assistant-input/v1",
+              "analysisCatalog": {
+                "version": "analysis-catalog/v1",
+                "datasets": [
+                  {
+                    "id": "resources.current",
+                    "name": "当前资源统计",
+                    "unit": "resources",
+                    "kinds": [
+                      "Pod",
+                      "Node",
+                      "Deployment",
+                      "StatefulSet",
+                      "DaemonSet",
+                      "Service",
+                      "PersistentVolumeClaim",
+                      "PersistentVolume",
+                      "Namespace",
+                      "Job",
+                      "CronJob",
+                      "ReplicaSet",
+                      "ConfigMap",
+                      "Secret",
+                      "ServiceAccount",
+                      "Ingress",
+                      "EndpointSlice",
+                      "Endpoints",
+                      "Event"
+                    ],
+                    "metric": "resource_count",
+                    "source": "graph",
+                    "filters": [
+                      "kind",
+                      "namespace",
+                      "name",
+                      "health"
+                    ],
+                    "maxGroups": 50,
+                    "dimensions": [
+                      "kind",
+                      "health"
+                    ],
+                    "operations": [
+                      "aggregate"
+                    ],
+                    "calculation": "按真实 Canonical ID 统计；复用 Graph 完整授权范围 summary，先授权再筛选和聚合。",
+                    "description": "指定非虚拟化 Kubernetes 资源类型的当前授权快照统计；不提供历史资源数量。",
+                    "zeroMeaning": "只有 fresh、完整且来源无降级的成功快照才可以报告精确零。",
+                    "healthValues": [
+                      "normal",
+                      "abnormal",
+                      "unknown",
+                      "degraded"
+                    ],
+                    "requiredFilters": [
+                      "kind"
+                    ],
+                    "templateVersion": "resources-current-summary/v1",
+                    "historySupported": false,
+                    "clusterScopedKinds": [
+                      "Node",
+                      "PersistentVolume",
+                      "Namespace"
+                    ],
+                    "authorizationDomain": "operational"
+                  },
+                  {
+                    "id": "findings.occurrences",
+                    "name": "告警 occurrence 统计",
+                    "unit": "findings",
+                    "kinds": [],
+                    "metric": "occurrence_count",
+                    "source": "postgresql",
+                    "filters": [
+                      "namespace",
+                      "state",
+                      "severity"
+                    ],
+                    "maxGroups": 50,
+                    "dimensions": [
+                      "namespace",
+                      "state",
+                      "severity",
+                      "day"
+                    ],
+                    "operations": [
+                      "aggregate"
+                    ],
+                    "calculation": "每个已校验 occurrence 只统计一次；使用可靠 startsAt，排除旧 Schema 和不可靠时间。",
+                    "description": "每个已校验 occurrence 只统计一次；使用可靠 startsAt，排除旧 Schema 和不可靠时间。",
+                    "zeroMeaning": "授权过滤后的成功控制面快照为零；不能推断物理环境不存在故障。",
+                    "healthValues": [],
+                    "requiredFilters": [],
+                    "templateVersion": "findings.occurrences/v1",
+                    "historySupported": true,
+                    "clusterScopedKinds": [],
+                    "authorizationDomain": "operational"
+                  },
+                  {
+                    "id": "incidents.records",
+                    "name": "Incident 记录统计",
+                    "unit": "incidents",
+                    "kinds": [],
+                    "metric": "incident_count",
+                    "source": "postgresql",
+                    "filters": [
+                      "namespace",
+                      "state"
+                    ],
+                    "maxGroups": 50,
+                    "dimensions": [
+                      "namespace",
+                      "state",
+                      "day"
+                    ],
+                    "operations": [
+                      "aggregate"
+                    ],
+                    "calculation": "按 Incident ID 去重；全部关联 Finding 必须在授权范围。",
+                    "description": "按 Incident ID 去重；全部关联 Finding 必须在授权范围。",
+                    "zeroMeaning": "授权过滤后的成功控制面快照为零；不能推断物理环境不存在故障。",
+                    "healthValues": [],
+                    "requiredFilters": [],
+                    "templateVersion": "incidents.records/v1",
+                    "historySupported": true,
+                    "clusterScopedKinds": [],
+                    "authorizationDomain": "operational"
+                  },
+                  {
+                    "id": "executions.records",
+                    "name": "本人执行记录统计",
+                    "unit": "executions",
+                    "kinds": [],
+                    "metric": "execution_count",
+                    "source": "postgresql",
+                    "filters": [
+                      "state"
+                    ],
+                    "maxGroups": 50,
+                    "dimensions": [
+                      "state",
+                      "day"
+                    ],
+                    "operations": [
+                      "aggregate"
+                    ],
+                    "calculation": "仅本人及当前授权目标；不读取命令或输出。",
+                    "description": "仅本人及当前授权目标；不读取命令或输出。",
+                    "zeroMeaning": "授权过滤后的成功控制面快照为零；不能推断物理环境不存在故障。",
+                    "healthValues": [],
+                    "requiredFilters": [],
+                    "templateVersion": "executions.records/v1",
+                    "historySupported": true,
+                    "clusterScopedKinds": [],
+                    "authorizationDomain": "operational"
+                  },
+                  {
+                    "id": "metrics.pod-restarts",
+                    "name": "Pod 重启增量",
+                    "unit": "restarts",
+                    "kinds": [],
+                    "metric": "restart_increase",
+                    "source": "victoriametrics",
+                    "filters": [
+                      "namespace"
+                    ],
+                    "maxGroups": 50,
+                    "dimensions": [
+                      "namespace",
+                      "uid",
+                      "time",
+                      "comparison"
+                    ],
+                    "operations": [
+                      "aggregate",
+                      "trend",
+                      "compare",
+                      "compare_percent"
+                    ],
+                    "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。",
+                    "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
+                    "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+                    "healthValues": [],
+                    "requiredFilters": [],
+                    "templateVersion": "metrics.pod-restarts/v1",
+                    "historySupported": true,
+                    "clusterScopedKinds": [],
+                    "authorizationDomain": "operational"
+                  },
+                  {
+                    "id": "metrics.pod-cpu",
+                    "name": "Pod CPU 平均使用",
+                    "unit": "cores",
+                    "kinds": [],
+                    "metric": "cpu_cores",
+                    "source": "victoriametrics",
+                    "filters": [
+                      "namespace"
+                    ],
+                    "maxGroups": 50,
+                    "dimensions": [
+                      "namespace",
+                      "uid",
+                      "time",
+                      "comparison"
+                    ],
+                    "operations": [
+                      "aggregate",
+                      "trend",
+                      "compare",
+                      "compare_percent"
+                    ],
+                    "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。",
+                    "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
+                    "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+                    "healthValues": [],
+                    "requiredFilters": [],
+                    "templateVersion": "metrics.pod-cpu/v1",
+                    "historySupported": true,
+                    "clusterScopedKinds": [],
+                    "authorizationDomain": "operational"
+                  },
+                  {
+                    "id": "metrics.pod-memory",
+                    "name": "Pod 工作集内存",
+                    "unit": "bytes",
+                    "kinds": [],
+                    "metric": "memory_bytes",
+                    "source": "victoriametrics",
+                    "filters": [
+                      "namespace"
+                    ],
+                    "maxGroups": 50,
+                    "dimensions": [
+                      "namespace",
+                      "uid",
+                      "time",
+                      "comparison"
+                    ],
+                    "operations": [
+                      "aggregate",
+                      "trend",
+                      "compare",
+                      "compare_percent",
+                      "average"
+                    ],
+                    "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 trend 不按资源分组，固定时间步长，最多 50 点，缺失点不补零；aggregate 仍为窗口末端求值。 趋势窗口开始前额外 5 分钟也须在已验证覆盖内；状态计数使用 bool 比较，仅有观测时才可返回零。 compare 比较两个等长、不重叠窗口末端的授权 gauge 快照；服务端计算增加/减少的绝对变化量，仅双方完整时发布变化，不计算百分比。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。 average 按每条授权序列窗口内的实际采样求平均后求和；不补缺失采样、不等同于完整墙钟时间平均。",
+                    "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。 趋势仅返回固定时间网格上的历史求值，使用显式 5 分钟 last_over_time 回看，须单独验证趋势来源。",
+                    "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+                    "healthValues": [],
+                    "requiredFilters": [],
+                    "templateVersion": "metrics.pod-memory/v1",
+                    "historySupported": true,
+                    "clusterScopedKinds": [],
+                    "authorizationDomain": "operational"
+                  },
+                  {
+                    "id": "metrics.pod-phase",
+                    "name": "Pod phase 数量",
+                    "unit": "resources",
+                    "kinds": [],
+                    "metric": "phase_count",
+                    "source": "victoriametrics",
+                    "filters": [
+                      "namespace"
+                    ],
+                    "maxGroups": 50,
+                    "dimensions": [
+                      "namespace",
+                      "phase",
+                      "time",
+                      "comparison"
+                    ],
+                    "operations": [
+                      "aggregate",
+                      "trend",
+                      "compare",
+                      "compare_percent",
+                      "average"
+                    ],
+                    "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 trend 不按资源分组，固定时间步长，最多 50 点，缺失点不补零；aggregate 仍为窗口末端求值。 趋势窗口开始前额外 5 分钟也须在已验证覆盖内；状态计数使用 bool 比较，仅有观测时才可返回零。 compare 比较两个等长、不重叠窗口末端的授权 gauge 快照；服务端计算增加/减少的绝对变化量，仅双方完整时发布变化，不计算百分比。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。 average 按每条授权序列窗口内的实际采样求平均后求和；不补缺失采样、不等同于完整墙钟时间平均。",
+                    "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。 趋势仅返回固定时间网格上的历史求值，使用显式 5 分钟 last_over_time 回看，须单独验证趋势来源。",
+                    "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+                    "healthValues": [],
+                    "requiredFilters": [],
+                    "templateVersion": "metrics.pod-phase/v1",
+                    "historySupported": true,
+                    "clusterScopedKinds": [],
+                    "authorizationDomain": "operational"
+                  },
+                  {
+                    "id": "metrics.node-ready",
+                    "name": "Node Ready 数量",
+                    "unit": "resources",
+                    "kinds": [],
+                    "metric": "ready_count",
+                    "source": "victoriametrics",
+                    "filters": [
+                      "namespace"
+                    ],
+                    "maxGroups": 50,
+                    "dimensions": [
+                      "time",
+                      "comparison"
+                    ],
+                    "operations": [
+                      "aggregate",
+                      "trend",
+                      "compare",
+                      "compare_percent",
+                      "average"
+                    ],
+                    "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 trend 不按资源分组，固定时间步长，最多 50 点，缺失点不补零；aggregate 仍为窗口末端求值。 趋势窗口开始前额外 5 分钟也须在已验证覆盖内；状态计数使用 bool 比较，仅有观测时才可返回零。 compare 比较两个等长、不重叠窗口末端的授权 gauge 快照；服务端计算增加/减少的绝对变化量，仅双方完整时发布变化，不计算百分比。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。 average 按每条授权序列窗口内的实际采样求平均后求和；不补缺失采样、不等同于完整墙钟时间平均。",
+                    "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。 趋势仅返回固定时间网格上的历史求值，使用显式 5 分钟 last_over_time 回看，须单独验证趋势来源。",
+                    "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+                    "healthValues": [],
+                    "requiredFilters": [],
+                    "templateVersion": "metrics.node-ready/v1",
+                    "historySupported": true,
+                    "clusterScopedKinds": [],
+                    "authorizationDomain": "operational"
+                  },
+                  {
+                    "id": "logs.records",
+                    "name": "日志完整聚合",
+                    "unit": "logs",
+                    "kinds": [],
+                    "metric": "log_count",
+                    "source": "victorialogs",
+                    "filters": [
+                      "namespace",
+                      "level"
+                    ],
+                    "maxGroups": 50,
+                    "dimensions": [
+                      "namespace",
+                      "level",
+                      "time",
+                      "comparison"
+                    ],
+                    "operations": [
+                      "aggregate",
+                      "trend",
+                      "compare",
+                      "compare_percent",
+                      "samples"
+                    ],
+                    "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。 samples 最多返回20条脱敏样例；value仅表示本次返回样例数，不是日志总数；样例始终partial。",
+                    "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
+                    "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。",
+                    "healthValues": [],
+                    "requiredFilters": [],
+                    "templateVersion": "logs.records/v1",
+                    "historySupported": true,
+                    "clusterScopedKinds": [],
+                    "authorizationDomain": "operational"
+                  },
+                  {
+                    "id": "incidents.recovery-duration",
+                    "name": "Incident 平均恢复时长",
+                    "unit": "milliseconds",
+                    "kinds": [],
+                    "metric": "mean_recovery_ms",
+                    "source": "postgresql",
+                    "filters": [
+                      "namespace"
+                    ],
+                    "maxGroups": 50,
+                    "dimensions": [
+                      "namespace",
+                      "day"
+                    ],
+                    "operations": [
+                      "aggregate"
+                    ],
+                    "calculation": "按 resolved_at 窗口，resolved/closed 且 started_at 与 resolved_at 可靠且顺序有效；平均恢复毫秒，不使用 created_at 替代。",
+                    "description": "按 resolved_at 窗口，resolved/closed 且 started_at 与 resolved_at 可靠且顺序有效；平均恢复毫秒，不使用 created_at 替代。",
+                    "zeroMeaning": "只有有效样本的计算结果可为零；无有效样本返回 no_data。",
+                    "healthValues": [],
+                    "requiredFilters": [],
+                    "templateVersion": "incidents.recovery-duration/v1",
+                    "historySupported": true,
+                    "clusterScopedKinds": [],
+                    "authorizationDomain": "operational"
+                  },
+                  {
+                    "id": "executions.success-rate",
+                    "name": "本人执行成功率",
+                    "unit": "percent",
+                    "kinds": [],
+                    "metric": "success_percent",
+                    "source": "postgresql",
+                    "filters": [],
+                    "maxGroups": 50,
+                    "dimensions": [
+                      "day"
+                    ],
+                    "operations": [
+                      "aggregate"
+                    ],
+                    "calculation": "窗口内本人当前授权目标的 succeeded/(succeeded+failed)*100；queued/running/cancelled/execution_unknown 不纳入分母；无分母返回 no_data。",
+                    "description": "窗口内本人当前授权目标的 succeeded/(succeeded+failed)*100；queued/running/cancelled/execution_unknown 不纳入分母；无分母返回 no_data。",
+                    "zeroMeaning": "只有有效样本的计算结果可为零；无有效样本返回 no_data。",
+                    "healthValues": [],
+                    "requiredFilters": [],
+                    "templateVersion": "executions.success-rate/v1",
+                    "historySupported": true,
+                    "clusterScopedKinds": [],
+                    "authorizationDomain": "operational"
+                  },
+                  {
+                    "id": "network.http-responses",
+                    "name": "HTTP 完成响应观测数",
+                    "unit": "responses",
+                    "kinds": [
+                      "Pod"
+                    ],
+                    "metric": "response_count",
+                    "source": "deepflow",
+                    "filters": [],
+                    "maxGroups": 50,
+                    "dimensions": [
+                      "time",
+                      "comparison"
+                    ],
+                    "operations": [
+                      "aggregate",
+                      "trend",
+                      "compare",
+                      "compare_percent"
+                    ],
+                    "calculation": "固定 Querier 聚合；HTTP 仅 type=2 且 200<=code<600 完成会话；比率使用同窗分母，平均耗时以微秒总量/会话数转换为毫秒。TCP 仅按已证明计数口径开放。",
+                    "description": "同一授权 namespace 内明确双端身份和单一已验证采集点的固定网络统计；不代表所有用户请求。",
+                    "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。",
+                    "healthValues": [],
+                    "requiredFilters": [],
+                    "templateVersion": "deepflow-network-summary/v1",
+                    "historySupported": true,
+                    "clusterScopedKinds": [],
+                    "authorizationDomain": "operational"
+                  },
+                  {
+                    "id": "network.http-5xx",
+                    "name": "HTTP 5xx 响应观测数",
+                    "unit": "responses",
+                    "kinds": [
+                      "Pod"
+                    ],
+                    "metric": "http_5xx_count",
+                    "source": "deepflow",
+                    "filters": [],
+                    "maxGroups": 50,
+                    "dimensions": [
+                      "time",
+                      "comparison"
+                    ],
+                    "operations": [
+                      "aggregate",
+                      "trend",
+                      "compare",
+                      "compare_percent"
+                    ],
+                    "calculation": "固定 Querier 聚合；HTTP 仅 type=2 且 200<=code<600 完成会话；比率使用同窗分母，平均耗时以微秒总量/会话数转换为毫秒。TCP 仅按已证明计数口径开放。",
+                    "description": "同一授权 namespace 内明确双端身份和单一已验证采集点的固定网络统计；不代表所有用户请求。",
+                    "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。",
+                    "healthValues": [],
+                    "requiredFilters": [],
+                    "templateVersion": "deepflow-network-summary/v1",
+                    "historySupported": true,
+                    "clusterScopedKinds": [],
+                    "authorizationDomain": "operational"
+                  },
+                  {
+                    "id": "network.http-5xx-rate",
+                    "name": "HTTP 5xx 观测比例",
+                    "unit": "percent",
+                    "kinds": [
+                      "Pod"
+                    ],
+                    "metric": "http_5xx_percent",
+                    "source": "deepflow",
+                    "filters": [],
+                    "maxGroups": 50,
+                    "dimensions": [
+                      "time",
+                      "comparison"
+                    ],
+                    "operations": [
+                      "aggregate",
+                      "trend",
+                      "compare"
+                    ],
+                    "calculation": "固定 Querier 聚合；HTTP 仅 type=2 且 200<=code<600 完成会话；比率使用同窗分母，平均耗时以微秒总量/会话数转换为毫秒。TCP 仅按已证明计数口径开放。",
+                    "description": "同一授权 namespace 内明确双端身份和单一已验证采集点的固定网络统计；不代表所有用户请求。",
+                    "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。",
+                    "healthValues": [],
+                    "requiredFilters": [],
+                    "templateVersion": "deepflow-network-summary/v1",
+                    "historySupported": true,
+                    "clusterScopedKinds": [],
+                    "authorizationDomain": "operational"
+                  },
+                  {
+                    "id": "network.http-response-time",
+                    "name": "HTTP 完成响应平均耗时",
+                    "unit": "milliseconds",
+                    "kinds": [
+                      "Pod"
+                    ],
+                    "metric": "mean_http_response_ms",
+                    "source": "deepflow",
+                    "filters": [],
+                    "maxGroups": 50,
+                    "dimensions": [
+                      "time",
+                      "comparison"
+                    ],
+                    "operations": [
+                      "aggregate",
+                      "trend",
+                      "compare",
+                      "compare_percent"
+                    ],
+                    "calculation": "固定 Querier 聚合；HTTP 仅 type=2 且 200<=code<600 完成会话；比率使用同窗分母，平均耗时以微秒总量/会话数转换为毫秒。TCP 仅按已证明计数口径开放。",
+                    "description": "同一授权 namespace 内明确双端身份和单一已验证采集点的固定网络统计；不代表所有用户请求。",
+                    "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。",
+                    "healthValues": [],
+                    "requiredFilters": [],
+                    "templateVersion": "deepflow-network-summary/v1",
+                    "historySupported": true,
+                    "clusterScopedKinds": [],
+                    "authorizationDomain": "operational"
+                  },
+                  {
+                    "id": "network.tcp-retransmissions",
+                    "name": "TCP 重传观测数",
+                    "unit": "retransmissions",
+                    "kinds": [
+                      "Pod"
+                    ],
+                    "metric": "retransmission_count",
+                    "source": "deepflow",
+                    "filters": [],
+                    "maxGroups": 50,
+                    "dimensions": [
+                      "time",
+                      "comparison"
+                    ],
+                    "operations": [
+                      "aggregate",
+                      "trend",
+                      "compare",
+                      "compare_percent"
+                    ],
+                    "calculation": "固定 Querier 聚合；HTTP 仅 type=2 且 200<=code<600 完成会话；比率使用同窗分母，平均耗时以微秒总量/会话数转换为毫秒。TCP 仅按已证明计数口径开放。",
+                    "description": "同一授权 namespace 内明确双端身份和单一已验证采集点的固定网络统计；不代表所有用户请求。",
+                    "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。",
+                    "healthValues": [],
+                    "requiredFilters": [],
+                    "templateVersion": "deepflow-network-summary/v1",
+                    "historySupported": true,
+                    "clusterScopedKinds": [],
+                    "authorizationDomain": "operational"
+                  },
+                  {
+                    "id": "network.connection-failure-observations",
+                    "name": "TCP 客户端/服务端错误观测数",
+                    "unit": "observations",
+                    "kinds": [
+                      "Pod"
+                    ],
+                    "metric": "connection_failure_observation_count",
+                    "source": "deepflow",
+                    "filters": [],
+                    "maxGroups": 50,
+                    "dimensions": [
+                      "time",
+                      "comparison"
+                    ],
+                    "operations": [
+                      "aggregate",
+                      "trend",
+                      "compare",
+                      "compare_percent"
+                    ],
+                    "calculation": "protocol=6、单一合格采集点中 status=3/4 的记录数，含建连、重置、超时等错误分类；不是独立失败连接数，不代表失败请求数。",
+                    "description": "同一授权 namespace 内明确双端身份和单一已验证采集点的固定网络统计；不代表所有用户请求。",
+                    "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。",
+                    "healthValues": [],
+                    "requiredFilters": [],
+                    "templateVersion": "deepflow-network-summary/v1",
+                    "historySupported": true,
+                    "clusterScopedKinds": [],
+                    "authorizationDomain": "operational"
+                  },
+                  {
+                    "id": "network.http-summary",
+                    "name": "HTTP 完成响应统计",
+                    "unit": "percent",
+                    "kinds": [
+                      "Pod"
+                    ],
+                    "metric": "http_5xx_percent",
+                    "source": "deepflow",
+                    "filters": [],
+                    "maxGroups": 50,
+                    "dimensions": [
+                      "time",
+                      "comparison"
+                    ],
+                    "operations": [
+                      "aggregate",
+                      "trend",
+                      "compare",
+                      "compare_percent"
+                    ],
+                    "calculation": "HTTP：完成会话的响应数、5xx 数、比例及样本加权平均耗时；TCP：status=3/4 的客户端/服务端错误观测记录及周期重传计数。不是独立失败连接数或丢包率。",
+                    "description": "单一合格采集点的固定统计快照；数值按独立单位 Fact 引用，避免重复读取同一总体。",
+                    "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。",
+                    "healthValues": [],
+                    "requiredFilters": [],
+                    "templateVersion": "deepflow-network-summary/v1",
+                    "historySupported": true,
+                    "clusterScopedKinds": [],
+                    "authorizationDomain": "operational"
+                  },
+                  {
+                    "id": "network.tcp-summary",
+                    "name": "TCP 观测记录统计",
+                    "unit": "observations",
+                    "kinds": [
+                      "Pod"
+                    ],
+                    "metric": "connection_failure_observation_count",
+                    "source": "deepflow",
+                    "filters": [],
+                    "maxGroups": 50,
+                    "dimensions": [
+                      "time",
+                      "comparison"
+                    ],
+                    "operations": [
+                      "aggregate",
+                      "trend",
+                      "compare",
+                      "compare_percent"
+                    ],
+                    "calculation": "HTTP：完成会话的响应数、5xx 数、比例及样本加权平均耗时；TCP：status=3/4 的客户端/服务端错误观测记录及周期重传计数。不是独立失败连接数或丢包率。",
+                    "description": "单一合格采集点的固定统计快照；数值按独立单位 Fact 引用，避免重复读取同一总体。",
+                    "zeroMeaning": "计数零仅表示合格观测总体为空；比例与耗时空分母为 no_data，不能推断正常。",
+                    "healthValues": [],
+                    "requiredFilters": [],
+                    "templateVersion": "deepflow-network-summary/v1",
+                    "historySupported": true,
+                    "clusterScopedKinds": [],
+                    "authorizationDomain": "operational"
+                  }
+                ],
+                "schemaVersion": "analysis-catalog/v1"
+              },
+              "effectiveBudget": {
+                "toolCalls": 6,
+                "graphNodes": 8000,
+                "rawQueries": 10,
+                "inputTokens": 524288,
+                "resultBytes": 41943040,
+                "outputTokens": 32768,
+                "evidenceItems": 4000,
+                "modelRequests": 3,
+                "durationSeconds": 120,
+                "modelCostMicros": 0,
+                "allowedDataClasses": [
+                  "D0",
+                  "D1"
+                ]
+              },
+              "sourceCapabilities": [],
+              "networkCapabilities": [],
+              "historyManifestDigest": "sha256:a186076ca82c53afcfe463e7accaf94c82d8662f10dc87a30abbe402700ee997",
+              "sourceCapabilityStatus": "available"
+            },
+            "tool": "get_assistant_context",
+            "state": "succeeded",
+            "budget": {
+              "consumed": {
+                "toolCalls": 1,
+                "graphNodes": 0,
+                "rawQueries": 0,
+                "inputTokens": 0,
+                "resultBytes": 32774,
+                "outputTokens": 0,
+                "evidenceItems": 0,
+                "modelRequests": 0,
+                "modelCostMicros": 0
+              },
+              "remaining": {
+                "toolCalls": 5,
+                "graphNodes": 8000,
+                "rawQueries": 10,
+                "inputTokens": 524288,
+                "resultBytes": 41910264,
+                "outputTokens": 32768,
+                "evidenceItems": 4000,
+                "modelRequests": 3,
+                "modelCostMicros": 0
+              }
+            },
+            "partial": false,
+            "evidenceRefs": [],
+            "schemaVersion": "tool-response/v3",
+            "degradedSources": []
+          }
+        },
+        {
+          "argsSummary": {
+            "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4"
+          },
+          "stepId": "01a1c37c-ed4f-760b-800f-90f8f4919c05",
+          "toolName": "get_incident_context",
+          "argsDigest": "sha256:da83ded3a5803adb3ff5d6ecd7fbe8021ff8724f4da963e1ade031bdd1391e6d",
+          "state": "succeeded",
+          "result": {
+            "data": {
+              "findings": {
+                "items": [
+                  {
+                    "digest": "sha256:e8727fc37721f6c329dd396b692fc808ccdd3bf15629edecddcf69c021ef0d76",
+                    "ruleId": "kubernetes/FailedMount/v1",
+                    "eventId": "reconcile-deleted-01a1ae2d-e4fa-7c1a-83f9-684ec768c87a",
+                    "payload": {
+                      "ruleId": "kubernetes/FailedMount/v1",
+                      "deleted": true,
+                      "ruleFamily": "storage",
+                      "normalizedSymptom": "FailedMount"
+                    },
+                    "severity": "warning",
+                    "startsAt": "2026-11-06T00:06:44.07233Z",
+                    "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                    "findingId": "01a1ae2d-e4fa-7c1a-83f9-684ec768c87a",
+                    "namespace": "ops-current",
+                    "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+                    "observedAt": "2026-11-07T09:39:44.098309512Z",
+                    "receivedAt": "2026-11-07T17:39:44.099616+08:00",
+                    "ruleFamily": "storage",
+                    "evidenceRefs": [],
+                    "occurrenceId": "01a1ae2d-e4b9-7dfc-acd3-951c74c06ce7",
+                    "timeReliable": true,
+                    "schemaVersion": "finding-envelope/v2",
+                    "idempotencyKey": "reconcile-deleted-01a1ae2d-e4fa-7c1a-83f9-684ec768c87a",
+                    "lifecycleState": "resolved",
+                    "sourceRevision": 2,
+                    "sourceSequence": 0,
+                    "firstReceivedAt": "2026-11-06T00:06:45.754767Z",
+                    "aggregateRevision": 12,
+                    "normalizedSymptom": "FailedMount",
+                    "sourceFingerprint": "sha256:df6632a2e70973c5ce3f703a807c9fee50608df0e31c1630a8bf080f3e2016df",
+                    "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/6eb76263-66c2-49ce-befc-d842ef473ae2",
+                    "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+                  }
+                ]
+              },
+              "incident": {
+                "state": "resolved",
+                "revision": 11,
+                "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                "createdAt": "2026-11-06T00:06:48.560353Z",
+                "namespace": "ops-current",
+                "startedAt": "2026-11-06T00:06:44.07233Z",
+                "updatedAt": "2026-11-07T09:44:48.086752Z",
+                "assignedAt": null,
+                "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+                "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+                "resolvedAt": "2026-11-07T09:44:48.086706Z",
+                "fingerprint": "sha256:f28c93562f573f2010c3e2c643b46446d25cc2c12688ba2432d1a9e818ed8d0c",
+                "policyVersion": "correlation/nonvirtual/v1",
+                "schemaVersion": "incident/v2",
+                "lastObservedAt": "2026-11-07T09:39:44.098309Z",
+                "assigneeSubject": "",
+                "recoveryKnownAt": "2026-11-07T09:39:46.075654Z",
+                "suppressedUntil": null,
+                "currentRcaRevision": 22,
+                "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/6eb76263-66c2-49ce-befc-d842ef473ae2"
+              }
+            },
+            "tool": "get_incident_context",
+            "state": "succeeded",
+            "budget": {
+              "consumed": {
+                "toolCalls": 1,
+                "graphNodes": 0,
+                "rawQueries": 0,
+                "inputTokens": 0,
+                "resultBytes": 2776,
+                "outputTokens": 0,
+                "evidenceItems": 0,
+                "modelRequests": 0,
+                "modelCostMicros": 0
+              },
+              "remaining": {
+                "toolCalls": 4,
+                "graphNodes": 8000,
+                "rawQueries": 10,
+                "inputTokens": 524288,
+                "resultBytes": 41874494,
+                "outputTokens": 32768,
+                "evidenceItems": 4000,
+                "modelRequests": 3,
+                "modelCostMicros": 0
+              }
+            },
+            "partial": false,
+            "evidenceRefs": [],
+            "schemaVersion": "tool-response/v3",
+            "degradedSources": []
+          }
+        },
+        {
+          "argsSummary": {},
+          "stepId": "01a1c37c-edb3-7b24-a8dd-5a6833be21f3",
+          "toolName": "get_formal_references",
+          "argsDigest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "state": "succeeded",
+          "result": {
+            "data": {
+              "rca": {
+                "result": {
+                  "status": "unresolved",
+                  "partial": true,
+                  "candidates": [],
+                  "recipeDigest": "sha256:effab3e207d101d5fc523840ca5e1d6ce3dca6078547fd6390a66cd178d7c66a",
+                  "recipeVersion": "v2",
+                  "evidenceBundle": {
+                    "missing": [
+                      "node-not-ready",
+                      "node-causal-evidence",
+                      "node-path"
+                    ],
+                    "supporting": [],
+                    "contradicting": [],
+                    "degradedSources": [
+                      "graph"
+                    ]
+                  }
+                },
+                "revision": 22,
+                "createdAt": "2026-11-07T09:44:48.191099466Z",
+                "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+                "inputDigest": "sha256:fd604aa7cd3480b1ceff83637c220ef4071f654f79576ae0c8f1e813f10d93e9",
+                "fullSnapshot": "read exact formalReference; summary is not the full archived snapshot",
+                "inputManifest": {
+                  "to": "2026-11-07T09:44:48.186020088Z",
+                  "from": "2026-11-07T09:39:48.186020088Z",
+                  "evaluatedAt": "2026-11-07T09:44:48.186020088Z",
+                  "evidenceRefs": [],
+                  "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/6eb76263-66c2-49ce-befc-d842ef473ae2"
+                },
+                "schemaVersion": "formal-rca-summary/v1"
+              },
+              "plans": [],
+              "historical": false,
+              "omittedEvidence": [],
+              "archivedEvidence": [],
+              "formalReferences": [
+                {
+                  "kind": "rca",
+                  "revision": 22,
+                  "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+                  "contentDigest": "sha256:973f8894f60b255f9de33a8d3858c2061395f360170ebab19b36a136d90c66ca"
+                }
+              ],
+              "currentRcaRevision": 22
+            },
+            "tool": "get_formal_references",
+            "state": "succeeded",
+            "budget": {
+              "consumed": {
+                "toolCalls": 1,
+                "graphNodes": 0,
+                "rawQueries": 0,
+                "inputTokens": 0,
+                "resultBytes": 1770,
+                "outputTokens": 0,
+                "evidenceItems": 0,
+                "modelRequests": 0,
+                "modelCostMicros": 0
+              },
+              "remaining": {
+                "toolCalls": 3,
+                "graphNodes": 8000,
+                "rawQueries": 10,
+                "inputTokens": 524288,
+                "resultBytes": 41872724,
+                "outputTokens": 32768,
+                "evidenceItems": 4000,
+                "modelRequests": 3,
+                "modelCostMicros": 0
+              }
+            },
+            "partial": false,
+            "evidenceRefs": [],
+            "schemaVersion": "tool-response/v3",
+            "degradedSources": []
+          }
+        },
+        {
+          "argsSummary": {
+            "context": "已授权故障上下文与持久工具结果",
+            "rawPromptOmitted": true
+          },
+          "stepId": "01a1c37c-ee7d-74cb-a599-0fca2a6e8b11",
+          "toolName": "model",
+          "argsDigest": "sha256:891436d3f3a8a6141982cf3937e71af0cc70458793bb1e6d7a58d7687b249008",
+          "state": "succeeded",
+          "result": {
+            "provider": "openai-compatible",
+            "response": {
+              "id": "d2ee1c40-103a-44c2-a87e-da8bc8435623",
+              "model": "deepseek-flash",
+              "usage": {
+                "total_tokens": 15072,
+                "prompt_tokens": 15035,
+                "completion_tokens": 37,
+                "prompt_tokens_details": {
+                  "audio_tokens": null,
+                  "cached_tokens": 1408,
+                  "cache_write_tokens": null
+                },
+                "prompt_cache_hit_tokens": 1408,
+                "prompt_cache_miss_tokens": 13627,
+                "completion_tokens_details": null
+              },
+              "object": "chat.completion",
+              "choices": [
+                {
+                  "index": 0,
+                  "message": {
+                    "role": "assistant",
+                    "content": "",
+                    "tool_calls": [
+                      {
+                        "id": "call_00_yXXXjr0XJ3rmIcBOrOmf0985",
+                        "type": "function",
+                        "index": 0,
+                        "function": {
+                          "name": "describe_analysis_dataset",
+                          "arguments": "{\"datasetId\":\"incidents.records\"}"
+                        }
+                      }
+                    ],
+                    "function_call": null,
+                    "provider_specific_fields": {
+                      "refusal": null
+                    }
+                  },
+                  "finish_reason": "tool_calls",
+                  "provider_specific_fields": {}
+                }
+              ],
+              "created": 1794281111,
+              "moderation": null,
+              "service_tier": null,
+              "system_fingerprint": "bc19ba97cbe016479903222bb1578db6"
+            },
+            "usageKnown": true
+          }
+        },
+        {
+          "argsSummary": {},
+          "stepId": "01a1c37d-0406-7df2-acdf-dac73d1f86b7",
+          "toolName": "describe_analysis_dataset",
+          "argsDigest": "sha256:8bd4dfb0f8c84aba440d71a691f28c9e99d798b9c9e23ec1a5286a227e506245",
+          "state": "succeeded",
+          "result": {
+            "data": {
+              "version": "analysis-catalog/v1",
+              "datasets": [
+                {
+                  "id": "incidents.records",
+                  "name": "Incident 记录统计",
+                  "unit": "incidents",
+                  "kinds": [],
+                  "metric": "incident_count",
+                  "source": "postgresql",
+                  "filters": [
+                    "namespace",
+                    "state"
+                  ],
+                  "maxGroups": 50,
+                  "dimensions": [
+                    "namespace",
+                    "state",
+                    "day"
+                  ],
+                  "operations": [
+                    "aggregate"
+                  ],
+                  "calculation": "按 Incident ID 去重；全部关联 Finding 必须在授权范围。",
+                  "description": "按 Incident ID 去重；全部关联 Finding 必须在授权范围。",
+                  "zeroMeaning": "授权过滤后的成功控制面快照为零；不能推断物理环境不存在故障。",
+                  "healthValues": [],
+                  "requiredFilters": [],
+                  "templateVersion": "incidents.records/v1",
+                  "historySupported": true,
+                  "clusterScopedKinds": [],
+                  "authorizationDomain": "operational"
+                }
+              ],
+              "schemaVersion": "analysis-catalog/v1"
+            },
+            "tool": "describe_analysis_dataset",
+            "state": "succeeded",
+            "budget": {
+              "consumed": {
+                "toolCalls": 1,
+                "graphNodes": 0,
+                "rawQueries": 0,
+                "inputTokens": 0,
+                "resultBytes": 1296,
+                "outputTokens": 0,
+                "evidenceItems": 0,
+                "modelRequests": 0,
+                "modelCostMicros": 0
+              },
+              "remaining": {
+                "toolCalls": 2,
+                "graphNodes": 8000,
+                "rawQueries": 10,
+                "inputTokens": 509253,
+                "resultBytes": 41691808,
+                "outputTokens": 32731,
+                "evidenceItems": 4000,
+                "modelRequests": 2,
+                "modelCostMicros": 0
+              }
+            },
+            "partial": false,
+            "evidenceRefs": [],
+            "schemaVersion": "tool-response/v3",
+            "degradedSources": []
+          }
+        },
+        {
+          "argsSummary": {
+            "context": "已授权故障上下文与持久工具结果",
+            "rawPromptOmitted": true
+          },
+          "stepId": "01a1c37d-04b6-7001-ad59-cac8477a6dc5",
+          "toolName": "model",
+          "argsDigest": "sha256:55021a228f7d85e4ee58be65c6143111d17d43b17d82bb76025d992c73cb6370",
+          "state": "succeeded",
+          "result": {
+            "provider": "openai-compatible",
+            "response": {
+              "id": "e5927751-d9be-461d-92d0-1d3698ada9ad",
+              "model": "deepseek-flash",
+              "usage": {
+                "total_tokens": 16819,
+                "prompt_tokens": 16711,
+                "completion_tokens": 108,
+                "prompt_tokens_details": {
+                  "audio_tokens": null,
+                  "cached_tokens": 2688,
+                  "cache_write_tokens": null
+                },
+                "prompt_cache_hit_tokens": 2688,
+                "prompt_cache_miss_tokens": 14023,
+                "completion_tokens_details": null
+              },
+              "object": "chat.completion",
+              "choices": [
+                {
+                  "index": 0,
+                  "message": {
+                    "role": "assistant",
+                    "content": "",
+                    "tool_calls": [
+                      {
+                        "id": "call_00_q6lbToartQCrHRyIWlLy8434",
+                        "type": "function",
+                        "index": 0,
+                        "function": {
+                          "name": "execute_analysis_query",
+                          "arguments": "{\"intent\":{\"datasetId\":\"incidents.records\",\"dimensions\":[],\"filters\":[{\"field\":\"namespace\",\"operator\":\"eq\",\"value\":\"ops-current\"}],\"limit\":1,\"metrics\":[\"incident_count\"],\"operation\":\"aggregate\",\"schemaVersion\":\"query-intent/v1\",\"sort\":[]}}"
+                        }
+                      }
+                    ],
+                    "function_call": null,
+                    "provider_specific_fields": {
+                      "refusal": null
+                    }
+                  },
+                  "finish_reason": "tool_calls",
+                  "provider_specific_fields": {}
+                }
+              ],
+              "created": 1794281113,
+              "moderation": null,
+              "service_tier": null,
+              "system_fingerprint": "bc19ba97cbe016479903222bb1578db6"
+            },
+            "usageKnown": true
+          }
+        },
+        {
+          "argsSummary": {
+            "context": "已授权故障上下文与持久工具结果",
+            "rawPromptOmitted": true
+          },
+          "stepId": "01a1c37d-0ebd-705e-b723-107a4c5247ce",
+          "toolName": "model",
+          "argsDigest": "sha256:0c1f7b95da1866d7dbd154c54c20bae6e5c7cb37c5dbad63d7f9655b304479a9",
+          "state": "succeeded",
+          "result": {
+            "provider": "openai-compatible",
+            "response": {
+              "id": "3f07c291-8a81-4717-9825-578760654ae3",
+              "model": "deepseek-flash",
+              "usage": {
+                "total_tokens": 17166,
+                "prompt_tokens": 17057,
+                "completion_tokens": 109,
+                "prompt_tokens_details": {
+                  "audio_tokens": null,
+                  "cached_tokens": 16768,
+                  "cache_write_tokens": null
+                },
+                "prompt_cache_hit_tokens": 16768,
+                "prompt_cache_miss_tokens": 289,
+                "completion_tokens_details": null
+              },
+              "object": "chat.completion",
+              "choices": [
+                {
+                  "index": 0,
+                  "message": {
+                    "role": "assistant",
+                    "content": "",
+                    "tool_calls": [
+                      {
+                        "id": "call_00_mWjJBqAGBasvPc2aPwIi7236",
+                        "type": "function",
+                        "index": 0,
+                        "function": {
+                          "name": "execute_analysis_query",
+                          "arguments": "{\"intent\":{\"datasetId\":\"incidents.records\",\"dimensions\":[],\"filters\":[{\"field\":\"namespace\",\"operator\":\"eq\",\"value\":\"ops-current\"}],\"limit\":1,\"metrics\":[\"incident_count\"],\"operation\":\"aggregate\",\"schemaVersion\":\"query-intent/v1\",\"sort\":[]}}"
+                        }
+                      }
+                    ],
+                    "function_call": null,
+                    "provider_specific_fields": {
+                      "refusal": null
+                    }
+                  },
+                  "finish_reason": "tool_calls",
+                  "provider_specific_fields": {}
+                }
+              ],
+              "created": 1794281116,
+              "moderation": null,
+              "service_tier": null,
+              "system_fingerprint": "bc19ba97cbe016479903222bb1578db6"
+            },
+            "usageKnown": true
+          }
+        }
+      ],
+      "requestId": "01a1c37d-8e72-7eae-8072-2fe0a13072a4"
+    }
+  },
+  {
+    "path": "/api/v1/incidents/01a1ae2d-eff0-7664-a10e-d02a701023f4/investigations?limit=20",
+    "status": 200,
+    "body": {
+      "data": [
+        {
+          "schemaVersion": "investigation-job/v3",
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "jobId": "01a1c37c-e8bb-718d-ab08-f951b9785cf9",
+          "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+          "subject": "native:01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f",
+          "triggerRevision": 11,
+          "triggerKind": "manual",
+          "policyVersion": "01a1ae2e-1f32-7277-af0d-5e1923adcf77",
+          "scope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "effectiveScopeDigest": "sha256:e406234cd9d37177a3b9473394cd3ae8fec8a2541da9556c42ed794a85547664",
+          "toolCatalogDigest": "sha256:659167882bab37eed309c69554b9a50b0b1e5bebb2aee953b707f0d7aec45bf4",
+          "state": "partial",
+          "budget": {
+            "toolCalls": 6,
+            "rawQueries": 10,
+            "resultBytes": 41943040,
+            "graphNodes": 8000,
+            "evidenceItems": 4000,
+            "modelRequests": 3,
+            "inputTokens": 524288,
+            "outputTokens": 32768,
+            "modelCostMicros": 0,
+            "durationSeconds": 120,
+            "allowedDataClasses": [
+              "D0",
+              "D1"
+            ]
+          },
+          "budgetReserved": {
+            "toolCalls": 0,
+            "rawQueries": 0,
+            "resultBytes": 0,
+            "graphNodes": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "inputTokens": 0,
+            "outputTokens": 0,
+            "modelCostMicros": 0
+          },
+          "budgetConsumed": {
+            "toolCalls": 4,
+            "rawQueries": 0,
+            "resultBytes": 508865,
+            "graphNodes": 0,
+            "evidenceItems": 0,
+            "modelRequests": 3,
+            "inputTokens": 48803,
+            "outputTokens": 254,
+            "modelCostMicros": 0
+          },
+          "focus": "观察真实步骤逐项更新并核验固定RCA与归档证据，不将时序当因果。",
+          "admissionDigest": "sha256:1937242116f5762444f0bdc876a05305b31b37c101971cc886bac6033f52d90b",
+          "expiresAt": "2026-11-10T03:27:05.596907Z",
+          "eventSeq": 26,
+          "nextCallSeq": 0,
+          "result": {
+            "asOf": "2026-11-10T03:25:18.14980813Z",
+            "partial": true,
+            "summary": "本轮已停止，保留已提交的查询事实；未完成的检查没有结论。",
+            "factRefs": [],
+            "warnings": [
+              "BUDGET_EXHAUSTED"
+            ],
+            "answerKind": "unsupported",
+            "entityRefs": [],
+            "hypotheses": [],
+            "nextChecks": [
+              "缩小范围后发起新一轮检查"
+            ],
+            "evidenceRefs": [],
+            "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+            "schemaVersion": "assistant-answer/v1",
+            "degradedSources": [],
+            "missingEvidence": [
+              "remaining_checks_not_completed"
+            ],
+            "queryResultRefs": []
+          },
+          "errorCode": "BUDGET_EXHAUSTED",
+          "conversationId": "01a1bff0-b844-70c2-a4e5-32c7cc5d29af",
+          "turnId": "01a1c37c-e8bb-718c-a56d-d57b9116c746"
+        },
+        {
+          "schemaVersion": "investigation-job/v3",
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "jobId": "01a1c37c-af8a-719c-8873-afad97051c7b",
+          "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+          "subject": "native:01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f",
+          "triggerRevision": 11,
+          "triggerKind": "manual",
+          "policyVersion": "01a1ae2e-1f32-7277-af0d-5e1923adcf77",
+          "scope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "effectiveScopeDigest": "sha256:e406234cd9d37177a3b9473394cd3ae8fec8a2541da9556c42ed794a85547664",
+          "toolCatalogDigest": "sha256:659167882bab37eed309c69554b9a50b0b1e5bebb2aee953b707f0d7aec45bf4",
+          "state": "cancelled",
+          "budget": {
+            "toolCalls": 6,
+            "rawQueries": 10,
+            "resultBytes": 41943040,
+            "graphNodes": 8000,
+            "evidenceItems": 4000,
+            "modelRequests": 3,
+            "inputTokens": 524288,
+            "outputTokens": 32768,
+            "modelCostMicros": 0,
+            "durationSeconds": 120,
+            "allowedDataClasses": [
+              "D0",
+              "D1"
+            ]
+          },
+          "budgetReserved": {
+            "toolCalls": 0,
+            "rawQueries": 0,
+            "resultBytes": 0,
+            "graphNodes": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "inputTokens": 0,
+            "outputTokens": 0,
+            "modelCostMicros": 0
+          },
+          "budgetConsumed": {
+            "toolCalls": 1,
+            "rawQueries": 0,
+            "resultBytes": 32089,
+            "graphNodes": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "inputTokens": 0,
+            "outputTokens": 0,
+            "modelCostMicros": 0
+          },
+          "focus": "公开工作台真实停止确认验收，保留已经提交的事实。",
+          "admissionDigest": "sha256:18bc1befac133048818d09f279cdd42776e18a1bb0d352df99748d97bb8a5506",
+          "expiresAt": "2026-11-10T03:26:50.955963Z",
+          "eventSeq": 5,
+          "nextCallSeq": 0,
+          "result": {
+            "asOf": "2026-11-10T03:24:51.64806488Z",
+            "partial": true,
+            "summary": "本轮已停止，保留已提交的查询事实；未完成的检查没有结论。",
+            "factRefs": [],
+            "warnings": [
+              "CANCELLED"
+            ],
+            "answerKind": "unsupported",
+            "entityRefs": [],
+            "hypotheses": [],
+            "nextChecks": [
+              "缩小范围后发起新一轮检查"
+            ],
+            "evidenceRefs": [],
+            "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+            "schemaVersion": "assistant-answer/v1",
+            "degradedSources": [],
+            "missingEvidence": [
+              "remaining_checks_not_completed"
+            ],
+            "queryResultRefs": []
+          },
+          "errorCode": "CANCELLED",
+          "conversationId": "01a1bff0-b844-70c2-a4e5-32c7cc5d29af",
+          "turnId": "01a1c37c-af8a-719b-9c3a-897bef8e9d74"
+        },
+        {
+          "schemaVersion": "investigation-job/v3",
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "jobId": "01a1bffa-f2dc-7a97-9547-042fb0f97a52",
+          "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+          "subject": "native:01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f",
+          "triggerRevision": 11,
+          "triggerKind": "manual",
+          "policyVersion": "01a1ae2e-1f32-7277-af0d-5e1923adcf77",
+          "scope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "effectiveScopeDigest": "sha256:e406234cd9d37177a3b9473394cd3ae8fec8a2541da9556c42ed794a85547664",
+          "toolCatalogDigest": "sha256:659167882bab37eed309c69554b9a50b0b1e5bebb2aee953b707f0d7aec45bf4",
+          "state": "partial",
+          "budget": {
+            "toolCalls": 1,
+            "rawQueries": 10,
+            "resultBytes": 41943040,
+            "graphNodes": 8000,
+            "evidenceItems": 4000,
+            "modelRequests": 1,
+            "inputTokens": 524288,
+            "outputTokens": 32768,
+            "modelCostMicros": 0,
+            "durationSeconds": 30,
+            "allowedDataClasses": [
+              "D0",
+              "D1"
+            ]
+          },
+          "budgetReserved": {
+            "toolCalls": 0,
+            "rawQueries": 0,
+            "resultBytes": 0,
+            "graphNodes": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "inputTokens": 0,
+            "outputTokens": 0,
+            "modelCostMicros": 0
+          },
+          "budgetConsumed": {
+            "toolCalls": 1,
+            "rawQueries": 0,
+            "resultBytes": 71862,
+            "graphNodes": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "inputTokens": 0,
+            "outputTokens": 0,
+            "modelCostMicros": 0
+          },
+          "focus": "",
+          "admissionDigest": "sha256:1f5e4f2c79b6d8e752f0c9b5f47a6d645523a3a0958c4bffdfdf5fd8da0a6249",
+          "expiresAt": "2026-11-09T11:04:46.862485Z",
+          "eventSeq": 6,
+          "nextCallSeq": 0,
+          "result": {
+            "asOf": "2026-11-09T11:04:17.916524997Z",
+            "partial": true,
+            "summary": "本轮已停止，保留已提交的查询事实；未完成的检查没有结论。",
+            "factRefs": [],
+            "warnings": [
+              "BUDGET_EXHAUSTED"
+            ],
+            "answerKind": "unsupported",
+            "entityRefs": [],
+            "hypotheses": [],
+            "nextChecks": [
+              "缩小范围后发起新一轮检查"
+            ],
+            "evidenceRefs": [],
+            "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+            "schemaVersion": "assistant-answer/v1",
+            "degradedSources": [],
+            "missingEvidence": [
+              "remaining_checks_not_completed"
+            ],
+            "queryResultRefs": []
+          },
+          "errorCode": "BUDGET_EXHAUSTED",
+          "conversationId": "01a1bff0-b844-70c2-a4e5-32c7cc5d29af",
+          "turnId": "01a1bffa-f2dc-7a96-afba-c54eb0ece1d6"
+        },
+        {
+          "schemaVersion": "investigation-job/v3",
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "jobId": "01a1bff9-4878-75b0-8b01-3ecbcc435cc0",
+          "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+          "subject": "native:01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f",
+          "triggerRevision": 11,
+          "triggerKind": "manual",
+          "policyVersion": "01a1ae2e-1f32-7277-af0d-5e1923adcf77",
+          "scope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "effectiveScopeDigest": "sha256:e406234cd9d37177a3b9473394cd3ae8fec8a2541da9556c42ed794a85547664",
+          "toolCatalogDigest": "sha256:659167882bab37eed309c69554b9a50b0b1e5bebb2aee953b707f0d7aec45bf4",
+          "state": "partial",
+          "budget": {
+            "toolCalls": 6,
+            "rawQueries": 10,
+            "resultBytes": 41943040,
+            "graphNodes": 8000,
+            "evidenceItems": 4000,
+            "modelRequests": 3,
+            "inputTokens": 524288,
+            "outputTokens": 32768,
+            "modelCostMicros": 0,
+            "durationSeconds": 120,
+            "allowedDataClasses": [
+              "D0",
+              "D1"
+            ]
+          },
+          "budgetReserved": {
+            "toolCalls": 0,
+            "rawQueries": 0,
+            "resultBytes": 0,
+            "graphNodes": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "inputTokens": 0,
+            "outputTokens": 0,
+            "modelCostMicros": 0
+          },
+          "budgetConsumed": {
+            "toolCalls": 2,
+            "rawQueries": 0,
+            "resultBytes": 369946,
+            "graphNodes": 0,
+            "evidenceItems": 2,
+            "modelRequests": 2,
+            "inputTokens": 24542,
+            "outputTokens": 1370,
+            "modelCostMicros": 0
+          },
+          "focus": "重点比较两条 FailedMount 的 resourceVersion，说明递增不等于因果。",
+          "admissionDigest": "sha256:d8f98cff5c6ad0b374558510c45ce3b4df7694df70cfc93ab17ccd3ea305a189",
+          "expiresAt": "2026-11-09T11:04:27.706366Z",
+          "eventSeq": 17,
+          "nextCallSeq": 0,
+          "result": {
+            "asOf": "2026-11-09T11:02:39.133350878Z",
+            "partial": true,
+            "summary": "已实际调用 get_formal_references(rcaRevision=1)，取得故障 01a1ae2d-eff0-7664-a10e-d02a701023f4 的冻结 RCA 第1版（contentDigest sha256:d131fc8917122a7c9fd0ed2c661d8d47d28a0cf667ab8edb74b163f4f82f1a35，历史版本，当前为第22版）。两条 FailedMount 归档证据属于同一 Pod（6eb76263-66c2-49ce-befc-d842ef473ae2），resourceVersion 分别为 2528117 与 2528128，观测时间几乎相同（2026-11-06T00:06:44.0723Z），版本递增只说明对象被更新，不能证明挂载失败导致故障。",
+            "factRefs": [],
+            "warnings": [
+              "resourceVersion 从 2528117 递增到 2528128 仅表示同一 Pod 的 Event 对象被更新，属于对象版本变化，不构成因果证据",
+              "两条证据的 nativeUID 不同（1ec8c0c9-19bb-4eab-8027-c366c7a9a7fb 与 0e6e39f9-3818-449b-a8a5-7517c2879642），是两条独立 Event 记录，不是同一事件的两个版本",
+              "RCA 第1版为历史版本（historical=true），当前 RCA 已到第22版，本复盘不代表当前结论",
+              "未取得数据不等于正常或为零，不能据此推断 FailedMount 与故障无关",
+              "model_answer_incomplete"
+            ],
+            "answerKind": "diagnosis",
+            "entityRefs": [],
+            "formalRefs": [
+              {
+                "kind": "rca",
+                "revision": 1,
+                "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+                "contentDigest": "sha256:d131fc8917122a7c9fd0ed2c661d8d47d28a0cf667ab8edb74b163f4f82f1a35"
+              }
+            ],
+            "hypotheses": [
+              {
+                "key": "failedmount-version-increase-not-causal",
+                "summary": "两条 FailedMount 属于同一 Pod 的两条独立 Event，resourceVersion 2528117→2528128 的递增只反映对象版本更新，不能作为因果链；RCA 第1版也未给出任何 supporting 证据。",
+                "supports": [
+                  "3dbe6b3d-67b1-560e-9712-a5093ce69b3b",
+                  "9f58d2ab-8723-5df5-931c-85b89676206f"
+                ],
+                "conflicts": [],
+                "nextChecks": [
+                  "按 Pod 拉取 Event 时间线，比对首次出现时间与 Pod 状态变化时间"
+                ],
+                "missingEvidence": [
+                  "两条证据观测时间戳完全相同，无法建立先后顺序",
+                  "缺少卷名、挂载路径与节点侧证据，无法判断挂载失败是否影响 Pod 就绪"
+                ]
+              },
+              {
+                "key": "node-path-gap-blocks-root-cause",
+                "summary": "RCA 第1版 status=unresolved 且 missing 列出 node-not-ready、node-causal-evidence、node-path，说明节点侧与挂载路径证据缺失是未定根因的主要缺口，而非已排除挂载问题。",
+                "supports": [],
+                "conflicts": [],
+                "nextChecks": [
+                  "补齐节点就绪状态与挂载路径证据后再评估挂载失败的角色"
+                ],
+                "missingEvidence": [
+                  "node-not-ready 证据缺失",
+                  "node-causal-evidence 证据缺失",
+                  "node-path 证据缺失"
+                ]
+              }
+            ],
+            "nextChecks": [
+              "在允许新查询的轮次中，按同一 Pod 6eb76263-66c2-49ce-befc-d842ef473ae2 拉取 Event 时间线，确认两条 FailedMount 的首次/末次出现时间与涉及卷名",
+              "补齐 RCA 第1版 missing 中的 node-not-ready 与 node-path 证据，验证节点就绪状态与挂载路径是否构成可验证链路",
+              "对照 Pod 调度与容器启动时间线，判断挂载失败是故障原因、并发症状还是无关噪声"
+            ],
+            "evidenceRefs": [
+              "3dbe6b3d-67b1-560e-9712-a5093ce69b3b",
+              "9f58d2ab-8723-5df5-931c-85b89676206f"
+            ],
+            "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+            "schemaVersion": "assistant-answer/v1",
+            "degradedSources": [
+              "01a1ab38-fbeb-79be-91c0-8823152c8c9d/analyzer/ops-current（RCA 第1版记录为降级来源）",
+              "01a1ab38-fbeb-79be-91c0-8823152c8c9d/archive（RCA 第1版记录为降级来源）"
+            ],
+            "missingEvidence": [
+              "RCA 第1版 evidenceBundle 的 supporting 与 contradicting 均为空，没有任何支持或反证条目可解释因果",
+              "RCA 第1版 missing 明确列出 node-not-ready、node-causal-evidence、node-path，缺少节点侧因果证据与路径",
+              "两条 FailedMount 证据的 observedFrom/observedTo 完全相同（2026-11-06T00:06:44.0723Z），无法据此建立先后时序，也无法判断哪条是原因",
+              "RCA 第1版 status=unresolved、partial=true，candidates 为空，未形成任何候选根因",
+              "本次任务禁止新指标/日志查询与刷新 RCA，无法补齐节点状态、挂载路径与 Pod 启动时间线"
+            ],
+            "queryResultRefs": []
+          },
+          "conversationId": "01a1bff0-b844-70c2-a4e5-32c7cc5d29af",
+          "turnId": "01a1bff9-4878-75af-8356-e2c226a2f832"
+        },
+        {
+          "schemaVersion": "investigation-job/v3",
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "jobId": "01a1bff5-613b-741f-b699-8a24fd255fea",
+          "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+          "subject": "native:01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f",
+          "triggerRevision": 11,
+          "triggerKind": "manual",
+          "policyVersion": "01a1ae2e-1f32-7277-af0d-5e1923adcf77",
+          "scope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "effectiveScopeDigest": "sha256:e406234cd9d37177a3b9473394cd3ae8fec8a2541da9556c42ed794a85547664",
+          "toolCatalogDigest": "sha256:659167882bab37eed309c69554b9a50b0b1e5bebb2aee953b707f0d7aec45bf4",
+          "state": "partial",
+          "budget": {
+            "toolCalls": 1,
+            "rawQueries": 10,
+            "resultBytes": 41943040,
+            "graphNodes": 8000,
+            "evidenceItems": 4000,
+            "modelRequests": 1,
+            "inputTokens": 524288,
+            "outputTokens": 32768,
+            "modelCostMicros": 0,
+            "durationSeconds": 60,
+            "allowedDataClasses": [
+              "D0",
+              "D1"
+            ]
+          },
+          "budgetReserved": {
+            "toolCalls": 0,
+            "rawQueries": 0,
+            "resultBytes": 0,
+            "graphNodes": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "inputTokens": 0,
+            "outputTokens": 0,
+            "modelCostMicros": 0
+          },
+          "budgetConsumed": {
+            "toolCalls": 1,
+            "rawQueries": 0,
+            "resultBytes": 60778,
+            "graphNodes": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "inputTokens": 0,
+            "outputTokens": 0,
+            "modelCostMicros": 0
+          },
+          "focus": "验证工具额度耗尽：禁止新指标日志查询或命令；只允许历史正式引用。",
+          "admissionDigest": "sha256:59b274a132d0a094773f8b65c684ee2c9acdee883b2d5cc449b3ab9b79b7837b",
+          "expiresAt": "2026-11-09T10:59:11.90147Z",
+          "eventSeq": 6,
+          "nextCallSeq": 0,
+          "result": {
+            "asOf": "2026-11-09T10:58:12.761477624Z",
+            "partial": true,
+            "summary": "本轮已停止，保留已提交的查询事实；未完成的检查没有结论。",
+            "factRefs": [],
+            "warnings": [
+              "BUDGET_EXHAUSTED"
+            ],
+            "answerKind": "unsupported",
+            "entityRefs": [],
+            "hypotheses": [],
+            "nextChecks": [
+              "缩小范围后发起新一轮检查"
+            ],
+            "evidenceRefs": [],
+            "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+            "schemaVersion": "assistant-answer/v1",
+            "degradedSources": [],
+            "missingEvidence": [
+              "remaining_checks_not_completed"
+            ],
+            "queryResultRefs": []
+          },
+          "errorCode": "BUDGET_EXHAUSTED",
+          "conversationId": "01a1bff0-b844-70c2-a4e5-32c7cc5d29af",
+          "turnId": "01a1bff5-613b-741e-9b61-873341e00f06"
+        },
+        {
+          "schemaVersion": "investigation-job/v3",
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "jobId": "01a1bff1-0338-7dc4-a1f4-f7ff333482f2",
+          "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+          "subject": "native:01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f",
+          "triggerRevision": 11,
+          "triggerKind": "manual",
+          "policyVersion": "01a1ae2e-1f32-7277-af0d-5e1923adcf77",
+          "scope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "effectiveScopeDigest": "sha256:e406234cd9d37177a3b9473394cd3ae8fec8a2541da9556c42ed794a85547664",
+          "toolCatalogDigest": "sha256:659167882bab37eed309c69554b9a50b0b1e5bebb2aee953b707f0d7aec45bf4",
+          "state": "partial",
+          "budget": {
+            "toolCalls": 6,
+            "rawQueries": 10,
+            "resultBytes": 41943040,
+            "graphNodes": 8000,
+            "evidenceItems": 4000,
+            "modelRequests": 3,
+            "inputTokens": 524288,
+            "outputTokens": 32768,
+            "modelCostMicros": 0,
+            "durationSeconds": 120,
+            "allowedDataClasses": [
+              "D0",
+              "D1"
+            ]
+          },
+          "budgetReserved": {
+            "toolCalls": 0,
+            "rawQueries": 0,
+            "resultBytes": 0,
+            "graphNodes": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "inputTokens": 0,
+            "outputTokens": 0,
+            "modelCostMicros": 0
+          },
+          "budgetConsumed": {
+            "toolCalls": 2,
+            "rawQueries": 0,
+            "resultBytes": 399155,
+            "graphNodes": 0,
+            "evidenceItems": 100,
+            "modelRequests": 2,
+            "inputTokens": 36677,
+            "outputTokens": 609,
+            "modelCostMicros": 0
+          },
+          "focus": "重点比较两条 FailedMount 归档证据的 resourceVersion；递增不能单独证明因果。",
+          "admissionDigest": "sha256:8881895aa6da036857db16f7c46d2bf461f5d080f894125fb837e4796fe267d0",
+          "expiresAt": "2026-11-09T10:55:25.690738Z",
+          "eventSeq": 17,
+          "nextCallSeq": 0,
+          "result": {
+            "asOf": "2026-11-09T10:53:43.076359003Z",
+            "partial": true,
+            "summary": "无法完成对故障 01a1ae2d-eff0-7664-a10e-d02a701023f4 冻结 RCA 第1版的复盘：实际调用 get_formal_references（rcaRevision=1）返回失败，错误码 SOURCE_DEGRADED，因此没有取得任何 RCA 版本引用、contentDigest 或两条 FailedMount 归档证据的 resourceVersion，无法比较二者。",
+            "factRefs": [],
+            "warnings": [
+              "resourceVersion 递增仅表示对象版本变化，本身不能证明因果；即使取得两条证据，也只能作为时序线索",
+              "未取得数据不等于正常或为零，不能据此推断 FailedMount 已消失或与故障无关",
+              "source_read_failed:get_formal_references:SOURCE_DEGRADED"
+            ],
+            "answerKind": "unsupported",
+            "entityRefs": [],
+            "hypotheses": [],
+            "nextChecks": [
+              "在正式引用来源恢复后，重新调用 get_formal_references(rcaRevision=1) 取得版本与 contentDigest",
+              "取得两条 FailedMount 归档证据后，逐条比对 resourceVersion、时间戳与所属对象，判断是否同一对象、是否同一事件",
+              "补充挂载失败与 Pod 调度/启动时间线的对照，确认是否存在可验证的因果链而非仅版本递增"
+            ],
+            "evidenceRefs": [],
+            "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+            "schemaVersion": "assistant-answer/v1",
+            "degradedSources": [
+              "get_formal_references：SOURCE_DEGRADED（RCA 正式引用读取失败）"
+            ],
+            "missingEvidence": [
+              "get_formal_references(rcaRevision=1) 调用失败，错误码 SOURCE_DEGRADED，未返回 RCA 第1版内容与 contentDigest",
+              "未取得两条 FailedMount 归档证据的 resourceVersion 值，无法进行递增比较",
+              "缺少 RCA 第1版中该故障链的 supports/conflicts/coverage 说明，无法评估因果假设",
+              "本次任务禁止新指标/日志查询与刷新 RCA，无法用其他来源补齐上述缺口"
+            ],
+            "queryResultRefs": []
+          },
+          "conversationId": "01a1bff0-b844-70c2-a4e5-32c7cc5d29af",
+          "turnId": "01a1bff1-0338-7dc3-aaa2-c26189d7d7b0"
+        },
+        {
+          "schemaVersion": "investigation-job/v3",
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "jobId": "01a1bf36-1c75-7bef-8aee-10386a72f79a",
+          "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+          "subject": "native:01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f",
+          "triggerRevision": 11,
+          "triggerKind": "manual",
+          "policyVersion": "01a1ae2e-1f32-7277-af0d-5e1923adcf77",
+          "scope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "effectiveScopeDigest": "sha256:e406234cd9d37177a3b9473394cd3ae8fec8a2541da9556c42ed794a85547664",
+          "toolCatalogDigest": "sha256:659167882bab37eed309c69554b9a50b0b1e5bebb2aee953b707f0d7aec45bf4",
+          "state": "partial",
+          "budget": {
+            "toolCalls": 40,
+            "rawQueries": 10,
+            "resultBytes": 41943040,
+            "graphNodes": 8000,
+            "evidenceItems": 4000,
+            "modelRequests": 8,
+            "inputTokens": 524288,
+            "outputTokens": 32768,
+            "modelCostMicros": 0,
+            "durationSeconds": 600,
+            "allowedDataClasses": [
+              "D0",
+              "D1"
+            ]
+          },
+          "budgetReserved": {
+            "toolCalls": 0,
+            "rawQueries": 0,
+            "resultBytes": 0,
+            "graphNodes": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "inputTokens": 0,
+            "outputTokens": 0,
+            "modelCostMicros": 0
+          },
+          "budgetConsumed": {
+            "toolCalls": 3,
+            "rawQueries": 0,
+            "resultBytes": 293750,
+            "graphNodes": 0,
+            "evidenceItems": 0,
+            "modelRequests": 1,
+            "inputTokens": 21897,
+            "outputTokens": 1226,
+            "modelCostMicros": 0
+          },
+          "focus": "",
+          "admissionDigest": "",
+          "expiresAt": "2026-11-09T07:39:16.919585Z",
+          "eventSeq": 16,
+          "nextCallSeq": 0,
+          "result": {
+            "asOf": "2026-11-09T07:27:43.208165574Z",
+            "partial": true,
+            "summary": "本轮仅按你的要求读取冻结 RCA 第1版（revision=1，historical=true，contentDigest=sha256:d131fc8917122a7c9fd0ed2c661d8d47d28a0cf667ab8edb74b163f4f82f1a35），未做任何新查询或命令；该版本基于 Pod 6eb76263-66c2-49ce-befc-d842ef473ae2 在 2026-11-06T00:05:36Z–00:10:36Z 窗口内的两条 FailedMount 证据，status=unresolved、partial=true、candidates 为空，只能解释观察到的挂载失败，不能确认因果。",
+            "factRefs": [],
+            "warnings": [
+              "本次为历史复盘：RCA 第1版 historical=true，当前 RCA 已推进到 revision=22，第1版内容不代表当前结论",
+              "两条证据的 observedFrom 与 observedTo 相同（2026-11-06T00:06:44.072330915Z 与 2026-11-06T00:06:44.072373956Z），是单点归档观测，不是持续时长",
+              "证据引用仅使用 evidenceRefs 中的 evidenceId，未使用 nativeUID 或 resourceVersion 作为证据标识",
+              "按你的要求未执行任何新查询或命令",
+              "model_answer_incomplete"
+            ],
+            "answerKind": "diagnosis",
+            "entityRefs": [],
+            "formalRefs": [
+              {
+                "kind": "rca",
+                "revision": 1,
+                "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+                "contentDigest": "sha256:d131fc8917122a7c9fd0ed2c661d8d47d28a0cf667ab8edb74b163f4f82f1a35"
+              }
+            ],
+            "hypotheses": [
+              {
+                "key": "pod-volume-mount-failure",
+                "summary": "Pod 6eb76263-66c2-49ce-befc-d842ef473ae2 在 2026-11-06T00:06:44Z 前后出现两次 FailedMount 事件，提示其卷挂载流程失败；但第1版未给出卷名、错误文本或卷侧对象状态，无法确定是卷缺失、绑定冲突还是节点侧挂载问题。",
+                "supports": [
+                  "3dbe6b3d-67b1-560e-9712-a5093ce69b3b",
+                  "9f58d2ab-8723-5df5-931c-85b89676206f"
+                ],
+                "conflicts": [],
+                "nextChecks": [
+                  "读取该 Pod 冻结窗口内的 resource_history 与 resource_changes",
+                  "读取关联 PVC/PV 的当前状态"
+                ],
+                "missingEvidence": [
+                  "卷名与 FailedMount 具体错误消息",
+                  "关联 PVC/PV 的绑定状态与访问模式",
+                  "kubelet 侧挂载日志"
+                ]
+              },
+              {
+                "key": "node-side-contribution",
+                "summary": "第1版 evidenceBundle.missing 明确缺少 node-not-ready、node-causal-evidence 与 node-path，说明节点侧是否参与尚未被检查；这既不能支持也不能排除节点因素。",
+                "supports": [],
+                "conflicts": [],
+                "nextChecks": [
+                  "在授权范围内检查该 Pod 所在节点的 Ready 状态与路径证据"
+                ],
+                "missingEvidence": [
+                  "node-not-ready 观测",
+                  "node-causal-evidence",
+                  "node-path 证据"
+                ]
+              }
+            ],
+            "nextChecks": [
+              "如需继续，可在获得授权后读取该 Pod 在冻结故障窗口内的 resource_history/resource_changes，核对卷相关字段与事件序列",
+              "如需继续，可读取关联 PVC/PV 的当前状态与绑定关系，验证挂载失败是否与卷侧对象相关",
+              "如需继续，可对比 RCA 第1版与当前 revision=22 的差异，确认后续版本是否补充了 node-not-ready 或 node-path 证据"
+            ],
+            "evidenceRefs": [
+              "3dbe6b3d-67b1-560e-9712-a5093ce69b3b",
+              "9f58d2ab-8723-5df5-931c-85b89676206f"
+            ],
+            "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+            "schemaVersion": "assistant-answer/v1",
+            "degradedSources": [
+              "01a1ab38-fbeb-79be-91c0-8823152c8c9d/analyzer/ops-current",
+              "01a1ab38-fbeb-79be-91c0-8823152c8c9d/archive"
+            ],
+            "missingEvidence": [
+              "RCA 第1版 evidenceBundle.missing 明确列出 node-not-ready、node-causal-evidence、node-path 三项缺失，节点侧与存储路径是否参与未被检查",
+              "两条证据仅含 nativeKind=Event、reason=FailedMount、nativeUID、resourceVersion，缺少挂载失败的具体卷名、错误消息与涉及的 PVC/PV 对象",
+              "缺少同一窗口内 Pod 事件序列、卷绑定状态与 kubelet 侧挂载日志，无法区分卷不存在、绑定冲突、权限或多挂载冲突等机制",
+              "RCA 第1版 status=unresolved 且 candidates 为空，无任何已确认根因候选",
+              "按你的要求本轮未执行新查询，上述缺口未做补充验证"
+            ],
+            "queryResultRefs": []
+          },
+          "conversationId": "01a1bf33-f7fd-7124-b954-8fa271850887",
+          "turnId": "01a1bf36-1c75-7bed-bfde-0862c5de8423"
+        },
+        {
+          "schemaVersion": "investigation-job/v3",
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "jobId": "01a1bf34-ae03-70c6-a408-18380f090b1c",
+          "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+          "subject": "native:01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f",
+          "triggerRevision": 11,
+          "triggerKind": "manual",
+          "policyVersion": "01a1ae2e-1f32-7277-af0d-5e1923adcf77",
+          "scope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "effectiveScopeDigest": "sha256:e406234cd9d37177a3b9473394cd3ae8fec8a2541da9556c42ed794a85547664",
+          "toolCatalogDigest": "sha256:659167882bab37eed309c69554b9a50b0b1e5bebb2aee953b707f0d7aec45bf4",
+          "state": "cancelled",
+          "budget": {
+            "toolCalls": 40,
+            "rawQueries": 10,
+            "resultBytes": 41943040,
+            "graphNodes": 8000,
+            "evidenceItems": 4000,
+            "modelRequests": 8,
+            "inputTokens": 524288,
+            "outputTokens": 32768,
+            "modelCostMicros": 0,
+            "durationSeconds": 600,
+            "allowedDataClasses": [
+              "D0",
+              "D1"
+            ]
+          },
+          "budgetReserved": {
+            "toolCalls": 0,
+            "rawQueries": 0,
+            "resultBytes": 0,
+            "graphNodes": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "inputTokens": 0,
+            "outputTokens": 0,
+            "modelCostMicros": 0
+          },
+          "budgetConsumed": {
+            "toolCalls": 0,
+            "rawQueries": 0,
+            "resultBytes": 0,
+            "graphNodes": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "inputTokens": 0,
+            "outputTokens": 0,
+            "modelCostMicros": 0
+          },
+          "focus": "",
+          "admissionDigest": "",
+          "expiresAt": "2026-11-09T07:37:43.109282Z",
+          "eventSeq": 1,
+          "nextCallSeq": 0,
+          "result": {
+            "asOf": "2026-11-09T07:27:43.208165574Z",
+            "partial": true,
+            "summary": "本轮已停止，保留已提交的查询事实；未完成的检查没有结论。",
+            "factRefs": [],
+            "warnings": [
+              "CANCELLED"
+            ],
+            "answerKind": "unsupported",
+            "entityRefs": [],
+            "hypotheses": [],
+            "nextChecks": [
+              "缩小范围后发起新一轮检查"
+            ],
+            "evidenceRefs": [],
+            "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+            "schemaVersion": "assistant-answer/v1",
+            "degradedSources": [],
+            "missingEvidence": [
+              "remaining_checks_not_completed"
+            ],
+            "queryResultRefs": []
+          },
+          "errorCode": "CANCELLED",
+          "conversationId": "01a1bf33-f7fd-7124-b954-8fa271850887",
+          "turnId": "01a1bf34-ae03-70c5-aac0-fca67d146f59"
+        },
+        {
+          "schemaVersion": "investigation-job/v3",
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "jobId": "01a1bf33-f90c-70a9-9355-f4b6885dad4f",
+          "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+          "subject": "native:01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f",
+          "triggerRevision": 11,
+          "triggerKind": "manual",
+          "policyVersion": "01a1ae2e-1f32-7277-af0d-5e1923adcf77",
+          "scope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "effectiveScopeDigest": "sha256:e406234cd9d37177a3b9473394cd3ae8fec8a2541da9556c42ed794a85547664",
+          "toolCatalogDigest": "sha256:659167882bab37eed309c69554b9a50b0b1e5bebb2aee953b707f0d7aec45bf4",
+          "state": "partial",
+          "budget": {
+            "toolCalls": 40,
+            "rawQueries": 10,
+            "resultBytes": 41943040,
+            "graphNodes": 8000,
+            "evidenceItems": 4000,
+            "modelRequests": 8,
+            "inputTokens": 524288,
+            "outputTokens": 32768,
+            "modelCostMicros": 0,
+            "durationSeconds": 600,
+            "allowedDataClasses": [
+              "D0",
+              "D1"
+            ]
+          },
+          "budgetReserved": {
+            "toolCalls": 0,
+            "rawQueries": 0,
+            "resultBytes": 0,
+            "graphNodes": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "inputTokens": 0,
+            "outputTokens": 0,
+            "modelCostMicros": 0
+          },
+          "budgetConsumed": {
+            "toolCalls": 2,
+            "rawQueries": 0,
+            "resultBytes": 342589,
+            "graphNodes": 0,
+            "evidenceItems": 2,
+            "modelRequests": 2,
+            "inputTokens": 37754,
+            "outputTokens": 1303,
+            "modelCostMicros": 0
+          },
+          "focus": "",
+          "admissionDigest": "",
+          "expiresAt": "2026-11-09T07:36:56.781784Z",
+          "eventSeq": 17,
+          "nextCallSeq": 0,
+          "result": {
+            "asOf": "2026-11-09T07:27:08.342601162Z",
+            "partial": true,
+            "summary": "已按你的要求只读取冻结的 RCA 第1版（revision=1，historical=true，当前已到 revision=22），未执行任何新查询或命令。该版本基于 Pod 6eb76263-66c2-49ce-befc-d842ef473ae2 在 2026-11-06T00:05:36Z–00:10:36Z 窗口内的两条 FailedMount Event 证据，状态为 unresolved、partial=true，候选根因列表为空，因此只能解释观察到的挂载失败，不能确认因果。",
+            "factRefs": [],
+            "warnings": [
+              "本次为历史复盘：RCA 第1版为 historical=true，当前 RCA 已推进到 revision=22，第1版内容不代表当前结论",
+              "两条证据的 observedFrom 与 observedTo 相同（2026-11-06T00:06:44.072330915Z 与 2026-11-06T00:06:44.072373956Z），是单点归档观测，不是持续时长",
+              "按你的要求未执行任何新查询或命令，因此未对上述缺口做补充验证",
+              "证据引用仅使用 evidenceRefs 中的 evidenceId，未使用 nativeUID 或 resourceVersion 作为证据标识",
+              "model_answer_incomplete"
+            ],
+            "answerKind": "diagnosis",
+            "entityRefs": [],
+            "formalRefs": [
+              {
+                "kind": "rca",
+                "revision": 1,
+                "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+                "contentDigest": "sha256:d131fc8917122a7c9fd0ed2c661d8d47d28a0cf667ab8edb74b163f4f82f1a35"
+              }
+            ],
+            "hypotheses": [
+              {
+                "key": "pod-volume-mount-failure",
+                "summary": "Pod 6eb76263-66c2-49ce-befc-d842ef473ae2 在 2026-11-06T00:06:44Z 前后出现两次 FailedMount 事件，提示其卷挂载流程失败；但第1版未给出卷名、错误文本或卷侧对象状态，无法确定是卷缺失、绑定冲突还是节点侧挂载问题。",
+                "supports": [
+                  "3dbe6b3d-67b1-560e-9712-a5093ce69b3b",
+                  "9f58d2ab-8723-5df5-931c-85b89676206f"
+                ],
+                "conflicts": [],
+                "nextChecks": [
+                  "读取该 Pod 冻结窗口内的 resource_history 与 resource_changes",
+                  "读取关联 PVC/PV 的当前状态"
+                ],
+                "missingEvidence": [
+                  "卷名与 FailedMount 具体错误消息",
+                  "关联 PVC/PV 的绑定状态与访问模式",
+                  "kubelet 侧挂载日志"
+                ]
+              },
+              {
+                "key": "node-side-contribution",
+                "summary": "第1版 evidenceBundle.missing 明确缺少 node-not-ready、node-causal-evidence 与 node-path，说明节点侧是否参与尚未被检查；这既不能支持也不能排除节点因素。",
+                "supports": [],
+                "conflicts": [],
+                "nextChecks": [
+                  "在授权范围内检查该 Pod 所在节点的 Ready 状态与路径证据"
+                ],
+                "missingEvidence": [
+                  "node-not-ready 观测",
+                  "node-causal-evidence",
+                  "node-path 证据"
+                ]
+              }
+            ],
+            "nextChecks": [
+              "如需继续，可在获得授权后读取该 Pod 在冻结故障窗口内的 resource_history/resource_changes，核对卷相关字段与事件序列",
+              "如需继续，可读取关联 PVC/PV 的当前状态与绑定关系，验证挂载失败是否与卷侧对象相关",
+              "如需继续，可对比 RCA 第1版与当前 revision=22 的差异，确认后续版本是否补充了 node-not-ready 或 node-path 证据"
+            ],
+            "evidenceRefs": [
+              "3dbe6b3d-67b1-560e-9712-a5093ce69b3b",
+              "9f58d2ab-8723-5df5-931c-85b89676206f"
+            ],
+            "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+            "schemaVersion": "assistant-answer/v1",
+            "degradedSources": [
+              "01a1ab38-fbeb-79be-91c0-8823152c8c9d/analyzer/ops-current",
+              "01a1ab38-fbeb-79be-91c0-8823152c8c9d/archive"
+            ],
+            "missingEvidence": [
+              "RCA 第1版 evidenceBundle.missing 明确列出 node-not-ready、node-causal-evidence、node-path 三项缺失，无法判断节点侧或存储路径是否为触发因素",
+              "两条证据仅含 nativeKind=Event、reason=FailedMount、nativeUID、resourceVersion，未包含挂载失败的具体卷名、错误消息或涉及的 PVC/PV 对象",
+              "缺少同一窗口内 Pod 事件序列、卷绑定状态与 kubelet 侧挂载日志，无法区分卷不存在、绑定冲突、权限或多挂载冲突等具体机制",
+              "RCA 第1版 status=unresolved 且 candidates 为空，无任何已确认根因候选"
+            ],
+            "queryResultRefs": []
+          },
+          "conversationId": "01a1bf33-f7fd-7124-b954-8fa271850887",
+          "turnId": "01a1bf33-f90c-70a8-8966-f4bd0a829931"
+        },
+        {
+          "schemaVersion": "investigation-job/v3",
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "jobId": "01a1bf2e-8baa-77ac-860c-17a519ceb042",
+          "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+          "subject": "native:01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f",
+          "triggerRevision": 11,
+          "triggerKind": "manual",
+          "policyVersion": "01a1ae2e-1f32-7277-af0d-5e1923adcf77",
+          "scope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "effectiveScopeDigest": "sha256:e406234cd9d37177a3b9473394cd3ae8fec8a2541da9556c42ed794a85547664",
+          "toolCatalogDigest": "sha256:659167882bab37eed309c69554b9a50b0b1e5bebb2aee953b707f0d7aec45bf4",
+          "state": "partial",
+          "budget": {
+            "toolCalls": 40,
+            "rawQueries": 10,
+            "resultBytes": 41943040,
+            "graphNodes": 8000,
+            "evidenceItems": 4000,
+            "modelRequests": 8,
+            "inputTokens": 524288,
+            "outputTokens": 32768,
+            "modelCostMicros": 0,
+            "durationSeconds": 600,
+            "allowedDataClasses": [
+              "D0",
+              "D1"
+            ]
+          },
+          "budgetReserved": {
+            "toolCalls": 0,
+            "rawQueries": 0,
+            "resultBytes": 0,
+            "graphNodes": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "inputTokens": 0,
+            "outputTokens": 0,
+            "modelCostMicros": 0
+          },
+          "budgetConsumed": {
+            "toolCalls": 2,
+            "rawQueries": 0,
+            "resultBytes": 343744,
+            "graphNodes": 0,
+            "evidenceItems": 2,
+            "modelRequests": 2,
+            "inputTokens": 37976,
+            "outputTokens": 1366,
+            "modelCostMicros": 0
+          },
+          "focus": "",
+          "admissionDigest": "",
+          "expiresAt": "2026-11-09T07:31:01.100398Z",
+          "eventSeq": 17,
+          "nextCallSeq": 0,
+          "result": {
+            "asOf": "2026-11-09T07:21:12.103294635Z",
+            "partial": true,
+            "summary": "已按 rcaRevision=1 读取故障 01a1ae2d-eff0-7664-a10e-d02a701023f4 的冻结 RCA 第 1 版（contentDigest sha256:d131fc8917122a7c9fd0ed2c661d8d47d28a0cf667ab8edb74b163f4f82f1a35，historical=true，当前 RCA 已到 revision 22）：归档快照仅含两条 Pod 6eb76263-66c2-49ce-befc-d842ef473ae2 的 Event 证据，reason 均为 FailedMount，resourceVersion 分别为 2528117 与 2528128，状态 unresolved/partial，无候选根因。",
+            "factRefs": [],
+            "warnings": [
+              "引用的是归档历史版本 RCA 1，不代表当前 RCA（revision 22）结论",
+              "两条证据的 sourceRevision 均为 1，而当前来源注册版本为 2，归档证据与当前来源版本不一致",
+              "证据 observedFrom/observedTo 均为 2026-11-06T00:06:44Z 附近，属归档回放（archived_verified），非实时观测",
+              "未执行任何新查询、未刷新 RCA、未执行命令；缺失观测不能推断为正常",
+              "model_answer_incomplete"
+            ],
+            "answerKind": "diagnosis",
+            "entityRefs": [],
+            "formalRefs": [
+              {
+                "kind": "rca",
+                "revision": 1,
+                "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+                "contentDigest": "sha256:d131fc8917122a7c9fd0ed2c661d8d47d28a0cf667ab8edb74b163f4f82f1a35"
+              }
+            ],
+            "hypotheses": [
+              {
+                "key": "pod-volume-mount-failure",
+                "summary": "Pod 6eb76263-66c2-49ce-befc-d842ef473ae2 在 2026-11-06T00:06:44Z 附近发生卷挂载失败（FailedMount），两次 Event 的 resourceVersion 递增（2528117→2528128）提示同一失败被重复记录；仅为归档观察，未确认因果。",
+                "supports": [
+                  "3dbe6b3d-67b1-560e-9712-a5093ce69b3b",
+                  "9f58d2ab-8723-5df5-931c-85b89676206f"
+                ],
+                "conflicts": [],
+                "nextChecks": [
+                  "在允许新查询时读取该 Pod 的当前状态与卷绑定关系"
+                ],
+                "missingEvidence": [
+                  "挂载失败涉及的具体卷/PVC 与错误消息",
+                  "Pod 当时的 phase 与容器状态",
+                  "节点侧 kubelet/CSI 相关证据"
+                ]
+              },
+              {
+                "key": "node-or-path-contributing-factor",
+                "summary": "RCA 1 的 missing 列表指向 node-not-ready、node-causal-evidence、node-path，提示节点或存储路径侧因素可能参与，但归档中无任何支持或反证证据，无法评估。",
+                "supports": [],
+                "conflicts": [],
+                "nextChecks": [
+                  "在允许新查询时检查承载该 Pod 的节点 Ready 状态与存储路径可达性"
+                ],
+                "missingEvidence": [
+                  "node-not-ready 观测",
+                  "node-causal-evidence",
+                  "node-path 证据"
+                ]
+              }
+            ],
+            "nextChecks": [
+              "如需当前结论，另行按授权读取当前 RCA 版本（revision 22）的正式引用，而非归档 revision 1",
+              "在允许新查询时，针对 Pod 6eb76263-66c2-49ce-befc-d842ef473ae2 补齐 node-not-ready、node-causal-evidence、node-path 三类缺失证据",
+              "核对来源注册版本 1→2 的变更内容，确认归档证据是否仍与当前来源语义一致"
+            ],
+            "evidenceRefs": [
+              "3dbe6b3d-67b1-560e-9712-a5093ce69b3b",
+              "9f58d2ab-8723-5df5-931c-85b89676206f"
+            ],
+            "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+            "schemaVersion": "assistant-answer/v1",
+            "degradedSources": [
+              "01a1ab38-fbeb-79be-91c0-8823152c8c9d/analyzer/ops-current",
+              "01a1ab38-fbeb-79be-91c0-8823152c8c9d/archive"
+            ],
+            "missingEvidence": [
+              "冻结 RCA 1 的 evidenceBundle.missing 明确列出 node-not-ready、node-causal-evidence、node-path，缺少节点侧与路径侧证据",
+              "归档证据仅两条 Event 事实（reason/resourceVersion），未包含挂载失败的具体卷、错误消息或 Pod 状态细节",
+              "RCA 1 的 supporting 与 contradicting 均为空，无支持性因果证据，也无反证",
+              "RCA 1 记录 degradedSources：01a1ab38-fbeb-79be-91c0-8823152c8c9d/analyzer/ops-current 与 01a1ab38-fbeb-79be-91c0-8823152c8c9d/archive，来源质量受限",
+              "本次按指令未做新指标/日志查询，也未刷新 RCA，因此无法补充当前状态观测"
+            ],
+            "queryResultRefs": []
+          },
+          "conversationId": "01a1bf2d-f9dc-7047-8dd9-0359309d184f",
+          "turnId": "01a1bf2e-8baa-77ab-be09-044dc1c5b03d"
+        },
+        {
+          "schemaVersion": "investigation-job/v3",
+          "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+          "jobId": "01a1be1b-4ad6-70a4-989d-0d7e2b84dc4d",
+          "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+          "subject": "native:01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f",
+          "triggerRevision": 11,
+          "triggerKind": "manual",
+          "policyVersion": "01a1ae2e-1f32-7277-af0d-5e1923adcf77",
+          "scope": {
+            "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+            "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+            "namespaces": [
+              "ops-current"
+            ],
+            "resources": [],
+            "clusterScoped": false,
+            "authorizationRevision": "sha256:6f2b197df1d98167301a10f0113323570f48872d5a73f397965aafdf7ba9dd14"
+          },
+          "effectiveScopeDigest": "sha256:e406234cd9d37177a3b9473394cd3ae8fec8a2541da9556c42ed794a85547664",
+          "toolCatalogDigest": "sha256:659167882bab37eed309c69554b9a50b0b1e5bebb2aee953b707f0d7aec45bf4",
+          "state": "partial",
+          "budget": {
+            "toolCalls": 40,
+            "rawQueries": 10,
+            "resultBytes": 41943040,
+            "graphNodes": 8000,
+            "evidenceItems": 4000,
+            "modelRequests": 8,
+            "inputTokens": 524288,
+            "outputTokens": 32768,
+            "modelCostMicros": 0,
+            "durationSeconds": 600,
+            "allowedDataClasses": [
+              "D0",
+              "D1"
+            ]
+          },
+          "budgetReserved": {
+            "toolCalls": 0,
+            "rawQueries": 0,
+            "resultBytes": 0,
+            "graphNodes": 0,
+            "evidenceItems": 0,
+            "modelRequests": 0,
+            "inputTokens": 0,
+            "outputTokens": 0,
+            "modelCostMicros": 0
+          },
+          "budgetConsumed": {
+            "toolCalls": 2,
+            "rawQueries": 0,
+            "resultBytes": 343834,
+            "graphNodes": 0,
+            "evidenceItems": 2,
+            "modelRequests": 2,
+            "inputTokens": 37998,
+            "outputTokens": 1358,
+            "modelCostMicros": 0
+          },
+          "focus": "",
+          "admissionDigest": "",
+          "expiresAt": "2026-11-09T02:30:22.104049Z",
+          "eventSeq": 17,
+          "nextCallSeq": 0,
+          "result": {
+            "asOf": "2026-11-09T02:20:34.460161004Z",
+            "partial": true,
+            "summary": "已按 rcaRevision=1 读取故障 01a1ae2d-eff0-7664-a10e-d02a701023f4 的冻结 RCA 第 1 版（contentDigest sha256:d131fc8917122a7c9fd0ed2c661d8d47d28a0cf667ab8edb74b163f4f82f1a35，historical=true，当前版本为 22）；该版状态为 unresolved、partial=true，candidates 为空，归档证据仅两条同 Pod 的 FailedMount Event（resourceVersion 2528117 与 2528128），因此只能说明挂载失败被观察到，不能确认根因。",
+            "factRefs": [],
+            "warnings": [
+              "RCA 1 为历史版本（historical=true），当前 RCA 版本为 22；本回答仅复述第 1 版冻结内容，不代表当前结论",
+              "archivedEvidence 中两条 Event 的 observedFrom/observedTo 均为 2026-11-06T00:06:44Z 的同一时刻，属归档快照观测，非持续观测",
+              "来源注册当前版本为 2，而归档证据的 sourceRevision 为 1，二者不可混用",
+              "按指令未刷新 RCA、未执行命令、未发起新指标或日志查询",
+              "model_answer_incomplete"
+            ],
+            "answerKind": "diagnosis",
+            "entityRefs": [],
+            "formalRefs": [
+              {
+                "kind": "rca",
+                "revision": 1,
+                "incidentId": "01a1ae2d-eff0-7664-a10e-d02a701023f4",
+                "contentDigest": "sha256:d131fc8917122a7c9fd0ed2c661d8d47d28a0cf667ab8edb74b163f4f82f1a35"
+              }
+            ],
+            "hypotheses": [
+              {
+                "key": "pod-volume-mount-failure",
+                "summary": "Pod 6eb76263-66c2-49ce-befc-d842ef473ae2 在 2026-11-06T00:06:44Z 前后出现两次 FailedMount 事件（resourceVersion 2528117、2528128），提示卷挂载环节异常；但 RCA 1 未给出候选根因，也无节点或路径侧证据，因果未确认。",
+                "supports": [
+                  "3dbe6b3d-67b1-560e-9712-a5093ce69b3b",
+                  "9f58d2ab-8723-5df5-931c-85b89676206f"
+                ],
+                "conflicts": [],
+                "nextChecks": [
+                  "读取该 Pod 在故障窗口内的卷与事件序列",
+                  "检查对应节点就绪状态与存储路径可达性"
+                ],
+                "missingEvidence": [
+                  "node-not-ready",
+                  "node-causal-evidence",
+                  "node-path",
+                  "存储/CSI 侧观测"
+                ]
+              },
+              {
+                "key": "node-or-path-side-cause",
+                "summary": "RCA 1 的 missing 列表指向节点未就绪与节点路径证据缺失，挂载失败可能来自节点或存储路径侧；当前无任何支持或反证，仅为待验证假设。",
+                "supports": [],
+                "conflicts": [],
+                "nextChecks": [
+                  "在授权窗口内查询节点就绪与路径相关证据",
+                  "对比当前 RCA 版本 22 是否已补齐该链路"
+                ],
+                "missingEvidence": [
+                  "node-not-ready",
+                  "node-path",
+                  "节点与存储路径的独立观测"
+                ]
+              }
+            ],
+            "nextChecks": [
+              "如需当前结论，另行读取当前 RCA 版本 22 的正式引用，与第 1 版对比差异",
+              "在获得授权的新窗口内补充节点就绪状态与存储路径证据，以填补 node-not-ready、node-path 缺口",
+              "核对 Pod 6eb76263-66c2-49ce-befc-d842ef473ae2 的卷挂载配置与事件后续序列，确认 FailedMount 是否持续"
+            ],
+            "evidenceRefs": [
+              "3dbe6b3d-67b1-560e-9712-a5093ce69b3b",
+              "9f58d2ab-8723-5df5-931c-85b89676206f"
+            ],
+            "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+            "schemaVersion": "assistant-answer/v1",
+            "degradedSources": [
+              "01a1ab38-fbeb-79be-91c0-8823152c8c9d/analyzer/ops-current",
+              "01a1ab38-fbeb-79be-91c0-8823152c8c9d/archive"
+            ],
+            "missingEvidence": [
+              "RCA 1 的 evidenceBundle.missing 明确列出 node-not-ready、node-causal-evidence、node-path，缺少节点侧与路径侧因果证据",
+              "RCA 1 的 supporting 与 contradicting 均为空，无支持性证据也无反证，无法区分挂载失败的具体成因（存储、CSI、节点或配置）",
+              "RCA 1 的 degradedSources 含 01a1ab38-fbeb-79be-91c0-8823152c8c9d/analyzer/ops-current 与 01a1ab38-fbeb-79be-91c0-8823152c8c9d/archive，归档来源降级，覆盖不完整",
+              "本次为冻结复盘，按指令未做新的指标/日志查询，故无当前时段的独立观测"
+            ],
+            "queryResultRefs": []
+          },
+          "conversationId": "01a1be1b-2a19-73ea-b2c4-60b099f655b1",
+          "turnId": "01a1be1b-4ad6-70a3-be11-ee53cbbb8bb4"
+        }
+      ],
+      "meta": {
+        "nextCursor": null
+      },
+      "requestId": "01a1c37d-8e7b-7ab0-ae1c-9800a1f74a2f"
+    }
+  }
+]

@@ -1,0 +1,61 @@
+{
+  "submitStatus": 202,
+  "turn": {
+    "turnId": "01a1c37c-af8a-719b-9c3a-897bef8e9d74",
+    "conversationId": "01a1bff0-b844-70c2-a4e5-32c7cc5d29af",
+    "jobId": "01a1c37c-af8a-719c-8873-afad97051c7b",
+    "parentTurnId": "01a1bffa-f2dc-7a96-afba-c54eb0ece1d6",
+    "state": "queued",
+    "createdAt": "2026-11-10T03:24:50.960297Z",
+    "conversationRevision": 6,
+    "focus": "公开工作台真实停止确认验收，保留已经提交的事实。",
+    "budget": {
+      "durationSeconds": 120,
+      "toolCalls": 6,
+      "rawQueries": 10,
+      "resultBytes": 41943040,
+      "graphNodes": 8000,
+      "evidenceItems": 4000,
+      "modelRequests": 3,
+      "inputTokens": 524288,
+      "outputTokens": 32768,
+      "modelCostMicros": 0,
+      "consumed": {
+        "toolCalls": 0,
+        "rawQueries": 0,
+        "resultBytes": 0,
+        "graphNodes": 0,
+        "evidenceItems": 0,
+        "modelRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "modelCostMicros": 0
+      }
+    }
+  },
+  "dismissedRequests": 0,
+  "cancelRequestCount": 1,
+  "stopStatus": 200,
+  "writes": [
+    {
+      "method": "POST",
+      "path": "/api/v1/assistant/conversations/01a1bff0-b844-70c2-a4e5-32c7cc5d29af/messages",
+      "body": {
+        "message": "仅复盘同一故障冻结 RCA 第1版，实际调用 get_formal_references(rcaRevision=1)，解释证据限制；禁止刷新 RCA、新指标日志查询和执行命令。",
+        "expectedConversationRevision": 5,
+        "parentTurnId": "01a1bffa-f2dc-7a96-afba-c54eb0ece1d6",
+        "focus": "公开工作台真实停止确认验收，保留已经提交的事实。",
+        "budgetTightening": {
+          "toolCalls": 6,
+          "modelRequests": 3,
+          "durationSeconds": 120
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/assistant/turns/01a1c37c-af8a-719b-9c3a-897bef8e9d74:cancel",
+      "body": {}
+    }
+  ]
+}
