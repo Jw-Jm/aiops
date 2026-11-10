@@ -98,7 +98,8 @@ def serve(config):
             except Exception as error:
                 if isinstance(error, ModelCallError):
                     print("investigator-model-failure", error.kind, error.provider_failure_kind or "", file=sys.stderr)
-                for frame in traceback.extract_tb(error.__traceback__):print("investigator-failure",type(error).__name__,frame.filename,frame.lineno,file=sys.stderr)
+                from .failure_diagnostics import failure_frames
+                for frame in failure_frames(error):print("investigator-failure",*frame,file=sys.stderr)
                 # Static ModelCallError categories carry no provider response or credentials.
                 code=error.kind if isinstance(error, ModelCallError) else "INVESTIGATION_FAILED"
                 self.respond(503,{"errorCode":code})
