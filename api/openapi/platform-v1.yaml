@@ -6564,6 +6564,12 @@ paths:
           - cancelled
           - execution_unknown
           type: string
+      - description: Literal case-insensitive search in execution ID, incident ID, submitter and target canonical ID. Cursor is bound to this search and state.
+        in: query
+        name: q
+        schema:
+          type: string
+          maxLength: 256
       responses:
         '200':
           content:

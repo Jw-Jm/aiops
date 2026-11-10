@@ -16,6 +16,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
+	"unicode/utf8"
 )
 
 type ActionHandlers struct {
@@ -34,6 +36,8 @@ type executionListCursor struct {
 	Subject string    `json:"subject"`
 	Before  uuid.UUID `json:"before"`
 	Expires int64     `json:"expires"`
+	State   string    `json:"state,omitempty"`
+	Query   string    `json:"q,omitempty"`
 }
 
 func decodeAction(r *http.Request, v any) error {
@@ -177,7 +181,7 @@ func (h *ActionHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 			limit := 20
 			for k, v := range r.URL.Query() {
-				if (k != "cursor" && k != "limit" && k != "state") || len(v) != 1 {
+				if (k != "cursor" && k != "limit" && k != "state" && k != "q") || len(v) != 1 {
 					fail(action.ErrInvalid)
 					return
 				}
@@ -187,7 +191,8 @@ func (h *ActionHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				limit, err = strconv.Atoi(v)
 			}
 			state := r.URL.Query().Get("state")
-			if err != nil || limit < 1 || limit > 50 || (state != "" && !executionListStates[state]) {
+			query := strings.TrimSpace(r.URL.Query().Get("q"))
+			if err != nil || !utf8.ValidString(query) || utf8.RuneCountInString(query) > 256 || strings.IndexFunc(query, unicode.IsControl) >= 0 || limit < 1 || limit > 50 || (state != "" && !executionListStates[state]) {
 				fail(action.ErrInvalid)
 				return
 			}
@@ -199,7 +204,7 @@ func (h *ActionHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				if valid {
 					b, e := base64.RawURLEncoding.DecodeString(parts[0])
 					sig, se := base64.RawURLEncoding.DecodeString(parts[1])
-					valid = e == nil && se == nil && ed25519.Verify(h.CursorKey.Public().(ed25519.PublicKey), b, sig) && json.Unmarshal(b, &c) == nil && c.Tenant == a.TenantID && c.Subject == a.Subject
+					valid = e == nil && se == nil && ed25519.Verify(h.CursorKey.Public().(ed25519.PublicKey), b, sig) && json.Unmarshal(b, &c) == nil && c.Tenant == a.TenantID && c.Subject == a.Subject && c.State == state && c.Query == query
 				}
 				if !valid {
 					fail(action.ErrDenied)
@@ -211,7 +216,7 @@ func (h *ActionHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 				before = &c.Before
 			}
-			page, last, err := h.Service.ListExecutions(r.Context(), a, before, state, limit)
+			page, last, err := h.Service.ListExecutions(r.Context(), a, before, state, query, limit)
 			if err != nil {
 				fail(err)
 				return
@@ -226,7 +231,7 @@ func (h *ActionHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					fail(action.ErrInvalid)
 					return
 				}
-				b, _ := json.Marshal(executionListCursor{a.TenantID, a.Subject, *last, time.Now().Add(10 * time.Minute).Unix()})
+				b, _ := json.Marshal(executionListCursor{Tenant: a.TenantID, Subject: a.Subject, Before: *last, Expires: time.Now().Add(10 * time.Minute).Unix(), State: state, Query: query})
 				next = base64.RawURLEncoding.EncodeToString(b) + "." + base64.RawURLEncoding.EncodeToString(ed25519.Sign(h.CursorKey, b))
 			}
 			writeJSON(w, 200, map[string]any{"data": data, "meta": map[string]any{"nextCursor": next}, "requestId": a.RequestID})

@@ -20,4 +20,9 @@ limit?: number;
  * Exact state filter.
  */
 state?: ListCommandExecutionsState;
+/**
+ * Literal case-insensitive search in execution ID, incident ID, submitter and target canonical ID. Cursor is bound to this search and state.
+ * @maxLength 256
+ */
+q?: string;
 };

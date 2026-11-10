@@ -59,7 +59,7 @@ export function FormalReferenceView({
           {query.data && <Details value={query.data.data.metadata} />}
         </QueryState>
         <Link
-          to={`/incidents/${encodeURIComponent(refValue.incidentId)}?tab=rca`}
+          to={`/events/incidents/${encodeURIComponent(refValue.incidentId)}?tab=rca`}
         >
           打开 Incident 当前工作区
         </Link>

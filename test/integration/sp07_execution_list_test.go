@@ -86,30 +86,40 @@ func TestSP07ExecutionListFiltersByAuthorization(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	page, next, err := service.ListExecutions(ctx, actor, nil, "", 1)
+	page, next, err := service.ListExecutions(ctx, actor, nil, "", "", 1)
 	if err != nil {
 		t.Fatalf("list: %T %[1]v", err)
 	}
 	if len(page) != 1 || page[0].ID != newer.ID || next == nil {
 		t.Fatalf("first page %v next %v", page, next)
 	}
-	rest, next, err := service.ListExecutions(ctx, actor, next, "", 1)
+	rest, next, err := service.ListExecutions(ctx, actor, next, "", "", 1)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(rest) != 1 || rest[0].ID != older.ID || next != nil {
 		t.Fatalf("second page %v next %v", rest, next)
 	}
-	prepared, _, err := service.ListExecutions(ctx, actor, nil, "prepared", 10)
+	prepared, _, err := service.ListExecutions(ctx, actor, nil, "prepared", "", 10)
 	if err != nil || len(prepared) != 2 {
 		t.Fatalf("state filter %v %v", prepared, err)
 	}
-	succeeded, _, err := service.ListExecutions(ctx, actor, nil, "succeeded", 10)
+	succeeded, _, err := service.ListExecutions(ctx, actor, nil, "succeeded", "", 10)
 	if err != nil || len(succeeded) != 0 {
 		t.Fatalf("terminal filter %v %v", succeeded, err)
 	}
+	for _, query := range []string{newer.ID.String(), target, "sp07-list-operator", incidentID.String()} {
+		found, _, e := service.ListExecutions(ctx, actor, nil, "", query, 10)
+		if e != nil || len(found) == 0 {
+			t.Fatalf("search %q: %d %v", query, len(found), e)
+		}
+	}
+	missing, _, e := service.ListExecutions(ctx, actor, nil, "", "%_ no wildcard", 10)
+	if e != nil || len(missing) != 0 {
+		t.Fatalf("literal search: %v %v", missing, e)
+	}
 	stranger := auth.RequestContext{TenantID: b.TenantID, Subject: "sp07-list-stranger", Roles: []auth.Role{auth.Operator}, TokenExpiresAt: time.Now().Add(time.Hour)}
-	hidden, next, err := service.ListExecutions(ctx, stranger, nil, "", 10)
+	hidden, next, err := service.ListExecutions(ctx, stranger, nil, "", "", 10)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -145,6 +155,11 @@ func TestSP07ExecutionListFiltersByAuthorization(t *testing.T) {
 	meta, _ = body["meta"].(map[string]any)
 	if len(data) != 1 || meta["nextCursor"] != nil {
 		t.Fatalf("http second page %v meta %v", data, meta)
+	}
+	for _, suffix := range []string{"&state=prepared", "&q=node-list"} {
+		if code, _ := respond("/api/v1/command-executions?limit=1&cursor="+cursor+suffix, actor); code != 403 {
+			t.Fatalf("cursor filter switch: %d", code)
+		}
 	}
 	if status, _ = respond("/api/v1/command-executions?state=bogus", actor); status != 400 {
 		t.Fatalf("bogus state %d", status)

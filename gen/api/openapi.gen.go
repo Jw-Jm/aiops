@@ -6132,6 +6132,9 @@ type ListCommandExecutionsParams struct {
 
 	// State Exact state filter.
 	State *ListCommandExecutionsParamsState `form:"state,omitempty" json:"state,omitempty"`
+
+	// Q Literal case-insensitive search in execution ID, incident ID, submitter and target canonical ID. Cursor is bound to this search and state.
+	Q *string `form:"q,omitempty" json:"q,omitempty"`
 }
 
 // ListCommandExecutionsParamsState defines parameters for ListCommandExecutions.
@@ -15096,6 +15099,19 @@ func (siw *ServerInterfaceWrapper) ListCommandExecutions(w http.ResponseWriter, 
 			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "state"})
 		} else {
 			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "state", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "q" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "q", r.URL.Query(), &params.Q, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "q"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "q", Err: err})
 		}
 		return
 	}

@@ -12,7 +12,10 @@ import (
 	"ops-platform/internal/graph"
 	"ops-platform/internal/persistence"
 	"slices"
+	"strings"
 	"time"
+	"unicode"
+	"unicode/utf8"
 )
 
 type PublishProfileRequest struct {
@@ -102,6 +105,7 @@ func (s Service) RetireProfile(ctx context.Context, a auth.RequestContext, id uu
 		return complete(ctx, tx, d, map[string]any{"status": "retired"}, 200)
 	})
 }
+
 const executionColumns = `execution_id,binding,authority,request_digest,state,suggestion_match,comparator_version,exit_code,output_bytes,output_truncated,post_check,created_at,risk_acknowledgement_id,policy_decision_id,claimed_at,completed_at,output_archive_ref,output_digest,output_previews,post_checked_at,COALESCE((SELECT (content->>'iteration')::int FROM action.plans WHERE tenant_id=$1 AND action_plan_id=(action.executions.binding->>'actionPlanId')::uuid),1),(SELECT content->>'suggestedCommand' FROM action.plans WHERE tenant_id=$1 AND action_plan_id=(action.executions.binding->>'actionPlanId')::uuid),step_up_session_id,step_up_proof_id,step_up_operation,step_up_binding_digest,step_up_expires_at`
 
 type executionScanner interface {
@@ -148,14 +152,18 @@ func executionTx(ctx context.Context, tx pgx.Tx, tenant, id uuid.UUID) (Executio
 // ListExecutions returns one tenant-wide page newest first. Rows the caller's
 // effective scope cannot read are skipped, never leaked; the keyset cursor is
 // the last returned execution id, so hidden rows are re-scanned on later pages.
-func (s Service) ListExecutions(ctx context.Context, a auth.RequestContext, before *uuid.UUID, state string, limit int) ([]Execution, *uuid.UUID, error) {
+func (s Service) ListExecutions(ctx context.Context, a auth.RequestContext, before *uuid.UUID, state string, query string, limit int) ([]Execution, *uuid.UUID, error) {
+	query = strings.TrimSpace(query)
+	if !utf8.ValidString(query) || utf8.RuneCountInString(query) > 256 || strings.IndexFunc(query, unicode.IsControl) >= 0 || limit < 1 || limit > 50 {
+		return nil, nil, ErrInvalid
+	}
 	out := []Execution{}
 	var next *uuid.UUID
 	err := s.with(ctx, a, func(tx pgx.Tx) error {
 		scopes := map[string]graph.Scope{}
 		cursor := before
 		for len(out) < limit {
-			rows, err := tx.Query(ctx, `SELECT `+executionColumns+` FROM action.executions WHERE tenant_id=$1 AND ($2::uuid IS NULL OR execution_id<$2) AND ($3='' OR state=$3) ORDER BY execution_id DESC LIMIT 100`, a.TenantID, cursor, state)
+			rows, err := tx.Query(ctx, `SELECT `+executionColumns+` FROM action.executions WHERE tenant_id=$1 AND ($2::uuid IS NULL OR execution_id<$2) AND ($3='' OR state=$3) AND ($4='' OR position(lower($4) in lower(execution_id::text || ' ' || COALESCE(binding->>'incidentId','') || ' ' || subject || ' ' || COALESCE(binding->>'targetCanonicalId',''))) > 0) ORDER BY execution_id DESC LIMIT 100`, a.TenantID, cursor, state, query)
 			if err != nil {
 				return err
 			}

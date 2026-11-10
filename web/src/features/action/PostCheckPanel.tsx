@@ -1,5 +1,5 @@
 import { Alert, Button, Space } from "antd";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCommandPostCheck } from "../../api/generated/platform";
 import { checked, requestOptions } from "../../api/client";
@@ -11,19 +11,34 @@ const recordedTime = (value: unknown) =>
   !value || (typeof value === "string" && value.startsWith("0001-"))
     ? "未取得"
     : displayTime(value);
-export function PostCheckPanel({ executionId }: { executionId: string }) {
+export function PostCheckPanel({
+  executionId,
+  incidentHref,
+}: {
+  executionId: string;
+  incidentHref?: string;
+}) {
+  const navigate = useNavigate();
+  const destination = () =>
+    incidentHref ? new URL(incidentHref, "https://ops.invalid") : undefined;
+  const parameters = () =>
+    destination()?.searchParams ?? new URLSearchParams(url);
+  const href = (params: URLSearchParams) =>
+    (destination()?.pathname ?? "") + "?" + params.toString();
+  const visit = (params: URLSearchParams) =>
+    incidentHref ? navigate(href(params)) : setUrl(params);
   const [url, setUrl] = useSearchParams();
   const reviewNext = (tab: string) => {
-    const n = new URLSearchParams(url);
+    const n = parameters();
     n.set("tab", tab);
     if (tab === "rca") {
       n.delete("executionId");
       n.delete("actionPlanId");
     }
-    setUrl(n);
+    visit(n);
   };
   const startRelated = (relation: "follow_up" | "rollback", probe?: string) => {
-    const n = new URLSearchParams(url);
+    const n = parameters();
     n.set("tab", "action");
     n.set("relatedExecutionId", executionId);
     n.set("executionRelation", relation);
@@ -31,22 +46,22 @@ export function PostCheckPanel({ executionId }: { executionId: string }) {
     else n.delete("verificationMode");
     n.delete("executionId");
     n.delete("actionPlanId");
-    setUrl(n);
+    visit(n);
   };
   const executionLink = (id: string) => {
-    const n = new URLSearchParams(url);
+    const n = parameters();
     n.set("tab", "action");
     n.set("executionId", id);
     n.delete("relatedExecutionId");
     n.delete("executionRelation");
     n.delete("actionPlanId");
-    return "?" + n.toString();
+    return href(n);
   };
   const evidenceLink = (id: string) => {
-    const n = new URLSearchParams(url);
+    const n = parameters();
     n.set("tab", "evidence");
     n.set("evidenceId", id);
-    return "?" + n.toString();
+    return href(n);
   };
   const q = useQuery({
     queryKey: ["postcheck", executionId],
