@@ -230,7 +230,7 @@ func (h *InvestigationHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request
 		return
 	}
 	if len(parts) == 4 {
-		writeJSON(w, 200, map[string]any{"data": job, "requestId": actor.RequestID})
+		writeJSON(w, 200, map[string]any{"data": publicInvestigationJobView(job), "requestId": actor.RequestID})
 		return
 	}
 	if len(parts) == 5 && parts[4] == "steps" {

@@ -49,6 +49,17 @@ import { QueryState } from "../components/QueryState";
 import { DiagnosisAnswer } from "../features/assistant/DiagnosisAnswer";
 import { ConversationContext } from "../features/assistant/ConversationContext";
 import { useConversationStream } from "../features/assistant/useConversationStream";
+import { UnifiedInvestigationDetail } from "../features/assistant/UnifiedInvestigationDetail";
+import {
+  UnifiedInvestigationHistory,
+  type InvestigationHistoryEntry,
+} from "../features/assistant/UnifiedInvestigationHistory";
+import {
+  InvestigationStopConfirm,
+  freezeStopTarget,
+  stopTargetMatches,
+  type StopTarget,
+} from "../features/assistant/InvestigationStopConfirm";
 
 // The archive view of the conversation list. The value is sent to the server:
 // the browser never filters an already fetched page.
@@ -240,6 +251,23 @@ export function AssistantPage({
   const [error, setError] = useState<Error>();
   const [busy, setBusy] = useState(false);
   const [turn, setTurn] = useState<AssistantTurnV1>();
+  // The public investigation detail of the unified entry. It is opened by
+  // the turn of the conversation or by an entry of the investigation history.
+  const [investigationDetail, setInvestigationDetail] = useState<{
+    jobId?: string;
+    turnId?: string;
+  }>();
+  // The stop confirmation of the public detail. The target is frozen when
+  // the confirmation opens and the dialog itself never sends a request.
+  const [stopTarget, setStopTarget] = useState<StopTarget>();
+  const [stopBusy, setStopBusy] = useState(false);
+  const [stopError, setStopError] = useState<unknown>();
+  // The stop request owns the confirmation only while it is the newest one.
+  // The synchronous guard rejects a second confirmation while the first
+  // request is still in flight, and the epoch rejects a late answer of an
+  // older confirmation.
+  const stopBusyRef = useRef(false);
+  const stopEpochRef = useRef(0);
   const [renameOpen, setRenameOpen] = useState(false);
   const [renameValue, setRenameValue] = useState("");
   const [renameBusy, setRenameBusy] = useState(false);
@@ -264,6 +292,20 @@ export function AssistantPage({
     setReferent(undefined);
     setError(undefined);
     setMessageCursor(undefined);
+    // The open investigation detail and the stop confirmation belong to the
+    // conversation and the authorization context they were opened for. A new
+    // conversation, a new scope or a new account closes them at once, so a
+    // detail of the previous context can never stay on the page.
+    setInvestigationDetail(undefined);
+    setStopTarget(undefined);
+    setStopError(undefined);
+    setStopBusy(false);
+    stopBusyRef.current = false;
+    // A request that is still in flight belongs to the previous context. Its
+    // late answer, its late refusal and its late completion must not write
+    // into the new context, and must not clear a confirmation that is busy in
+    // the new context.
+    stopEpochRef.current += 1;
   }, [scopeKey, id]);
   useEffect(() => {
     // A new account or scope starts without the search of the previous
@@ -292,6 +334,61 @@ export function AssistantPage({
     const timer = setTimeout(() => setSearchQuery(searchTerm.trim()), 300);
     return () => clearTimeout(timer);
   }, [searchTerm]);
+  // The same-incident history opens the unified detail of the exact
+  // conversation, turn and job through a link. The detail belongs to the
+  // scope that is shown now: a scope or account change closes it and the
+  // link of the previous scope never reopens it.
+  const urlDetailJobId = url.get("investigationJob") || undefined;
+  const urlDetailTurnId = url.get("investigationTurn") || undefined;
+  const detailLinkRef = useRef<
+    { scope: string; jobId?: string; turnId?: string } | undefined
+  >(undefined);
+  // A link that was left with an authorization context is consumed. The same
+  // old URL must not reopen the old detail in a later generation of that
+  // context; a normal new link still opens.
+  const consumedDetailRef = useRef<Set<string>>(new Set());
+  const detailLinkKey = (jobId?: string, turnId?: string) =>
+    `${jobId ?? ""}|${turnId ?? ""}`;
+  useEffect(() => {
+    const applied = detailLinkRef.current;
+    if (applied && applied.scope !== scopeKey) {
+      // The context of the link is left: the link is consumed and the detail
+      // is closed. The URL parameter may survive the change, so the consumed
+      // link is remembered instead of only being cleared.
+      detailLinkRef.current = undefined;
+      consumedDetailRef.current.add(
+        detailLinkKey(applied.jobId, applied.turnId),
+      );
+      setInvestigationDetail(undefined);
+    }
+    if (!urlDetailJobId && !urlDetailTurnId) {
+      // The link was consumed by the reader. A later link to the same job is a
+      // new link and opens the detail again.
+      detailLinkRef.current = undefined;
+      return;
+    }
+    const key = detailLinkKey(urlDetailJobId, urlDetailTurnId);
+    if (consumedDetailRef.current.has(key)) return;
+    if (
+      applied &&
+      applied.scope === scopeKey &&
+      applied.jobId === urlDetailJobId &&
+      applied.turnId === urlDetailTurnId
+    )
+      return;
+    detailLinkRef.current = {
+      scope: scopeKey,
+      jobId: urlDetailJobId,
+      turnId: urlDetailTurnId,
+    };
+    setInvestigationDetail({ jobId: urlDetailJobId, turnId: urlDetailTurnId });
+  }, [scopeKey, urlDetailJobId, urlDetailTurnId]);
+  const clearDetailLink = () => {
+    const next = new URLSearchParams(url);
+    next.delete("investigationJob");
+    next.delete("investigationTurn");
+    setUrl(next, { replace: true });
+  };
   const conversation = useQuery({
     queryKey: ["assistant", scopeKey, id, "conversation"],
     enabled: !!id,
@@ -477,6 +574,130 @@ export function AssistantPage({
   epochRef.current = submissionEpoch;
   const reload = () =>
     client.invalidateQueries({ queryKey: ["assistant", scopeKey] });
+  // The stop confirmation is bound to the exact work it was opened for. The
+  // job, the turn, the conversation, the conversation revision and the
+  // subject generation are frozen when the confirmation opens. Opening it
+  // sends no request at all, and a later navigation, a new turn or a changed
+  // authorization cannot move the cancellation onto another job.
+  const openStopConfirm = (target: {
+    jobId: string;
+    turnId?: string;
+    conversationId?: string;
+  }) => {
+    if (!id) return;
+    const frozenTurnId = target.turnId;
+    const frozenConversationId = target.conversationId;
+    // The confirmation is bound to the work that was opened. It never falls
+    // back to the active turn of the page, and it only belongs to the
+    // conversation that is shown now: a detail of another conversation is
+    // refused instead of stopping the current one.
+    if (!frozenTurnId || !frozenConversationId) return;
+    if (frozenConversationId !== id) return;
+    setStopError(undefined);
+    setStopTarget(
+      freezeStopTarget({
+        jobId: target.jobId,
+        turnId: frozenTurnId,
+        conversationId: id,
+        conversationRevision:
+          conversation.data?.data.revision ??
+          active?.conversationRevision ??
+          0,
+        subject: session?.subject ?? "",
+        tenantId: session?.tenantId ?? "",
+        scopeKey,
+        epoch: submissionEpoch,
+        // The idempotency key is frozen here. A repeated confirmation of the
+        // same target carries the same key, so it can never cancel a second
+        // job under a fresh key.
+        idempotencyKey: crypto.randomUUID(),
+      }),
+    );
+  };
+  const confirmStop = async () => {
+    const target = stopTarget;
+    if (!target) return;
+    // A second confirmation while the first request is in flight is refused
+    // synchronously, before any request is sent.
+    if (stopBusyRef.current) return;
+    // The confirmation may only act on the work it was opened for.
+    if (
+      !stopTargetMatches(target, {
+        subject: session?.subject ?? "",
+        scopeKey,
+        conversationId: id ?? "",
+        epoch: submissionEpoch,
+      })
+    ) {
+      setStopError(
+        new Error(
+          "当前会话、授权或轮次已变化，停止请求已被拒绝，请重新打开确认",
+        ),
+      );
+      return;
+    }
+    const epoch = (stopEpochRef.current += 1);
+    // The request belongs to the conversation and the scope it was confirmed
+    // in. Leaving that conversation or scope aborts it.
+    const signal = AbortSignal.any([
+      scopeAbort.current.signal,
+      conversationAbort.current.signal,
+    ]);
+    const canCommit = () =>
+      !unmountedRef.current &&
+      scopeRef.current === scopeKey &&
+      conversationRef.current === target.conversationId &&
+      !signal.aborted &&
+      epoch === stopEpochRef.current;
+    stopBusyRef.current = true;
+    setStopBusy(true);
+    setStopError(undefined);
+    try {
+      await checked(
+        cancelAssistantTurn(
+          target.turnId,
+          {},
+          requestOptions(signal, true, target.idempotencyKey),
+        ),
+      );
+      if (!canCommit()) return;
+      setStopTarget(undefined);
+      await reload();
+    } catch (cause) {
+      if (!canCommit()) return;
+      const e = cause instanceof Error ? cause : new Error("停止请求未被接受");
+      // A lost grant or an expired session drops the cached data of this
+      // scope only. A late refusal of an older scope never touches the cache
+      // of the scope that is shown now.
+      if (e instanceof ApiError && [401, 403].includes(e.status))
+        client.removeQueries({ queryKey: ["assistant", scopeKey] });
+      setStopError(e);
+    } finally {
+      // Only the newest confirmation may release the busy state. An older
+      // request that settles late must not clear the state of a newer one.
+      if (epoch === stopEpochRef.current) {
+        stopBusyRef.current = false;
+        setStopBusy(false);
+      }
+    }
+  };
+  // The investigation history of the conversation. The entries are the turns
+  // the conversation produced, so a v3 investigation started from the unified
+  // entry is never missing here. Reading an entry never starts another job.
+  const investigationEntries: InvestigationHistoryEntry[] = (() => {
+    const seen = new Set<string>();
+    const entries: InvestigationHistoryEntry[] = [];
+    for (const item of (messages.data?.data || []).slice().reverse()) {
+      if (!item?.turnId || seen.has(item.turnId)) continue;
+      seen.add(item.turnId);
+      entries.push({
+        turnId: item.turnId,
+        createdAt: item.createdAt,
+        active: item.turnId === active?.turnId,
+      });
+    }
+    return entries.slice(0, 20);
+  })();
   // A fault-chain child answers for the conversation it was mounted with. The page
   // re-checks the live scope and the live conversation before the answer may
   // become the current turn: a late answer of another conversation, another
@@ -1414,6 +1635,14 @@ export function AssistantPage({
                     </List.Item>
                   )}
                 />
+                {investigationEntries.length > 0 && (
+                  <UnifiedInvestigationHistory
+                    entries={investigationEntries}
+                    onOpen={(turnId) =>
+                      setInvestigationDetail({ turnId })
+                    }
+                  />
+                )}
                 {!messageCursor &&
                   active?.answer &&
                   !(messages.data?.data || []).some(
@@ -1453,6 +1682,18 @@ export function AssistantPage({
                       <Typography.Text type="danger">
                         {active.errorCode}
                       </Typography.Text>
+                    )}
+                    {active.jobId && (
+                      <Button
+                        onClick={() =>
+                          setInvestigationDetail({
+                            jobId: active.jobId,
+                            turnId: active.turnId,
+                          })
+                        }
+                      >
+                        查看调查过程
+                      </Button>
                     )}
                     {running && canWriteConversation && (
                       <Button
@@ -1639,6 +1880,32 @@ export function AssistantPage({
             />
             {renameError && <Alert type="error" title={renameError} />}
           </Modal>
+          {investigationDetail && (
+            <UnifiedInvestigationDetail
+              jobId={investigationDetail.jobId}
+              turnId={investigationDetail.turnId}
+              scopeKey={scopeKey}
+              onClose={() => {
+                setInvestigationDetail(undefined);
+                clearDetailLink();
+              }}
+              onStop={(target) => openStopConfirm(target)}
+            />
+          )}
+          {stopTarget && (
+            <InvestigationStopConfirm
+              target={stopTarget}
+              confirming={stopBusy}
+              error={stopError}
+              onCancel={() => {
+                // A cancelled confirmation drops the frozen target and its
+                // request. Nothing was cancelled.
+                setStopTarget(undefined);
+                setStopError(undefined);
+              }}
+              onConfirm={() => void confirmStop()}
+            />
+          )}
         </Col>
       </Row>
     </>

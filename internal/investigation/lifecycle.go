@@ -57,7 +57,9 @@ func (r Repository) Stop(ctx context.Context, tenant, id uuid.UUID, subject stri
 			// Cancellation is a subject decision. The authority re-proof below uses
 			// the Job's persisted identity source, so a native v2 Job is checked
 			// against its frozen account/version instead of the legacy table.
-			if j.Assistant == nil && subject != j.Subject {
+			// An assistant Job belongs to the subject that submitted the turn, so
+			// a different operator in the same tenant may not cancel it.
+			if subject != j.Subject {
 				return ErrDenied
 			}
 			if err = current(ctx, tx, j); err != nil {

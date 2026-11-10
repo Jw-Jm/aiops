@@ -3957,30 +3957,43 @@ type InvestigationEvent struct {
 // InvestigationEventEventType defines model for InvestigationEvent.EventType.
 type InvestigationEventEventType string
 
-// InvestigationJobV2 defines model for InvestigationJobV2.
+// InvestigationJobV2 Public investigation job. A legacy job carries investigation-job/v2 and an investigation-result/v1 result. A unified entry job carries investigation-job/v3, an assistant-answer/v1 result and the conversation and turn that produced it. The internal admission binding is never part of this public view.
 type InvestigationJobV2 struct {
-	AdmissionDigest      *string                `json:"admissionDigest,omitempty"`
-	Budget               InvestigationBudgetV1  `json:"budget"`
-	BudgetConsumed       InvestigationUsageV1   `json:"budgetConsumed"`
-	BudgetReserved       InvestigationUsageV1   `json:"budgetReserved"`
-	EffectiveScopeDigest string                 `json:"effectiveScopeDigest"`
-	ErrorCode            *string                `json:"errorCode,omitempty"`
-	EventSeq             int                    `json:"eventSeq"`
-	ExpiresAt            time.Time              `json:"expiresAt"`
-	Focus                string                 `json:"focus"`
-	IncidentId           openapi_types.UUID     `json:"incidentId"`
-	JobId                openapi_types.UUID     `json:"jobId"`
-	NextCallSeq          int                    `json:"nextCallSeq"`
-	PolicyVersion        string                 `json:"policyVersion"`
-	Result               *InvestigationResultV1 `json:"result,omitempty"`
-	SchemaVersion        interface{}            `json:"schemaVersion"`
-	Scope                InvestigationScopeV1   `json:"scope"`
-	State                interface{}            `json:"state"`
-	Subject              string                 `json:"subject"`
-	TenantId             openapi_types.UUID     `json:"tenantId"`
-	ToolCatalogDigest    string                 `json:"toolCatalogDigest"`
-	TriggerKind          interface{}            `json:"triggerKind"`
-	TriggerRevision      int                    `json:"triggerRevision"`
+	AdmissionDigest *string               `json:"admissionDigest,omitempty"`
+	Budget          InvestigationBudgetV1 `json:"budget"`
+	BudgetConsumed  InvestigationUsageV1  `json:"budgetConsumed"`
+	BudgetReserved  InvestigationUsageV1  `json:"budgetReserved"`
+
+	// ConversationId The unified entry conversation that produced this job. Present for investigation-job/v3.
+	ConversationId       *openapi_types.UUID        `json:"conversationId,omitempty"`
+	EffectiveScopeDigest string                     `json:"effectiveScopeDigest"`
+	ErrorCode            *string                    `json:"errorCode,omitempty"`
+	EventSeq             int                        `json:"eventSeq"`
+	ExpiresAt            time.Time                  `json:"expiresAt"`
+	Focus                string                     `json:"focus"`
+	IncidentId           openapi_types.UUID         `json:"incidentId"`
+	JobId                openapi_types.UUID         `json:"jobId"`
+	NextCallSeq          int                        `json:"nextCallSeq"`
+	PolicyVersion        string                     `json:"policyVersion"`
+	Result               *InvestigationJobV2_Result `json:"result,omitempty"`
+	SchemaVersion        interface{}                `json:"schemaVersion"`
+	Scope                InvestigationScopeV1       `json:"scope"`
+	State                interface{}                `json:"state"`
+	Subject              string                     `json:"subject"`
+	TenantId             openapi_types.UUID         `json:"tenantId"`
+	ToolCatalogDigest    string                     `json:"toolCatalogDigest"`
+	TriggerKind          interface{}                `json:"triggerKind"`
+
+	// TriggerRevision Legacy jobs carry the incident revision that triggered them. A unified entry job without an incident carries 0.
+	TriggerRevision int `json:"triggerRevision"`
+
+	// TurnId The unified entry turn that produced this job. Present for investigation-job/v3.
+	TurnId *openapi_types.UUID `json:"turnId,omitempty"`
+}
+
+// InvestigationJobV2_Result defines model for InvestigationJobV2.Result.
+type InvestigationJobV2_Result struct {
+	union json.RawMessage
 }
 
 // InvestigationPageV2 defines model for InvestigationPageV2.
@@ -4058,6 +4071,7 @@ type InvestigationStepsSuccessV2 struct {
 
 // InvestigationSuccessV2 defines model for InvestigationSuccessV2.
 type InvestigationSuccessV2 struct {
+	// Data Public investigation job. A legacy job carries investigation-job/v2 and an investigation-result/v1 result. A unified entry job carries investigation-job/v3, an assistant-answer/v1 result and the conversation and turn that produced it. The internal admission binding is never part of this public view.
 	Data      InvestigationJobV2 `json:"data"`
 	RequestId string             `json:"requestId"`
 }
@@ -7184,6 +7198,68 @@ func (t EvidenceV2_FactSlice) MarshalJSON() ([]byte, error) {
 }
 
 func (t *EvidenceV2_FactSlice) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsInvestigationResultV1 returns the union data inside the InvestigationJobV2_Result as a InvestigationResultV1
+func (t InvestigationJobV2_Result) AsInvestigationResultV1() (InvestigationResultV1, error) {
+	var body InvestigationResultV1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromInvestigationResultV1 overwrites any union data inside the InvestigationJobV2_Result as the provided InvestigationResultV1
+func (t *InvestigationJobV2_Result) FromInvestigationResultV1(v InvestigationResultV1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeInvestigationResultV1 performs a merge with any union data inside the InvestigationJobV2_Result, using the provided InvestigationResultV1
+func (t *InvestigationJobV2_Result) MergeInvestigationResultV1(v InvestigationResultV1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAssistantAnswerV1 returns the union data inside the InvestigationJobV2_Result as a AssistantAnswerV1
+func (t InvestigationJobV2_Result) AsAssistantAnswerV1() (AssistantAnswerV1, error) {
+	var body AssistantAnswerV1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAssistantAnswerV1 overwrites any union data inside the InvestigationJobV2_Result as the provided AssistantAnswerV1
+func (t *InvestigationJobV2_Result) FromAssistantAnswerV1(v AssistantAnswerV1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAssistantAnswerV1 performs a merge with any union data inside the InvestigationJobV2_Result, using the provided AssistantAnswerV1
+func (t *InvestigationJobV2_Result) MergeAssistantAnswerV1(v AssistantAnswerV1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t InvestigationJobV2_Result) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *InvestigationJobV2_Result) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }

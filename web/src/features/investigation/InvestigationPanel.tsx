@@ -88,6 +88,29 @@ export function InvestigationPanel({
     n.set("jobId", id);
     setUrl(n);
   };
+  // A unified entry job (investigation-job/v3) carries the conversation and
+  // the turn that produced it. The history opens the read-only unified detail
+  // of exactly that conversation, turn and job; it never starts another job
+  // and never re-runs a model.
+  //
+  // The link identifiers are absent for a job without an assistant binding, so
+  // their presence is checked on the raw value. The display helper answers
+  // with a placeholder for a missing value and would mark every row as
+  // unified.
+  const linkValue = (value: unknown): string | undefined =>
+    typeof value === "string" && value.length > 0 ? value : undefined;
+  const openUnified = (row: Record<string, unknown>) => {
+    if (!assistantHref) return;
+    const conversationId = linkValue(row.conversationId);
+    const turnId = linkValue(row.turnId);
+    const jobId = linkValue(row.jobId);
+    if (!conversationId || !turnId || !jobId) return;
+    const next = new URLSearchParams(assistantHref.split("?")[1] || "");
+    next.set("conversation", conversationId);
+    next.set("investigationJob", jobId);
+    next.set("investigationTurn", turnId);
+    navigate(`/assistant?${next.toString()}`);
+  };
   const tighteningInputError = (): string | undefined => {
     const duration = tightenDuration.trim();
     const calls = tightenCalls.trim();
@@ -261,7 +284,7 @@ export function InvestigationPanel({
           </Button>
         )}
       </Space>
-      <h3>{assistantHref ? "旧版历史调查" : "历史调查"}</h3>
+      <h3>同一故障的历史调查</h3>
       <QueryState
         loading={timeline.isPending}
         error={timeline.error}
@@ -270,20 +293,34 @@ export function InvestigationPanel({
         {history.length === 0 ? (
           <p className="muted">
             {assistantHref
-              ? "当前没有可见的旧版调查。新调查的进度和结果保存在助手会话中。"
+              ? "当前没有可见的历史调查。助手会话中的调查保存在会话记录里，此处只显示与本故障关联的调查。"
               : "当前没有可见的历史调查。开始调查后，进度和结果会保存在此处。"}
           </p>
         ) : (
           <Space wrap>
-            {history.map((p) => (
-              <Button
-                key={text(p.jobId)}
-                title={text(p.jobId)}
-                onClick={() => choose(text(p.jobId))}
-              >
-                {stateLabel(text(p.state))} · 故障版本 {text(p.triggerRevision)}
-              </Button>
-            ))}
+            {history.map((p) => {
+              const rowJobId = text(p.jobId);
+              const unified =
+                !!linkValue(p.conversationId) &&
+                !!linkValue(p.turnId) &&
+                !!assistantHref;
+              return (
+                <Space key={rowJobId} size={4}>
+                  {/* A unified entry job (investigation-job/v3) is read through
+                      the unified detail of exactly that conversation, turn and
+                      job. The primary entry opens it directly, so a reader never
+                      lands in the legacy result view and never starts another
+                      job or another model run. A v2 job keeps its own result
+                      view. */}
+                  <Button
+                    title={rowJobId}
+                    onClick={() => (unified ? openUnified(p) : choose(rowJobId))}
+                  >
+                    {stateLabel(text(p.state))} · 故障版本 {text(p.triggerRevision)}
+                  </Button>
+                </Space>
+              );
+            })}
           </Space>
         )}
         {history.length > 0 && (

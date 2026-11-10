@@ -4,6 +4,7 @@
  * Smart Operations Platform API
  * OpenAPI spec version: 1.4.0
  */
+import type { AssistantAnswerV1 } from './assistantAnswerV1.ts';
 import type { InvestigationBudgetV1 } from './investigationBudgetV1.ts';
 import type { InvestigationJobV2SchemaVersion } from './investigationJobV2SchemaVersion.ts';
 import type { InvestigationJobV2State } from './investigationJobV2State.ts';
@@ -12,6 +13,9 @@ import type { InvestigationResultV1 } from './investigationResultV1.ts';
 import type { InvestigationScopeV1 } from './investigationScopeV1.ts';
 import type { InvestigationUsageV1 } from './investigationUsageV1.ts';
 
+/**
+ * Public investigation job. A legacy job carries investigation-job/v2 and an investigation-result/v1 result. A unified entry job carries investigation-job/v3, an assistant-answer/v1 result and the conversation and turn that produced it. The internal admission binding is never part of this public view.
+ */
 export interface InvestigationJobV2 {
   schemaVersion: InvestigationJobV2SchemaVersion;
   tenantId: string;
@@ -22,7 +26,10 @@ export interface InvestigationJobV2 {
      * @maxLength 256
      */
   subject: string;
-  /** @minimum 1 */
+  /**
+     * Legacy jobs carry the incident revision that triggered them. A unified entry job without an incident carries 0.
+     * @minimum 0
+     */
   triggerRevision: number;
   triggerKind: InvestigationJobV2TriggerKind;
   /**
@@ -44,7 +51,7 @@ export interface InvestigationJobV2 {
   eventSeq: number;
   /** @minimum 0 */
   nextCallSeq: number;
-  result?: InvestigationResultV1;
+  result?: InvestigationResultV1 | AssistantAnswerV1;
   /**
      * @minLength 1
      * @maxLength 128
@@ -54,4 +61,8 @@ export interface InvestigationJobV2 {
   focus: string;
   /** @pattern ^(sha256:[0-9a-f]{64})?$ */
   admissionDigest?: string;
+  /** The unified entry conversation that produced this job. Present for investigation-job/v3. */
+  conversationId?: string;
+  /** The unified entry turn that produced this job. Present for investigation-job/v3. */
+  turnId?: string;
 }

@@ -56,7 +56,7 @@ it("routes new incident investigations to the bound assistant and retains legacy
       </MemoryRouter>
     </QueryClientProvider>,
   );
-  expect(await screen.findByText("旧版历史调查")).toBeInTheDocument();
+  expect(await screen.findByText("同一故障的历史调查")).toBeInTheDocument();
   expect(screen.queryByLabelText("调查重点")).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "开始智能调查" }));
   expect(screen.getByTestId("investigation-location")).toHaveTextContent(
@@ -200,6 +200,116 @@ it("rejects out-of-range tightening locally without calling the API", async () =
     expect(
       screen.getByText("工具调用收紧必须是 1–40 的整数"),
     ).toBeInTheDocument(),
+  );
+  expect(api.create).not.toHaveBeenCalled();
+});
+
+// W4: a unified entry job (investigation-job/v3) of the same incident is
+// opened as the read-only unified detail of exactly that conversation, turn
+// and job. The primary history entry opens it directly. No new job is
+// started, no model is called and the legacy result view is never entered.
+it("opens the unified detail of a v3 history entry of the same incident", async () => {
+  setNativeCredentials("tenant", "csrf");
+  const reply = (data: unknown) =>
+    Promise.resolve({ status: 200, data: { data, requestId: "test" } });
+  api.history.mockImplementation(() =>
+    reply([
+      {
+        jobId: "job-v3",
+        schemaVersion: "investigation-job/v3",
+        state: "succeeded",
+        triggerRevision: 2,
+        conversationId: "conversation-9",
+        turnId: "turn-9",
+      },
+    ]),
+  );
+  api.create.mockClear();
+  api.job.mockClear();
+  function Location() {
+    const location = useLocation();
+    return (
+      <span data-testid="investigation-location">
+        {location.pathname + location.search}
+      </span>
+    );
+  }
+  render(
+    <QueryClientProvider
+      client={
+        new QueryClient({ defaultOptions: { queries: { retry: false } } })
+      }
+    >
+      <MemoryRouter initialEntries={["/incident"]}>
+        <Location />
+        <InvestigationPanel
+          incident={{ incidentId: "incident", revision: 1 } as IncidentV2}
+          assistantHref="/assistant?incidentId=incident&clusterUid=cluster"
+        />
+      </MemoryRouter>
+    </QueryClientProvider>,
+  );
+  // The primary history entry of the v3 job is the unified detail itself.
+  const primary = await screen.findByRole("button", { name: /故障版本 2/ });
+  fireEvent.click(primary);
+  expect(screen.getByTestId("investigation-location")).toHaveTextContent(
+    "/assistant?incidentId=incident&clusterUid=cluster&conversation=conversation-9&investigationJob=job-v3&investigationTurn=turn-9",
+  );
+  // The legacy result view is not entered and no job is started.
+  expect(screen.getByTestId("investigation-location")).not.toHaveTextContent(
+    "jobId=",
+  );
+  expect(api.job).not.toHaveBeenCalled();
+  expect(api.create).not.toHaveBeenCalled();
+});
+
+// W4: a v2 job of the same incident keeps its own result view. The primary
+// history entry opens the result of exactly that job.
+it("keeps the legacy result view for a v2 history entry of the same incident", async () => {
+  setNativeCredentials("tenant", "csrf");
+  const reply = (data: unknown) =>
+    Promise.resolve({ status: 200, data: { data, requestId: "test" } });
+  api.history.mockImplementation(() =>
+    reply([
+      {
+        jobId: "job-v2",
+        schemaVersion: "investigation-job/v2",
+        state: "succeeded",
+        triggerRevision: 3,
+      },
+    ]),
+  );
+  api.create.mockClear();
+  function Location() {
+    const location = useLocation();
+    return (
+      <span data-testid="investigation-location">
+        {location.pathname + location.search}
+      </span>
+    );
+  }
+  render(
+    <QueryClientProvider
+      client={
+        new QueryClient({ defaultOptions: { queries: { retry: false } } })
+      }
+    >
+      <MemoryRouter initialEntries={["/incident"]}>
+        <Location />
+        <InvestigationPanel
+          incident={{ incidentId: "incident", revision: 1 } as IncidentV2}
+          assistantHref="/assistant?incidentId=incident&clusterUid=cluster"
+        />
+      </MemoryRouter>
+    </QueryClientProvider>,
+  );
+  const primary = await screen.findByRole("button", { name: /故障版本 3/ });
+  fireEvent.click(primary);
+  expect(screen.getByTestId("investigation-location")).toHaveTextContent(
+    "/incident?jobId=job-v2",
+  );
+  expect(screen.getByTestId("investigation-location")).not.toHaveTextContent(
+    "conversation=",
   );
   expect(api.create).not.toHaveBeenCalled();
 });

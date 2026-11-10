@@ -4044,10 +4044,17 @@ components:
       additionalProperties: false
     InvestigationJobV2:
       type: object
+      description: >-
+        Public investigation job. A legacy job carries investigation-job/v2 and
+        an investigation-result/v1 result. A unified entry job carries
+        investigation-job/v3, an assistant-answer/v1 result and the
+        conversation and turn that produced it. The internal admission binding
+        is never part of this public view.
       properties:
         schemaVersion:
           enum:
           - investigation-job/v2
+          - investigation-job/v3
         tenantId:
           type: string
           format: uuid
@@ -4063,7 +4070,8 @@ components:
           maxLength: 256
         triggerRevision:
           type: integer
-          minimum: 1
+          minimum: 0
+          description: Legacy jobs carry the incident revision that triggered them. A unified entry job without an incident carries 0.
         triggerKind:
           enum:
           - manual
@@ -4106,7 +4114,9 @@ components:
           type: integer
           minimum: 0
         result:
-          $ref: '#/components/schemas/InvestigationResultV1'
+          oneOf:
+          - $ref: '#/components/schemas/InvestigationResultV1'
+          - $ref: '#/components/schemas/AssistantAnswerV1'
         errorCode:
           type: string
           minLength: 1
@@ -4117,6 +4127,14 @@ components:
         admissionDigest:
           type: string
           pattern: ^(sha256:[0-9a-f]{64})?$
+        conversationId:
+          type: string
+          format: uuid
+          description: The unified entry conversation that produced this job. Present for investigation-job/v3.
+        turnId:
+          type: string
+          format: uuid
+          description: The unified entry turn that produced this job. Present for investigation-job/v3.
       required:
       - schemaVersion
       - tenantId

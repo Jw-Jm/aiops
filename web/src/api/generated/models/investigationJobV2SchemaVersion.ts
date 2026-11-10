@@ -10,4 +10,5 @@ export type InvestigationJobV2SchemaVersion = typeof InvestigationJobV2SchemaVer
 
 export const InvestigationJobV2SchemaVersion = {
   'investigation-job/v2': 'investigation-job/v2',
+  'investigation-job/v3': 'investigation-job/v3',
 } as const;

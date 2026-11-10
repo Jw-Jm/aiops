@@ -79,7 +79,7 @@ func (h *InvestigationHandlers) history(w http.ResponseWriter, r *http.Request, 
 				subjects = append(subjects, mapping.LegacySubject)
 			}
 		}
-		rows, e := tx.Query(ctx, `SELECT job_id FROM investigation.jobs WHERE tenant_id=$1 AND incident_id=$2 AND requesting_subject=ANY($3) AND schema_version='investigation-job/v2' AND ($4::uuid IS NULL OR job_id<$4) ORDER BY job_id DESC LIMIT $5`, a.TenantID, id, subjects, before, limit+1)
+		rows, e := tx.Query(ctx, `SELECT job_id FROM investigation.jobs WHERE tenant_id=$1 AND incident_id=$2 AND ((schema_version='investigation-job/v2' AND requesting_subject=ANY($3)) OR (schema_version='investigation-job/v3' AND requesting_subject=$6)) AND ($4::uuid IS NULL OR job_id<$4) ORDER BY job_id DESC LIMIT $5`, a.TenantID, id, subjects, before, limit+1, a.Subject)
 		if e != nil {
 			return e
 		}
@@ -97,7 +97,11 @@ func (h *InvestigationHandlers) history(w http.ResponseWriter, r *http.Request, 
 		investigationError(w, err, a.RequestID)
 		return
 	}
-	out := []investigation.Job{}
+	// The history list uses the very same public projection as the single job
+	// read. The persisted job carries the whole assistant binding (grant
+	// snapshot, digests, identity source and version); serializing it here
+	// would publish internal admission material for every v3 row of the list.
+	out := []publicInvestigationJob{}
 	var next any
 	if len(ids) > limit {
 		ids = ids[:limit]
@@ -114,7 +118,7 @@ func (h *InvestigationHandlers) history(w http.ResponseWriter, r *http.Request, 
 			investigationError(w, investigation.ErrDenied, a.RequestID)
 			return
 		}
-		out = append(out, job)
+		out = append(out, publicInvestigationJobView(job))
 	}
 	writeJSON(w, 200, map[string]any{"data": out, "meta": map[string]any{"nextCursor": next}, "requestId": a.RequestID})
 }
