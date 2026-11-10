@@ -168,7 +168,7 @@ function mountEntry(url: string) {
     </QueryClientProvider>,
   );
 }
-function completed() {
+function completed(state = "partial", withAnswer = true) {
   vi.mocked(getAssistantConversation).mockResolvedValue(
     response({
       ...conversation,
@@ -177,10 +177,10 @@ function completed() {
         turnId: "old-turn",
         conversationId: "conversation-1",
         jobId: "old-job",
-        state: "partial",
+        state,
         createdAt: "2026-11-10T00:00:00Z",
         conversationRevision: 3,
-        answer: safeAnswer,
+        answer: withAnswer ? safeAnswer : undefined,
       },
     }) as never,
   );
@@ -273,3 +273,23 @@ it("explicit retry submits the original question with one new key and never auto
   await new Promise((r) => setTimeout(r, 50));
   expect(submitAssistantMessage).toHaveBeenCalledTimes(1);
 });
+
+it.each(["failed", "cancelled"])(
+  "offers an explicit original-question retry for %s turns without an answer",
+  async (state) => {
+    completed(state, false);
+    mountEntry("/assistant?conversation=conversation-1");
+    const retry = await screen.findByRole("button", {
+      name: "以原问题重新提问",
+    });
+    expect(submitAssistantMessage).not.toHaveBeenCalled();
+    fireEvent.click(retry);
+    await waitFor(() =>
+      expect(submitAssistantMessage).toHaveBeenCalledTimes(1),
+    );
+    expect(vi.mocked(submitAssistantMessage).mock.calls[0][1]).toMatchObject({
+      message: "原问题与固定范围",
+      parentTurnId: "old-turn",
+    });
+  },
+);

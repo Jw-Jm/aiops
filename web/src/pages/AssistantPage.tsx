@@ -1879,6 +1879,17 @@ export function AssistantPage({
                         {active.errorCode}
                       </Typography.Text>
                     )}
+                    {!active.answer &&
+                      ["failed", "cancelled"].includes(active.state) &&
+                      canWriteConversation &&
+                      questionOfTurn(active.turnId) && (
+                        <Button
+                          disabled={busy || Boolean(running)}
+                          onClick={() => retryTurn(active.turnId)}
+                        >
+                          以原问题重新提问
+                        </Button>
+                      )}
                     {active.jobId && (
                       <Button
                         onClick={() =>

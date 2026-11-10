@@ -45,7 +45,15 @@ class PlatformTool(Tool):
         if allocation.get("committed"):
             result=self._job_api.request("/steps/"+allocation["stepId"]+"/result?argsDigest="+allocation["argsDigest"])
         else:
-            result=self._bridge.call(self.name,params,allocation)
+            try:
+                result=self._bridge.call(self.name,params,allocation)
+            except Exception as transport_error:
+                # A lost MCP reply may follow a durable settlement. Re-read that
+                # exact authorized receipt; never allocate or invoke a second call.
+                try:
+                    result=self._job_api.request("/steps/"+allocation["stepId"]+"/result?argsDigest="+allocation["argsDigest"])
+                except Exception:
+                    raise transport_error
         from .assistant_binding import model_tool_result
         return StructuredToolResult(status=StructuredToolResultStatus.ERROR if result.get("state")=="failed" else StructuredToolResultStatus.SUCCESS,
                                     data={"untrusted_tool_result":model_tool_result(self.name, result)})
