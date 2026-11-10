@@ -239,7 +239,7 @@ func (h *InvestigationHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request
 			investigationError(w, err, actor.RequestID)
 			return
 		}
-		writeJSON(w, 200, map[string]any{"data": steps, "requestId": actor.RequestID})
+		writeJSON(w, 200, map[string]any{"data": publicInvestigationStepViews(steps), "requestId": actor.RequestID})
 		return
 	}
 	investigationError(w, pgx.ErrNoRows, actor.RequestID)
