@@ -1,0 +1,815 @@
+{
+  "link": "/resources?health=normal&assistantQueryResultId=01a1c483-1744-75e9-85a7-af7ce56a7f35&clusterUid=79014400-9453-4cb4-9678-0fae47981d79&assistantGroup=normal&aiFrom=assistant&aiDataset=resources.current&aiScopeDigest=sha256%3Ae406234cd9d37177a3b9473394cd3ae8fec8a2541da9556c42ed794a85547664&aiSnapshotAt=2026-11-10T08%3A11%3A27.929548287Z&aiVersion=Owner+35+%2F+Graph+5252&aiCount=10",
+  "requestUrl": "https://192.168.0.63:30471/api/v1/resources?limit=10&clusterUid=79014400-9453-4cb4-9678-0fae47981d79&includeFilterOptions=true&order=asc&health=normal&assistantQueryResultId=01a1c483-1744-75e9-85a7-af7ce56a7f35&assistantGroup=normal",
+  "status": 200,
+  "body": {
+    "data": [
+      {
+        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/0f6d7fec-161a-48ba-a20d-00bf81c82ae5",
+        "kind": "Pod",
+        "name": "ops-worker-7bb757f757-vjzmh",
+        "updatedAt": "2026-11-10T08:11:28.421054945Z",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "domain": "k8s",
+        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+        "apiGroup": "core",
+        "stableId": "0f6d7fec-161a-48ba-a20d-00bf81c82ae5",
+        "namespace": "ops-current",
+        "labels": {
+          "app": "ops-worker",
+          "pod-template-hash": "7bb757f757"
+        },
+        "attributes": {
+          "health": "normal",
+          "resourceDomain": "kubernetes",
+          "status": {
+            "conditions": [
+              {
+                "lastTransitionTime": "2026-11-09T00:43:19Z",
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastTransitionTime": "2026-11-09T00:43:18Z",
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastTransitionTime": "2026-11-09T00:43:19Z",
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastTransitionTime": "2026-11-09T00:43:19Z",
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastTransitionTime": "2026-11-09T00:43:18Z",
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "containerID": "containerd://43b0d0653629df41a71e27a16c79c0c48014246e5809465512daa9f99177d6f5",
+                "imageID": "ops.local/current/platform-worker@sha256:f54cfb69a57464c833323865ef092e00db5680d0d02522f928f36fc5b8d4ebbc",
+                "lastState": {},
+                "name": "worker",
+                "ready": true,
+                "restartCount": 0,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-11-09T00:43:19Z"
+                  }
+                }
+              }
+            ],
+            "phase": "Running"
+          }
+        },
+        "sourceRefs": [
+          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+        ],
+        "firstObservedAt": "2026-11-09T00:43:19.618610002Z",
+        "lastObservedAt": "2026-11-10T08:11:28.421054945Z"
+      },
+      {
+        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/12b26da0-db7c-46f7-b2f4-9ebe6cf9ff84",
+        "kind": "Pod",
+        "name": "ops-metrics",
+        "updatedAt": "2026-11-10T08:11:28.420288587Z",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "domain": "k8s",
+        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+        "apiGroup": "core",
+        "stableId": "12b26da0-db7c-46f7-b2f4-9ebe6cf9ff84",
+        "namespace": "ops-current",
+        "labels": {
+          "app": "ops-metrics"
+        },
+        "attributes": {
+          "health": "normal",
+          "resourceDomain": "kubernetes",
+          "status": {
+            "conditions": [
+              {
+                "lastTransitionTime": "2026-11-08T03:05:44Z",
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastTransitionTime": "2026-11-06T06:16:42Z",
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastTransitionTime": "2026-11-08T02:39:30Z",
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastTransitionTime": "2026-11-08T02:39:30Z",
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastTransitionTime": "2026-11-06T06:16:42Z",
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "containerID": "containerd://a9bb8cf5a5b3a56017a3ac1339893d8391daa2f24f2926d0ce1381036f35c6c8",
+                "imageID": "docker.io/victoriametrics/victoria-metrics@sha256:b10c78f4bd9b52554b7f863ff416e480d931b1811f591049d166eea1fb247638",
+                "lastState": {
+                  "terminated": {
+                    "containerID": "containerd://eb7bd35e3a825cf2a2b605d3627018cff869605cf4a87806071b46a5cba2da76",
+                    "exitCode": 0,
+                    "finishedAt": "2026-11-08T03:05:44Z",
+                    "reason": "Completed",
+                    "startedAt": "2026-11-08T02:39:30Z"
+                  }
+                },
+                "name": "collector",
+                "ready": true,
+                "restartCount": 3,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-11-08T03:05:44Z"
+                  }
+                }
+              }
+            ],
+            "phase": "Running"
+          }
+        },
+        "sourceRefs": [
+          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+        ],
+        "firstObservedAt": "2026-11-09T00:43:19.617227981Z",
+        "lastObservedAt": "2026-11-10T08:11:28.420288587Z"
+      },
+      {
+        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/49224918-5319-4743-b3ce-1c6473066e27",
+        "kind": "Pod",
+        "name": "ops-command-closure-8445fddff-2mbdb",
+        "updatedAt": "2026-11-10T08:11:28.419631334Z",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "domain": "k8s",
+        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+        "apiGroup": "core",
+        "stableId": "49224918-5319-4743-b3ce-1c6473066e27",
+        "namespace": "ops-current",
+        "labels": {
+          "app": "ops-command-closure",
+          "ops.platform.io/acceptance": "remediation-20261109",
+          "pod-template-hash": "8445fddff"
+        },
+        "attributes": {
+          "health": "normal",
+          "resourceDomain": "kubernetes",
+          "status": {
+            "conditions": [
+              {
+                "lastTransitionTime": "2026-11-09T00:39:33Z",
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastTransitionTime": "2026-11-09T00:39:32Z",
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastTransitionTime": "2026-11-09T00:39:33Z",
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastTransitionTime": "2026-11-09T00:39:33Z",
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastTransitionTime": "2026-11-09T00:39:32Z",
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "containerID": "containerd://3d1cf2891beaa266c3e244f9171e0bdaa42b69fb8e8bc76607bbb274ddb3b668",
+                "imageID": "ops.local/current/command-runner@sha256:bef1188002556accd30604c18a0e57c27bd0afe8b0168bc216421d3b8486f310",
+                "lastState": {},
+                "name": "acceptance",
+                "ready": true,
+                "restartCount": 0,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-11-09T00:39:33Z"
+                  }
+                }
+              }
+            ],
+            "phase": "Running"
+          }
+        },
+        "sourceRefs": [
+          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+        ],
+        "firstObservedAt": "2026-11-09T00:43:19.616328656Z",
+        "lastObservedAt": "2026-11-10T08:11:28.419631334Z"
+      },
+      {
+        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/4bf32bad-263d-4f19-a57a-2a9c9a928a43",
+        "kind": "Pod",
+        "name": "ops-seaweedfs-0",
+        "updatedAt": "2026-11-10T08:11:28.420838468Z",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "domain": "k8s",
+        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+        "apiGroup": "core",
+        "stableId": "4bf32bad-263d-4f19-a57a-2a9c9a928a43",
+        "namespace": "ops-current",
+        "labels": {
+          "app.kubernetes.io/name": "ops-seaweedfs",
+          "apps.kubernetes.io/pod-index": "0",
+          "controller-revision-hash": "ops-seaweedfs-9c598cfd8",
+          "ops.platform.io/component": "seaweedfs",
+          "ops.platform.io/mode": "bundled",
+          "ops.platform.io/release": "ops-current",
+          "statefulset.kubernetes.io/pod-name": "ops-seaweedfs-0"
+        },
+        "attributes": {
+          "health": "normal",
+          "resourceDomain": "kubernetes",
+          "status": {
+            "conditions": [
+              {
+                "lastTransitionTime": "2026-11-09T10:58:15Z",
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastTransitionTime": "2026-11-09T10:58:15Z",
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastTransitionTime": "2026-11-09T10:58:36Z",
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastTransitionTime": "2026-11-09T10:58:36Z",
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastTransitionTime": "2026-11-09T10:58:15Z",
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "containerID": "containerd://13b82fd1ff02f17b4c82794d65a5cb9eb6461919bf4a81a3f554a9e43c55cbbe",
+                "imageID": "docker.io/chrislusf/seaweedfs@sha256:ce9e796f1fe6f06968f4c04bdaf8f678dad9c8acdfef3d244133d71bfa6bf882",
+                "lastState": {},
+                "name": "seaweedfs",
+                "ready": true,
+                "restartCount": 0,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-11-09T10:58:16Z"
+                  }
+                }
+              }
+            ],
+            "phase": "Running"
+          }
+        },
+        "sourceRefs": [
+          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+        ],
+        "firstObservedAt": "2026-11-09T10:58:20.920489844Z",
+        "lastObservedAt": "2026-11-10T08:11:28.420838468Z"
+      },
+      {
+        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/4eeefd2e-3d0c-4d7e-9da5-7976964415d7",
+        "kind": "Pod",
+        "name": "ops-investigator-787d954574-4gfpt",
+        "updatedAt": "2026-11-10T08:11:28.419786256Z",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "domain": "k8s",
+        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+        "apiGroup": "core",
+        "stableId": "4eeefd2e-3d0c-4d7e-9da5-7976964415d7",
+        "namespace": "ops-current",
+        "labels": {
+          "app": "ops-investigator",
+          "pod-template-hash": "787d954574"
+        },
+        "attributes": {
+          "health": "normal",
+          "resourceDomain": "kubernetes",
+          "status": {
+            "conditions": [
+              {
+                "lastTransitionTime": "2026-11-09T10:53:11Z",
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastTransitionTime": "2026-11-09T10:53:10Z",
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastTransitionTime": "2026-11-09T10:53:11Z",
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastTransitionTime": "2026-11-09T10:53:11Z",
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastTransitionTime": "2026-11-09T10:53:10Z",
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "containerID": "containerd://3efc8c52d945b3150c029150c21422b1de64895b90b2e1a07633e298f1960542",
+                "imageID": "ops.local/current/investigator@sha256:c981bda5f40bacaa79968c21f2e719eacf6556e3a0533434a4d2642d2e2225d8",
+                "lastState": {},
+                "name": "investigator",
+                "ready": true,
+                "restartCount": 0,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-11-09T10:53:11Z"
+                  }
+                }
+              }
+            ],
+            "phase": "Running"
+          }
+        },
+        "sourceRefs": [
+          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+        ],
+        "firstObservedAt": "2026-11-09T10:53:10.733820292Z",
+        "lastObservedAt": "2026-11-10T08:11:28.419786256Z"
+      },
+      {
+        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/924eb3bb-e1a6-4987-96d7-130d67d60a39",
+        "kind": "Pod",
+        "name": "ops-ksm",
+        "updatedAt": "2026-11-10T08:11:28.419932462Z",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "domain": "k8s",
+        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+        "apiGroup": "core",
+        "stableId": "924eb3bb-e1a6-4987-96d7-130d67d60a39",
+        "namespace": "ops-current",
+        "labels": {
+          "app": "ops-ksm"
+        },
+        "attributes": {
+          "health": "normal",
+          "resourceDomain": "kubernetes",
+          "status": {
+            "conditions": [
+              {
+                "lastTransitionTime": "2026-11-08T03:05:51Z",
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastTransitionTime": "2026-11-06T06:16:42Z",
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastTransitionTime": "2026-11-06T06:16:50Z",
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastTransitionTime": "2026-11-06T06:16:50Z",
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastTransitionTime": "2026-11-06T06:16:42Z",
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "containerID": "containerd://0da2281d6f145781db2d7bda1f066600f60fcfc32214563bb0b705153374ec44",
+                "imageID": "sha256:32acec6855323f46b0b3ed1b193d38312db76b46a107390f6ddaefc9d8a51713",
+                "lastState": {
+                  "terminated": {
+                    "containerID": "containerd://6dbc4f36acf2d60ccec5372d23f04ce4797d77719c715327c0cc6962a40dfab3",
+                    "exitCode": 2,
+                    "finishedAt": "2026-11-08T03:05:50Z",
+                    "reason": "Error",
+                    "startedAt": "2026-11-06T06:16:49Z"
+                  }
+                },
+                "name": "collector",
+                "ready": true,
+                "restartCount": 1,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-11-08T03:05:51Z"
+                  }
+                }
+              }
+            ],
+            "phase": "Running"
+          }
+        },
+        "sourceRefs": [
+          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+        ],
+        "firstObservedAt": "2026-11-09T00:43:19.61674228Z",
+        "lastObservedAt": "2026-11-10T08:11:28.419932462Z"
+      },
+      {
+        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/9d925158-f0c9-4ce5-84b8-830959e148dc",
+        "kind": "Pod",
+        "name": "ops-metrics-server-metrics-6d46c4f8f5-7ztrn",
+        "updatedAt": "2026-11-10T08:11:28.420453251Z",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "domain": "k8s",
+        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+        "apiGroup": "core",
+        "stableId": "9d925158-f0c9-4ce5-84b8-830959e148dc",
+        "namespace": "ops-current",
+        "labels": {
+          "app.kubernetes.io/instance": "ops-metrics-server",
+          "app.kubernetes.io/name": "ops-metrics-server-metrics",
+          "ops.platform.io/release": "ops-metrics-server",
+          "pod-template-hash": "6d46c4f8f5"
+        },
+        "attributes": {
+          "health": "normal",
+          "resourceDomain": "kubernetes",
+          "status": {
+            "conditions": [
+              {
+                "lastTransitionTime": "2026-11-08T03:05:22Z",
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastTransitionTime": "2026-11-06T06:16:42Z",
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastTransitionTime": "2026-11-10T03:18:03Z",
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastTransitionTime": "2026-11-10T03:18:03Z",
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastTransitionTime": "2026-11-06T06:16:42Z",
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "containerID": "containerd://5c1e6a545e3bbc5ee75e55c51f599a668400b56b0c2065a6c4b8097d3c762ca3",
+                "imageID": "registry.k8s.io/metrics-server/metrics-server@sha256:89258156d0e9af60403eafd44da9676fd66f600c7934d468ccc17e42b199aee2",
+                "lastState": {
+                  "terminated": {
+                    "containerID": "containerd://99ebc9b3088a73af7f0f3d2659671a50a5ebacdc1814f37529395959e595b9cd",
+                    "exitCode": 0,
+                    "finishedAt": "2026-11-09T06:00:12Z",
+                    "reason": "Completed",
+                    "startedAt": "2026-11-08T03:05:23Z"
+                  }
+                },
+                "name": "metrics-server",
+                "ready": true,
+                "restartCount": 115,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-11-09T06:00:12Z"
+                  }
+                }
+              }
+            ],
+            "phase": "Running"
+          }
+        },
+        "sourceRefs": [
+          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+        ],
+        "firstObservedAt": "2026-11-09T00:43:19.617551218Z",
+        "lastObservedAt": "2026-11-10T08:11:28.420453251Z"
+      },
+      {
+        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/b1cedde8-5bdf-4f1f-a7b5-6120fa60a39f",
+        "kind": "Pod",
+        "name": "ops-openbao-0",
+        "updatedAt": "2026-11-10T08:11:28.42064034Z",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "domain": "k8s",
+        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+        "apiGroup": "core",
+        "stableId": "b1cedde8-5bdf-4f1f-a7b5-6120fa60a39f",
+        "namespace": "ops-current",
+        "labels": {
+          "app.kubernetes.io/name": "ops-openbao",
+          "apps.kubernetes.io/pod-index": "0",
+          "controller-revision-hash": "ops-openbao-77bdb6bf68",
+          "ops.platform.io/component": "openbao",
+          "ops.platform.io/mode": "bundled",
+          "ops.platform.io/release": "ops-current",
+          "statefulset.kubernetes.io/pod-name": "ops-openbao-0"
+        },
+        "attributes": {
+          "health": "normal",
+          "resourceDomain": "kubernetes",
+          "status": {
+            "conditions": [
+              {
+                "lastTransitionTime": "2026-11-08T03:04:24Z",
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastTransitionTime": "2026-11-06T06:16:42Z",
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastTransitionTime": "2026-11-10T04:00:24Z",
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastTransitionTime": "2026-11-10T04:00:24Z",
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastTransitionTime": "2026-11-06T06:16:42Z",
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "containerID": "containerd://52992a8a3cd22f69b3b7932e7086bd0fa423180a2caedff0dee24048e99353e1",
+                "imageID": "ghcr.io/openbao/openbao@sha256:71156a1c6623a5fa3f5e61b0c6a8ead0faf0df29a778339188443551995d1315",
+                "lastState": {
+                  "terminated": {
+                    "containerID": "containerd://1f620f8caccf0c5a465f13820fbaea0a1b006ee35cdd6850fb41b43cb39e5f11",
+                    "exitCode": 0,
+                    "finishedAt": "2026-11-08T03:04:24Z",
+                    "reason": "Completed",
+                    "startedAt": "2026-11-06T06:16:56Z"
+                  }
+                },
+                "name": "openbao",
+                "ready": true,
+                "restartCount": 1,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-11-08T03:04:24Z"
+                  }
+                }
+              }
+            ],
+            "phase": "Running"
+          }
+        },
+        "sourceRefs": [
+          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+        ],
+        "firstObservedAt": "2026-11-09T00:43:19.617979093Z",
+        "lastObservedAt": "2026-11-10T08:11:28.42064034Z"
+      },
+      {
+        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/b65d0462-dbe0-45f1-aa4b-39e61cb0f168",
+        "kind": "Pod",
+        "name": "ops-api-f76fdc49b-sbbb4",
+        "updatedAt": "2026-11-10T08:11:28.419494172Z",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "domain": "k8s",
+        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+        "apiGroup": "core",
+        "stableId": "b65d0462-dbe0-45f1-aa4b-39e61cb0f168",
+        "namespace": "ops-current",
+        "labels": {
+          "app": "ops-api",
+          "pod-template-hash": "f76fdc49b"
+        },
+        "attributes": {
+          "health": "normal",
+          "resourceDomain": "kubernetes",
+          "status": {
+            "conditions": [
+              {
+                "lastTransitionTime": "2026-11-10T08:10:46Z",
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastTransitionTime": "2026-11-10T08:10:46Z",
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastTransitionTime": "2026-11-10T08:10:47Z",
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastTransitionTime": "2026-11-10T08:10:47Z",
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastTransitionTime": "2026-11-10T08:10:46Z",
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "containerID": "containerd://155834e9d8c9d8ab4c6d36bb484db94597f0b895f4574cf80619aae820bf3d2e",
+                "imageID": "ops.local/current/platform-api@sha256:9fafaec4fdea1732fc3f81b3784bd3ee52eebe4a9553551a5c7a16bd09cc5e54",
+                "lastState": {},
+                "name": "api",
+                "ready": true,
+                "restartCount": 0,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-11-10T08:10:46Z"
+                  }
+                }
+              }
+            ],
+            "phase": "Running"
+          }
+        },
+        "sourceRefs": [
+          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+        ],
+        "firstObservedAt": "2026-11-10T08:10:47.412177783Z",
+        "lastObservedAt": "2026-11-10T08:11:28.419494172Z"
+      },
+      {
+        "canonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/ec7dbe15-81fd-4340-b658-3e75dd42a103",
+        "kind": "Pod",
+        "name": "ops-log-collector-vz2zm",
+        "updatedAt": "2026-11-10T08:11:28.420121037Z",
+        "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+        "domain": "k8s",
+        "scope": "79014400-9453-4cb4-9678-0fae47981d79",
+        "apiGroup": "core",
+        "stableId": "ec7dbe15-81fd-4340-b658-3e75dd42a103",
+        "namespace": "ops-current",
+        "labels": {
+          "app": "ops-log-collector",
+          "controller-revision-hash": "5d9dcc98c9",
+          "pod-template-generation": "5"
+        },
+        "attributes": {
+          "health": "normal",
+          "resourceDomain": "kubernetes",
+          "status": {
+            "conditions": [
+              {
+                "lastTransitionTime": "2026-11-08T03:05:46Z",
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastTransitionTime": "2026-11-06T06:16:42Z",
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastTransitionTime": "2026-11-08T02:39:30Z",
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastTransitionTime": "2026-11-08T02:39:30Z",
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastTransitionTime": "2026-11-06T06:16:42Z",
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "containerID": "containerd://ecd4bbe1a57c7443ca90dd7f404ee1f4f9dd01e3b0d8d74ea2762af2928d7a44",
+                "imageID": "ops.local/verification-20261019/platform-worker@sha256:48d3700cd7595781e5384821b07e8fa38aaf172ada0fe2b55832fedd661a92ad",
+                "lastState": {
+                  "terminated": {
+                    "containerID": "containerd://01e827c84561baf88b2d35ce02db7f3ea4ac80a8544fe33dabe70536cfb180d6",
+                    "exitCode": 0,
+                    "finishedAt": "2026-11-08T03:05:46Z",
+                    "reason": "Completed",
+                    "startedAt": "2026-11-08T02:39:30Z"
+                  }
+                },
+                "name": "collector",
+                "ready": true,
+                "restartCount": 2,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-11-08T03:05:46Z"
+                  }
+                }
+              }
+            ],
+            "phase": "Running"
+          }
+        },
+        "sourceRefs": [
+          "01a1ab38-fbeb-79be-91c0-8823152c8c9d"
+        ],
+        "firstObservedAt": "2026-11-09T00:43:19.617003797Z",
+        "lastObservedAt": "2026-11-10T08:11:28.420121037Z"
+      }
+    ],
+    "meta": {
+      "collectedAt": "2026-11-10T08:13:35.931990454Z",
+      "degradedSources": [
+        "kubernetes",
+        "01a1ab38-fbeb-79be-91c0-8823152c8c9d/archive",
+        "01a1ae32-5595-7eea-aa8a-ac0ff097c123/proof",
+        "01a1ae32-b7a2-7987-bc83-9a7d8855093d/npd",
+        "01a1ae32-b7a2-7987-bc83-9a7d8855093d/proof"
+      ],
+      "freshness": "stale",
+      "graphRevision": {
+        "ownerEpoch": 35,
+        "graphGeneration": 5255
+      },
+      "nextCursor": "",
+      "partial": true,
+      "schemaVersion": "resource-graph/v2",
+      "summary": {
+        "filterOptions": {
+          "kinds": [
+            "ConfigMap",
+            "DaemonSet",
+            "Deployment",
+            "EndpointSlice",
+            "Event",
+            "PersistentVolumeClaim",
+            "Pod",
+            "ReplicaSet",
+            "Service",
+            "StatefulSet"
+          ],
+          "namespaces": [
+            "ops-current"
+          ],
+          "clusterScoped": false
+        },
+        "total": 10,
+        "byKind": {
+          "Pod": 10
+        },
+        "byHealth": {
+          "normal": 10
+        }
+      },
+      "warnings": [
+        "source_continuity_unverified",
+        "scope_limited",
+        "archive_backpressure_or_unavailable",
+        "source_scope_unverified",
+        "node_kernel_source_unavailable",
+        "source_scope_unverified"
+      ]
+    },
+    "requestId": "01a1c485-0ac8-7240-83b7-518b75a28f05"
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "turn": {
+    "status": 200,
+    "body": {
+      "data": {
+        "turnId": "01a1c483-0a56-7200-890d-85b40dd5cd13",
+        "conversationId": "01a1c472-1948-7af6-8fe2-08fb4c7aa41d",
+        "jobId": "01a1c483-0a56-7201-98e1-d2eb2e8cf154",
+        "parentTurnId": "01a1c472-19d5-7e96-a5cb-be30d58cae86",
+        "state": "partial",
+        "answer": {
+          "asOf": "2026-11-10T08:11:32.906869309Z",
+          "partial": true,
+          "summary": "受控查询 resources.current（kind=Pod、namespace=ops-current、dimensions=[health]）已成功执行，返回唯一分组 normal=10（单位 resources），但该快照为 stale 且 status=partial、exact=false，并存在多个来源降级，因此不能作为精确的 Pod 总数或“全部健康”的结论。",
+          "factRefs": [
+            {
+              "factId": "sha256:840f9fc500f45f6a0a5445dc59b7f0da4bed943ee54f7d9ecc64d7e4351330a3",
+              "queryResultId": "01a1c483-1744-75e9-85a7-af7ce56a7f35"
+            }
+          ],
+          "warnings": [
+            "查询结果为 partial 且 stale，normal=10 仅为该次快照观测值，不代表精确总数",
+            "未返回的分组（abnormal/unknown/degraded）不等于零",
+            "未读取日志、未执行任何命令，符合请求约束",
+            "source_read_partial:execute_analysis_query",
+            "query_result_incomplete"
+          ],
+          "answerKind": "data",
+          "entityRefs": [],
+          "hypotheses": [],
+          "nextChecks": [
+            "待 kubernetes 等来源恢复且快照 fresh 后，重新执行 resources.current 聚合：kind=Pod、namespace=ops-current、dimensions=[health]",
+            "核对 graphRevision（generation 5252 / ownerEpoch 35）与来源连续性，确认 stale 快照的覆盖范围",
+            "如需精确 Pod 总数，可在来源完整后以 dimensions=[] 复核总数与分组之和是否一致"
+          ],
+          "evidenceRefs": [],
+          "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+          "schemaVersion": "assistant-answer/v1",
+          "degradedSources": [
+            "kubernetes",
+            "01a1ab38-fbeb-79be-91c0-8823152c8c9d/archive",
+            "01a1ae32-5595-7eea-aa8a-ac0ff097c123/proof",
+            "01a1ae32-b7a2-7987-bc83-9a7d8855093d/npd",
+            "01a1ae32-b7a2-7987-bc83-9a7d8855093d/proof"
+          ],
+          "missingEvidence": [
+            "快照 freshness=stale、status=partial、exact=false，无法发布精确 Pod 总数",
+            "结果仅含 normal 分组，未返回 abnormal/unknown/degraded 分组行，缺失分组不能推断为零",
+            "来源降级：kubernetes、archive、proof、npd 等来源不可用或未验证（source_continuity_unverified、source_scope_unverified、node_kernel_source_unavailable、archive_backpressure_or_unavailable）"
+          ],
+          "queryResultRefs": [
+            "01a1c483-1744-75e9-85a7-af7ce56a7f35"
+          ]
+        },
+        "createdAt": "2026-11-10T08:11:24.635005Z",
+        "conversationRevision": 3,
+        "budget": {
+          "durationSeconds": 600,
+          "toolCalls": 40,
+          "rawQueries": 10,
+          "resultBytes": 41943040,
+          "graphNodes": 8000,
+          "evidenceItems": 4000,
+          "modelRequests": 8,
+          "inputTokens": 524288,
+          "outputTokens": 32768,
+          "modelCostMicros": 0,
+          "consumed": {
+            "toolCalls": 2,
+            "rawQueries": 1,
+            "resultBytes": 353879,
+            "graphNodes": 0,
+            "evidenceItems": 0,
+            "modelRequests": 2,
+            "inputTokens": 26074,
+            "outputTokens": 817,
+            "modelCostMicros": 0
+          }
+        }
+      },
+      "requestId": "01a1c483-9458-7a88-8080-94a034317a9d"
+    }
+  },
+  "result": {
+    "status": 200,
+    "body": {
+      "data": {
+        "queryResultId": "01a1c483-1744-75e9-85a7-af7ce56a7f35",
+        "result": {
+          "schemaVersion": "query-result/v1",
+          "datasetId": "resources.current",
+          "planDigest": "sha256:f45612746ff4147edbe8577d968aeadb7784393232d15e352b16888cd17ed3c7",
+          "catalogDigest": "sha256:0f5d90d49b25c101606da99cf174a50300ef660fe3a399d240843c4722020c44",
+          "scopeDigest": "sha256:e406234cd9d37177a3b9473394cd3ae8fec8a2541da9556c42ed794a85547664",
+          "status": "partial",
+          "exact": false,
+          "truncated": false,
+          "dimension": "health",
+          "unit": "resources",
+          "rows": [
+            {
+              "dimension": "normal",
+              "value": 10
+            }
+          ],
+          "snapshotReadAt": "2026-11-10T08:11:27.929548287Z",
+          "graphRevision": {
+            "ownerEpoch": 35,
+            "graphGeneration": 5252
+          },
+          "freshness": "stale",
+          "warnings": [
+            "source_continuity_unverified",
+            "scope_limited",
+            "archive_backpressure_or_unavailable",
+            "source_scope_unverified",
+            "node_kernel_source_unavailable",
+            "source_scope_unverified"
+          ],
+          "degradedSources": [
+            "kubernetes",
+            "01a1ab38-fbeb-79be-91c0-8823152c8c9d/archive",
+            "01a1ae32-5595-7eea-aa8a-ac0ff097c123/proof",
+            "01a1ae32-b7a2-7987-bc83-9a7d8855093d/npd",
+            "01a1ae32-b7a2-7987-bc83-9a7d8855093d/proof"
+          ]
+        },
+        "facts": [
+          {
+            "schemaVersion": "query-fact/v1",
+            "factId": "sha256:840f9fc500f45f6a0a5445dc59b7f0da4bed943ee54f7d9ecc64d7e4351330a3",
+            "row": 0,
+            "column": "value",
+            "value": 10,
+            "unit": "resources",
+            "exact": false
+          }
+        ],
+        "contentDigest": "sha256:b782b2d8cfdb5467e42f05e960578c6103d4febd12e3b8872a8415796f131934"
+      },
+      "queryScope": {
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "namespaces": [
+          "ops-current"
+        ],
+        "canonicalIds": [],
+        "clusterScoped": false,
+        "filters": [
+          {
+            "field": "kind",
+            "operator": "eq",
+            "value": "Pod"
+          },
+          {
+            "field": "namespace",
+            "operator": "eq",
+            "value": "ops-current"
+          }
+        ],
+        "filtersKnown": true
+      },
+      "requestId": "01a1c483-be0b-717f-8e64-b07275862f6a"
+    }
+  }
+}

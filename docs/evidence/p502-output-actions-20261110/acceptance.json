@@ -1,0 +1,64 @@
+{
+  "at": "2026-11-10T13:58:00+08:00",
+  "status": "remediation_in_progress_pending_independent_review",
+  "scope": "P5-01 structured answer display and P5-02 shared output actions implemented on the Web side on the existing AssistantAnswerV1 / persisted QueryResult contracts; not a live browser acceptance, not a whole-task acceptance",
+  "base_commit": "fb50599fe9ae1b16d187207bb492231d7ef65850",
+  "feature_commit": "2dee0f2358b384c5681f7d443e8a170e7e943cd0",
+  "backend_changed": true,
+  "new_api_tables_or_dependencies": false,
+  "generated_artifacts_changed": true,
+  "evidence_type": "synthetic",
+  "checks": [
+    "cd web && npx tsc --noEmit: passed, no output",
+    "cd web && npx vitest run: 62 test files / 328 tests all passed, including the new tests/assistant_output_actions.test.tsx (8 cases) and the adjusted existing tests/observe_pages.test.tsx and tests/resource_detail.test.tsx",
+    "cd web && pnpm build: succeeded, built in 375ms",
+    "go build ./...: exit 0 (no Go source changed this round)",
+    "docs/plans/ui-v12-replication-20261021/validate-progress.py: exit 0, tasks 39 / slices 458 / contracts 179 / existing 120 / proposed 59 unchanged",
+    "docs/plans/ui-v12-replication-20261021/validate-plan.py: status passed, 5084 checks, contracts 179 / slices 458 / tasks 39 unchanged"
+  ],
+  "actions_implemented": [
+    "count-drill: countDrillTarget only for resources.current / findings.occurrences / incidents.records with a matching list filter; link carries aiDataset, aiScopeDigest, aiSnapshotAt, aiWindow, aiVersion, aiCount",
+    "turn-view: chart / values switch changes presentation only, never a submitted number",
+    "chart-point: click or keyboard on a real observation opens the point drawer with observation time, value, unit, row, QueryResult, scope digest, time window and the data statement",
+    "turn-source: caliber and source drawer with dataset, snapshot read time, scope/plan/catalog digests, time window, source version, content digest, warnings and data statement",
+    "turn-copy / turn-export: result level and answer level, public business fields and fixed identifiers only, no binding, no grantSnapshot, no raw model input, no DOM scraping and no cross-session export",
+    "ai-suggestion: suggestions only fill the draft, they are never sent automatically",
+    "manual-from-ai: session binding incidentId opens the existing /events/incidents/{id}?tab=action path, no prefilled command, no automatic confirmation, no execution created",
+    "ai-retry: the original user text of that turn is resent as an explicit new turn with its own idempotency key; the old job and its fixed output stay, no background blind replay",
+    "entry points: AskAssistantEntry / assistantEntryHref carry clusterUid, canonicalId, incidentId, logQuery, mode, from and to into the assistant"
+  ],
+  "lifecycle_handling": [
+    "cache key includes the parent scope generation, so A -> B -> A does not serve an older generation",
+    "the fact drawer closes on scope or result change",
+    "401 / 403 clears the cache of the affected scope only; a late refusal of an older scope never clears the current scope"
+  ],
+  "not_verified": [
+    "R2 same-scope drill-down against a live authorized database (cross cluster/namespace, filter intersection, paging, window, current revocation refusal) - requires the remote QA run",
+    "parent-mounted tests for the R4/R5 paths (NetworkPage click path, AssistantPage create request, retry idempotency key and 409, manual target tab)",
+    "real browser acceptance, HTML 1:1 visual acceptance, live model calls for suggestions and retry",
+    "not committed, not pushed, not deployed; P5-01/P5-02 stay in_progress in task-progress.csv"
+  ],
+  "reused_evidence_not_rerun": [
+    "docs/evidence/p502-live-20261109",
+    "docs/evidence/scope-history-combinations-20261109",
+    "docs/evidence/incident-remediation-20261109",
+    "docs/evidence/investigation-closure-20261108",
+    "docs/evidence/p405-public-workbench-20261110"
+  ],
+  "product_acceptance_asserted": false,
+  "business_runtime_tested": false,
+  "model": "minimax/MiniMax-M3.1-Flash",
+  "feature_commit_note": "feature_commit 2dee0f2 is the base/runtime commit of this round, not a new uncommitted feature commit; the remediation work of this round is uncommitted in the working tree",
+  "remediation_round": {
+    "at": "2026-11-10T14:15:00+08:00",
+    "review": "codex independent review changes_required (3 mounted probes failed, not deployed, not committed)",
+    "R1": "fixed: original row index kept in QueryDayTrend; intent state bound to scopeKey+id in QueryResultView (chartPoint/sourceOpen/copied/view/factId all cleared on switch); focusFactId opens only a loaded and authorized fact, handles same-id focus change and scope change; the 3 failed probes are now formal product tests",
+    "R2": "backend publishes a minimal public scope descriptor queryScope (clusterUid/namespaces/canonicalIds/clusterScoped/filters) from the persisted assistant_query_results.scope and the committed execute_analysis_query step filters; no grant snapshot, no internal binding, no new table or migration; the web drill now carries real filter parameters",
+    "R3": "turn and result copy/export re-read the committed result under the current authorization at click time; 403/401 writes nothing and clears only this scope cache; the payload carries queryResultRefs/evidenceRefs/formalRefs/entityRefs and the real committed numbers with fixed fact ids and units; the model summary is labelled as explanation and is not exported for a data answer",
+    "R4": "NetworkPage freezes the query window and carries it into the AI entry; AssistantPage keeps the exact ISO instant and shows/submits the same instant without truncation; MetricsPage already carries result.timeRange",
+    "R5": "the fallback active.answer path now fills onReadOnlyCheck; AssistantTurnActions renders suggestions only with onDraft; retry and manual entries keep their existing semantics",
+    "R6": "this directory documents the status per action; it does not claim a completed implementation"
+  },
+  "historical_agent_receipt": true,
+  "superseded_by": "codex-review.json and README Codex独立审核 section"
+}

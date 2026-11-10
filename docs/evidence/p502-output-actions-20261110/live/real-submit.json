@@ -1,0 +1,63 @@
+{
+  "commit": "f2c3db9eb4914590c31c970d8391896c37efe37c",
+  "conversationId": "01a1c472-1948-7af6-8fe2-08fb4c7aa41d",
+  "turn": {
+    "turnId": "01a1c472-19d5-7e96-a5cb-be30d58cae86",
+    "conversationId": "01a1c472-1948-7af6-8fe2-08fb4c7aa41d",
+    "jobId": "01a1c472-19d5-7e97-afdf-30665beb9a23",
+    "state": "queued",
+    "createdAt": "2026-11-10T07:52:54.492282Z",
+    "conversationRevision": 2,
+    "budget": {
+      "durationSeconds": 120,
+      "toolCalls": 8,
+      "rawQueries": 10,
+      "resultBytes": 41943040,
+      "graphNodes": 8000,
+      "evidenceItems": 4000,
+      "modelRequests": 6,
+      "inputTokens": 524288,
+      "outputTokens": 32768,
+      "modelCostMicros": 0,
+      "consumed": {
+        "toolCalls": 0,
+        "rawQueries": 0,
+        "resultBytes": 0,
+        "graphNodes": 0,
+        "evidenceItems": 0,
+        "modelRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "modelCostMicros": 0
+      }
+    }
+  },
+  "writes": [
+    {
+      "method": "POST",
+      "path": "/api/v1/assistant/conversations",
+      "body": {
+        "title": "运维问数",
+        "mode": "data_query",
+        "authorizationDomain": "operational",
+        "timezone": "Asia/Shanghai",
+        "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+        "namespaceSelection": [],
+        "includeClusterScoped": false
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/assistant/conversations/01a1c472-1948-7af6-8fe2-08fb4c7aa41d/messages",
+      "body": {
+        "message": "实际查询当前授权的 ops-current 命名空间 Pod 数量，按健康状态分组。仅使用 resources.current，kind=Pod、namespace=ops-current。必须执行受控查询并引用真实 QueryResult/Fact，不读取日志、不执行命令。",
+        "expectedConversationRevision": 1,
+        "budgetTightening": {
+          "toolCalls": 8,
+          "modelRequests": 6,
+          "durationSeconds": 120
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,155 @@
+{
+  "turn": {
+    "status": 200,
+    "body": {
+      "data": {
+        "turnId": "01a1c472-19d5-7e96-a5cb-be30d58cae86",
+        "conversationId": "01a1c472-1948-7af6-8fe2-08fb4c7aa41d",
+        "jobId": "01a1c472-19d5-7e97-afdf-30665beb9a23",
+        "state": "partial",
+        "answer": {
+          "asOf": "2026-11-10T07:53:05.801404917Z",
+          "partial": true,
+          "summary": "无法给出 ops-current 命名空间按健康状态分组的 Pod 数量：受控查询 resources.current（kind=Pod、namespace=ops-current、dimensions=[health]）执行失败，返回错误 INVESTIGATION_NOT_AUTHORIZED，因此没有任何可引用的 QueryResult/Fact，也不能据此推断为零或正常。",
+          "factRefs": [],
+          "warnings": [
+            "查询失败不等于 Pod 数量为零或健康状态正常；缺失观测不能证明正常性",
+            "未读取日志、未执行任何命令，符合请求约束",
+            "source_read_failed:execute_analysis_query:INVESTIGATION_NOT_AUTHORIZED"
+          ],
+          "answerKind": "unsupported",
+          "entityRefs": [],
+          "hypotheses": [],
+          "nextChecks": [
+            "确认当前授权域是否允许对 resources.current 执行 aggregate 查询（INVESTIGATION_NOT_AUTHORIZED 的授权原因）",
+            "授权恢复后重新执行 resources.current 聚合：kind=Pod、namespace=ops-current、dimensions=[health]",
+            "若授权范围需调整，请由平台侧核对 grantSnapshot 与 namespace 绑定后再重试"
+          ],
+          "evidenceRefs": [],
+          "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+          "schemaVersion": "assistant-answer/v1",
+          "degradedSources": [],
+          "missingEvidence": [
+            "execute_analysis_query 对 resources.current 的聚合查询失败（errorCode=INVESTIGATION_NOT_AUTHORIZED），未返回任何分组计数事实",
+            "缺少 ops-current 命名空间 Pod 按 health（normal/abnormal/unknown/degraded）分组的真实计数与快照新鲜度信息",
+            "未获得该快照是否 fresh、完整、无降级的说明，无法判断精确零是否可发布"
+          ],
+          "queryResultRefs": []
+        },
+        "createdAt": "2026-11-10T07:52:54.492282Z",
+        "conversationRevision": 2,
+        "budget": {
+          "durationSeconds": 120,
+          "toolCalls": 8,
+          "rawQueries": 10,
+          "resultBytes": 41943040,
+          "graphNodes": 8000,
+          "evidenceItems": 4000,
+          "modelRequests": 6,
+          "inputTokens": 524288,
+          "outputTokens": 32768,
+          "modelCostMicros": 0,
+          "consumed": {
+            "toolCalls": 2,
+            "rawQueries": 1,
+            "resultBytes": 395507,
+            "graphNodes": 0,
+            "evidenceItems": 100,
+            "modelRequests": 2,
+            "inputTokens": 23853,
+            "outputTokens": 627,
+            "modelCostMicros": 0
+          }
+        }
+      },
+      "requestId": "01a1c472-c1e9-7d49-a34d-471f5b8ba00b"
+    }
+  },
+  "steps": {
+    "status": 200,
+    "body": {
+      "data": [
+        {
+          "argsSummary": {},
+          "stepId": "01a1c472-1d60-7035-8c5a-4b54a1277ab4",
+          "toolName": "get_assistant_context",
+          "argsDigest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "state": "succeeded",
+          "result": {
+            "budget": {
+              "consumed": {
+                "evidenceItems": 0,
+                "graphNodes": 0,
+                "inputTokens": 0,
+                "modelCostMicros": 0,
+                "modelRequests": 0,
+                "outputTokens": 0,
+                "rawQueries": 0,
+                "resultBytes": 27289,
+                "toolCalls": 1
+              },
+              "remaining": {
+                "evidenceItems": 4000,
+                "graphNodes": 8000,
+                "inputTokens": 524288,
+                "modelCostMicros": 0,
+                "modelRequests": 6,
+                "outputTokens": 32768,
+                "rawQueries": 10,
+                "resultBytes": 41915749,
+                "toolCalls": 7
+              }
+            },
+            "data": {
+              "requestedAt": "2026-11-10T07:52:54.485744109Z",
+              "schemaVersion": "assistant-input/v1"
+            },
+            "degradedSources": [],
+            "evidenceRefs": [],
+            "partial": false,
+            "schemaVersion": "tool-response/v3",
+            "state": "succeeded",
+            "tool": "get_assistant_context"
+          }
+        },
+        {
+          "argsSummary": {
+            "context": "已授权故障上下文与持久工具结果",
+            "rawPromptOmitted": true
+          },
+          "stepId": "01a1c472-2115-7cfd-9c47-ab1a521a5ca9",
+          "toolName": "model",
+          "argsDigest": "sha256:daf9bc34ae44b49215257d1373c53e7bb02e95f1aabcaa9227ce33d3d0f676d3",
+          "state": "succeeded",
+          "result": {
+            "provider": "openai-compatible",
+            "usageKnown": true
+          }
+        },
+        {
+          "argsSummary": {},
+          "stepId": "01a1c472-363e-72fc-88ca-0ab602041c84",
+          "toolName": "execute_analysis_query",
+          "argsDigest": "sha256:f4ef214efd46b8d3eb73a599fe4bc10e9c67f5a8203cc6f775893172e95e95c7",
+          "state": "failed",
+          "errorCode": "INVESTIGATION_NOT_AUTHORIZED"
+        },
+        {
+          "argsSummary": {
+            "context": "已授权故障上下文与持久工具结果",
+            "rawPromptOmitted": true
+          },
+          "stepId": "01a1c472-36bd-7b12-b0d2-beb6554d5faf",
+          "toolName": "model",
+          "argsDigest": "sha256:a141f48b22ea459442a9b0baeb594d7bedc48bd21e1ce482a5ea0d74b5624827",
+          "state": "succeeded",
+          "result": {
+            "provider": "openai-compatible",
+            "usageKnown": true
+          }
+        }
+      ],
+      "requestId": "01a1c472-fe26-7674-8016-c5a4041b792d"
+    }
+  }
+}
