@@ -714,7 +714,17 @@ func StartSP04Worker(ctx context.Context, pool *pgxpool.Pool, archive *evidence.
 					currentProbe.To = time.Now().UTC()
 					currentProbe.From = currentProbe.To.Add(-time.Minute)
 				}
-				return (evidence.Repository{Pool: pool}).VerifyVictoria(proofContext, adapter, currentProbe)
+				verify := func(ctx context.Context, candidate evidence.Query) error {
+					return (evidence.Repository{Pool: pool}).VerifyVictoria(ctx, adapter, candidate)
+				}
+				if source.Binding.KubernetesLogArchive() || source.Binding.KubernetesMetrics() {
+					owner, ok := handlers[source.Binding.Tenant+"|"+source.Binding.ScopeMapping.Scopes["cluster"][0]]
+					if !ok {
+						return evidence.ErrScopeUnverified
+					}
+					return verifyCurrentVictoriaProbe(proofContext, source.Binding, currentProbe, owner.Graph, verify)
+				}
+				return verify(proofContext, currentProbe)
 			}, handlers, source.Binding, runtime)
 		}
 		adapters[source.Binding.SourceID] = adapter
