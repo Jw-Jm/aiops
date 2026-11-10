@@ -153,6 +153,15 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 	if err := a.CheckScope(ctx, j, name, args); err != nil {
 		return out, err
 	}
+	// Analytics checks authority before and after graph reads, outside the
+	// graph transport itself. A native Worker has a persisted task, not a
+	// browser session or a legacy binding, at both of those checks.
+	if j.Assistant.AuthorizationSource == investigation.AuditSourceNative {
+		if nativeTaskProof(j) == nil {
+			return out, investigation.ErrDenied
+		}
+		ctx = graph.WithTaskAuthority(ctx, j.JobID)
+	}
 	h := a.Legacy.SP04
 	if h == nil {
 		return out, investigation.ErrDenied
