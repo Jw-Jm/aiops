@@ -201,7 +201,7 @@ func (h *SP05Handlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case len(path) == 2 && path[1] == "claim":
 		var c struct {
 			ExpectedRevision int64  `json:"expectedRevision"`
-			Note              string `json:"note"`
+			Note             string `json:"note"`
 		}
 		if decodeSP05(r, &c) != nil {
 			fail(finding.ErrInvalid)
@@ -339,10 +339,21 @@ func (h *SP05Handlers) read(ctx context.Context, actor auth.RequestContext, r *h
 	if err != nil {
 		return nil, "", graph.ErrScope
 	}
+	grantScope := scope
+	if len(path) == 1 {
+		dataset := "findings.occurrences"
+		if path[0] == "incidents" {
+			dataset = "incidents.records"
+		}
+		scope, r, err = assistantDrill(ctx, h.Pool, actor, r, dataset, scope)
+		if err != nil {
+			return nil, "", graph.ErrScope
+		}
+	}
 	defer func() {
 		if readErr == nil {
 			current, err := (graph.Authorization{Pool: h.Pool}).Effective(ctx, scope.Tenant, actor.Subject, scope.Cluster)
-			if err != nil || graph.ScopeDigest(current) != graph.ScopeDigest(scope) {
+			if err != nil || graph.ScopeDigest(current) != graph.ScopeDigest(grantScope) {
 				data = nil
 				next = ""
 				readErr = graph.ErrScope
@@ -406,7 +417,7 @@ func (h *SP05Handlers) read(ctx context.Context, actor auth.RequestContext, r *h
 	}
 	query := r.URL.Query()
 	query.Del("cursor")
-	digest := graph.ScopeDigest(scope)
+	digest := graph.ScopeDigest(grantScope)
 	queryHash := finding.Hash([]string{path[0], query.Encode()})
 	cursorScope := graph.ScopeDigest([]any{actor.TenantID.String(), actor.Subject, scope})
 	after := ""

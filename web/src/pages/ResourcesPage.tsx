@@ -22,6 +22,8 @@ import { FullText, Details } from "../components/Details";
 import { Status } from "../components/Status";
 import { V12Drawer, V12Modal } from "../components/v12/Layer";
 import { record, text, displayTime } from "../components/data";
+import { AskAssistantEntry } from "../features/assistant/AskAssistantEntry";
+import { AssistantDrillNotice } from "../features/assistant/drill";
 export function ResourcesPage() {
   const { scopeKey } = useOperationalCluster();
   const [url] = useSearchParams();
@@ -54,6 +56,8 @@ function ResourceCatalog() {
         "health",
         "label",
         "cursor",
+        "assistantQueryResultId",
+        "assistantGroup",
         "sort",
       ]
         .filter((k) => url.has(k))
@@ -240,6 +244,7 @@ function ResourceCatalog() {
       />
       <section className="section">
         <h2>授权资源</h2>
+        <AssistantDrillNotice />
         <p className="muted">
           导出仅包含本页资源的重新授权投影，不代表全部匹配结果；选择 2 至 4
           个本页资源可对比静态字段。
@@ -404,6 +409,15 @@ function ResourceCatalog() {
                 "health",
                 "label",
                 "cursor",
+                "assistantQueryResultId",
+                "assistantGroup",
+                "aiFrom",
+                "aiDataset",
+                "aiScopeDigest",
+                "aiSnapshotAt",
+                "aiWindow",
+                "aiVersion",
+                "aiCount",
                 "sort",
                 "order",
               ])
@@ -678,6 +692,15 @@ function ResourceCatalog() {
         footer={
           shownDetail && !detail.isError && !detail.isFetching ? (
             <Space>
+              <AskAssistantEntry
+                entry={{
+                  clusterUid: cluster,
+                  canonicalId: shownDetail.canonicalId,
+                  mode: "troubleshoot",
+                }}
+                label="发起排查"
+                primary
+              />
               <Link
                 to={
                   "/resources/detail?" +

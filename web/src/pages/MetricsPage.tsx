@@ -6,6 +6,7 @@ import { PageHeading } from "../components/PageHeading";
 import { Surface, DataTable } from "../components/v12/primitives";
 import { useOperationalCluster } from "../app/ClusterContext";
 import { observation, type ObservationCapabilities } from "../api/observation";
+import { AskAssistantEntry } from "../features/assistant/AskAssistantEntry";
 import {
   metrics,
   type MetricCapability,
@@ -209,6 +210,19 @@ function MetricWorkspace({
           >
             查询指标
           </Button>
+          <AskAssistantEntry
+            entry={{
+              clusterUid: cluster,
+              canonicalId: canonical || undefined,
+              mode: "troubleshoot",
+              ...(result?.timeRange
+                ? { from: result.timeRange.from, to: result.timeRange.to }
+                : {}),
+            }}
+            disabled={!canonical}
+            reason="请先选择要询问的资源。"
+            label="按此范围询问 AI"
+          />
         </div>
       </Surface>
       {(resources.error || caps.error || error) && (

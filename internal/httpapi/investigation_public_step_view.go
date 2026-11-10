@@ -110,6 +110,19 @@ func publicStepData(tool string, data any) any {
 		return publicAssistantContextData(data)
 	case "get_resource_investigation_context":
 		return publicResourceInvestigationContextData(data)
+	case "execute_analysis_query":
+		// The persisted scope authorizes recovery; public results expose its
+		// digest and the separately authorized queryScope descriptor instead.
+		if fields, ok := data.(map[string]any); ok {
+			out := make(map[string]any, len(fields))
+			for key, value := range fields {
+				if key != "scope" {
+					out[key] = stripInternalStepContext(value)
+				}
+			}
+			return out
+		}
+		return nil
 	default:
 		return stripInternalStepContext(data)
 	}

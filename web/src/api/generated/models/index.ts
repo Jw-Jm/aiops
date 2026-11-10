@@ -110,6 +110,8 @@ export * from './assistantQueryResultV1StatisticsItemUnit.ts';
 export * from './assistantQueryResultV1Status.ts';
 export * from './assistantQueryResultV1TimeRange.ts';
 export * from './assistantQueryResultV1Unit.ts';
+export * from './assistantQueryScopeFilterV1.ts';
+export * from './assistantQueryScopeV1.ts';
 export * from './assistantRebindV1.ts';
 export * from './assistantRebindV1TimeRange.ts';
 export * from './assistantRenameV1.ts';

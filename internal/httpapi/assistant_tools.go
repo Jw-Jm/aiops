@@ -581,7 +581,7 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 			if err != nil {
 				return out, err
 			}
-			out.Data = map[string]any{"storedQueryResult": stored, "queryResultRefs": []uuid.UUID{stored.QueryResultID}, "scope": plan.ExecutionScope()}
+			out.Data = map[string]any{"storedQueryResult": stored, "queryResultRefs": []uuid.UUID{stored.QueryResultID}, "scope": plan.ExecutionScope(), "filters": intent.Filters}
 			out.Partial = !stored.Result.Exact
 			return out, nil
 		}
@@ -604,7 +604,7 @@ func (a AssistantTools) Invoke(ctx context.Context, j investigation.Job, name st
 		if err != nil {
 			return out, err
 		}
-		out.Data = map[string]any{"storedQueryResult": stored, "queryResultRefs": []uuid.UUID{stored.QueryResultID}, "scope": plan.ExecutionScope()}
+		out.Data = map[string]any{"storedQueryResult": stored, "queryResultRefs": []uuid.UUID{stored.QueryResultID}, "scope": plan.ExecutionScope(), "filters": intent.Filters}
 		out.Partial = !stored.Result.Exact
 		out.DegradedSources = stored.Result.DegradedSources
 	case "get_resource_investigation_context":

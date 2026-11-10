@@ -8,6 +8,15 @@ import type { CanonicalID } from './canonicalID.ts';
 
 export type GetIncidentsParams = {
 /**
+ * Reauthorize a committed assistant result and constrain this live list to its original scope and filters.
+ */
+assistantQueryResultId?: string;
+/**
+ * Original group value to drill into; accepted only with assistantQueryResultId.
+ * @maxLength 253
+ */
+assistantGroup?: string;
+/**
  * @minLength 1
  */
 clusterUid: string;

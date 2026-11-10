@@ -124,36 +124,44 @@ func validateStoredQueryResult(out StoredQueryResult) error {
 	return nil
 }
 func loadQueryResultTx(ctx context.Context, tx pgx.Tx, j Job, id uuid.UUID) (StoredQueryResult, error) {
+	out, _, err := loadQueryResultScopeTx(ctx, tx, j, id)
+	return out, err
+}
+
+// loadQueryResultScopeTx authorizes the query result read and returns the
+// persisted scope of that row. The scope is returned only after the read has
+// been authorized, so callers can publish it without a second check.
+func loadQueryResultScopeTx(ctx context.Context, tx pgx.Tx, j Job, id uuid.UUID) (StoredQueryResult, graph.Scope, error) {
 	var out StoredQueryResult
 	var b, scopeRaw []byte
 	var owner string
 	var conversation uuid.UUID
+	var scope graph.Scope
 	err := tx.QueryRow(ctx, `SELECT q.result,q.scope,q.owner_subject,t.conversation_id FROM investigation.assistant_query_results q JOIN investigation.assistant_turns t USING(tenant_id,turn_id) WHERE q.tenant_id=$1 AND q.query_result_id=$2 AND (q.retain_until>clock_timestamp() OR q.legal_hold)`, j.TenantID, id).Scan(&b, &scopeRaw, &owner, &conversation)
 	if err != nil {
-		return out, ErrDenied
+		return out, scope, ErrDenied
 	}
-	var scope graph.Scope
 	if json.Unmarshal(b, &out) != nil || json.Unmarshal(scopeRaw, &scope) != nil || validateStoredQueryResult(out) != nil {
-		return out, ErrInvalid
+		return out, scope, ErrInvalid
 	}
 	if j.Assistant == nil || owner != j.Subject || conversation != j.Assistant.ConversationID || !ScopeSubset(j.Scope, scope) || out.Result.ScopeDigest != graph.ScopeDigest(scope) {
-		return out, ErrDenied
+		return out, scope, ErrDenied
 	}
 	if out.Result.DatasetID == "resources.current" {
 		// A changed graph owner invalidates replay, even if the subject still has rights.
 		var epoch int64
 		if tx.QueryRow(ctx, `SELECT owner_epoch FROM platform.graph_ownership WHERE tenant_id=$1 AND cluster_uid=$2 AND route_expires_at>clock_timestamp()`, j.TenantID, j.Scope.Cluster).Scan(&epoch) != nil || epoch != out.Result.GraphRevision.OwnerEpoch {
-			return out, ErrDenied
+			return out, scope, ErrDenied
 		}
 	}
 	if manifest := out.Result.SourceManifest; manifest != nil {
 		var source evidence.Binding
 		var mapping []byte
 		if tx.QueryRow(ctx, `SELECT source_type,revision,backend_logical_id,data_scope_mapping FROM platform.source_registrations WHERE tenant_id=$1 AND source_id=$2 AND status='active'`, j.TenantID, manifest.SourceID).Scan(&source.SourceType, &source.Revision, &source.BackendLogicalID, &mapping) != nil || json.Unmarshal(mapping, &source.ScopeMapping) != nil || source.Revision != manifest.Revision || evidence.BindingScopeDigest(source) != manifest.BindingDigest {
-			return out, ErrDenied
+			return out, scope, ErrDenied
 		}
 	}
-	return out, nil
+	return out, scope, nil
 }
 
 // ValidateAssistantAnswerTx accepts only references from committed tool results.

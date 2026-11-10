@@ -46,9 +46,14 @@ components['AssistantSubmitMessageV1']=obj({'message':{'type':'string','minLengt
 tightening_dimension={'type':'integer','format':'int64','minimum':0,'description':'0 或省略表示该维度不请求收紧，沿用当次准入额度。高于当次准入额度的值按当次准入额度收紧（clamp），不会放大额度；高于平台上限的值被拒绝。非空值必须是非负整数。'}
 components['AssistantBudgetTighteningV1']=obj({k:dict(tightening_dimension) for k in ['durationSeconds','toolCalls','rawQueries','resultBytes','graphNodes','evidenceItems','modelRequests','inputTokens','outputTokens']},[])
 components['AssistantStoredQueryResultV1']=obj({'queryResultId':uid,'result':ref('AssistantQueryResultV1'),'facts':arr(ref('AssistantQueryFactV1')),'contentDigest':text})
+components['AssistantQueryScopeFilterV1']=obj({'field':text,'operator':text,'value':text})
+components['AssistantQueryScopeV1']=obj({'clusterUid':text,'namespaces':arr(text),'canonicalIds':arr(text),'clusterScoped':{'type':'boolean'},'filters':arr(ref('AssistantQueryScopeFilterV1')),'filtersKnown':{'type':'boolean'}})
 components['AssistantEventV1']=obj({'eventId':{'type':'integer','format':'int64'},'turnId':uid,'type':text,'payload':{'type':'object','additionalProperties':True},'occurredAt':timestamp})
-for name,data in [('AssistantConversationEnvelopeV1',ref('AssistantConversationV1')),('AssistantConversationListV1',arr(ref('AssistantConversationV1'))),('AssistantMessagesEnvelopeV1',arr(ref('AssistantMessageV1'))),('AssistantTurnEnvelopeV1',ref('AssistantTurnV1')),('AssistantQueryEnvelopeV1',ref('AssistantStoredQueryResultV1'))]:
+for name,data in [('AssistantConversationEnvelopeV1',ref('AssistantConversationV1')),('AssistantConversationListV1',arr(ref('AssistantConversationV1'))),('AssistantMessagesEnvelopeV1',arr(ref('AssistantMessageV1'))),('AssistantTurnEnvelopeV1',ref('AssistantTurnV1'))]:
  components[name]=obj({'data':data,'requestId':text,'meta':obj({'nextCursor':text})},['data','requestId'])
+# The query result endpoint always publishes the scope of the submitted query;
+# older envelopes do not carry it, so the property stays optional.
+components['AssistantQueryEnvelopeV1']=obj({'data':ref('AssistantStoredQueryResultV1'),'queryScope':ref('AssistantQueryScopeV1'),'requestId':text,'meta':obj({'nextCursor':text})},['data','requestId'])
 components['AssistantCapabilitiesEnvelopeV1']=obj({'data':obj({'enabled':{'type':'boolean'},'faultChainEnabled':{'type':'boolean'},'catalog':{'type':'object','additionalProperties':True},'virtualization':text,'runtimeAcceptance':text,'taskKinds':arr(text),'sourceCapabilityStatus':text,'sourceCapabilities':arr({'type':'object','additionalProperties':True}),'networkCapabilities':arr(obj({'network':{'enum':['live','fixture_only','disabled/unverified']},'l7':{'enum':['disabled','live','fixture_only']},'trace':{'const':'CAPABILITY_DISABLED'}}))}),'requestId':text})
 components['AssistantResourceSourceStepEnvelopeV1']=obj({'data':{'type':'object','additionalProperties':True},'requestId':text})
 components['AssistantFaultChainContextEnvelopeV1']=obj({'data':ref('AssistantFaultChainContextV1'),'requestId':text})

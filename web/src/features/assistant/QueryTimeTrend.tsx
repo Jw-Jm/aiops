@@ -1,12 +1,23 @@
 import type { AssistantQueryResultV1 } from "../../api/generated/models";
 
-export function QueryTimeTrend({ result }: { result: AssistantQueryResultV1 }) {
+export function QueryTimeTrend({
+  result,
+  onPointSelect,
+}: {
+  result: AssistantQueryResultV1;
+  onPointSelect?: (point: {
+    dimension: string;
+    value: number;
+    unit: string;
+    row: number;
+  }) => void;
+}) {
   if (!result.timeRange || !result.stepSeconds || !result.rows.length)
     return null;
   const start = Date.parse(result.timeRange.from),
     end = Date.parse(result.timeRange.to);
   const points = result.rows
-    .map((row) => ({ ...row, time: Date.parse(row.dimension) }))
+    .map((row, index) => ({ ...row, time: Date.parse(row.dimension), index }))
     .filter((row) => Number.isFinite(row.time) && Number.isFinite(row.value))
     .sort((a, b) => a.time - b.time);
   if (!points.length || end <= start) return null;
@@ -45,6 +56,36 @@ export function QueryTimeTrend({ result }: { result: AssistantQueryResultV1 }) {
                 {point.dimension}：{point.value} {result.unit}
               </title>
             </circle>
+            {onPointSelect && (
+              <circle
+                cx={x(point.time)}
+                cy={y(point.value)}
+                r="9"
+                fill="transparent"
+                style={{ cursor: "pointer" }}
+                role="button"
+                tabIndex={0}
+                aria-label={`${point.dimension} ${point.value} ${result.unit}`}
+                onClick={() =>
+                  onPointSelect({
+                    dimension: point.dimension,
+                    value: point.value,
+                    unit: result.unit,
+                    row: point.index,
+                  })
+                }
+                onKeyDown={(event) => {
+                  if (event.key !== "Enter" && event.key !== " ") return;
+                  event.preventDefault();
+                  onPointSelect({
+                    dimension: point.dimension,
+                    value: point.value,
+                    unit: result.unit,
+                    row: point.index,
+                  });
+                }}
+              />
+            )}
           </g>
         ))}
         <text x="40" y="162" fontSize="11" fill="currentColor">

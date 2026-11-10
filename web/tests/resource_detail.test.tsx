@@ -141,6 +141,7 @@ it("resolves the exact resource in current cluster before entity read; selects t
       new URLSearchParams({
         clusterUid: "cluster-a",
         canonicalId: node.canonicalId,
+        mode: "troubleshoot",
       }),
   );
   expect(screen.getByText("登记版本")).toBeVisible();

@@ -144,6 +144,15 @@ func (h *SP04Handlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		fail(403, "FORBIDDEN")
 		return
 	}
+	grantScope := scope
+	if q.QueryKind == "list" {
+		scope, r, err = assistantDrill(r.Context(), h.Pool, request, r, "resources.current", scope)
+		if err != nil {
+			fail(403, "FORBIDDEN")
+			return
+		}
+		q.Kind, q.Namespace, q.Name, q.Health = r.URL.Query().Get("kind"), r.URL.Query().Get("namespace"), r.URL.Query().Get("name"), r.URL.Query().Get("health")
+	}
 	q.Scope = scope
 	if len(q.CanonicalIDs) > 50 {
 		fail(400, "INVALID_ARGUMENT")
@@ -189,7 +198,7 @@ func (h *SP04Handlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	if cursor := r.URL.Query().Get("cursor"); cursor != "" {
 		var bound graphCursor
-		if decodeCursor(h.SigningKey.Public().(ed25519.PublicKey), cursor, &bound) != nil || bound.ScopeDigest != graph.ScopeDigest(scope) || bound.QueryDigest != graph.QueryDigest(q) {
+		if decodeCursor(h.SigningKey.Public().(ed25519.PublicKey), cursor, &bound) != nil || bound.ScopeDigest != graph.ScopeDigest(scope) || bound.QueryDigest != resourceListDigest(q, r.URL.Query()) {
 			fail(409, "CONFLICT")
 			return
 		}
@@ -200,6 +209,9 @@ func (h *SP04Handlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	boundedRead, cancelRead := context.WithTimeout(r.Context(), 4*time.Second)
 	defer cancelRead()
 	reply, err := generationRead(boundedRead, q.CursorRevision != nil, func() ([]byte, error) {
+		if r.URL.Query().Has("assistantQueryResultId") {
+			return h.callWithGrantDigest(boundedRead, route.Endpoint, "/internal/v1/graph:query", "platform-graph-query", request.Subject, scope, raw, graph.ScopeDigest(grantScope), internalProofFromContext(r.Context()))
+		}
 		return h.call(boundedRead, route.Endpoint, "/internal/v1/graph:query", "platform-graph-query", request.Subject, scope, raw)
 	})
 	if err != nil {
@@ -231,13 +243,13 @@ func (h *SP04Handlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	current, err := (graph.Authorization{Pool: h.Pool}).Effective(r.Context(), scope.Tenant, request.Subject, cluster)
-	if err != nil || graph.ScopeDigest(current) != graph.ScopeDigest(scope) {
+	if err != nil || graph.ScopeDigest(current) != graph.ScopeDigest(grantScope) {
 		fail(409, "CONFLICT")
 		return
 	}
 	next := ""
 	if result.NextCanonicalID != "" {
-		bound := graphCursor{ScopeDigest: graph.ScopeDigest(scope), QueryDigest: graph.QueryDigest(q), Revision: result.GraphRevision, After: result.NextCanonicalID}
+		bound := graphCursor{ScopeDigest: graph.ScopeDigest(scope), QueryDigest: resourceListDigest(q, r.URL.Query()), Revision: result.GraphRevision, After: result.NextCanonicalID}
 		next, _ = encodeCursor(h.SigningKey, bound)
 	}
 	if q.QueryKind == "list" {

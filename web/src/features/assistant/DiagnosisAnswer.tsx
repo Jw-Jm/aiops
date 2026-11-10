@@ -7,6 +7,7 @@ import { QueryResultView } from "./QueryResultView";
 import type { FaultChainCheckControls } from "./FaultChainGapCheck";
 import { ResourceCorrelation } from "./ResourceCorrelation";
 import { FaultChainPanel } from "./FaultChainPanel";
+import { AssistantTurnActions } from "./AssistantTurnActions";
 
 function warningLabel(value: string) {
   if (value.startsWith("source_read_failed:"))
@@ -37,11 +38,19 @@ export function DiagnosisAnswer({
   turnId,
   onReadOnlyCheck,
   checkControls,
+  conversationId,
+  onManual,
+  onRetry,
+  suggestions,
 }: {
   answer: AssistantAnswerV1;
   turnId?: string;
   onReadOnlyCheck?: (message: string) => void;
   checkControls?: FaultChainCheckControls;
+  conversationId?: string;
+  onManual?: () => void;
+  onRetry?: () => void;
+  suggestions?: { key: string; label: string; draft: string }[];
 }) {
   return (
     <Space orientation="vertical" style={{ width: "100%" }}>
@@ -209,6 +218,16 @@ export function DiagnosisAnswer({
         </Space>
       )}
       <Typography.Text type="secondary">{answer.scopeSummary}</Typography.Text>
+      {turnId && (
+        <AssistantTurnActions
+          answer={answer}
+          identity={{ conversationId, turnId }}
+          suggestions={suggestions}
+          onDraft={onReadOnlyCheck}
+          onManual={onManual}
+          onRetry={onRetry}
+        />
+      )}
     </Space>
   );
 }

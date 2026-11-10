@@ -156,3 +156,19 @@ func TestPublicStepResultOfLegacyStep(t *testing.T) {
 		}
 	}
 }
+
+func TestPublicAnalysisStepKeepsFactsWithoutRecoveryScope(t *testing.T) {
+	raw := json.RawMessage(`{"tool":"execute_analysis_query","state":"succeeded","data":{"scope":{"authorizationRevision":"private-revision","namespaces":["apps"]},"queryResultRefs":["result-1"],"filters":[{"field":"kind","operator":"eq","value":"Pod"}],"storedQueryResult":{"result":{"rows":[{"dimension":"normal","value":7}]}}}}`)
+	body := string(publicStepResult("execute_analysis_query", raw))
+	if strings.Contains(body, "authorizationRevision") || strings.Contains(body, `"scope"`) {
+		t.Fatal("recovery authority published", body)
+	}
+	for _, want := range []string{`"queryResultRefs":["result-1"]`, `"value":7`, `"field":"kind"`} {
+		if !strings.Contains(body, want) {
+			t.Fatal("public fact lost", body)
+		}
+	}
+	if !strings.Contains(string(raw), "private-revision") {
+		t.Fatal("stored input changed")
+	}
+}

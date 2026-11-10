@@ -2872,7 +2872,8 @@ type AssistantQueryEnvelopeV1 struct {
 	Meta *struct {
 		NextCursor string `json:"nextCursor"`
 	} `json:"meta,omitempty"`
-	RequestId string `json:"requestId"`
+	QueryScope *AssistantQueryScopeV1 `json:"queryScope,omitempty"`
+	RequestId  string                 `json:"requestId"`
 }
 
 // AssistantQueryFactV1 defines model for AssistantQueryFactV1.
@@ -2956,6 +2957,23 @@ type AssistantQueryResultV1 struct {
 	Truncated bool        `json:"truncated"`
 	Unit      interface{} `json:"unit"`
 	Warnings  []string    `json:"warnings"`
+}
+
+// AssistantQueryScopeFilterV1 defines model for AssistantQueryScopeFilterV1.
+type AssistantQueryScopeFilterV1 struct {
+	Field    string `json:"field"`
+	Operator string `json:"operator"`
+	Value    string `json:"value"`
+}
+
+// AssistantQueryScopeV1 defines model for AssistantQueryScopeV1.
+type AssistantQueryScopeV1 struct {
+	CanonicalIds  []string                      `json:"canonicalIds"`
+	ClusterScoped bool                          `json:"clusterScoped"`
+	ClusterUid    string                        `json:"clusterUid"`
+	Filters       []AssistantQueryScopeFilterV1 `json:"filters"`
+	FiltersKnown  bool                          `json:"filtersKnown"`
+	Namespaces    []string                      `json:"namespaces"`
 }
 
 // AssistantRebindV1 defines model for AssistantRebindV1.
@@ -6184,9 +6202,14 @@ type QueryEvidencedefaultJSONResponseBody struct {
 
 // GetFindingsParams defines parameters for GetFindings.
 type GetFindingsParams struct {
-	ClusterUid string  `form:"clusterUid" json:"clusterUid"`
-	State      *string `form:"state,omitempty" json:"state,omitempty"`
-	Severity   *string `form:"severity,omitempty" json:"severity,omitempty"`
+	// AssistantQueryResultId Reauthorize a committed assistant result and constrain this live list to its original scope and filters.
+	AssistantQueryResultId *openapi_types.UUID `form:"assistantQueryResultId,omitempty" json:"assistantQueryResultId,omitempty"`
+
+	// AssistantGroup Original group value to drill into; accepted only with assistantQueryResultId.
+	AssistantGroup *string `form:"assistantGroup,omitempty" json:"assistantGroup,omitempty"`
+	ClusterUid     string  `form:"clusterUid" json:"clusterUid"`
+	State          *string `form:"state,omitempty" json:"state,omitempty"`
+	Severity       *string `form:"severity,omitempty" json:"severity,omitempty"`
 
 	// ResourceCanonicalId Percent-encode the complete Canonical ID value per RFC 3986; the server decodes and validates it.
 	ResourceCanonicalId *CanonicalID `form:"resourceCanonicalId,omitempty" json:"resourceCanonicalId,omitempty"`
@@ -6223,9 +6246,14 @@ type IngestFindingdefaultJSONResponseBody struct {
 
 // GetIncidentsParams defines parameters for GetIncidents.
 type GetIncidentsParams struct {
-	ClusterUid string  `form:"clusterUid" json:"clusterUid"`
-	State      *string `form:"state,omitempty" json:"state,omitempty"`
-	Severity   *string `form:"severity,omitempty" json:"severity,omitempty"`
+	// AssistantQueryResultId Reauthorize a committed assistant result and constrain this live list to its original scope and filters.
+	AssistantQueryResultId *openapi_types.UUID `form:"assistantQueryResultId,omitempty" json:"assistantQueryResultId,omitempty"`
+
+	// AssistantGroup Original group value to drill into; accepted only with assistantQueryResultId.
+	AssistantGroup *string `form:"assistantGroup,omitempty" json:"assistantGroup,omitempty"`
+	ClusterUid     string  `form:"clusterUid" json:"clusterUid"`
+	State          *string `form:"state,omitempty" json:"state,omitempty"`
+	Severity       *string `form:"severity,omitempty" json:"severity,omitempty"`
 
 	// ResourceCanonicalId Percent-encode the complete Canonical ID value per RFC 3986; the server decodes and validates it.
 	ResourceCanonicalId *CanonicalID `form:"resourceCanonicalId,omitempty" json:"resourceCanonicalId,omitempty"`
@@ -6575,6 +6603,12 @@ type GetOverviewParams struct {
 
 // GetResourcesParams defines parameters for GetResources.
 type GetResourcesParams struct {
+	// AssistantQueryResultId Reauthorize a committed assistant result and constrain this live list to its original scope and filters.
+	AssistantQueryResultId *openapi_types.UUID `form:"assistantQueryResultId,omitempty" json:"assistantQueryResultId,omitempty"`
+
+	// AssistantGroup Original group value to drill into; accepted only with assistantQueryResultId.
+	AssistantGroup *string `form:"assistantGroup,omitempty" json:"assistantGroup,omitempty"`
+
 	// IncludeFilterOptions Return sorted kind and namespace candidates from the whole current authorized snapshot before list filters and pagination. No extra access is granted.
 	IncludeFilterOptions *bool                     `form:"includeFilterOptions,omitempty" json:"includeFilterOptions,omitempty"`
 	IncludeDomains       *bool                     `form:"includeDomains,omitempty" json:"includeDomains,omitempty"`
@@ -15531,6 +15565,32 @@ func (siw *ServerInterfaceWrapper) GetFindings(w http.ResponseWriter, r *http.Re
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetFindingsParams
 
+	// ------------- Optional query parameter "assistantQueryResultId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "assistantQueryResultId", r.URL.Query(), &params.AssistantQueryResultId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "assistantQueryResultId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "assistantQueryResultId", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "assistantGroup" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "assistantGroup", r.URL.Query(), &params.AssistantGroup, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "assistantGroup"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "assistantGroup", Err: err})
+		}
+		return
+	}
+
 	// ------------- Required query parameter "clusterUid" -------------
 
 	err = runtime.BindQueryParameterWithOptions("form", true, true, "clusterUid", r.URL.Query(), &params.ClusterUid, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
@@ -15751,6 +15811,32 @@ func (siw *ServerInterfaceWrapper) GetIncidents(w http.ResponseWriter, r *http.R
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetIncidentsParams
+
+	// ------------- Optional query parameter "assistantQueryResultId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "assistantQueryResultId", r.URL.Query(), &params.AssistantQueryResultId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "assistantQueryResultId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "assistantQueryResultId", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "assistantGroup" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "assistantGroup", r.URL.Query(), &params.AssistantGroup, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "assistantGroup"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "assistantGroup", Err: err})
+		}
+		return
+	}
 
 	// ------------- Required query parameter "clusterUid" -------------
 
@@ -17462,6 +17548,32 @@ func (siw *ServerInterfaceWrapper) GetResources(w http.ResponseWriter, r *http.R
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetResourcesParams
+
+	// ------------- Optional query parameter "assistantQueryResultId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "assistantQueryResultId", r.URL.Query(), &params.AssistantQueryResultId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "assistantQueryResultId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "assistantQueryResultId", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "assistantGroup" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "assistantGroup", r.URL.Query(), &params.AssistantGroup, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "assistantGroup"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "assistantGroup", Err: err})
+		}
+		return
+	}
 
 	// ------------- Optional query parameter "includeFilterOptions" -------------
 

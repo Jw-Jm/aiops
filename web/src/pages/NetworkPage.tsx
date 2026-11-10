@@ -14,6 +14,7 @@ import {
 import { QueryState } from "../components/QueryState";
 import { Details } from "../components/Details";
 import { record, list, text, displayTime } from "../components/data";
+import { AskAssistantEntry } from "../features/assistant/AskAssistantEntry";
 
 // Same DeepFlow templates the investigation assistant is admitted to use.
 const OPERATIONS: { value: string; label: string }[] = [
@@ -33,30 +34,42 @@ function NetworkWorkspace({ cluster }: { cluster: string }) {
     queryKey: ["network-resources", cluster],
     queryFn: ({ signal }) =>
       checked(
-        getResources({ clusterUid: cluster, limit: 50 }, requestOptions(signal)),
+        getResources(
+          { clusterUid: cluster, limit: 50 },
+          requestOptions(signal),
+        ),
       ),
   });
   const page = resources.data as ResourcePageV2 | undefined;
   const run = useMutation({
-    mutationFn: () => {
-      const to = new Date();
-      const from = new Date(to.getTime() - 3600_000);
-      return checked(
+    mutationFn: (frozen: {
+      from: string;
+      to: string;
+      canonicalId: string;
+      operation: string;
+    }) =>
+      checked(
         queryEvidence(
           {
-            resourceCanonicalId: canonicalId,
+            resourceCanonicalId: frozen.canonicalId,
             type: "deepflow",
-            queryTemplate: operation,
-            timeRange: { from: from.toISOString(), to: to.toISOString() },
+            queryTemplate: frozen.operation,
+            timeRange: { from: frozen.from, to: frozen.to },
             budget: { timeoutMs: 9000, maxBytes: 32 << 10 },
             limit: 100,
           },
           requestOptions(undefined, true),
         ),
-      );
-    },
+      ),
   });
-  const result = record(run.data).data ? record(record(run.data).data) : null;
+  const sameSelection =
+    run.variables?.canonicalId === canonicalId &&
+    run.variables?.operation === operation;
+  const window = sameSelection ? run.variables : undefined;
+  const result =
+    sameSelection && record(run.data).data
+      ? record(record(run.data).data)
+      : null;
   const rows = result ? list(result.evidence).map(record) : [];
   return (
     <Surface title="网络观测查询">
@@ -93,12 +106,35 @@ function NetworkWorkspace({ cluster }: { cluster: string }) {
           type="primary"
           disabled={!canonicalId}
           loading={run.isPending}
-          onClick={() => run.mutate()}
+          onClick={() => {
+            const to = new Date();
+            const from = new Date(to.getTime() - 3600_000);
+            const frozen = {
+              from: from.toISOString(),
+              to: to.toISOString(),
+              canonicalId,
+              operation,
+            };
+            run.mutate(frozen);
+          }}
         >
           查询最近一小时
         </Button>
+        <AskAssistantEntry
+          entry={{
+            clusterUid: cluster,
+            canonicalId: canonicalId || undefined,
+            mode: "troubleshoot",
+            ...(window ? { from: window.from, to: window.to } : {}),
+          }}
+          disabled={!canonicalId}
+          reason="请先选择要询问的资源。"
+          label="按此范围询问 AI"
+        />
       </QueryState>
-      {run.error && <QueryState loading={false} error={run.error} />}
+      {sameSelection && run.error && (
+        <QueryState loading={false} error={run.error} />
+      )}
       {result && (
         <>
           {text(result.freshness) !== "fresh" && (

@@ -5,10 +5,12 @@
  * OpenAPI spec version: 1.4.0
  */
 import type { AssistantQueryEnvelopeV1Meta } from './assistantQueryEnvelopeV1Meta.ts';
+import type { AssistantQueryScopeV1 } from './assistantQueryScopeV1.ts';
 import type { AssistantStoredQueryResultV1 } from './assistantStoredQueryResultV1.ts';
 
 export interface AssistantQueryEnvelopeV1 {
   data: AssistantStoredQueryResultV1;
+  queryScope?: AssistantQueryScopeV1;
   requestId: string;
   meta?: AssistantQueryEnvelopeV1Meta;
 }

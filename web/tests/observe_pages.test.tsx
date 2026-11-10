@@ -2,6 +2,7 @@
 import { beforeEach, expect, it, vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { MemoryRouter } from "react-router-dom";
 import { NetworkPage } from "../src/pages/NetworkPage";
 import { HardwarePage } from "../src/pages/HardwarePage";
 import { getResources, queryEvidence } from "../src/api/generated/platform";
@@ -58,11 +59,15 @@ beforeEach(() => {
 });
 
 function renderPage(page: React.ReactElement) {
+  // The observe pages carry the entry into the assistant, so they render a
+  // link that needs the router context.
   render(
     <QueryClientProvider
-      client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+      client={
+        new QueryClient({ defaultOptions: { queries: { retry: false } } })
+      }
     >
-      {page}
+      <MemoryRouter>{page}</MemoryRouter>
     </QueryClientProvider>,
   );
 }
@@ -88,6 +93,17 @@ it("queries network evidence for the selected resource", async () => {
     ),
   );
   expect(await screen.findByText("deepflow")).toBeInTheDocument();
+  const sent = vi.mocked(queryEvidence).mock.calls[0][0];
+  const href = screen
+    .getByRole("link", { name: "按此范围询问 AI" })
+    .getAttribute("href")!;
+  const link = new URL(href, "https://fixture.local");
+  expect(link.searchParams.get("canonicalId")).toBe(sent.resourceCanonicalId);
+  expect(link.searchParams.get("from")).toBe(sent.timeRange.from);
+  expect(link.searchParams.get("to")).toBe(sent.timeRange.to);
+  expect(Date.parse(sent.timeRange.to) - Date.parse(sent.timeRange.from)).toBe(
+    3600000,
+  );
 });
 
 it("queries hardware health for the selected hardware resource", async () => {

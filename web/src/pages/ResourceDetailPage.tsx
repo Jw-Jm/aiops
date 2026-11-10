@@ -28,6 +28,7 @@ import { Surface, DataTable } from "../components/v12/primitives";
 import { V12Drawer } from "../components/v12/Layer";
 import { ResourceGraphExplorer } from "../features/graph/ResourceGraphExplorer";
 import { TopologyResult } from "../features/graph/TopologyResult";
+import { AskAssistantEntry } from "../features/assistant/AskAssistantEntry";
 
 export function ResourceDetailPage() {
   const { clusterUid, invalid, scopeKey } = useOperationalCluster();
@@ -110,9 +111,15 @@ function ResourceDetail({ cluster, id }: { cluster: string; id: string }) {
               <Button>返回资源目录</Button>
             </Link>
             {current && (
-              <Link to={href("/assistant")}>
-                <Button type="primary">AI 排查</Button>
-              </Link>
+              <AskAssistantEntry
+                entry={{
+                  clusterUid: cluster,
+                  canonicalId: current.canonicalId,
+                  mode: "troubleshoot",
+                }}
+                label="AI 排查"
+                primary
+              />
             )}
             <Button
               aria-label="刷新资源"

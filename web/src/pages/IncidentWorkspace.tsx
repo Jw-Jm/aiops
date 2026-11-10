@@ -55,6 +55,7 @@ const AuditPage = lazy(() =>
 );
 import { useAuth } from "../auth/AuthProvider";
 import { IncidentCollaboration } from "../features/collab/IncidentCollaboration";
+import { AskAssistantEntry } from "../features/assistant/AskAssistantEntry";
 export function IncidentWorkspace() {
   const { incidentId = "" } = useParams();
   const client = useQueryClient();
@@ -144,12 +145,31 @@ export function IncidentWorkspace() {
               查看资源详情与关系
             </Link>
           </Space>
-          {list(record(record(content.data).data).nodes).map((node, index) => (
-            <Details
-              key={text(record(node).canonicalId ?? index)}
-              value={node}
-            />
-          ))}
+          {list(record(record(content.data).data).nodes).map((node, index) => {
+            const value = record(node).canonicalId;
+            const canonicalId =
+              typeof value === "string" && value ? value : undefined;
+            return (
+              <Space
+                key={text(record(node).canonicalId ?? index)}
+                orientation="vertical"
+                style={{ width: "100%" }}
+              >
+                <AskAssistantEntry
+                  entry={{
+                    clusterUid: incident?.clusterUid || "",
+                    canonicalId,
+                    incidentId,
+                    mode: "troubleshoot",
+                  }}
+                  label="发起排查"
+                  disabled={!canonicalId}
+                  reason="该节点没有可用的资源身份，不能发起排查。"
+                />
+                <Details value={node} />
+              </Space>
+            );
+          })}
         </Space>
       ) : Array.isArray(record(content.data).data) ? (
         <>

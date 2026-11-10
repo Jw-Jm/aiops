@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { Button } from "antd";
+import { Button, Space } from "antd";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   getResources,
@@ -17,6 +17,7 @@ import { Details } from "../components/Details";
 import { Surface } from "../components/v12/primitives";
 import { V12Drawer } from "../components/v12/Layer";
 import { TopologyResult } from "../features/graph/TopologyResult";
+import { AskAssistantEntry } from "../features/assistant/AskAssistantEntry";
 
 export function TopologyPage() {
   const { clusterUid, invalid, scopeKey } = useOperationalCluster();
@@ -228,17 +229,28 @@ function TopologyWorkspace({ cluster }: { cluster: string }) {
         onClose={() => setSelected(undefined)}
         footer={
           shownDetail && !detail.isError ? (
-            <Link
-              to={
-                "/resources/detail?" +
-                new URLSearchParams({
+            <Space>
+              <AskAssistantEntry
+                entry={{
                   clusterUid: cluster,
                   canonicalId: shownDetail.canonicalId,
-                })
-              }
-            >
-              打开完整资源详情
-            </Link>
+                  mode: "troubleshoot",
+                }}
+                label="发起排查"
+                primary
+              />
+              <Link
+                to={
+                  "/resources/detail?" +
+                  new URLSearchParams({
+                    clusterUid: cluster,
+                    canonicalId: shownDetail.canonicalId,
+                  })
+                }
+              >
+                打开完整资源详情
+              </Link>
+            </Space>
           ) : null
         }
       >

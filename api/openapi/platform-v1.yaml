@@ -53,12 +53,14 @@ components:
     AssistantSubmitMessageV1: {"type": "object", "additionalProperties": false, "properties": {"message": {"type": "string", "minLength": 1, "maxLength": 4000}, "expectedConversationRevision": {"type": "integer", "format": "int64", "minimum": 1}, "parentTurnId": {"type": "string", "format": "uuid"}, "clarificationId": {"type": "string", "format": "uuid"}, "referentCanonicalId": {"type": "string"}, "faultChainRequest": {"$ref": "#/components/schemas/AssistantFaultChainRequestV1"}, "focus": {"type": "string", "maxLength": 500, "description": "调查重点：仅作为用户意图，不改变授权范围或额度。长度为脱敏后的字符数，上限 500。"}, "budgetTightening": {"$ref": "#/components/schemas/AssistantBudgetTighteningV1"}}, "required": ["message", "expectedConversationRevision"]}
     AssistantBudgetTighteningV1: {"type": "object", "additionalProperties": false, "properties": {"durationSeconds": {"type": "integer", "format": "int64", "minimum": 0, "description": "0 或省略表示该维度不请求收紧，沿用当次准入额度。高于当次准入额度的值按当次准入额度收紧（clamp），不会放大额度；高于平台上限的值被拒绝。非空值必须是非负整数。"}, "toolCalls": {"type": "integer", "format": "int64", "minimum": 0, "description": "0 或省略表示该维度不请求收紧，沿用当次准入额度。高于当次准入额度的值按当次准入额度收紧（clamp），不会放大额度；高于平台上限的值被拒绝。非空值必须是非负整数。"}, "rawQueries": {"type": "integer", "format": "int64", "minimum": 0, "description": "0 或省略表示该维度不请求收紧，沿用当次准入额度。高于当次准入额度的值按当次准入额度收紧（clamp），不会放大额度；高于平台上限的值被拒绝。非空值必须是非负整数。"}, "resultBytes": {"type": "integer", "format": "int64", "minimum": 0, "description": "0 或省略表示该维度不请求收紧，沿用当次准入额度。高于当次准入额度的值按当次准入额度收紧（clamp），不会放大额度；高于平台上限的值被拒绝。非空值必须是非负整数。"}, "graphNodes": {"type": "integer", "format": "int64", "minimum": 0, "description": "0 或省略表示该维度不请求收紧，沿用当次准入额度。高于当次准入额度的值按当次准入额度收紧（clamp），不会放大额度；高于平台上限的值被拒绝。非空值必须是非负整数。"}, "evidenceItems": {"type": "integer", "format": "int64", "minimum": 0, "description": "0 或省略表示该维度不请求收紧，沿用当次准入额度。高于当次准入额度的值按当次准入额度收紧（clamp），不会放大额度；高于平台上限的值被拒绝。非空值必须是非负整数。"}, "modelRequests": {"type": "integer", "format": "int64", "minimum": 0, "description": "0 或省略表示该维度不请求收紧，沿用当次准入额度。高于当次准入额度的值按当次准入额度收紧（clamp），不会放大额度；高于平台上限的值被拒绝。非空值必须是非负整数。"}, "inputTokens": {"type": "integer", "format": "int64", "minimum": 0, "description": "0 或省略表示该维度不请求收紧，沿用当次准入额度。高于当次准入额度的值按当次准入额度收紧（clamp），不会放大额度；高于平台上限的值被拒绝。非空值必须是非负整数。"}, "outputTokens": {"type": "integer", "format": "int64", "minimum": 0, "description": "0 或省略表示该维度不请求收紧，沿用当次准入额度。高于当次准入额度的值按当次准入额度收紧（clamp），不会放大额度；高于平台上限的值被拒绝。非空值必须是非负整数。"}}, "required": []}
     AssistantStoredQueryResultV1: {"type": "object", "additionalProperties": false, "properties": {"queryResultId": {"type": "string", "format": "uuid"}, "result": {"$ref": "#/components/schemas/AssistantQueryResultV1"}, "facts": {"type": "array", "items": {"$ref": "#/components/schemas/AssistantQueryFactV1"}}, "contentDigest": {"type": "string"}}, "required": ["queryResultId", "result", "facts", "contentDigest"]}
+    AssistantQueryScopeFilterV1: {"type": "object", "additionalProperties": false, "properties": {"field": {"type": "string"}, "operator": {"type": "string"}, "value": {"type": "string"}}, "required": ["field", "operator", "value"]}
+    AssistantQueryScopeV1: {"type": "object", "additionalProperties": false, "properties": {"clusterUid": {"type": "string"}, "namespaces": {"type": "array", "items": {"type": "string"}}, "canonicalIds": {"type": "array", "items": {"type": "string"}}, "clusterScoped": {"type": "boolean"}, "filters": {"type": "array", "items": {"$ref": "#/components/schemas/AssistantQueryScopeFilterV1"}}, "filtersKnown": {"type": "boolean"}}, "required": ["clusterUid", "namespaces", "canonicalIds", "clusterScoped", "filters", "filtersKnown"]}
     AssistantEventV1: {"type": "object", "additionalProperties": false, "properties": {"eventId": {"type": "integer", "format": "int64"}, "turnId": {"type": "string", "format": "uuid"}, "type": {"type": "string"}, "payload": {"type": "object", "additionalProperties": true}, "occurredAt": {"type": "string", "format": "date-time"}}, "required": ["eventId", "turnId", "type", "payload", "occurredAt"]}
     AssistantConversationEnvelopeV1: {"type": "object", "additionalProperties": false, "properties": {"data": {"$ref": "#/components/schemas/AssistantConversationV1"}, "requestId": {"type": "string"}, "meta": {"type": "object", "additionalProperties": false, "properties": {"nextCursor": {"type": "string"}}, "required": ["nextCursor"]}}, "required": ["data", "requestId"]}
     AssistantConversationListV1: {"type": "object", "additionalProperties": false, "properties": {"data": {"type": "array", "items": {"$ref": "#/components/schemas/AssistantConversationV1"}}, "requestId": {"type": "string"}, "meta": {"type": "object", "additionalProperties": false, "properties": {"nextCursor": {"type": "string"}}, "required": ["nextCursor"]}}, "required": ["data", "requestId"]}
     AssistantMessagesEnvelopeV1: {"type": "object", "additionalProperties": false, "properties": {"data": {"type": "array", "items": {"$ref": "#/components/schemas/AssistantMessageV1"}}, "requestId": {"type": "string"}, "meta": {"type": "object", "additionalProperties": false, "properties": {"nextCursor": {"type": "string"}}, "required": ["nextCursor"]}}, "required": ["data", "requestId"]}
     AssistantTurnEnvelopeV1: {"type": "object", "additionalProperties": false, "properties": {"data": {"$ref": "#/components/schemas/AssistantTurnV1"}, "requestId": {"type": "string"}, "meta": {"type": "object", "additionalProperties": false, "properties": {"nextCursor": {"type": "string"}}, "required": ["nextCursor"]}}, "required": ["data", "requestId"]}
-    AssistantQueryEnvelopeV1: {"type": "object", "additionalProperties": false, "properties": {"data": {"$ref": "#/components/schemas/AssistantStoredQueryResultV1"}, "requestId": {"type": "string"}, "meta": {"type": "object", "additionalProperties": false, "properties": {"nextCursor": {"type": "string"}}, "required": ["nextCursor"]}}, "required": ["data", "requestId"]}
+    AssistantQueryEnvelopeV1: {"type": "object", "additionalProperties": false, "properties": {"data": {"$ref": "#/components/schemas/AssistantStoredQueryResultV1"}, "queryScope": {"$ref": "#/components/schemas/AssistantQueryScopeV1"}, "requestId": {"type": "string"}, "meta": {"type": "object", "additionalProperties": false, "properties": {"nextCursor": {"type": "string"}}, "required": ["nextCursor"]}}, "required": ["data", "requestId"]}
     AssistantCapabilitiesEnvelopeV1: {"type": "object", "additionalProperties": false, "properties": {"data": {"type": "object", "additionalProperties": false, "properties": {"enabled": {"type": "boolean"}, "faultChainEnabled": {"type": "boolean"}, "catalog": {"type": "object", "additionalProperties": true}, "virtualization": {"type": "string"}, "runtimeAcceptance": {"type": "string"}, "taskKinds": {"type": "array", "items": {"type": "string"}}, "sourceCapabilityStatus": {"type": "string"}, "sourceCapabilities": {"type": "array", "items": {"type": "object", "additionalProperties": true}}, "networkCapabilities": {"type": "array", "items": {"type": "object", "additionalProperties": false, "properties": {"network": {"enum": ["live", "fixture_only", "disabled/unverified"]}, "l7": {"enum": ["disabled", "live", "fixture_only"]}, "trace": {"const": "CAPABILITY_DISABLED"}}, "required": ["network", "l7", "trace"]}}}, "required": ["enabled", "faultChainEnabled", "catalog", "virtualization", "runtimeAcceptance", "taskKinds", "sourceCapabilityStatus", "sourceCapabilities", "networkCapabilities"]}, "requestId": {"type": "string"}}, "required": ["data", "requestId"]}
     AssistantResourceSourceStepEnvelopeV1: {"type": "object", "additionalProperties": false, "properties": {"data": {"type": "object", "additionalProperties": true}, "requestId": {"type": "string"}}, "required": ["data", "requestId"]}
     AssistantFaultChainContextEnvelopeV1: {"type": "object", "additionalProperties": false, "properties": {"data": {"$ref": "#/components/schemas/AssistantFaultChainContextV1"}, "requestId": {"type": "string"}}, "required": ["data", "requestId"]}
@@ -6966,6 +6968,18 @@ paths:
     get:
       operationId: getFindings
       parameters:
+      - name: assistantQueryResultId
+        in: query
+        description: Reauthorize a committed assistant result and constrain this live list to its original scope and filters.
+        schema:
+          type: string
+          format: uuid
+      - name: assistantGroup
+        in: query
+        description: Original group value to drill into; accepted only with assistantQueryResultId.
+        schema:
+          type: string
+          maxLength: 253
       - in: query
         name: clusterUid
         required: true
@@ -7147,6 +7161,18 @@ paths:
     get:
       operationId: getIncidents
       parameters:
+      - name: assistantQueryResultId
+        in: query
+        description: Reauthorize a committed assistant result and constrain this live list to its original scope and filters.
+        schema:
+          type: string
+          format: uuid
+      - name: assistantGroup
+        in: query
+        description: Original group value to drill into; accepted only with assistantQueryResultId.
+        schema:
+          type: string
+          maxLength: 253
       - in: query
         name: clusterUid
         required: true
@@ -8192,6 +8218,18 @@ paths:
     get:
       operationId: getResources
       parameters:
+      - name: assistantQueryResultId
+        in: query
+        description: Reauthorize a committed assistant result and constrain this live list to its original scope and filters.
+        schema:
+          type: string
+          format: uuid
+      - name: assistantGroup
+        in: query
+        description: Original group value to drill into; accepted only with assistantQueryResultId.
+        schema:
+          type: string
+          maxLength: 253
       - in: query
         name: includeFilterOptions
         description: Return sorted kind and namespace candidates from the whole current authorized snapshot before list filters and pagination. No extra access is granted.

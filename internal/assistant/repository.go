@@ -968,7 +968,16 @@ func (r Repository) Events(ctx context.Context, tenant, id uuid.UUID, subject st
 	return c, out, err
 }
 func (r Repository) QueryResult(ctx context.Context, tenant, id uuid.UUID, subject string) (investigation.StoredQueryResult, error) {
+	out, _, err := r.QueryResultWithScope(ctx, tenant, id, subject)
+	return out, err
+}
+
+// QueryResultWithScope returns the authorized query result and the public
+// scope descriptor of the same row. The descriptor is produced inside the same
+// authorized transaction as the read.
+func (r Repository) QueryResultWithScope(ctx context.Context, tenant, id uuid.UUID, subject string) (investigation.StoredQueryResult, investigation.AssistantQueryScopeV1, error) {
 	var out investigation.StoredQueryResult
+	var scope investigation.AssistantQueryScopeV1
 	err := persistence.WithTenantTx(ctx, r.Pool, tenant, func(tx pgx.Tx) error {
 		rs, err := newReadSubjects(ctx, tx, tenant, subject)
 		if err != nil {
@@ -992,8 +1001,8 @@ func (r Repository) QueryResult(ctx context.Context, tenant, id uuid.UUID, subje
 		if err != nil {
 			return err
 		}
-		out, err = investigation.ReadAssistantQueryResultTx(ctx, tx, j, id)
+		out, scope, err = investigation.ReadAssistantQueryResultWithScopeTx(ctx, tx, j, id)
 		return err
 	})
-	return out, err
+	return out, scope, err
 }

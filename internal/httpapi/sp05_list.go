@@ -56,6 +56,24 @@ func sp05ListSQL(kind string, tenant uuid.UUID, cluster, after string, scope gra
 	} else {
 		args = append(args, q.Get("incidentId"), q.Get("sourceSystem"))
 	}
+	resourcesIndex := len(args) + 1
+	args = append(args, scope.Resources)
+	extra += fmt.Sprintf(" AND (COALESCE(cardinality($%d::text[]),0)=0 OR t.resource_canonical_id=ANY($%d::text[]))", resourcesIndex, resourcesIndex)
+	if kind == "incidents" {
+		extra += fmt.Sprintf(" AND NOT EXISTS(SELECT 1 FROM incident.finding_links l JOIN finding.records f USING(tenant_id,finding_id) WHERE l.tenant_id=t.tenant_id AND l.incident_id=t.incident_id AND NOT (COALESCE(cardinality($%d::text[]),0)=0 OR f.resource_canonical_id=ANY($%d::text[])))", resourcesIndex, resourcesIndex)
+	}
+	if q.Has("assistantQueryResultId") {
+		if q.Has("namespace") {
+			args = append(args, q.Get("namespace"))
+			extra += fmt.Sprintf(" AND t.namespace=$%d", len(args))
+		}
+		if kind == "findings" {
+			clock = "(t.payload->>'startsAt')::timestamptz"
+			extra += " AND t.schema_version='finding-envelope/v2' AND t.payload->>'timeReliable'='true'"
+		}
+		// Analytics windows are half open; preserve that boundary on a drill.
+		extra += " AND ($11::timestamptz IS NULL OR " + clock + "<$11)"
+	}
 	sql := fmt.Sprintf(`SELECT t.%s,%s FROM %s t WHERE t.tenant_id=$1 AND t.cluster_uid=$2 AND ($3='' OR t.%s::text>$3) AND (($4 AND t.namespace='') OR t.namespace=ANY($5::text[])) AND ($6='' OR t.%s=$6) AND ($7='' OR t.resource_canonical_id=$7) AND ($10::timestamptz IS NULL OR %s>=$10) AND ($11::timestamptz IS NULL OR %s<=$11)%s ORDER BY t.%s LIMIT $8`, id, payload, table, id, state, clock, clock, extra, id)
 	return sql, args, nil
 }

@@ -1,7 +1,7 @@
 import { LegalHoldControl } from "../features/assistant/LegalHoldControl";
 import { FaultChainCollector } from "../features/assistant/FaultChainCollector";
 import { BindingEditor } from "../features/assistant/BindingEditor";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Alert,
@@ -19,7 +19,7 @@ import {
   Tag,
   Typography,
 } from "antd";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";
 import { useOperationalCluster, useClusterDraft } from "../app/ClusterContext";
 import { ApiError, checked, requestOptions } from "../api/client";
@@ -81,6 +81,7 @@ export function AssistantPage({
   const { session } = useAuth();
   const client = useQueryClient();
   const [url, setUrl] = useSearchParams();
+  const navigate = useNavigate();
   const id = url.get("conversation") || undefined;
   const logQuery = url.get("logQuery");
   const {
@@ -110,9 +111,11 @@ export function AssistantPage({
   });
   const linkedLog = !logContext.error ? logContext.data : undefined;
   const [mode, setMode] = useState<"data_query" | "troubleshoot">(
-    url.get("incidentId") || url.get("canonicalId") || logQuery
-      ? "troubleshoot"
-      : "data_query",
+    url.get("mode") === "data_query" || url.get("mode") === "troubleshoot"
+      ? (url.get("mode") as "data_query" | "troubleshoot")
+      : url.get("incidentId") || url.get("canonicalId") || logQuery
+        ? "troubleshoot"
+        : "data_query",
   );
   const [domain, setDomain] = useState<"operational" | "audit">(
     initialDomain ??
@@ -123,9 +126,11 @@ export function AssistantPage({
     setCluster(scopedCluster);
   }, [scopedCluster]);
   const [namespace, setNamespace] = useState("");
-  const clusterScopedGranted = session?.clusterScopes.includes(
-    candidates.find((candidate) => candidate.clusterUid === cluster)?.clusterId ?? "",
-  ) ?? false;
+  const clusterScopedGranted =
+    session?.clusterScopes.includes(
+      candidates.find((candidate) => candidate.clusterUid === cluster)
+        ?.clusterId ?? "",
+    ) ?? false;
   const [targetName, setTargetName] = useState("");
   const [targetKind, setTargetKind] = useState("Pod");
   const [resolution, setResolution] = useState<{
@@ -159,26 +164,47 @@ export function AssistantPage({
     const previous = previousObjectRef.current;
     previousObjectRef.current = boundObject;
     if (boundObject === previous || !boundObject) return;
+    // An explicit mode of the deep link wins: the operator asked for the
+    // question mode of a bound object on purpose.
+    if (url.get("mode") === "data_query") {
+      setDomain("operational");
+      return;
+    }
     setMode("troubleshoot");
     setDomain("operational");
-  }, [boundObject]);
+  }, [boundObject, url]);
   const [symptom, setSymptom] = useState("");
   const [windowMinutes, setWindowMinutes] = useState<number | "custom">(30);
+  // The requested window is an exact instant. The form shows the same instant
+  // in the UTC form its label declares and the request sends that instant, so
+  // the shown window and the submitted window are the same one.
   const [windowFrom, setWindowFrom] = useState(() =>
-    new Date(Date.now() - 30 * 60000).toISOString().slice(0, 16),
+    new Date(Date.now() - 30 * 60000).toISOString(),
   );
-  const [windowTo, setWindowTo] = useState(() =>
-    new Date().toISOString().slice(0, 16),
-  );
+  const [windowTo, setWindowTo] = useState(() => new Date().toISOString());
+  // The deep link of an observation page carries the window that was actually
+  // observed. The new session form starts with exactly that window, so the
+  // question of the operator is asked in the scope and the time window the
+  // page showed.
+  useEffect(() => {
+    const from = url.get("from");
+    const to = url.get("to");
+    if (!from || !to) return;
+    const fromValue = new Date(from);
+    const toValue = new Date(to);
+    if (!Number.isFinite(fromValue.getTime())) return;
+    if (!Number.isFinite(toValue.getTime())) return;
+    setWindowMinutes("custom");
+    setWindowFrom(fromValue.toISOString());
+    setWindowTo(toValue.toISOString());
+  }, [url]);
   const [message, setMessage] = useState("");
   // The operator focus and the requested budget narrowing belong to the
   // current scope and conversation. They are draft state: a scope change, an
   // account change or a different conversation drops them, so a draft never
   // leaks into another authorization context.
   const [focus, setFocus] = useState("");
-  const [tightenToolCalls, setTightenToolCalls] = useState<number | null>(
-    null,
-  );
+  const [tightenToolCalls, setTightenToolCalls] = useState<number | null>(null);
   const [tightenModelRequests, setTightenModelRequests] = useState<
     number | null
   >(null);
@@ -444,6 +470,60 @@ export function AssistantPage({
       "过去七天本人执行成功率是多少？明确成功和失败分母，排除未知和取消。",
     "audit.events": "过去七天的平台审计事件有多少？按操作类型分组。",
   };
+  // The suggestions of the assistant are drafts. They fill the composer of
+  // the operator and are never sent on their own, so a suggestion never runs
+  // a query or switches the scope of the session by itself.
+  const turnSuggestions = useMemo(() => {
+    const list: { key: string; label: string; draft: string }[] = [];
+    const bound =
+      boundTarget || url.get("canonicalId") || url.get("incidentId");
+    if (mode === "troubleshoot") {
+      if (bound) {
+        list.push({
+          key: "cpu-trend",
+          label: "查看 CPU 趋势",
+          draft: `${bound} 的 CPU 使用情况如何？说明缺失观测与查询来源。`,
+        });
+        list.push({
+          key: "restart",
+          label: "核对告警支持证据",
+          draft: `${bound} 为什么重复重启？核对支持、冲突与待补证据。`,
+        });
+        list.push({
+          key: "error-logs",
+          label: "查看错误日志",
+          draft: `查看 ${bound} 最近错误日志脱敏样例及其适用范围。`,
+        });
+      }
+      list.push({
+        key: "health-distribution",
+        label: "按健康状态统计当前资源",
+        draft: "按健康状态统计当前资源查看授权资源的当前分布。",
+      });
+    } else {
+      list.push({
+        key: "health-distribution",
+        label: "按健康状态统计当前资源",
+        draft: "按健康状态统计当前资源查看授权资源的当前分布。",
+      });
+      list.push({
+        key: "cpu-trend",
+        label: "查看 CPU 趋势",
+        draft: "查看当前授权范围内 CPU 使用情况最高的资源趋势与缺失观测。",
+      });
+      list.push({
+        key: "alert-evidence",
+        label: "核对告警支持证据",
+        draft: "核对当前告警的支持证据、冲突证据与待补证据。",
+      });
+      list.push({
+        key: "error-logs",
+        label: "查看错误日志",
+        draft: "查看当前授权范围最近错误日志脱敏样例及其适用范围。",
+      });
+    }
+    return list;
+  }, [boundTarget, mode, url]);
   const conversations = useQuery({
     queryKey: [
       "assistant",
@@ -600,9 +680,7 @@ export function AssistantPage({
         turnId: frozenTurnId,
         conversationId: id,
         conversationRevision:
-          conversation.data?.data.revision ??
-          active?.conversationRevision ??
-          0,
+          conversation.data?.data.revision ?? active?.conversationRevision ?? 0,
         subject: session?.subject ?? "",
         tenantId: session?.tenantId ?? "",
         scopeKey,
@@ -859,7 +937,9 @@ export function AssistantPage({
                 : namespace
                   ? [namespace]
                   : [],
-              includeClusterScoped: log ? false : !namespace && clusterScopedGranted,
+              includeClusterScoped: log
+                ? false
+                : !namespace && clusterScopedGranted,
             }
           : {}),
       };
@@ -877,10 +957,9 @@ export function AssistantPage({
         else {
           const from =
             windowMinutes === "custom"
-              ? new Date(windowFrom + "Z")
+              ? new Date(windowFrom)
               : new Date(now.getTime() - windowMinutes * 60000);
-          const to =
-            windowMinutes === "custom" ? new Date(windowTo + "Z") : now;
+          const to = windowMinutes === "custom" ? new Date(windowTo) : now;
           if (
             !Number.isFinite(from.getTime()) ||
             !Number.isFinite(to.getTime()) ||
@@ -931,29 +1010,43 @@ export function AssistantPage({
             : {}),
         }
       : undefined;
-  const invalidTightening =
-    [tightenToolCalls, tightenModelRequests, tightenDurationSeconds].some(
-      (value) =>
-        value !== null &&
-        (!Number.isInteger(value) || value < 0 || value > 2_000_000_000),
-    );
-  async function send() {
+  const invalidTightening = [
+    tightenToolCalls,
+    tightenModelRequests,
+    tightenDurationSeconds,
+  ].some(
+    (value) =>
+      value !== null &&
+      (!Number.isInteger(value) || value < 0 || value > 2_000_000_000),
+  );
+  async function send(options?: { text?: string; parentTurnId?: string }) {
     if (!id || !conversation.data || !canWriteConversation) return;
     // The revision and the idempotency key of this submission are frozen when
     // the operator sends: a late answer of another conversation may neither
     // pick up another revision nor reuse another key.
     const revision = conversation.data.data.revision;
     const idempotencyKey = crypto.randomUUID();
+    // The retry sends the question of the retried turn again as a new turn.
+    // It is an explicit new round of the operator: the old job and its fixed
+    // output stay untouched, and nothing is replayed in the background.
+    const submitted = options?.text ?? message;
+    const parentTurnId =
+      options?.parentTurnId ?? (active ? active.turnId : undefined);
     await mutate(
       async (signal, canCommit) => {
-        const clarification = active?.answer?.clarification?.clarificationId;
+        // A retry is a new round of the operator. It is not an answer to a
+        // pending clarification, so it never carries the clarification of
+        // another turn.
+        const clarification = options?.text
+          ? undefined
+          : active?.answer?.clarification?.clarificationId;
         const out = await checked(
           submitAssistantMessage(
             id,
             {
-              message,
+              message: submitted,
               expectedConversationRevision: revision,
-              ...(active ? { parentTurnId: active.turnId } : {}),
+              ...(parentTurnId ? { parentTurnId } : {}),
               ...(clarification ? { clarificationId: clarification } : {}),
               ...(referent ? { referentCanonicalId: referent } : {}),
               ...(focus.trim() ? { focus: focus.trim() } : {}),
@@ -975,6 +1068,41 @@ export function AssistantPage({
       { conversation: id },
     );
   }
+  // The question of a turn is the message the operator sent for it. The retry
+  // reuses exactly that text, so the new round asks the same question in the
+  // current scope instead of a rewritten one.
+  const questionOfTurn = (turnId?: string) => {
+    if (!turnId) return "";
+    const item = (messages.data?.data || []).find(
+      (entry) =>
+        entry.turnId === turnId &&
+        entry.role === "user" &&
+        "text" in entry.content,
+    );
+    return item && "text" in item.content ? item.content.text : "";
+  };
+  // The retry is an explicit new round of the operator: it submits the
+  // question of the retried turn again. The old job and its fixed output stay
+  // untouched, and nothing is replayed in the background.
+  const retryTurn = (turnId?: string) => {
+    const question = questionOfTurn(turnId);
+    if (!question) return;
+    void send({ text: question, parentTurnId: turnId });
+  };
+  // The manual disposition entry belongs to the incident of the session. The
+  // incident page reads the incident again under the current authorization, so
+  // the identity that is carried over is the re-authorized one. Nothing is
+  // filled in, confirmed or executed by the assistant.
+  const manualHref = (() => {
+    const incidentId = conversation.data?.data.binding.incidentId;
+    if (!incidentId || typeof incidentId !== "string") return undefined;
+    return `/events/incidents/${incidentId}?${new URLSearchParams({
+      tab: "action",
+      ...(conversation.data?.data.clusterUid
+        ? { clusterUid: conversation.data.data.clusterUid }
+        : {}),
+    })}`;
+  })();
   return (
     <>
       <PageHeading
@@ -1307,7 +1435,8 @@ export function AssistantPage({
                                       namespaceSelection: namespace
                                         ? [namespace]
                                         : [],
-                                      includeClusterScoped: !namespace && clusterScopedGranted,
+                                      includeClusterScoped:
+                                        !namespace && clusterScopedGranted,
                                       selector: {
                                         name: targetName,
                                         kind: targetKind,
@@ -1418,8 +1547,17 @@ export function AssistantPage({
                               <Input
                                 aria-label="开始时间（UTC）"
                                 type="datetime-local"
-                                value={windowFrom}
-                                onChange={(e) => setWindowFrom(e.target.value)}
+                                step="0.001"
+                                value={windowFrom.slice(0, 23)}
+                                onChange={(e) =>
+                                  setWindowFrom(
+                                    e.target.value
+                                      ? new Date(
+                                          `${e.target.value}Z`,
+                                        ).toISOString()
+                                      : "",
+                                  )
+                                }
                               />
                             </label>
                             <label>
@@ -1427,8 +1565,17 @@ export function AssistantPage({
                               <Input
                                 aria-label="结束时间（UTC）"
                                 type="datetime-local"
-                                value={windowTo}
-                                onChange={(e) => setWindowTo(e.target.value)}
+                                step="0.001"
+                                value={windowTo.slice(0, 23)}
+                                onChange={(e) =>
+                                  setWindowTo(
+                                    e.target.value
+                                      ? new Date(
+                                          `${e.target.value}Z`,
+                                        ).toISOString()
+                                      : "",
+                                  )
+                                }
                               />
                             </label>
                           </>
@@ -1629,6 +1776,27 @@ export function AssistantPage({
                                   }
                                 : undefined
                             }
+                            conversationId={
+                              conversation.data?.data.conversationId
+                            }
+                            suggestions={
+                              canWriteConversation &&
+                              item.turnId === active?.turnId
+                                ? turnSuggestions
+                                : undefined
+                            }
+                            onManual={
+                              manualHref && canWriteConversation
+                                ? () => {
+                                    navigate(manualHref);
+                                  }
+                                : undefined
+                            }
+                            onRetry={
+                              canWriteConversation && !running && !busy
+                                ? () => retryTurn(item.turnId)
+                                : undefined
+                            }
                           />
                         )}
                       </Card>
@@ -1638,9 +1806,7 @@ export function AssistantPage({
                 {investigationEntries.length > 0 && (
                   <UnifiedInvestigationHistory
                     entries={investigationEntries}
-                    onOpen={(turnId) =>
-                      setInvestigationDetail({ turnId })
-                    }
+                    onOpen={(turnId) => setInvestigationDetail({ turnId })}
                   />
                 )}
                 {!messageCursor &&
@@ -1670,6 +1836,36 @@ export function AssistantPage({
                                     epoch,
                                   ),
                               }
+                            : undefined
+                        }
+                        conversationId={conversation.data?.data.conversationId}
+                        // The fallback answer of a turn that is not in the
+                        // message list is still the current turn: its
+                        // suggestions fill the composer of the operator and
+                        // never run a query on their own.
+                        onReadOnlyCheck={
+                          canWriteConversation
+                            ? (draft) => {
+                                setMessage(draft);
+                                document
+                                  .getElementById("assistant-message")
+                                  ?.focus();
+                              }
+                            : undefined
+                        }
+                        suggestions={
+                          canWriteConversation ? turnSuggestions : undefined
+                        }
+                        onManual={
+                          manualHref && canWriteConversation
+                            ? () => {
+                                navigate(manualHref);
+                              }
+                            : undefined
+                        }
+                        onRetry={
+                          canWriteConversation && !running && !busy
+                            ? () => retryTurn(active.turnId)
                             : undefined
                         }
                       />
@@ -1810,7 +2006,8 @@ export function AssistantPage({
                   />
                   <Typography.Text type="secondary">
                     只能收紧服务端当次准入额度，实际生效值以本轮回显为准。
-                    留空或填 0 表示该维度不收紧，仍沿用当次准入额度（不会禁止调用）；填写的值高于当次准入额度时按当次准入额度收紧，高于平台上限则整次提交被拒绝。
+                    留空或填 0
+                    表示该维度不收紧，仍沿用当次准入额度（不会禁止调用）；填写的值高于当次准入额度时按当次准入额度收紧，高于平台上限则整次提交被拒绝。
                   </Typography.Text>
                 </Space>
                 {invalidTightening && (

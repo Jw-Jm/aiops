@@ -10,6 +10,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { getFindings, getIncidents } from "../api/generated/platform";
 import { checked, requestOptions } from "../api/client";
 import { PageHeading } from "../components/PageHeading";
+import { AssistantDrillNotice } from "../features/assistant/drill";
 import { ScopeFilter } from "../components/ScopeFilter";
 import { useOperationalCluster } from "../app/ClusterContext";
 import { QueryState } from "../components/QueryState";
@@ -26,6 +27,8 @@ export function FindingsPage({ incidents = false }: { incidents?: boolean }) {
     limit: 50,
     ...Object.fromEntries(
       [
+        "assistantQueryResultId",
+        "assistantGroup",
         "state",
         "severity",
         "resourceCanonicalId",
@@ -70,6 +73,7 @@ export function FindingsPage({ incidents = false }: { incidents?: boolean }) {
         }
       />
       <section className="section">
+        <AssistantDrillNotice />
         <div className="filters">
           <ScopeFilter value={cluster} />
           {[

@@ -360,12 +360,12 @@ func (h *AssistantHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			fail(investigation.ErrInvalid)
 			return
 		}
-		out, err := h.Repository.QueryResult(r.Context(), actor.TenantID, id, actor.Subject)
+		out, scope, err := h.Repository.QueryResultWithScope(r.Context(), actor.TenantID, id, actor.Subject)
 		if err != nil {
 			fail(err)
 			return
 		}
-		writeJSON(w, 200, map[string]any{"data": out, "requestId": actor.RequestID})
+		writeJSON(w, 200, map[string]any{"data": out, "queryScope": scope, "requestId": actor.RequestID})
 		return
 	}
 	if len(parts) >= 2 && parts[0] == "conversations" {

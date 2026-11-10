@@ -14,6 +14,7 @@ import {
 import { QueryState } from "../components/QueryState";
 import { Details } from "../components/Details";
 import { record, list, text, displayTime } from "../components/data";
+import { AskAssistantEntry } from "../features/assistant/AskAssistantEntry";
 
 function HardwareWorkspace({ cluster }: { cluster: string }) {
   const [canonicalId, setCanonicalId] = useState("");
@@ -79,6 +80,16 @@ function HardwareWorkspace({ cluster }: { cluster: string }) {
         >
           查询当前健康
         </Button>
+        <AskAssistantEntry
+          entry={{
+            clusterUid: cluster,
+            canonicalId: canonicalId || undefined,
+            mode: "troubleshoot",
+          }}
+          disabled={!canonicalId}
+          reason="请先选择要询问的硬件资源。"
+          label="按此范围询问 AI"
+        />
       </QueryState>
       {run.error && <QueryState loading={false} error={run.error} />}
       {result && (

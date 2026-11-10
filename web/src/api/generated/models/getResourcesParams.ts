@@ -10,6 +10,15 @@ import type { GetResourcesOrder } from './getResourcesOrder.ts';
 
 export type GetResourcesParams = {
 /**
+ * Reauthorize a committed assistant result and constrain this live list to its original scope and filters.
+ */
+assistantQueryResultId?: string;
+/**
+ * Original group value to drill into; accepted only with assistantQueryResultId.
+ * @maxLength 253
+ */
+assistantGroup?: string;
+/**
  * Return sorted kind and namespace candidates from the whole current authorized snapshot before list filters and pagination. No extra access is granted.
  */
 includeFilterOptions?: boolean;
