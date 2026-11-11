@@ -10,6 +10,7 @@ import { Details, FullText } from "../../components/Details";
 import { record, list, text, displayTime } from "../../components/data";
 import { Status } from "../../components/Status";
 import { useSearchParams } from "react-router-dom";
+import { EvidenceCopyButton } from "./EvidenceCopyButton";
 export function EvidencePanel({ incidentId }: { incidentId: string }) {
   const [url, setUrl] = useSearchParams();
   const id = url.get("evidenceId");
@@ -145,6 +146,9 @@ export function EvidencePanel({ incidentId }: { incidentId: string }) {
                 }}
               />
               <h4>实际观测内容</h4>
+              {record(record(detail.data).data).evidenceId === id && (
+                <EvidenceCopyButton evidenceId={id} />
+              )}
               <ObservationFacts
                 value={record(record(detail.data).data).factSlice}
               />

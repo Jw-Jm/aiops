@@ -6,6 +6,7 @@ import { checked, requestOptions } from "../../api/client";
 import { getEvidence } from "../../api/generated/platform";
 import { QueryState } from "../../components/QueryState";
 import { ObservationFacts } from "../../components/ObservationFacts";
+import { EvidenceCopyButton } from "../evidence/EvidenceCopyButton";
 
 export function AssistantEvidence({ refs }: { refs: string[] }) {
   const [id, setId] = useState<string>();
@@ -29,6 +30,7 @@ export function AssistantEvidence({ refs }: { refs: string[] }) {
             { key: "replay", label: "回放状态", children: evidence.replayState },
           ]} />
           <Typography.Title level={5}>实际观测内容</Typography.Title>
+          <EvidenceCopyButton evidenceId={evidence.evidenceId} />
           <ObservationFacts value={evidence.factSlice} />
         </>}
       </QueryState>
