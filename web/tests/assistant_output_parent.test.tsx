@@ -219,6 +219,10 @@ it("submits the exact observation instants and canonical identity from a deep li
       }),
   );
   const button = await screen.findByRole("button", { name: "创建会话" });
+  expect(button).toBeDisabled();
+  fireEvent.change(screen.getByPlaceholderText("描述现象"), {
+    target: { value: "排查观测窗口内的资源异常" },
+  });
   await waitFor(() => expect(button).not.toBeDisabled());
   fireEvent.click(button);
   await waitFor(() =>

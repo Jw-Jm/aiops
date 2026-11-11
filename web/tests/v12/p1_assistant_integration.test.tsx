@@ -207,6 +207,9 @@ it("commits the confirmed deep link with pathname, search and hash, clears the o
     ),
   );
   expect(screen.getByPlaceholderText("描述现象")).toHaveValue("");
+  fireEvent.change(screen.getByPlaceholderText("描述现象"), {
+    target: { value: "调查新资源的异常" },
+  });
   fireEvent.click((await screen.findByText("创建会话")).closest("button")!);
   await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));
   expect(api.create.mock.calls[0][0]).toMatchObject({
@@ -261,10 +264,14 @@ it("does not commit a valid late create success after switching to another clust
     "/assistant?clusterUid=uid-b&canonicalId=new-object",
   );
   const createButton = (await screen.findByText("创建会话")).closest("button")!;
+  fireEvent.change(screen.getByPlaceholderText("描述现象"), {
+    target: { value: "调查当前资源的异常" },
+  });
   await waitFor(() => expect(createButton).toBeEnabled());
   fireEvent.click(createButton);
   await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));
   fireEvent.click(screen.getByText("navigate-target"));
+  fireEvent.click(await screen.findByText("丢弃草稿并切换"));
   await waitFor(() =>
     expect(screen.getByTestId("location")).toHaveTextContent(
       "clusterUid=uid-b",
@@ -298,6 +305,9 @@ it("discards a valid late create success after the real AssistantPage unmounts",
     "/assistant?clusterUid=uid-b&canonicalId=new-object",
   );
   const createButton = (await screen.findByText("创建会话")).closest("button")!;
+  fireEvent.change(screen.getByPlaceholderText("描述现象"), {
+    target: { value: "调查当前资源的异常" },
+  });
   await waitFor(() => expect(createButton).toBeEnabled());
   fireEvent.click(createButton);
   await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));

@@ -213,6 +213,9 @@ it("does not navigate to a conversation created for the old scope after a same-t
   api.create.mockReturnValueOnce(pending.promise);
   renderAssistant("/assistant?clusterUid=uid-a&canonicalId=pod-1");
   const createButton = (await screen.findByText("创建会话")).closest("button")!;
+  fireEvent.change(screen.getByPlaceholderText("描述现象"), {
+    target: { value: "调查 Pod 异常" },
+  });
   await waitFor(() => expect(createButton).toBeEnabled());
   fireEvent.click(createButton);
   await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));
@@ -272,6 +275,9 @@ it("discards a late created conversation when AssistantPage unmounts", async () 
   const view = renderAssistant("/assistant?clusterUid=uid-a&canonicalId=pod-1");
   expect(await screen.findByText("故障排查")).toBeInTheDocument();
   const button = (await screen.findByText("创建会话")).closest("button")!;
+  fireEvent.change(screen.getByPlaceholderText("描述现象"), {
+    target: { value: "调查 Pod 异常" },
+  });
   await waitFor(() => expect(button).toBeEnabled());
   fireEvent.click(button);
   await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));
@@ -350,6 +356,9 @@ it.each([403, 410])(
         "request-denied",
       ),
     );
+    fireEvent.change(screen.getByPlaceholderText("描述现象"), {
+      target: { value: "调查该窗口的日志异常" },
+    });
     fireEvent.click(screen.getByRole("button", { name: /创建会话/ }));
     await waitFor(() => expect(observation).toHaveBeenCalledTimes(2));
     await waitFor(() =>
