@@ -191,33 +191,12 @@ func (h *AssistantHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					fail(investigation.ErrInvalid)
 					return
 				}
-				grant, err := (graph.Authorization{Pool: h.Repository.Pool}).Effective(r.Context(), actor.TenantID.String(), actor.Subject, q.ClusterUID)
+				rc, err := h.bindResource(r, actor, c, q.ResourceCanonicalIDs[0], q.Symptom, *q.TimeRange)
 				if err != nil {
 					fail(err)
 					return
 				}
-				route, err := (graph.Repository{Pool: h.Repository.Pool}).Load(r.Context(), actor.TenantID.String(), q.ClusterUID)
-				if err != nil {
-					fail(err)
-					return
-				}
-				scope, err := analytics.RestrictScope(grant, c.Binding.Selection)
-				if err != nil {
-					fail(err)
-					return
-				}
-				j := investigation.Job{TenantID: actor.TenantID, Subject: actor.Subject, Scope: scope, Assistant: &investigation.AssistantTask{GrantSnapshotDigest: graph.ScopeDigest(grant)}}
-				resolution, err := (assistant.ResourceResolver{Authorization: graph.Authorization{Pool: h.Repository.Pool}, Graph: assistantGraphReader{h.SP04, j}}).Resolve(r.Context(), analytics.Binding{Subject: actor.Subject, Grant: grant, Selection: c.Binding.Selection, OwnerEpoch: route.Epoch}, assistant.ResourceSelector{CanonicalID: q.ResourceCanonicalIDs[0]})
-				if err != nil {
-					fail(err)
-					return
-				}
-				rc, err := assistant.NewContext(resolution, q.Symptom, *q.TimeRange)
-				if err != nil {
-					fail(err)
-					return
-				}
-				c.Binding.ResourceContext = &rc
+				c.Binding.ResourceContext = rc
 			}
 			out, err := h.Repository.Create(r.Context(), c, assistant.CreationKey{Key: r.Header.Get("Idempotency-Key"), RequestDigest: graph.ScopeDigest(q)})
 			if err != nil {
@@ -403,7 +382,7 @@ func (h *AssistantHandlers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 				var q struct {
-					Title                       string `json:"title"`
+					Title                        string `json:"title"`
 					ExpectedConversationRevision int64  `json:"expectedConversationRevision"`
 				}
 				if decodeInvestigation(r, &q) != nil {
