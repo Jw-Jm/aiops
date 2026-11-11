@@ -8,6 +8,7 @@
 - P4-05 的真实 PVC 和 Node 故障从冻结图打开准确资源抽屉，并从故障页发起同故障调查。PVC 返回 partial、1 个固定证据和 1 个正式引用。Node 首轮在结果结算失败，归档恢复后从原对话显式重试，返回 partial、13 个固定证据和 RCA rev2848。两条成功轮次均从同一故障历史回读，故障状态分别仍为 open 和 resolved。[图谱](live/incident-pvc-node-read.json) · [PVC 与 Node 首轮](live/incident-pvc-node-turns.json) · [Node 重试](live/node-investigation-after-archive.json)
 - P5-01 / P5-02 在同一真实故障的既有对话中显式重试。公开步骤确认 `execute_analysis_query` 成功。持久化 `metrics.pod-cpu` 结果 `01a1c82a-2f91-7470-8d7d-a6b6ee82dae8` 使用固定 60 秒步长，返回 5 个 cores 实测点，首个时间点无观测。界面保留 partial 声明。点抽屉的时间、值、单位、行号和结果标识与持久化数据一致，数值表 5 行与导出逐行相符。日志读取并导出原结果 `01a1bdc5-6cb6-794d-a7f6-fb4ffe21f2c7` 的固定样本与来源版本。[趋势记录](live/trend-verified.json) · [趋势导出](live/trend-export.json) · [日志导出](live/real-log-export.json)
 - P5-01 的 Pod 图谱入口在真实页面创建资源调查会话，HTTP 201，保存的 UID、窗口与入口一致。发送一次只读问题后，资源历史、告警和变更步骤成功，回答为 partial，未生成指标查询结果。指标点验收来自上面的同故障趋势轮次。[会话创建](live/resource-session.json) · [调查结算](live/resource-session-turn.json)
+- P5-01 的告警严重级别统计在调用模型时收到供应商 HTTP 402。数据库中没有可复用的该数据集结果。产品修复把计费限制作为固定错误类别从调查器传到 Worker 和会话页，真实重试验证页面提示与持久错误一致，且未生成查询结果。最新运行版 `37ab3d1` 仍能读取历史趋势、固定 RCA 和已恢复归档。[初次拒绝](live/finding-count-provider-rejection.json) · [新版反馈](live/finding-count-provider-feedback.json) · [历史读回](live/provider-rollout-retained-reads.json)
 - P5-02 的个人历史、改名、归档、绑定、断线恢复、撤权与法律保留沿用 [同环境既有验收](../p502-live-20261109/README.md)。复用 [已验收的结果复制和同范围下钻](../p502-output-actions-20261110/README.md)。
 - P6-01 读取 13 条原有执行记录。全局按执行 ID 可定位未知状态，字面搜索无匹配显示空态，清空恢复 13 条。未知执行 exitCode 为空，取消、后续操作和回退均禁用。旧执行成功的独立验证仍是 not_resolved，其关联回退执行的报告仍是 resolved / rollback_goal_met。全局新建先重新授权并进入同一故障处置页，命令为空，未发起写操作。[列表](live/execution-list.json) · [筛选](live/execution-empty-clear.json) · [新建入口](live/execution-create-handoff.json) · [历史验证与回退](live/execution-postcheck-links.json)
 - PostgreSQL 隔离库实测 `TestNativeExecutionSearchAndRevocation` 和 `TestSP07ExecutionListFiltersByAuthorization` 通过，覆盖搜索、授权与撤权。远端日志 `/mnt/ops-sdb/ops-p502-qa-20261109/codex-p601-list2.log`。Web 全量 65 文件、354 用例及 6 条流解析用例通过。Go 调查与资源绑定、执行、归档队列回归通过。[测试](checks/)
@@ -22,6 +23,6 @@
 
 ## 待收口
 
-- P5-01 的其余来源和资源入口、告警统计下钻等结构化分支仍待逐片验证。P6-01 的 Service/PVC 人工验证仍需合格的实际目标和回执。已有 13 条执行均为 Pod 或 Deployment。
+- P5-01 的告警统计下钻等待模型供应商账户恢复。其他结构化分支和入口仍待逐片验证。PhysicalServer/Disk 入口可以进入助手页面，但当前资源调查解析只接收支持的 Kubernetes 类型，硬件调查合同和现场验收待补。P6-01 的 Service/PVC 人工验证仍需合格的实际目标和回执。已有 13 条执行均为 Pod 或 Deployment。
 - 共享的故障转案例和知识原文分别由 P7-04 / P7-05 的 C-092、C-102、C-108 承接，模板库由 P6-02 的 C-089 承接。相关真实功能仍未交付。
 - 这次的真实页面截图用于功能验收。89 张主切片的逐片视觉比对与六项整体验收仍待完成。
