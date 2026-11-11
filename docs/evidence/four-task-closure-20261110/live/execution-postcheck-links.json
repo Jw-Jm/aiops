@@ -1,0 +1,126 @@
+{
+  "parent": {
+    "status": 200,
+    "body": {
+      "data": {
+        "executionId": "01a1bdbe-0a55-76ba-8445-81e0c0b3b9db",
+        "executionState": "succeeded",
+        "verdict": "not_resolved",
+        "status": "completed",
+        "checkedAt": "2026-11-09T00:38:58.948781Z",
+        "applicability": {
+          "status": "requires_qualified_source",
+          "targetKind": "Deployment",
+          "recipe": "deployment-health",
+          "reason": "native_recipe_and_evidence_required"
+        },
+        "report": {
+          "schemaVersion": "command-post-check/v1",
+          "executionId": "01a1bdbe-0a55-76ba-8445-81e0c0b3b9db",
+          "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96",
+          "targetCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/704b8cfa-d86a-42e7-828d-413f8925bb02",
+          "targetUid": "704b8cfa-d86a-42e7-828d-413f8925bb02",
+          "completedAt": "2026-11-09T00:38:57.164682Z",
+          "verdict": "not_resolved",
+          "reason": "recipe_fault_present",
+          "coverage": "native_related_health",
+          "facts": {
+            "observedSpecDigest": "sha256:779dcecd1aa3392718b5e2e1afa6fd64fa396db5cec4ca5b7321fc1d295e28aa",
+            "adapter": "native-related-health/v1",
+            "recipeVersion": "01a1bdad-eaf3-7214-8cbd-c40c16f46487",
+            "recipeName": "deployment-health",
+            "collectedAfter": "2026-11-09T00:38:58.890453232Z",
+            "checkedAt": "2026-11-09T00:38:58.942445487Z",
+            "authorized": true,
+            "sourceAvailable": true,
+            "complete": true,
+            "faultPresent": true,
+            "evidenceRefs": [
+              "01a1bdbe-784a-7726-97c6-e6111cc88444",
+              "01a1bdbe-7854-7ce9-b1ee-a55a7c1540a6",
+              "01a1bdbe-785e-7a53-b8fe-dd4603924ce1",
+              "01a1bdbe-7868-70c3-a23d-a11193a3b145",
+              "01a1bdbe-7871-79ee-87a1-536ae9fbefef"
+            ]
+          }
+        },
+        "reportDigest": "sha256:b077da21dbf1f47ad0a231065e6d327cbed94e9509cd7a92d6fd1fa85bd4402c",
+        "detailStatus": "recorded",
+        "relatedExecutions": [
+          {
+            "executionId": "01a1bdbe-f44e-7796-9d5b-e7ab8a625eab",
+            "relation": "rollback",
+            "direction": "child",
+            "state": "succeeded",
+            "createdAt": "2026-11-09T00:39:30.63968Z"
+          }
+        ],
+        "linksTruncated": false
+      },
+      "requestId": "01a1c803-b5f1-77c3-9b60-9949472b1e19"
+    }
+  },
+  "rollbackHref": "/events/incidents/01a1bdac-eaef-7730-a73a-90738956cc96?clusterUid=79014400-9453-4cb4-9678-0fae47981d79&tab=action&executionId=01a1bdbe-f44e-7796-9d5b-e7ab8a625eab",
+  "rollback": {
+    "status": 200,
+    "body": {
+      "data": {
+        "executionId": "01a1bdbe-f44e-7796-9d5b-e7ab8a625eab",
+        "executionState": "succeeded",
+        "verdict": "resolved",
+        "status": "completed",
+        "checkedAt": "2026-11-09T00:39:36.235745Z",
+        "applicability": {
+          "status": "requires_qualified_source",
+          "targetKind": "Deployment",
+          "recipe": "deployment-health",
+          "reason": "native_recipe_and_evidence_required"
+        },
+        "report": {
+          "rollbackSpecDigest": "sha256:779dcecd1aa3392718b5e2e1afa6fd64fa396db5cec4ca5b7321fc1d295e28aa",
+          "schemaVersion": "command-post-check/v1",
+          "executionId": "01a1bdbe-f44e-7796-9d5b-e7ab8a625eab",
+          "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96",
+          "targetCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/704b8cfa-d86a-42e7-828d-413f8925bb02",
+          "targetUid": "704b8cfa-d86a-42e7-828d-413f8925bb02",
+          "completedAt": "2026-11-09T00:39:33.3714Z",
+          "verdict": "resolved",
+          "reason": "rollback_goal_met",
+          "coverage": "native_related_health",
+          "facts": {
+            "observedSpecDigest": "sha256:779dcecd1aa3392718b5e2e1afa6fd64fa396db5cec4ca5b7321fc1d295e28aa",
+            "adapter": "native-related-health/v1",
+            "recipeVersion": "01a1bdad-eaf3-7214-8cbd-c40c16f46487",
+            "recipeName": "deployment-health",
+            "collectedAfter": "2026-11-09T00:39:36.08309027Z",
+            "checkedAt": "2026-11-09T00:39:36.231921912Z",
+            "authorized": true,
+            "sourceAvailable": true,
+            "complete": true,
+            "faultPresent": false,
+            "evidenceRefs": [
+              "01a1bdbf-0993-719b-92e9-79695756b9f3",
+              "01a1bdbf-09b3-770d-9a5d-82746d4613f6",
+              "01a1bdbf-09d9-7b2e-9e1d-a6072fd4392a",
+              "01a1bdbf-09fe-779c-81bf-0cdc048c1cae"
+            ]
+          }
+        },
+        "reportDigest": "sha256:70104108123adea25cce886647862b9028f923b5bdbdb7e7a1ca5ad229f04c5c",
+        "detailStatus": "recorded",
+        "relatedExecutions": [
+          {
+            "executionId": "01a1bdbe-0a55-76ba-8445-81e0c0b3b9db",
+            "relation": "rollback",
+            "direction": "parent",
+            "state": "succeeded",
+            "createdAt": "2026-11-09T00:38:30.753756Z"
+          }
+        ],
+        "linksTruncated": false
+      },
+      "requestId": "01a1c803-fecb-765b-97e6-d062c84ee20e"
+    }
+  },
+  "commandWriteRequests": []
+}

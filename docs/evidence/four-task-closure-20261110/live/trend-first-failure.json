@@ -1,0 +1,235 @@
+{
+  "submission": {
+    "data": {
+      "turnId": "01a1c4a6-a5bb-775a-9c4b-77e48df95a09",
+      "conversationId": "01a1bdae-03d4-7b55-8bce-f24cebc0f57b",
+      "jobId": "01a1c4a6-a5bb-775b-a608-7e73ea567901",
+      "parentTurnId": "01a1bdc5-4c80-779a-9299-7034308d692d",
+      "state": "queued",
+      "createdAt": "2026-11-10T08:50:18.1794Z",
+      "conversationRevision": 8,
+      "budget": {
+        "durationSeconds": 600,
+        "toolCalls": 40,
+        "rawQueries": 10,
+        "resultBytes": 41943040,
+        "graphNodes": 8000,
+        "evidenceItems": 4000,
+        "modelRequests": 8,
+        "inputTokens": 524288,
+        "outputTokens": 32768,
+        "modelCostMicros": 0,
+        "consumed": {
+          "toolCalls": 0,
+          "rawQueries": 0,
+          "resultBytes": 0,
+          "graphNodes": 0,
+          "evidenceItems": 0,
+          "modelRequests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "modelCostMicros": 0
+        }
+      }
+    },
+    "requestId": "01a1c4a6-a56f-79ab-b802-b695081a0b40"
+  },
+  "turn": {
+    "status": 200,
+    "body": {
+      "data": {
+        "turnId": "01a1c4a6-a5bb-775a-9c4b-77e48df95a09",
+        "conversationId": "01a1bdae-03d4-7b55-8bce-f24cebc0f57b",
+        "jobId": "01a1c4a6-a5bb-775b-a608-7e73ea567901",
+        "parentTurnId": "01a1bdc5-4c80-779a-9299-7034308d692d",
+        "state": "failed",
+        "errorCode": "INVESTIGATOR_FAILURE",
+        "createdAt": "2026-11-10T08:50:18.1794Z",
+        "conversationRevision": 8,
+        "budget": {
+          "durationSeconds": 600,
+          "toolCalls": 40,
+          "rawQueries": 10,
+          "resultBytes": 41943040,
+          "graphNodes": 8000,
+          "evidenceItems": 4000,
+          "modelRequests": 8,
+          "inputTokens": 524288,
+          "outputTokens": 32768,
+          "modelCostMicros": 0,
+          "consumed": {
+            "toolCalls": 2,
+            "rawQueries": 0,
+            "resultBytes": 115375,
+            "graphNodes": 0,
+            "evidenceItems": 1,
+            "modelRequests": 0,
+            "inputTokens": 0,
+            "outputTokens": 0,
+            "modelCostMicros": 0
+          }
+        }
+      },
+      "requestId": "01a1c4a7-5e15-7c0d-a7d4-fdc8e5af2355"
+    }
+  },
+  "steps": {
+    "status": 200,
+    "body": {
+      "data": [
+        {
+          "argsSummary": {},
+          "stepId": "01a1c4a6-a6a0-78f8-b3cc-0d30f4284f7d",
+          "toolName": "get_assistant_context",
+          "argsDigest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "state": "succeeded",
+          "result": {
+            "budget": {
+              "consumed": {
+                "evidenceItems": 0,
+                "graphNodes": 0,
+                "inputTokens": 0,
+                "modelCostMicros": 0,
+                "modelRequests": 0,
+                "outputTokens": 0,
+                "rawQueries": 0,
+                "resultBytes": 56123,
+                "toolCalls": 1
+              },
+              "remaining": {
+                "evidenceItems": 4000,
+                "graphNodes": 8000,
+                "inputTokens": 524288,
+                "modelCostMicros": 0,
+                "modelRequests": 8,
+                "outputTokens": 32768,
+                "rawQueries": 10,
+                "resultBytes": 41886915,
+                "toolCalls": 39
+              }
+            },
+            "data": {
+              "requestedAt": "2026-11-10T08:50:18.170137216Z",
+              "schemaVersion": "assistant-input/v1"
+            },
+            "degradedSources": [],
+            "evidenceRefs": [],
+            "partial": false,
+            "schemaVersion": "tool-response/v3",
+            "state": "succeeded",
+            "tool": "get_assistant_context"
+          }
+        },
+        {
+          "argsSummary": {
+            "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96"
+          },
+          "stepId": "01a1c4a6-a7da-74fe-9eb4-ad028f510da6",
+          "toolName": "get_incident_context",
+          "argsDigest": "sha256:e6154ab2ca67a94a65ac5d0b6eb844d71e6b3e1f5c3809a1b1e3100833c7b56e",
+          "state": "succeeded",
+          "result": {
+            "budget": {
+              "consumed": {
+                "evidenceItems": 1,
+                "graphNodes": 0,
+                "inputTokens": 0,
+                "modelCostMicros": 0,
+                "modelRequests": 0,
+                "outputTokens": 0,
+                "rawQueries": 0,
+                "resultBytes": 2907,
+                "toolCalls": 1
+              },
+              "remaining": {
+                "evidenceItems": 3999,
+                "graphNodes": 8000,
+                "inputTokens": 524288,
+                "modelCostMicros": 0,
+                "modelRequests": 8,
+                "outputTokens": 32768,
+                "rawQueries": 10,
+                "resultBytes": 41827665,
+                "toolCalls": 38
+              }
+            },
+            "data": {
+              "findings": {
+                "items": [
+                  {
+                    "aggregateRevision": 7,
+                    "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+                    "digest": "sha256:46a17d36869360e7fab0c199cc781460f2be38f2d146d116166f95ee5c3ef3bb",
+                    "eventId": "sha256:59aea746e5b261fc1ec62764ddbe520c97167b555f1983da234ff3dace012653",
+                    "evidenceRefs": [
+                      "921d1694-f531-5dcc-b97f-26c4a607094c"
+                    ],
+                    "findingId": "01a1bdac-e8f3-74f7-9ebd-f96d9f6bdcb1",
+                    "firstReceivedAt": "2026-11-09T00:19:48.083299Z",
+                    "idempotencyKey": "921d1694-f531-5dcc-b97f-26c4a607094c",
+                    "lifecycleState": "resolved",
+                    "namespace": "ops-current",
+                    "normalizedSymptom": "RolloutStuck",
+                    "observedAt": "2026-11-09T00:23:18.824727126Z",
+                    "occurrenceId": "01a1bdac-e8e9-7433-8fd7-57c669239cd3",
+                    "payload": {
+                      "nativeKind": "Deployment",
+                      "nativeUID": "704b8cfa-d86a-42e7-828d-413f8925bb02",
+                      "reason": "RolloutStuck",
+                      "resourceVersion": "2759553",
+                      "rolloutStuck": false
+                    },
+                    "receivedAt": "2026-11-09T00:23:18.935803Z",
+                    "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/704b8cfa-d86a-42e7-828d-413f8925bb02",
+                    "ruleFamily": "workload",
+                    "ruleId": "kubernetes/RolloutStuck/v1",
+                    "schemaVersion": "finding-envelope/v2",
+                    "severity": "warning",
+                    "sourceFingerprint": "sha256:2f3296c404fe0be274a1d2eec137ce014ec614155a2327f0597f92d0a4b51dfd",
+                    "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+                    "sourceRevision": 2,
+                    "sourceSequence": 0,
+                    "startsAt": "2026-11-09T00:19:48.011396Z",
+                    "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                    "timeReliable": true
+                  }
+                ]
+              },
+              "incident": {
+                "assignedAt": null,
+                "assigneeSubject": "",
+                "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+                "createdAt": "2026-11-09T00:19:48.591442Z",
+                "currentRcaRevision": 1328,
+                "fingerprint": "sha256:6de865ed4c6c5ddd6d853ddcb81307157dde1c879564aa239bbf7d84be54f927",
+                "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96",
+                "lastObservedAt": "2026-11-09T00:23:18.824727Z",
+                "namespace": "ops-current",
+                "policyVersion": "correlation/nonvirtual/v1",
+                "recoveryKnownAt": "2026-11-09T00:23:20.586419Z",
+                "resolvedAt": "2026-11-09T00:28:22.583073Z",
+                "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/704b8cfa-d86a-42e7-828d-413f8925bb02",
+                "revision": 6,
+                "schemaVersion": "incident/v2",
+                "startedAt": "2026-11-09T00:19:48.011396Z",
+                "state": "resolved",
+                "suppressedUntil": null,
+                "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                "updatedAt": "2026-11-09T00:28:22.583125Z"
+              }
+            },
+            "degradedSources": [],
+            "evidenceRefs": [
+              "921d1694-f531-5dcc-b97f-26c4a607094c"
+            ],
+            "partial": false,
+            "schemaVersion": "tool-response/v3",
+            "state": "succeeded",
+            "tool": "get_incident_context"
+          }
+        }
+      ],
+      "requestId": "01a1c4a7-bed9-73ec-a4cd-0e77a256948e"
+    }
+  }
+}

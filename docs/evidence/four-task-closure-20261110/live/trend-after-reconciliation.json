@@ -1,0 +1,537 @@
+{
+  "turn": {
+    "status": 200,
+    "body": {
+      "data": {
+        "turnId": "01a1c4b9-8adb-75db-ae48-ade94c4d2f18",
+        "conversationId": "01a1bdae-03d4-7b55-8bce-f24cebc0f57b",
+        "jobId": "01a1c4b9-8adb-75dd-a4dd-51c3d0626cb0",
+        "parentTurnId": "01a1c4b0-92f0-7738-8262-693c07825076",
+        "state": "partial",
+        "answer": {
+          "asOf": "2026-11-10T09:11:36.335209353Z",
+          "partial": true,
+          "summary": "本轮按要求对 Pod UID 49224918-5319-4743-b3ce-1c6473066e27（ops-current/ops-command-closure-8445fddff-2mbdb）在 2026-11-09T00:39:30Z–00:44:20Z、stepSeconds=60 提交 metrics.pod-cpu 的 trend 查询，但 execute_analysis_query 连续返回 INVALID_INVESTIGATION，未产生任何 QueryResult/Fact，因此该窗口的 CPU 趋势逐点数据缺失，不补零、不推断正常。",
+          "factRefs": [],
+          "warnings": [
+            "本轮仅做只读查询，未执行任何命令、未扩大窗口或权限",
+            "查询失败不等于 CPU 为零或正常；缺失点不补零",
+            "该窗口为修复后窗口（2026-11-09T00:39:30Z–00:44:20Z），即使取得数据也不能替代历史故障根因证据",
+            "source_read_failed:execute_analysis_query:INVALID_INVESTIGATION",
+            "query_not_executed"
+          ],
+          "answerKind": "unsupported",
+          "entityRefs": [],
+          "formalRefs": [
+            {
+              "kind": "rca",
+              "revision": 1343,
+              "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96",
+              "contentDigest": "sha256:e186f7f7acd13b2364a980aee598957f67229f7731bdf3bdbf89af830daa8988"
+            }
+          ],
+          "hypotheses": [
+            {
+              "key": "cpu-trend-unavailable-not-zero",
+              "summary": "推测：该 Pod 修复后窗口的 CPU 使用情况未知；查询被平台以 INVALID_INVESTIGATION 拒绝，既无支持也无反证，不能推断为空闲或过载。",
+              "supports": [],
+              "conflicts": [],
+              "nextChecks": [
+                "修正 intent 后重试 trend",
+                "改用 aggregate 取得窗口末端快照"
+              ],
+              "missingEvidence": [
+                "metrics.pod-cpu trend 的逐点数值（查询失败）",
+                "该 Pod 的容器资源限制与就绪状态"
+              ]
+            }
+          ],
+          "nextChecks": [
+            "核对 metrics.pod-cpu trend 的 intent 参数（dimensions=[\"time\"]、stepSeconds=60、整数秒窗口端点）后在同一冻结窗口重试一次",
+            "若 trend 仍被拒绝，改用 metrics.pod-cpu aggregate 取得窗口末端 CPU 快照，并明确其非逐点趋势",
+            "只读读取该 Pod 的 phase/Ready 条件与容器状态，与 CPU 观测对照"
+          ],
+          "evidenceRefs": [],
+          "scopeSummary": "operational:79014400-9453-4cb4-9678-0fae47981d79",
+          "schemaVersion": "assistant-answer/v1",
+          "degradedSources": [
+            "victoriametrics:metrics.pod-cpu（execute_analysis_query 返回 INVALID_INVESTIGATION，未产生结果）"
+          ],
+          "missingEvidence": [
+            "metrics.pod-cpu trend 未取得：execute_analysis_query(datasetId=metrics.pod-cpu, operation=trend, dimensions=[\"time\"], stepSeconds=60, canonicalId=k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/core/Pod/49224918-5319-4743-b3ce-1c6473066e27, 窗口 2026-11-09T00:39:30Z–00:44:20Z) 多次返回 INVALID_INVESTIGATION，无任何时间点数值",
+            "因无成功结果，无法给出该 Pod 在修复后窗口的 CPU 逐点序列、峰值或均值，也不能据此判断资源压力",
+            "未取得该 Pod 的 Ready 条件、容器状态与事件，CPU 缺失无法与就绪过程对照"
+          ],
+          "queryResultRefs": []
+        },
+        "createdAt": "2026-11-10T09:10:56.481786Z",
+        "conversationRevision": 10,
+        "budget": {
+          "durationSeconds": 600,
+          "toolCalls": 40,
+          "rawQueries": 10,
+          "resultBytes": 41943040,
+          "graphNodes": 8000,
+          "evidenceItems": 4000,
+          "modelRequests": 8,
+          "inputTokens": 524288,
+          "outputTokens": 32768,
+          "modelCostMicros": 0,
+          "consumed": {
+            "toolCalls": 4,
+            "rawQueries": 0,
+            "resultBytes": 1430197,
+            "graphNodes": 0,
+            "evidenceItems": 1,
+            "modelRequests": 8,
+            "inputTokens": 204842,
+            "outputTokens": 2242,
+            "modelCostMicros": 0
+          }
+        }
+      },
+      "requestId": "01a1c4ba-5e0f-7d13-b595-f28c8857875a"
+    }
+  },
+  "steps": {
+    "status": 200,
+    "body": {
+      "data": [
+        {
+          "argsSummary": {},
+          "stepId": "01a1c4b9-aed6-7f38-834e-17fab8d40d2c",
+          "toolName": "get_assistant_context",
+          "argsDigest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "state": "succeeded",
+          "result": {
+            "budget": {
+              "consumed": {
+                "evidenceItems": 0,
+                "graphNodes": 0,
+                "inputTokens": 0,
+                "modelCostMicros": 0,
+                "modelRequests": 0,
+                "outputTokens": 0,
+                "rawQueries": 0,
+                "resultBytes": 52847,
+                "toolCalls": 1
+              },
+              "remaining": {
+                "evidenceItems": 4000,
+                "graphNodes": 8000,
+                "inputTokens": 524288,
+                "modelCostMicros": 0,
+                "modelRequests": 8,
+                "outputTokens": 32768,
+                "rawQueries": 10,
+                "resultBytes": 41890191,
+                "toolCalls": 39
+              }
+            },
+            "data": {
+              "requestedAt": "2026-11-10T09:10:56.472593279Z",
+              "schemaVersion": "assistant-input/v1"
+            },
+            "degradedSources": [],
+            "evidenceRefs": [],
+            "partial": false,
+            "schemaVersion": "tool-response/v3",
+            "state": "succeeded",
+            "tool": "get_assistant_context"
+          }
+        },
+        {
+          "argsSummary": {
+            "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96"
+          },
+          "stepId": "01a1c4b9-b053-7786-ac24-7bf4917df5ff",
+          "toolName": "get_incident_context",
+          "argsDigest": "sha256:e6154ab2ca67a94a65ac5d0b6eb844d71e6b3e1f5c3809a1b1e3100833c7b56e",
+          "state": "succeeded",
+          "result": {
+            "budget": {
+              "consumed": {
+                "evidenceItems": 1,
+                "graphNodes": 0,
+                "inputTokens": 0,
+                "modelCostMicros": 0,
+                "modelRequests": 0,
+                "outputTokens": 0,
+                "rawQueries": 0,
+                "resultBytes": 2972,
+                "toolCalls": 1
+              },
+              "remaining": {
+                "evidenceItems": 3999,
+                "graphNodes": 8000,
+                "inputTokens": 524288,
+                "modelCostMicros": 0,
+                "modelRequests": 8,
+                "outputTokens": 32768,
+                "rawQueries": 10,
+                "resultBytes": 41834152,
+                "toolCalls": 38
+              }
+            },
+            "data": {
+              "findings": {
+                "items": [
+                  {
+                    "aggregateRevision": 7,
+                    "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+                    "digest": "sha256:46a17d36869360e7fab0c199cc781460f2be38f2d146d116166f95ee5c3ef3bb",
+                    "eventId": "sha256:59aea746e5b261fc1ec62764ddbe520c97167b555f1983da234ff3dace012653",
+                    "evidenceRefs": [
+                      "921d1694-f531-5dcc-b97f-26c4a607094c"
+                    ],
+                    "findingId": "01a1bdac-e8f3-74f7-9ebd-f96d9f6bdcb1",
+                    "firstReceivedAt": "2026-11-09T00:19:48.083299Z",
+                    "idempotencyKey": "921d1694-f531-5dcc-b97f-26c4a607094c",
+                    "lifecycleState": "resolved",
+                    "namespace": "ops-current",
+                    "normalizedSymptom": "RolloutStuck",
+                    "observedAt": "2026-11-09T00:23:18.824727126Z",
+                    "occurrenceId": "01a1bdac-e8e9-7433-8fd7-57c669239cd3",
+                    "payload": {
+                      "nativeKind": "Deployment",
+                      "nativeUID": "704b8cfa-d86a-42e7-828d-413f8925bb02",
+                      "reason": "RolloutStuck",
+                      "resourceVersion": "2759553",
+                      "rolloutStuck": false
+                    },
+                    "receivedAt": "2026-11-09T00:23:18.935803Z",
+                    "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/704b8cfa-d86a-42e7-828d-413f8925bb02",
+                    "ruleFamily": "workload",
+                    "ruleId": "kubernetes/RolloutStuck/v1",
+                    "schemaVersion": "finding-envelope/v2",
+                    "severity": "warning",
+                    "sourceFingerprint": "sha256:2f3296c404fe0be274a1d2eec137ce014ec614155a2327f0597f92d0a4b51dfd",
+                    "sourceRegistrationId": "01a1ab38-fbeb-79be-91c0-8823152c8c9d",
+                    "sourceRevision": 2,
+                    "sourceSequence": 0,
+                    "startsAt": "2026-11-09T00:19:48.011396Z",
+                    "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                    "timeReliable": true
+                  }
+                ]
+              },
+              "incident": {
+                "assignedAt": "2026-11-10T09:08:27.210804Z",
+                "assigneeSubject": "native:01a1bdd3-8d96-7c39-9489-cf7b94bd4d9f",
+                "clusterUid": "79014400-9453-4cb4-9678-0fae47981d79",
+                "createdAt": "2026-11-09T00:19:48.591442Z",
+                "currentRcaRevision": 1343,
+                "fingerprint": "sha256:6de865ed4c6c5ddd6d853ddcb81307157dde1c879564aa239bbf7d84be54f927",
+                "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96",
+                "lastObservedAt": "2026-11-09T00:23:18.824727Z",
+                "namespace": "ops-current",
+                "policyVersion": "correlation/nonvirtual/v1",
+                "recoveryKnownAt": "2026-11-09T00:23:20.586419Z",
+                "resolvedAt": "2026-11-09T00:28:22.583073Z",
+                "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/704b8cfa-d86a-42e7-828d-413f8925bb02",
+                "revision": 6,
+                "schemaVersion": "incident/v2",
+                "startedAt": "2026-11-09T00:19:48.011396Z",
+                "state": "resolved",
+                "suppressedUntil": null,
+                "tenantId": "01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3",
+                "updatedAt": "2026-11-10T09:08:27.211Z"
+              }
+            },
+            "degradedSources": [],
+            "evidenceRefs": [
+              "921d1694-f531-5dcc-b97f-26c4a607094c"
+            ],
+            "partial": false,
+            "schemaVersion": "tool-response/v3",
+            "state": "succeeded",
+            "tool": "get_incident_context"
+          }
+        },
+        {
+          "argsSummary": {},
+          "stepId": "01a1c4b9-cc84-78f3-a2bb-3248108b25a0",
+          "toolName": "get_formal_references",
+          "argsDigest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "state": "succeeded",
+          "result": {
+            "budget": {
+              "consumed": {
+                "evidenceItems": 0,
+                "graphNodes": 0,
+                "inputTokens": 0,
+                "modelCostMicros": 0,
+                "modelRequests": 0,
+                "outputTokens": 0,
+                "rawQueries": 0,
+                "resultBytes": 1963,
+                "toolCalls": 1
+              },
+              "remaining": {
+                "evidenceItems": 3999,
+                "graphNodes": 8000,
+                "inputTokens": 524288,
+                "modelCostMicros": 0,
+                "modelRequests": 8,
+                "outputTokens": 32768,
+                "rawQueries": 10,
+                "resultBytes": 41829060,
+                "toolCalls": 37
+              }
+            },
+            "data": {
+              "archivedEvidence": [],
+              "currentRcaRevision": 1343,
+              "formalReferences": [
+                {
+                  "contentDigest": "sha256:e186f7f7acd13b2364a980aee598957f67229f7731bdf3bdbf89af830daa8988",
+                  "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96",
+                  "kind": "rca",
+                  "revision": 1343
+                }
+              ],
+              "historical": false,
+              "omittedEvidence": [],
+              "plans": [],
+              "rca": {
+                "createdAt": "2026-11-10T09:10:26.085217415Z",
+                "fullSnapshot": "read exact formalReference; summary is not the full archived snapshot",
+                "incidentId": "01a1bdac-eaef-7730-a73a-90738956cc96",
+                "inputDigest": "sha256:2deca1f32f833689288468567d22a74b80485900ca3af945e77daf8d7cf89a4a",
+                "inputManifest": {
+                  "evaluatedAt": "2026-11-10T09:10:26.071484356Z",
+                  "evidenceRefs": [],
+                  "from": "2026-11-10T09:05:26.071484356Z",
+                  "resourceCanonicalId": "k8s+v1://01a1ab0b-3e7c-706e-bef6-024eeaf4c1b3/79014400-9453-4cb4-9678-0fae47981d79/apps/Deployment/704b8cfa-d86a-42e7-828d-413f8925bb02",
+                  "to": "2026-11-10T09:10:26.071484356Z"
+                },
+                "result": {
+                  "candidates": [],
+                  "evidenceBundle": {
+                    "contradicting": [],
+                    "degradedSources": [
+                      "01a1ab38-fbeb-79be-91c0-8823152c8c9d/archive",
+                      "01a1ae32-5595-7eea-aa8a-ac0ff097c123/proof",
+                      "01a1ae32-b7a2-7987-bc83-9a7d8855093d/npd",
+                      "01a1ae32-b7a2-7987-bc83-9a7d8855093d/proof",
+                      "kubernetes"
+                    ],
+                    "missing": [
+                      "rollout-stuck",
+                      "blocking-pod",
+                      "rollout-path"
+                    ],
+                    "supporting": []
+                  },
+                  "partial": true,
+                  "recipeDigest": "sha256:8958ec8d030cc1e5b8d129032306d8f5f7aa0c72ee266ee525c9635a139481b2",
+                  "recipeVersion": "v1",
+                  "status": "unresolved"
+                },
+                "revision": 1343,
+                "schemaVersion": "formal-rca-summary/v1"
+              }
+            },
+            "degradedSources": [],
+            "evidenceRefs": [],
+            "partial": false,
+            "schemaVersion": "tool-response/v3",
+            "state": "succeeded",
+            "tool": "get_formal_references"
+          }
+        },
+        {
+          "argsSummary": {
+            "context": "已授权故障上下文与持久工具结果",
+            "rawPromptOmitted": true
+          },
+          "stepId": "01a1c4b9-d08e-73e5-8b9e-d5804808e4d6",
+          "toolName": "model",
+          "argsDigest": "sha256:6ea8ed90ae873816b1a1a0aa3fc94d36e55e85e0a3081badad397adf35bace36",
+          "state": "succeeded",
+          "result": {
+            "provider": "openai-compatible",
+            "usageKnown": true
+          }
+        },
+        {
+          "argsSummary": {},
+          "stepId": "01a1c4b9-d87b-72ca-847f-5a4dff57dfb9",
+          "toolName": "describe_analysis_dataset",
+          "argsDigest": "sha256:394019c4c2debea1d4dab981af2684f6dca788b97fbc4a8448d0bef02571da39",
+          "state": "succeeded",
+          "result": {
+            "budget": {
+              "consumed": {
+                "evidenceItems": 0,
+                "graphNodes": 0,
+                "inputTokens": 0,
+                "modelCostMicros": 0,
+                "modelRequests": 0,
+                "outputTokens": 0,
+                "rawQueries": 0,
+                "resultBytes": 1622,
+                "toolCalls": 1
+              },
+              "remaining": {
+                "evidenceItems": 3999,
+                "graphNodes": 8000,
+                "inputTokens": 501232,
+                "modelCostMicros": 0,
+                "modelRequests": 7,
+                "outputTokens": 32730,
+                "rawQueries": 10,
+                "resultBytes": 41586432,
+                "toolCalls": 36
+              }
+            },
+            "data": {
+              "datasets": [
+                {
+                  "authorizationDomain": "operational",
+                  "calculation": "授权 selector 在聚合之前执行；固定服务端模板，受验证覆盖窗口约束。 compare_percent 由平台计算绝对相对变化百分比，以 increase/decrease 标明方向，基线为零不计算。CPU 趋势为固定 5 分钟 rate；重启和日志趋势为每个时间点之前一个 step 的增量/计数，不是累积数量。",
+                  "clusterScopedKinds": [],
+                  "description": "仅在来源、collector、UID 标签和覆盖范围验证通过后开放；缺失不能推断零。",
+                  "dimensions": [
+                    "namespace",
+                    "uid",
+                    "time",
+                    "comparison"
+                  ],
+                  "filters": [
+                    "namespace"
+                  ],
+                  "healthValues": [],
+                  "historySupported": true,
+                  "id": "metrics.pod-cpu",
+                  "kinds": [],
+                  "maxGroups": 50,
+                  "metric": "cpu_cores",
+                  "name": "Pod CPU 平均使用",
+                  "operations": [
+                    "aggregate",
+                    "trend",
+                    "compare",
+                    "compare_percent"
+                  ],
+                  "requiredFilters": [],
+                  "source": "victoriametrics",
+                  "templateVersion": "metrics.pod-cpu/v1",
+                  "unit": "cores",
+                  "zeroMeaning": "空来源返回 no_data；仅完整已验证覆盖可以发布精确零。"
+                }
+              ],
+              "schemaVersion": "analysis-catalog/v1",
+              "version": "analysis-catalog/v1"
+            },
+            "degradedSources": [],
+            "evidenceRefs": [],
+            "partial": false,
+            "schemaVersion": "tool-response/v3",
+            "state": "succeeded",
+            "tool": "describe_analysis_dataset"
+          }
+        },
+        {
+          "argsSummary": {
+            "context": "已授权故障上下文与持久工具结果",
+            "rawPromptOmitted": true
+          },
+          "stepId": "01a1c4b9-d978-7628-a63a-72ad32aa31fe",
+          "toolName": "model",
+          "argsDigest": "sha256:bc0c92e0e6e2bdbfa696ba81cfba2f06fd100f3dbbc9b8b60efd86cfb1edd4c6",
+          "state": "succeeded",
+          "result": {
+            "provider": "openai-compatible",
+            "usageKnown": true
+          }
+        },
+        {
+          "argsSummary": {
+            "context": "已授权故障上下文与持久工具结果",
+            "rawPromptOmitted": true
+          },
+          "stepId": "01a1c4b9-e422-7419-a204-9ec8839b2739",
+          "toolName": "model",
+          "argsDigest": "sha256:ee9c777bea1fb78c1b63e1b65dbfb994b44e9cacb067953f0cce87a6d47105fa",
+          "state": "succeeded",
+          "result": {
+            "provider": "openai-compatible",
+            "usageKnown": true
+          }
+        },
+        {
+          "argsSummary": {
+            "context": "已授权故障上下文与持久工具结果",
+            "rawPromptOmitted": true
+          },
+          "stepId": "01a1c4b9-ed30-7b59-8266-1d1616370b6e",
+          "toolName": "model",
+          "argsDigest": "sha256:81388ecf39027b0fd731346d3bd89f870009b57c6676ce1eaa355bf3ea74aeb2",
+          "state": "succeeded",
+          "result": {
+            "provider": "openai-compatible",
+            "usageKnown": true
+          }
+        },
+        {
+          "argsSummary": {
+            "context": "已授权故障上下文与持久工具结果",
+            "rawPromptOmitted": true
+          },
+          "stepId": "01a1c4b9-f3fb-711f-9d6c-a098f6bc13d2",
+          "toolName": "model",
+          "argsDigest": "sha256:66520d7bec439edd71f83f675c35f075604671c653155bac4583301ef3bc13e0",
+          "state": "succeeded",
+          "result": {
+            "provider": "openai-compatible",
+            "usageKnown": true
+          }
+        },
+        {
+          "argsSummary": {
+            "context": "已授权故障上下文与持久工具结果",
+            "rawPromptOmitted": true
+          },
+          "stepId": "01a1c4b9-fc1a-750f-b87a-2c48ffffcc7d",
+          "toolName": "model",
+          "argsDigest": "sha256:f3d1305dcf65c1871ce6f5b73e6ec3d856a6c2f9196f8ab16de09c12031ac871",
+          "state": "succeeded",
+          "result": {
+            "provider": "openai-compatible",
+            "usageKnown": true
+          }
+        },
+        {
+          "argsSummary": {
+            "context": "已授权故障上下文与持久工具结果",
+            "rawPromptOmitted": true
+          },
+          "stepId": "01a1c4ba-03a2-784f-a814-5ab414440aa0",
+          "toolName": "model",
+          "argsDigest": "sha256:f787cc77bcb3937cb4c2c9de65298d4c10b8b8dba9611f704d608bb2a42c1276",
+          "state": "succeeded",
+          "result": {
+            "provider": "openai-compatible",
+            "usageKnown": true
+          }
+        },
+        {
+          "argsSummary": {
+            "context": "已授权故障上下文与持久工具结果",
+            "rawPromptOmitted": true
+          },
+          "stepId": "01a1c4ba-0c49-7c27-a243-fd5a808498ed",
+          "toolName": "model",
+          "argsDigest": "sha256:880b5f8753bc60a480843baaaa9bbc2df9facb50eacc2fd1f4c27cf8a2cec09e",
+          "state": "succeeded",
+          "result": {
+            "provider": "openai-compatible",
+            "usageKnown": true
+          }
+        }
+      ],
+      "requestId": "01a1c4ba-a40d-74f7-857d-d1ed59374f55"
+    }
+  }
+}
