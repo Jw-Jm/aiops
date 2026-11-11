@@ -648,6 +648,66 @@ func (e IdentityRoleGrantV1Role) Valid() bool {
 	}
 }
 
+// Defines values for IncidentCaseDraftCreateV1Kind.
+const (
+	IncidentCaseDraftCreateV1KindCase IncidentCaseDraftCreateV1Kind = "case"
+)
+
+// Valid indicates whether the value is a known member of the IncidentCaseDraftCreateV1Kind enum.
+func (e IncidentCaseDraftCreateV1Kind) Valid() bool {
+	switch e {
+	case IncidentCaseDraftCreateV1KindCase:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for IncidentCaseDraftV1Kind.
+const (
+	IncidentCaseDraftV1KindCase IncidentCaseDraftV1Kind = "case"
+)
+
+// Valid indicates whether the value is a known member of the IncidentCaseDraftV1Kind enum.
+func (e IncidentCaseDraftV1Kind) Valid() bool {
+	switch e {
+	case IncidentCaseDraftV1KindCase:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for IncidentCaseDraftV1State.
+const (
+	Draft IncidentCaseDraftV1State = "draft"
+)
+
+// Valid indicates whether the value is a known member of the IncidentCaseDraftV1State enum.
+func (e IncidentCaseDraftV1State) Valid() bool {
+	switch e {
+	case Draft:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for IncidentCaseDraftV1Version.
+const (
+	IncidentCaseDraftV1VersionN1 IncidentCaseDraftV1Version = 1
+)
+
+// Valid indicates whether the value is a known member of the IncidentCaseDraftV1Version enum.
+func (e IncidentCaseDraftV1Version) Valid() bool {
+	switch e {
+	case IncidentCaseDraftV1VersionN1:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for IncidentSummaryV2SchemaVersion.
 const (
 	IncidentSummaryV2SchemaVersionIncidentv2 IncidentSummaryV2SchemaVersion = "incident/v2"
@@ -2379,6 +2439,21 @@ func (e ListCommandExecutionsParamsState) Valid() bool {
 	}
 }
 
+// Defines values for GetIncidentCaseDraftVersionParamsVersion.
+const (
+	GetIncidentCaseDraftVersionParamsVersionN1 GetIncidentCaseDraftVersionParamsVersion = 1
+)
+
+// Valid indicates whether the value is a known member of the GetIncidentCaseDraftVersionParamsVersion enum.
+func (e GetIncidentCaseDraftVersionParamsVersion) Valid() bool {
+	switch e {
+	case GetIncidentCaseDraftVersionParamsVersionN1:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for GetResourcesParamsDomain.
 const (
 	GetResourcesParamsDomainHardware   GetResourcesParamsDomain = "hardware"
@@ -3727,6 +3802,59 @@ type IncidentAlertLinksV2 struct {
 	FindingIds       []openapi_types.UUID `json:"findingIds"`
 	Reason           string               `json:"reason"`
 }
+
+// IncidentCaseDraftCreateV1 defines model for IncidentCaseDraftCreateV1.
+type IncidentCaseDraftCreateV1 struct {
+	Content          string                        `json:"content"`
+	ExpectedRevision int                           `json:"expectedRevision"`
+	IncidentId       openapi_types.UUID            `json:"incidentId"`
+	Kind             IncidentCaseDraftCreateV1Kind `json:"kind"`
+	Summary          string                        `json:"summary"`
+	Title            string                        `json:"title"`
+}
+
+// IncidentCaseDraftCreateV1Kind defines model for IncidentCaseDraftCreateV1.Kind.
+type IncidentCaseDraftCreateV1Kind string
+
+// IncidentCaseDraftEnvelopeV1 defines model for IncidentCaseDraftEnvelopeV1.
+type IncidentCaseDraftEnvelopeV1 struct {
+	Data      IncidentCaseDraftV1 `json:"data"`
+	RequestId string              `json:"requestId"`
+}
+
+// IncidentCaseDraftListV1 defines model for IncidentCaseDraftListV1.
+type IncidentCaseDraftListV1 struct {
+	Data []IncidentCaseDraftV1 `json:"data"`
+	Meta struct {
+		NextCursor string `json:"nextCursor"`
+	} `json:"meta"`
+	RequestId string `json:"requestId"`
+}
+
+// IncidentCaseDraftV1 defines model for IncidentCaseDraftV1.
+type IncidentCaseDraftV1 struct {
+	Content          string                     `json:"content"`
+	CreatedAt        time.Time                  `json:"createdAt"`
+	CreatorSubject   string                     `json:"creatorSubject"`
+	DocumentId       openapi_types.UUID         `json:"documentId"`
+	IncidentId       openapi_types.UUID         `json:"incidentId"`
+	IncidentRevision int                        `json:"incidentRevision"`
+	IncidentState    string                     `json:"incidentState"`
+	Kind             IncidentCaseDraftV1Kind    `json:"kind"`
+	State            IncidentCaseDraftV1State   `json:"state"`
+	Summary          string                     `json:"summary"`
+	Title            string                     `json:"title"`
+	Version          IncidentCaseDraftV1Version `json:"version"`
+}
+
+// IncidentCaseDraftV1Kind defines model for IncidentCaseDraftV1.Kind.
+type IncidentCaseDraftV1Kind string
+
+// IncidentCaseDraftV1State defines model for IncidentCaseDraftV1.State.
+type IncidentCaseDraftV1State string
+
+// IncidentCaseDraftV1Version defines model for IncidentCaseDraftV1.Version.
+type IncidentCaseDraftV1Version int
 
 // IncidentClaimV2 defines model for IncidentClaimV2.
 type IncidentClaimV2 struct {
@@ -6516,6 +6644,20 @@ type CancelInvestigationdefaultJSONResponseBody struct {
 	union json.RawMessage
 }
 
+// ListIncidentCaseDraftsParams defines parameters for ListIncidentCaseDrafts.
+type ListIncidentCaseDraftsParams struct {
+	IncidentId openapi_types.UUID `form:"incidentId" json:"incidentId"`
+	Cursor     *string            `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// CreateIncidentCaseDraftParams defines parameters for CreateIncidentCaseDraft.
+type CreateIncidentCaseDraftParams struct {
+	IdempotencyKey string `json:"Idempotency-Key"`
+}
+
+// GetIncidentCaseDraftVersionParamsVersion defines parameters for GetIncidentCaseDraftVersion.
+type GetIncidentCaseDraftVersionParamsVersion int
+
 // GetMetricCapabilitiesParams defines parameters for GetMetricCapabilities.
 type GetMetricCapabilitiesParams struct {
 	ClusterUid  string `form:"clusterUid" json:"clusterUid"`
@@ -6891,6 +7033,9 @@ type MergeIncidentsJSONRequestBody = IncidentMergeV2
 
 // CancelInvestigationJSONRequestBody defines body for CancelInvestigation for application/json ContentType.
 type CancelInvestigationJSONRequestBody = CancelInvestigationJSONBody
+
+// CreateIncidentCaseDraftJSONRequestBody defines body for CreateIncidentCaseDraft for application/json ContentType.
+type CreateIncidentCaseDraftJSONRequestBody = IncidentCaseDraftCreateV1
 
 // QueryPodMetricsJSONRequestBody defines body for QueryPodMetrics for application/json ContentType.
 type QueryPodMetricsJSONRequestBody QueryPodMetricsJSONBody
@@ -10969,6 +11114,15 @@ type ServerInterface interface {
 	// CancelInvestigation cancelInvestigation
 	// (POST /api/v1/investigations/{jobId}:cancel)
 	CancelInvestigation(w http.ResponseWriter, r *http.Request, jobId string, params CancelInvestigationParams)
+	// ListIncidentCaseDrafts Read case drafts for one currently authorized origin incident.
+	// (GET /api/v1/knowledge/documents)
+	ListIncidentCaseDrafts(w http.ResponseWriter, r *http.Request, params ListIncidentCaseDraftsParams)
+	// CreateIncidentCaseDraft Save a case draft bound to the current incident revision.
+	// (POST /api/v1/knowledge/documents)
+	CreateIncidentCaseDraft(w http.ResponseWriter, r *http.Request, params CreateIncidentCaseDraftParams)
+	// GetIncidentCaseDraftVersion Read immutable draft version 1 after reauthorizing its full origin incident.
+	// (GET /api/v1/knowledge/documents/{documentId}/versions/{version})
+	GetIncidentCaseDraftVersion(w http.ResponseWriter, r *http.Request, documentId openapi_types.UUID, version GetIncidentCaseDraftVersionParamsVersion)
 
 	// (GET /api/v1/metrics/capabilities)
 	GetMetricCapabilities(w http.ResponseWriter, r *http.Request, params GetMetricCapabilitiesParams)
@@ -11687,6 +11841,24 @@ func (_ Unimplemented) GetInvestigationSteps(w http.ResponseWriter, r *http.Requ
 // CancelInvestigation cancelInvestigation
 // (POST /api/v1/investigations/{jobId}:cancel)
 func (_ Unimplemented) CancelInvestigation(w http.ResponseWriter, r *http.Request, jobId string, params CancelInvestigationParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListIncidentCaseDrafts Read case drafts for one currently authorized origin incident.
+// (GET /api/v1/knowledge/documents)
+func (_ Unimplemented) ListIncidentCaseDrafts(w http.ResponseWriter, r *http.Request, params ListIncidentCaseDraftsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CreateIncidentCaseDraft Save a case draft bound to the current incident revision.
+// (POST /api/v1/knowledge/documents)
+func (_ Unimplemented) CreateIncidentCaseDraft(w http.ResponseWriter, r *http.Request, params CreateIncidentCaseDraftParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetIncidentCaseDraftVersion Read immutable draft version 1 after reauthorizing its full origin incident.
+// (GET /api/v1/knowledge/documents/{documentId}/versions/{version})
+func (_ Unimplemented) GetIncidentCaseDraftVersion(w http.ResponseWriter, r *http.Request, documentId openapi_types.UUID, version GetIncidentCaseDraftVersionParamsVersion) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -17155,6 +17327,132 @@ func (siw *ServerInterfaceWrapper) CancelInvestigation(w http.ResponseWriter, r 
 	handler.ServeHTTP(w, r)
 }
 
+// ListIncidentCaseDrafts operation middleware
+func (siw *ServerInterfaceWrapper) ListIncidentCaseDrafts(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListIncidentCaseDraftsParams
+
+	// ------------- Required query parameter "incidentId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "incidentId", r.URL.Query(), &params.IncidentId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "incidentId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "incidentId", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListIncidentCaseDrafts(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateIncidentCaseDraft operation middleware
+func (siw *ServerInterfaceWrapper) CreateIncidentCaseDraft(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateIncidentCaseDraftParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateIncidentCaseDraft(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetIncidentCaseDraftVersion operation middleware
+func (siw *ServerInterfaceWrapper) GetIncidentCaseDraftVersion(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "documentId" -------------
+	var documentId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "documentId", chi.URLParam(r, "documentId"), &documentId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "documentId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "version" -------------
+	var version GetIncidentCaseDraftVersionParamsVersion
+
+	err = runtime.BindStyledParameterWithOptions("simple", "version", chi.URLParam(r, "version"), &version, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "integer", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "version", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetIncidentCaseDraftVersion(w, r, documentId, version)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetMetricCapabilities operation middleware
 func (siw *ServerInterfaceWrapper) GetMetricCapabilities(w http.ResponseWriter, r *http.Request) {
 
@@ -18196,6 +18494,15 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/v1/assistant/conversations/{conversationId}/events", wrapper.GetAssistantConversationEvents)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/knowledge/documents", wrapper.ListIncidentCaseDrafts)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/knowledge/documents", wrapper.CreateIncidentCaseDraft)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/knowledge/documents/{documentId}/versions/{version}", wrapper.GetIncidentCaseDraftVersion)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/v1/metrics/capabilities", wrapper.GetMetricCapabilities)
@@ -23262,6 +23569,125 @@ func (response CancelInvestigationdefaultJSONResponse) VisitCancelInvestigationR
 	return err
 }
 
+type ListIncidentCaseDraftsRequestObject struct {
+	Params ListIncidentCaseDraftsParams
+}
+
+type ListIncidentCaseDraftsResponseObject interface {
+	VisitListIncidentCaseDraftsResponse(w http.ResponseWriter) error
+}
+
+type ListIncidentCaseDrafts200JSONResponse IncidentCaseDraftListV1
+
+func (response ListIncidentCaseDrafts200JSONResponse) VisitListIncidentCaseDraftsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListIncidentCaseDraftsdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response ListIncidentCaseDraftsdefaultJSONResponse) VisitListIncidentCaseDraftsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateIncidentCaseDraftRequestObject struct {
+	Params CreateIncidentCaseDraftParams
+	Body   *CreateIncidentCaseDraftJSONRequestBody
+}
+
+type CreateIncidentCaseDraftResponseObject interface {
+	VisitCreateIncidentCaseDraftResponse(w http.ResponseWriter) error
+}
+
+type CreateIncidentCaseDraft201JSONResponse IncidentCaseDraftEnvelopeV1
+
+func (response CreateIncidentCaseDraft201JSONResponse) VisitCreateIncidentCaseDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateIncidentCaseDraftdefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response CreateIncidentCaseDraftdefaultJSONResponse) VisitCreateIncidentCaseDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetIncidentCaseDraftVersionRequestObject struct {
+	DocumentId openapi_types.UUID                       `json:"documentId"`
+	Version    GetIncidentCaseDraftVersionParamsVersion `json:"version"`
+}
+
+type GetIncidentCaseDraftVersionResponseObject interface {
+	VisitGetIncidentCaseDraftVersionResponse(w http.ResponseWriter) error
+}
+
+type GetIncidentCaseDraftVersion200JSONResponse IncidentCaseDraftEnvelopeV1
+
+func (response GetIncidentCaseDraftVersion200JSONResponse) VisitGetIncidentCaseDraftVersionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetIncidentCaseDraftVersiondefaultJSONResponse struct {
+	Body       ErrorEnvelope
+	StatusCode int
+}
+
+func (response GetIncidentCaseDraftVersiondefaultJSONResponse) VisitGetIncidentCaseDraftVersionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type GetMetricCapabilitiesRequestObject struct {
 	Params GetMetricCapabilitiesParams
 }
@@ -24179,6 +24605,15 @@ type StrictServerInterface interface {
 	// CancelInvestigation cancelInvestigation
 	// (POST /api/v1/investigations/{jobId}:cancel)
 	CancelInvestigation(ctx context.Context, request CancelInvestigationRequestObject) (CancelInvestigationResponseObject, error)
+	// ListIncidentCaseDrafts Read case drafts for one currently authorized origin incident.
+	// (GET /api/v1/knowledge/documents)
+	ListIncidentCaseDrafts(ctx context.Context, request ListIncidentCaseDraftsRequestObject) (ListIncidentCaseDraftsResponseObject, error)
+	// CreateIncidentCaseDraft Save a case draft bound to the current incident revision.
+	// (POST /api/v1/knowledge/documents)
+	CreateIncidentCaseDraft(ctx context.Context, request CreateIncidentCaseDraftRequestObject) (CreateIncidentCaseDraftResponseObject, error)
+	// GetIncidentCaseDraftVersion Read immutable draft version 1 after reauthorizing its full origin incident.
+	// (GET /api/v1/knowledge/documents/{documentId}/versions/{version})
+	GetIncidentCaseDraftVersion(ctx context.Context, request GetIncidentCaseDraftVersionRequestObject) (GetIncidentCaseDraftVersionResponseObject, error)
 
 	// (GET /api/v1/metrics/capabilities)
 	GetMetricCapabilities(ctx context.Context, request GetMetricCapabilitiesRequestObject) (GetMetricCapabilitiesResponseObject, error)
@@ -27658,6 +28093,92 @@ func (sh *strictHandler) CancelInvestigation(w http.ResponseWriter, r *http.Requ
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(CancelInvestigationResponseObject); ok {
 		if err := validResponse.VisitCancelInvestigationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListIncidentCaseDrafts operation middleware
+func (sh *strictHandler) ListIncidentCaseDrafts(w http.ResponseWriter, r *http.Request, params ListIncidentCaseDraftsParams) {
+	var request ListIncidentCaseDraftsRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListIncidentCaseDrafts(ctx, request.(ListIncidentCaseDraftsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListIncidentCaseDrafts")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListIncidentCaseDraftsResponseObject); ok {
+		if err := validResponse.VisitListIncidentCaseDraftsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateIncidentCaseDraft operation middleware
+func (sh *strictHandler) CreateIncidentCaseDraft(w http.ResponseWriter, r *http.Request, params CreateIncidentCaseDraftParams) {
+	var request CreateIncidentCaseDraftRequestObject
+
+	request.Params = params
+
+	var body CreateIncidentCaseDraftJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateIncidentCaseDraft(ctx, request.(CreateIncidentCaseDraftRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateIncidentCaseDraft")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateIncidentCaseDraftResponseObject); ok {
+		if err := validResponse.VisitCreateIncidentCaseDraftResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetIncidentCaseDraftVersion operation middleware
+func (sh *strictHandler) GetIncidentCaseDraftVersion(w http.ResponseWriter, r *http.Request, documentId openapi_types.UUID, version GetIncidentCaseDraftVersionParamsVersion) {
+	var request GetIncidentCaseDraftVersionRequestObject
+
+	request.DocumentId = documentId
+	request.Version = version
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetIncidentCaseDraftVersion(ctx, request.(GetIncidentCaseDraftVersionRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetIncidentCaseDraftVersion")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetIncidentCaseDraftVersionResponseObject); ok {
+		if err := validResponse.VisitGetIncidentCaseDraftVersionResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

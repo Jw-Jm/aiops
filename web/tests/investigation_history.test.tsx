@@ -313,3 +313,48 @@ it("keeps the legacy result view for a v2 history entry of the same incident", a
   );
   expect(api.create).not.toHaveBeenCalled();
 });
+it("confirms cancellation of the frozen legacy job and sends nothing when dismissed", async () => {
+  setNativeCredentials("tenant", "csrf");
+  const reply = (data: unknown) =>
+    Promise.resolve({ status: 200, data: { data, requestId: "test" } });
+  api.history.mockImplementation(() => reply([]));
+  api.steps.mockImplementation(() => reply([]));
+  api.job.mockImplementation(() =>
+    reply({
+      jobId: "legacy-job",
+      subject: "user:reader",
+      state: "running",
+      triggerRevision: 1,
+      budget: {},
+      budgetConsumed: {},
+      budgetReserved: {},
+    }),
+  );
+  api.cancel.mockClear();
+  api.cancel.mockImplementation(() => reply({ state: "cancel_requested" }));
+  render(
+    <QueryClientProvider
+      client={
+        new QueryClient({ defaultOptions: { queries: { retry: false } } })
+      }
+    >
+      <MemoryRouter initialEntries={["/incident?jobId=legacy-job"]}>
+        <InvestigationPanel
+          incident={{ incidentId: "incident", revision: 1 } as IncidentV2}
+        />
+      </MemoryRouter>
+    </QueryClientProvider>,
+  );
+  await waitFor(() =>
+    expect(screen.getByRole("button", { name: "取消调查" })).toBeEnabled(),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "取消调查" }));
+  expect(api.cancel).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "继续运行" }));
+  expect(api.cancel).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "取消调查" }));
+  fireEvent.click(screen.getByRole("button", { name: "确认停止" }));
+  await waitFor(() => expect(api.cancel).toHaveBeenCalledTimes(1));
+  expect(api.cancel.mock.calls[0][0]).toBe("legacy-job");
+  expect(api.cancel.mock.calls[0][2].headers["Idempotency-Key"]).toBeTruthy();
+});

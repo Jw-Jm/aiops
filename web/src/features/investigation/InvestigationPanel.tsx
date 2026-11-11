@@ -1,6 +1,6 @@
 import { investigationFailure } from "../../components/investigationFailure";
 import { stateLabel } from "../../components/presentation";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { Alert, Button, Input, Space, Table } from "antd";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -25,6 +25,7 @@ import { BudgetSummary } from "./BudgetSummary";
 import { StepLedger } from "./StepLedger";
 import { useInvestigationStream } from "./useInvestigationStream";
 import { useAuth } from "../../auth/AuthProvider";
+import { ConfirmDialog } from "../../components/v12/Layer";
 export function InvestigationPanel({
   incident,
   onEvidence,
@@ -37,7 +38,12 @@ export function InvestigationPanel({
   creationBlocked?: boolean;
 }) {
   const navigate = useNavigate();
-  const { session } = useAuth();
+  const { session, nativeSession } = useAuth();
+  const [stopTarget, setStopTarget] = useState<{
+    jobId: string;
+    identity: string;
+    key: string;
+  }>();
   const [url, setUrl] = useSearchParams();
   const client = useQueryClient();
   const [input, setInput] = useState("");
@@ -61,6 +67,8 @@ export function InvestigationPanel({
   });
   const history = list(record(timeline.data).data).map(record);
   const jobId = url.get("jobId") || undefined;
+  const stopIdentity = `${incident.incidentId}:${jobId}:${session?.subject}:${nativeSession?.sessionRef ?? ""}`;
+  useEffect(() => setStopTarget(undefined), [stopIdentity]);
   const job = useQuery({
     queryKey: ["investigation", jobId],
     enabled: !!jobId,
@@ -160,10 +168,22 @@ export function InvestigationPanel({
     },
   });
   const cancel = useMutation({
-    mutationFn: () =>
-      checked(cancelInvestigation(jobId!, {}, requestOptions(undefined, true))),
-    onSuccess: () =>
-      void client.invalidateQueries({ queryKey: ["investigation", jobId] }),
+    mutationFn: (target: { jobId: string; identity: string; key: string }) =>
+      checked(
+        cancelInvestigation(
+          target.jobId,
+          {},
+          requestOptions(undefined, true, target.key),
+        ),
+      ),
+    onSuccess: (_, target) => {
+      setStopTarget((current) =>
+        current?.key === target.key ? undefined : current,
+      );
+      void client.invalidateQueries({
+        queryKey: ["investigation", target.jobId],
+      });
+    },
   });
   const stream = useInvestigationStream(
     jobId,
@@ -278,12 +298,47 @@ export function InvestigationPanel({
               historicalReadOnly ||
               !["queued", "running"].includes(data.state)
             }
-            onClick={() => cancel.mutate()}
+            onClick={() => {
+              cancel.reset();
+              setStopTarget({
+                jobId: jobId!,
+                identity: stopIdentity,
+                key: crypto.randomUUID(),
+              });
+            }}
           >
             取消调查
           </Button>
         )}
       </Space>
+      <ConfirmDialog
+        open={!!stopTarget && stopTarget.identity === stopIdentity}
+        title="停止调查？"
+        description={
+          <>
+            <p>调查作业 {stopTarget?.jobId}</p>
+            <p>已提交的事实和步骤会保留，未确认的根因仍需核对。</p>
+            {cancel.error && (
+              <QueryState loading={false} error={cancel.error} />
+            )}
+          </>
+        }
+        confirmLabel="确认停止"
+        cancelLabel="继续运行"
+        danger
+        loading={cancel.isPending}
+        onCancel={() => setStopTarget(undefined)}
+        onConfirm={() => {
+          if (
+            stopTarget?.identity === stopIdentity &&
+            data?.jobId === stopTarget.jobId &&
+            !historicalReadOnly &&
+            ["queued", "running"].includes(data.state) &&
+            !cancel.isPending
+          )
+            cancel.mutate(stopTarget);
+        }}
+      />
       <h3>同一故障的历史调查</h3>
       <QueryState
         loading={timeline.isPending}
@@ -314,9 +369,12 @@ export function InvestigationPanel({
                       view. */}
                   <Button
                     title={rowJobId}
-                    onClick={() => (unified ? openUnified(p) : choose(rowJobId))}
+                    onClick={() =>
+                      unified ? openUnified(p) : choose(rowJobId)
+                    }
                   >
-                    {stateLabel(text(p.state))} · 故障版本 {text(p.triggerRevision)}
+                    {stateLabel(text(p.state))} · 故障版本{" "}
+                    {text(p.triggerRevision)}
                   </Button>
                 </Space>
               );
@@ -360,7 +418,9 @@ export function InvestigationPanel({
         />
       )}
       {create.error && <QueryState loading={false} error={create.error} />}{" "}
-      {cancel.error && <QueryState loading={false} error={cancel.error} />}{" "}
+      {cancel.error && cancel.variables?.identity === stopIdentity && (
+        <QueryState loading={false} error={cancel.error} />
+      )}{" "}
       {!jobId && (
         <p className="status-note">
           点击“开始智能调查”分析当前故障，或从历史调查中查看已有结果。

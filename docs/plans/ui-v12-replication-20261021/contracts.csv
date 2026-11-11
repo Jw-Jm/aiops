@@ -89,8 +89,8 @@ C-087,PLAN,GET,/api/v1/inspection-plans,拟新增,P6-04,运维+当前对象范�
 C-088,PLAN,POST,/api/v1/inspection-plans,拟新增,P6-04,运维+当前对象范围,周期/时区/范围/版本,计划/状态/调度历史,列表/创建代表接口族；其余操作在专用行明确，P0校准复用
 C-089,TEMPLATE,GET,/api/v1/job-templates,拟新增,P6-02,运维+当前对象范围,受控操作/字面量参数/版本,模板/参数校验/预览,列表/创建代表接口族；其余操作在专用行明确，P0校准复用
 C-090,TEMPLATE,POST,/api/v1/job-templates,拟新增,P6-02,运维+当前对象范围,受控操作/字面量参数/版本,模板/参数校验/预览,列表/创建代表接口族；其余操作在专用行明确，P0校准复用
-C-091,KNOWLEDGE,GET,/api/v1/knowledge/documents,拟新增,P7-04,运维+当前对象范围,类型/范围/正文/状态/版本,文档与不可变版本,列表/创建代表接口族；其余操作在专用行明确，P0校准复用
-C-092,KNOWLEDGE,POST,/api/v1/knowledge/documents,拟新增,P7-04,运维+当前对象范围,类型/范围/正文/状态/版本,文档与不可变版本,列表/创建代表接口族；其余操作在专用行明确，P0校准复用
+C-091,KNOWLEDGE,GET,/api/v1/knowledge/documents,已有-适配,P7-04,运维+当前对象范围,类型/范围/正文/状态/版本,文档与不可变版本,列表/创建代表接口族；其余操作在专用行明确，P0校准复用；P4-05 接入当前授权故障案例草稿 v1 创建/按故障分页/固定版本读取；全库检索、编辑、发布与索引仍由 P7 接续
+C-092,KNOWLEDGE,POST,/api/v1/knowledge/documents,已有-适配,P7-04,运维+当前对象范围,类型/范围/正文/状态/版本,文档与不可变版本,列表/创建代表接口族；其余操作在专用行明确，P0校准复用；P4-05 接入当前授权故障案例草稿 v1 创建/按故障分页/固定版本读取；全库检索、编辑、发布与索引仍由 P7 接续
 C-093,NOTIFY,GET,/api/v1/admin/notification-channels,拟新增,P7-03,管理员,受控地址/凭据引用/版本,渠道及真实回执,列表/创建代表接口族；其余操作在专用行明确，P0校准复用
 C-094,NOTIFY,POST,/api/v1/admin/notification-channels,拟新增,P7-03,管理员,受控地址/凭据引用/版本,渠道及真实回执,列表/创建代表接口族；其余操作在专用行明确，P0校准复用
 C-095,INSPECT,GET,/api/v1/inspections/{inspectionId},拟新增,P6-03,运维+当前对象范围,任务ID,进度/各项状态/固定报告,拟定完整族之一；不得因一次HTTP成功伪造任务或外部结果
@@ -106,7 +106,7 @@ C-104,KNOWLEDGE,POST,/api/v1/knowledge/documents/{documentId}/versions/{version}
 C-105,KNOWLEDGE,POST,/api/v1/knowledge/documents/{documentId}:archive,拟新增,P7-04,运维+当前对象范围,expectedRevision,归档状态,拟定完整族之一；不得因一次HTTP成功伪造任务或外部结果
 C-106,KNOWLEDGE,POST,/api/v1/knowledge/documents/{documentId}/index-jobs,拟新增,P7-04,运维+当前对象范围,已发布固定版本,索引任务,拟定完整族之一；不得因一次HTTP成功伪造任务或外部结果
 C-107,KNOWLEDGE,POST,/api/v1/knowledge/search-tests,拟新增,P7-05,运维+当前对象范围,问题/范围/检索配置,命中/口径/固定引用,拟定完整族之一；不得因一次HTTP成功伪造任务或外部结果
-C-108,KNOWLEDGE,GET,/api/v1/knowledge/documents/{documentId}/versions/{version},拟新增,P7-05,运维+当前对象范围,固定版本ID,授权原文,拟定完整族之一；不得因一次HTTP成功伪造任务或外部结果
+C-108,KNOWLEDGE,GET,/api/v1/knowledge/documents/{documentId}/versions/{version},已有-适配,P7-05,运维+当前对象范围,固定版本ID,授权原文,拟定完整族之一；不得因一次HTTP成功伪造任务或外部结果；P4-05 接入当前授权故障案例草稿 v1 创建/按故障分页/固定版本读取；全库检索、编辑、发布与索引仍由 P7 接续
 C-109,NOTIFY,PATCH,/api/v1/admin/notification-channels/{channelId},拟新增,P7-03,管理员；敏感写再次验证,expectedRevision/渠道配置,更新渠道,拟定完整族之一；不得因一次HTTP成功伪造任务或外部结果
 C-110,NOTIFY,POST,/api/v1/admin/notification-channels/{channelId}:test,拟新增,P7-03,管理员；敏感写再次验证,指定隔离接收端/确认,真实测试投递任务,拟定完整族之一；不得因一次HTTP成功伪造任务或外部结果
 C-111,NOTIFY,GET,/api/v1/admin/notification-deliveries,拟新增,P7-03,管理员；敏感写再次验证,范围/游标,投递回执,拟定完整族之一；不得因一次HTTP成功伪造任务或外部结果

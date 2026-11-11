@@ -109,6 +109,8 @@ func NewFoundationHandlerWithNativeMFA(pool persistence.TxBeginner, authenticato
 			NativeUserHandlers{Pool: pool}.ServeHTTP(w, r)
 		case strings.HasPrefix(r.URL.Path, "/api/v1/assistant/") && sp04.Assistant != nil:
 			sp04.Assistant.ServeHTTP(w, r)
+		case r.URL.Path == "/api/v1/knowledge/documents" || strings.HasPrefix(r.URL.Path, "/api/v1/knowledge/documents/"):
+			sp04.SP05.serveCaseDrafts(w, r)
 		case strings.HasPrefix(r.URL.Path, "/api/v1/audit-records"):
 			sp04.serveAudit(w, r)
 		case strings.HasPrefix(r.URL.Path, "/api/v1/metrics/"):

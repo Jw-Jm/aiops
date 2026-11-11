@@ -56,6 +56,7 @@ const AuditPage = lazy(() =>
 import { useAuth } from "../auth/AuthProvider";
 import { IncidentCollaboration } from "../features/collab/IncidentCollaboration";
 import { AskAssistantEntry } from "../features/assistant/AskAssistantEntry";
+import { IncidentCaseDrafts } from "../features/investigation/IncidentCaseDrafts";
 export function IncidentWorkspace() {
   const { incidentId = "" } = useParams();
   const client = useQueryClient();
@@ -234,6 +235,12 @@ export function IncidentWorkspace() {
       >
         {incident && (
           <>
+            <IncidentCaseDrafts
+              incidentId={incidentId}
+              revision={incident.revision}
+              state={incident.state}
+              canonicalId={incident.resourceCanonicalId}
+            />
             <IncidentStateActions
               key={incidentId}
               incidentId={incidentId}

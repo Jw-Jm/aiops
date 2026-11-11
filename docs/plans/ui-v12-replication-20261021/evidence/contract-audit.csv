@@ -89,8 +89,8 @@ C-087,GET,/api/v1/inspection-plans,P6-04,implement public contract,false,not imp
 C-088,POST,/api/v1/inspection-plans,P6-04,implement public contract,false,not implemented,none,none,none,no handler or registration; owner task P6-04,not_verified
 C-089,GET,/api/v1/job-templates,P6-02,implement public contract,false,not implemented,none,none,none,no handler or registration; owner task P6-02,not_verified
 C-090,POST,/api/v1/job-templates,P6-02,implement public contract,false,not implemented,none,none,none,no handler or registration; owner task P6-02,not_verified
-C-091,GET,/api/v1/knowledge/documents,P7-04,implement public contract,false,not implemented,none,none,none,no handler or registration; owner task P7-04,not_verified
-C-092,POST,/api/v1/knowledge/documents,P7-04,implement public contract,false,not implemented,none,none,none,no handler or registration; owner task P7-04,not_verified
+C-091,GET,/api/v1/knowledge/documents,P7-04,已有-适配,true,internal/httpapi/incident_case_drafts.go:serveCaseDrafts,incident.Service.CreateCaseDraft/ReadCaseDrafts; incident.AuthorizeAll,incident.case_drafts; incident.timeline; audit.records; transport idempotency,web/src/features/investigation/IncidentCaseDrafts.tsx,仅关联故障草稿 v1；完整 P7 编辑/发布/检索仍待实施,not_verified
+C-092,POST,/api/v1/knowledge/documents,P7-04,已有-适配,true,internal/httpapi/incident_case_drafts.go:serveCaseDrafts,incident.Service.CreateCaseDraft/ReadCaseDrafts; incident.AuthorizeAll,incident.case_drafts; incident.timeline; audit.records; transport idempotency,web/src/features/investigation/IncidentCaseDrafts.tsx,仅关联故障草稿 v1；完整 P7 编辑/发布/检索仍待实施,not_verified
 C-093,GET,/api/v1/admin/notification-channels,P7-03,implement public contract,false,not implemented,none,none,none,no handler or registration; owner task P7-03,not_verified
 C-094,POST,/api/v1/admin/notification-channels,P7-03,implement public contract,false,not implemented,none,none,none,no handler or registration; owner task P7-03,not_verified
 C-095,GET,/api/v1/inspections/{inspectionId},P6-03,implement public contract,false,not implemented,none,none,none,no handler or registration; owner task P6-03,not_verified
@@ -106,7 +106,7 @@ C-104,POST,/api/v1/knowledge/documents/{documentId}/versions/{version}:publish,P
 C-105,POST,/api/v1/knowledge/documents/{documentId}:archive,P7-04,implement public contract,false,not implemented,none,none,none,no handler or registration; owner task P7-04,not_verified
 C-106,POST,/api/v1/knowledge/documents/{documentId}/index-jobs,P7-04,implement public contract,false,not implemented,none,none,none,no handler or registration; owner task P7-04,not_verified
 C-107,POST,/api/v1/knowledge/search-tests,P7-05,implement public contract,false,not implemented,none,none,none,no handler or registration; owner task P7-05,not_verified
-C-108,GET,/api/v1/knowledge/documents/{documentId}/versions/{version},P7-05,implement public contract,false,not implemented,none,none,none,no handler or registration; owner task P7-05,not_verified
+C-108,GET,/api/v1/knowledge/documents/{documentId}/versions/{version},P7-05,已有-适配,true,internal/httpapi/incident_case_drafts.go:serveCaseDrafts,incident.Service.CreateCaseDraft/ReadCaseDrafts; incident.AuthorizeAll,incident.case_drafts; incident.timeline; audit.records; transport idempotency,web/src/features/investigation/IncidentCaseDrafts.tsx,仅关联故障草稿 v1；完整 P7 编辑/发布/检索仍待实施,not_verified
 C-109,PATCH,/api/v1/admin/notification-channels/{channelId},P7-03,implement public contract,false,not implemented,none,none,none,no handler or registration; owner task P7-03,not_verified
 C-110,POST,/api/v1/admin/notification-channels/{channelId}:test,P7-03,implement public contract,false,not implemented,none,none,none,no handler or registration; owner task P7-03,not_verified
 C-111,GET,/api/v1/admin/notification-deliveries,P7-03,implement public contract,false,not implemented,none,none,none,no handler or registration; owner task P7-03,not_verified

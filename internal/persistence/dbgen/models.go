@@ -477,6 +477,19 @@ type IncidentAppliedRevision struct {
 	AggregateRevision int64       `json:"aggregate_revision"`
 }
 
+type IncidentCaseDraft struct {
+	TenantID         pgtype.UUID        `json:"tenant_id"`
+	DocumentID       pgtype.UUID        `json:"document_id"`
+	IncidentID       pgtype.UUID        `json:"incident_id"`
+	IncidentRevision int64              `json:"incident_revision"`
+	IncidentState    string             `json:"incident_state"`
+	Title            string             `json:"title"`
+	Summary          string             `json:"summary"`
+	Content          string             `json:"content"`
+	CreatorSubject   string             `json:"creator_subject"`
+	CreatedAt        pgtype.Timestamptz `json:"created_at"`
+}
+
 type IncidentCorrelationSubject struct {
 	TenantID    pgtype.UUID `json:"tenant_id"`
 	Fingerprint string      `json:"fingerprint"`

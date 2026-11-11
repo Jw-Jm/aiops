@@ -81,6 +81,9 @@ import type {
   GetToolsParams,
   Identifier,
   IncidentAlertLinksV2,
+  IncidentCaseDraftCreateV1,
+  IncidentCaseDraftEnvelopeV1,
+  IncidentCaseDraftListV1,
   IncidentClaimV2,
   IncidentCommentCreateV2,
   IncidentCommentSuccessV2,
@@ -108,6 +111,7 @@ import type {
   ListAssistantConversationsParams,
   ListAssistantMessagesParams,
   ListCommandExecutionsParams,
+  ListIncidentCaseDraftsParams,
   ListIncidentFollowUpsParams,
   ListObservationQueriesParams,
   NativeAccountSuccessV1,
@@ -1720,6 +1724,179 @@ export const getAssistantConversationEvents = async (conversationId: string, opt
 
   const data: getAssistantConversationEventsResponse['data'] = body ? (contentType.includes('json') ? JSON.parse(body) : body) : {}
   return { data, status: res.status, headers: res.headers } as getAssistantConversationEventsResponse
+}
+
+
+
+export type createIncidentCaseDraftResponse201 = {
+  data: IncidentCaseDraftEnvelopeV1
+  status: 201
+}
+
+export type createIncidentCaseDraftResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 201>
+}
+
+export type createIncidentCaseDraftResponseSuccess = (createIncidentCaseDraftResponse201) & {
+  headers: Headers;
+};
+export type createIncidentCaseDraftResponseError = (createIncidentCaseDraftResponseDefault) & {
+  headers: Headers;
+};
+
+export type createIncidentCaseDraftResponse = (createIncidentCaseDraftResponseSuccess | createIncidentCaseDraftResponseError)
+
+export const getCreateIncidentCaseDraftUrl = () => {
+
+
+
+
+  return `/api/v1/knowledge/documents`
+}
+
+/**
+ * @summary Save a case draft bound to the current incident revision.
+ */
+export const createIncidentCaseDraft = async (incidentCaseDraftCreateV1: IncidentCaseDraftCreateV1, options?: RequestInit): Promise<createIncidentCaseDraftResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getCreateIncidentCaseDraftUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(incidentCaseDraftCreateV1)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: createIncidentCaseDraftResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as createIncidentCaseDraftResponse
+}
+
+
+
+export type listIncidentCaseDraftsResponse200 = {
+  data: IncidentCaseDraftListV1
+  status: 200
+}
+
+export type listIncidentCaseDraftsResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type listIncidentCaseDraftsResponseSuccess = (listIncidentCaseDraftsResponse200) & {
+  headers: Headers;
+};
+export type listIncidentCaseDraftsResponseError = (listIncidentCaseDraftsResponseDefault) & {
+  headers: Headers;
+};
+
+export type listIncidentCaseDraftsResponse = (listIncidentCaseDraftsResponseSuccess | listIncidentCaseDraftsResponseError)
+
+export const getListIncidentCaseDraftsUrl = (params: ListIncidentCaseDraftsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/knowledge/documents?${stringifiedParams}` : `/api/v1/knowledge/documents`
+}
+
+/**
+ * @summary Read case drafts for one currently authorized origin incident.
+ */
+export const listIncidentCaseDrafts = async (params: ListIncidentCaseDraftsParams, options?: RequestInit): Promise<listIncidentCaseDraftsResponse> => {
+
+  const res = await fetch(getListIncidentCaseDraftsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: listIncidentCaseDraftsResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as listIncidentCaseDraftsResponse
+}
+
+
+
+export type getIncidentCaseDraftVersionResponse200 = {
+  data: IncidentCaseDraftEnvelopeV1
+  status: 200
+}
+
+export type getIncidentCaseDraftVersionResponseDefault = {
+  data: ErrorEnvelope
+  status: Exclude<HTTPStatusCodes, 200>
+}
+
+export type getIncidentCaseDraftVersionResponseSuccess = (getIncidentCaseDraftVersionResponse200) & {
+  headers: Headers;
+};
+export type getIncidentCaseDraftVersionResponseError = (getIncidentCaseDraftVersionResponseDefault) & {
+  headers: Headers;
+};
+
+export type getIncidentCaseDraftVersionResponse = (getIncidentCaseDraftVersionResponseSuccess | getIncidentCaseDraftVersionResponseError)
+
+export const getGetIncidentCaseDraftVersionUrl = (documentId: string,
+    version: 1,) => {
+
+
+
+
+  return `/api/v1/knowledge/documents/${documentId}/versions/${version}`
+}
+
+/**
+ * @summary Read immutable draft version 1 after reauthorizing its full origin incident.
+ */
+export const getIncidentCaseDraftVersion = async (documentId: string,
+    version: 1, options?: RequestInit): Promise<getIncidentCaseDraftVersionResponse> => {
+
+  const res = await fetch(getGetIncidentCaseDraftVersionUrl(documentId,version),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getIncidentCaseDraftVersionResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getIncidentCaseDraftVersionResponse
 }
 
 
