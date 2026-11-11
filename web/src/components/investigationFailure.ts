@@ -5,6 +5,8 @@ const failures: Record<string, string> = {
     "模型服务认证失败，请联系平台管理员核对连接配置。",
   MODEL_CONTEXT_LIMIT: "证据超过模型上下文限制；请缩小调查范围。",
   MODEL_RATE_LIMITED: "模型服务限制了请求频率，请稍后重试。",
+  MODEL_PROVIDER_PAYMENT_REQUIRED:
+    "模型服务返回计费限制（402）。请联系平台管理员核对供应商账户状态后重试。",
   MODEL_REQUEST_REJECTED: "模型服务拒绝此次请求，请联系平台管理员核对配置。",
   MODEL_FAILURE: "模型调用失败；请核对已保存的步骤和结果。",
   INVALID_MODEL_JSON: "模型返回的内容不符合结果格式，未形成可用的调查结论。",

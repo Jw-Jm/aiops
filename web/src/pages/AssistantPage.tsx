@@ -1,6 +1,7 @@
 import { LegalHoldControl } from "../features/assistant/LegalHoldControl";
 import { FaultChainCollector } from "../features/assistant/FaultChainCollector";
 import { BindingEditor } from "../features/assistant/BindingEditor";
+import { investigationFailure } from "../components/investigationFailure";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -1878,7 +1879,7 @@ export function AssistantPage({
                     <Tag>{active.state}</Tag>
                     {active.errorCode && (
                       <Typography.Text type="danger">
-                        {active.errorCode}
+                        {investigationFailure(active.errorCode) ?? active.errorCode}
                       </Typography.Text>
                     )}
                     {!active.answer &&

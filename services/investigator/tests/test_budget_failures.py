@@ -1,6 +1,7 @@
 """Fault injection checks for the official completion extension, not live gates."""
 import json
 
+import httpx
 import pytest
 from holmes.core.llm import DefaultLLM
 from litellm import (
@@ -8,7 +9,15 @@ from litellm import (
     ContextWindowExceededError, ModelResponse, RateLimitError, Timeout,
 )
 
-from investigator.budget import BudgetedLLM
+from investigator.budget import BudgetedLLM, _failure_kind
+
+
+def test_nested_payment_status_overrides_generic_bad_request():
+    response = httpx.Response(402, request=httpx.Request("POST", "https://provider.invalid"))
+    upstream = httpx.HTTPStatusError("token=do-not-log", request=response.request, response=response)
+    error = BadRequestError("generic wrapper", "llama3.1:8b-16k", "openai")
+    error.__cause__ = upstream
+    assert _failure_kind(error) == "MODEL_PROVIDER_PAYMENT_REQUIRED"
 
 
 class RecordingLedger:

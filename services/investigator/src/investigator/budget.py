@@ -4,6 +4,7 @@ from litellm import (
     ContextWindowExceededError, ModelResponse, RateLimitError, Timeout,
 )
 from openai import APIConnectionError as OpenAIConnectionError, APITimeoutError as OpenAITimeoutError
+from httpx import HTTPStatusError
 import json
 import hashlib
 import logging
@@ -21,12 +22,16 @@ class ModelCallError(RuntimeError):
 
 def _failure_kind(error):
     # LiteLLM can wrap native OpenAI connection errors in InternalServerError.
-    # Inspect only exception types in a bounded cause chain, never provider text.
+    # Inspect only exception types and status codes, never provider text.
     seen=set()
+    classified=None
     for _ in range(8):
         if error is None or id(error) in seen:
             break
         seen.add(id(error))
+        status = error.response.status_code if isinstance(error, HTTPStatusError) else getattr(error, "status_code", None)
+        if status == 402:
+            return "MODEL_PROVIDER_PAYMENT_REQUIRED"
         for exception, kind in (
             ((Timeout, OpenAITimeoutError), "MODEL_TIMEOUT"),
             (AuthenticationError, "MODEL_AUTHENTICATION_FAILED"),
@@ -35,10 +40,11 @@ def _failure_kind(error):
             ((APIConnectionError, OpenAIConnectionError), "MODEL_UNAVAILABLE"),
             (BadRequestError, "MODEL_REQUEST_REJECTED"),
         ):
-            if isinstance(error, exception):
-                return kind
+            if classified is None and isinstance(error, exception):
+                classified=kind
+                break
         error=error.__cause__ or error.__context__
-    return "MODEL_FAILURE"
+    return classified or "MODEL_FAILURE"
 
 
 class BudgetedLLM(DefaultLLM):

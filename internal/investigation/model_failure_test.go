@@ -7,7 +7,7 @@ import (
 )
 
 func TestSP08ModelFailureCategory(t *testing.T) {
-	for _, code := range []string{"MODEL_UNAVAILABLE", "MODEL_TIMEOUT", "MODEL_RATE_LIMITED", "MODEL_FAILURE_SETTLEMENT_REJECTED", "MODEL_OUTPUT_INVALID"} {
+	for _, code := range []string{"MODEL_UNAVAILABLE", "MODEL_TIMEOUT", "MODEL_RATE_LIMITED", "MODEL_PROVIDER_PAYMENT_REQUIRED", "MODEL_FAILURE_SETTLEMENT_REJECTED", "MODEL_OUTPUT_INVALID"} {
 		err := DecodeInvestigatorFailure(strings.NewReader(`{"errorCode":"` + code + `","detail":"password=private"}`))
 		var failure ModelFailure
 		if !errors.As(err, &failure) || failure.Code != code || err.Error() != code {
