@@ -7,7 +7,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { useState } from "react";
-import { MemoryRouter, useLocation } from "react-router-dom";
+import { MemoryRouter, useLocation, useNavigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AssistantPage } from "../../src/pages/AssistantPage";
 import {
@@ -87,6 +87,7 @@ const capabilitiesEnvelope = {
 
 function ScopeControls() {
   const scope = useClusterScope();
+  const navigate = useNavigate();
   const [result, setResult] = useState("");
   return (
     <div>
@@ -94,6 +95,9 @@ function ScopeControls() {
       <button onClick={() => setResult(scope.requestCluster("uid-b"))}>
         switch-scope
       </button>
+      {scope.pendingTarget && (
+        <button onClick={() => navigate(scope.pendingTarget!)}>confirm-switch</button>
+      )}
     </div>
   );
 }
@@ -220,6 +224,7 @@ it("does not navigate to a conversation created for the old scope after a same-t
   fireEvent.click(createButton);
   await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));
   fireEvent.click(screen.getByText("switch-scope"));
+  fireEvent.click(await screen.findByText("confirm-switch"));
   await waitFor(() =>
     expect(screen.getByTestId("location")).toHaveTextContent(
       "clusterUid=uid-b",

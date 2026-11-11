@@ -4,6 +4,7 @@ package assistant
 import (
 	"context"
 	"encoding/json"
+	"slices"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -170,7 +171,7 @@ func (r ResourceResolver) Resolve(ctx context.Context, binding analytics.Binding
 		return result, analytics.ErrSource
 	}
 	result.ObservationRevision, result.SnapshotReadAt, result.Freshness = out.GraphRevision, out.CollectedAt, out.Freshness
-	if !analytics.CompleteResourceList(out) {
+	if !analytics.CompleteResourceList(out) && !confirmedIdentityWithArchiveDelay(out, selector) {
 		result.Status = "degraded"
 		return result, nil
 	}
@@ -204,6 +205,22 @@ func (r ResourceResolver) Resolve(ctx context.Context, binding analytics.Binding
 	return result, nil
 }
 
+// A fresh, positively observed UID can bind an investigation even if the
+// evidence archive is behind. The archive health still applies to evidence
+// reads and diagnostic graphs. Absence and name matches need a complete list.
+func confirmedIdentityWithArchiveDelay(out graph.Result, selector ResourceSelector) bool {
+	return selector.CanonicalID != "" && out.Freshness == "fresh" &&
+		out.Summary != nil && out.Summary.Total == 1 && len(out.Nodes) == 1 &&
+		out.Nodes[0].CanonicalID == selector.CanonicalID && out.NextCanonicalID == "" &&
+		len(out.DegradedSources) > 0 && len(out.Warnings) > 0 &&
+		!slices.ContainsFunc(out.DegradedSources, func(source string) bool {
+			return !strings.HasSuffix(source, "/archive")
+		}) &&
+		!slices.ContainsFunc(out.Warnings, func(warning string) bool {
+			return warning != "scope_limited" && warning != "archive_pending" && warning != "archive_backpressure_or_unavailable"
+		})
+}
+
 func scopeNamespace(scope graph.Scope, ns string) bool {
 	for _, allowed := range scope.Namespaces {
 		if allowed == ns {
@@ -216,6 +233,9 @@ func scopeNamespace(scope graph.Scope, ns string) bool {
 // NewContext binds one resolved live identity. Selecting a clarification candidate
 // requires another exact-ID Resolve so UID replacement and authority are rechecked.
 func NewContext(resolution Resolution, symptom string, window TimeRange) (ResourceContext, error) {
+	if resolution.Status == "degraded" {
+		return ResourceContext{}, analytics.ErrSource
+	}
 	if resolution.Status != "resolved" || len(resolution.Candidates) != 1 || resolution.Truncated ||
 		resolution.scope.Tenant == "" || resolution.subject == "" || resolution.grantDigest == "" ||
 		resolution.resolvedDigest != graph.ScopeDigest(resolution) {

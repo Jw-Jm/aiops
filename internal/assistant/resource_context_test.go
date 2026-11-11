@@ -135,6 +135,30 @@ func TestIncompleteIdentityClarifiesWithoutReadingGraph(t *testing.T) {
 	}
 }
 
+func TestArchiveDelayOnlyAllowsPositiveLiveUID(t *testing.T) {
+	g, binding, auth, _ := fixture(t, true, pod("apps", "payment-api", "uid"))
+	g.SetSourceDegraded("kubernetes-source/archive", "archive_backpressure_or_unavailable")
+	resolver := assistant.ResourceResolver{Authorization: auth, Graph: g}
+	for _, test := range []struct {
+		selector assistant.ResourceSelector
+		status   string
+	}{
+		{assistant.ResourceSelector{CanonicalID: id("uid")}, "resolved"},
+		{assistant.ResourceSelector{CanonicalID: id("missing")}, "degraded"},
+		{assistant.ResourceSelector{Name: "payment-api", Kind: "Pod"}, "degraded"},
+	} {
+		resolved, err := resolver.Resolve(t.Context(), binding, test.selector)
+		if err != nil || resolved.Status != test.status {
+			t.Fatalf("selector %+v: status %q, error %v", test.selector, resolved.Status, err)
+		}
+	}
+	g.SetSourceDegraded("kubernetes-source/archive", "projection_archive_identity_conflict")
+	resolved, err := resolver.Resolve(t.Context(), binding, assistant.ResourceSelector{CanonicalID: id("uid")})
+	if err != nil || resolved.Status != "degraded" {
+		t.Fatalf("conflicting identity accepted: %+v %v", resolved, err)
+	}
+}
+
 func TestRevocationStalenessAndDeferredKindsDoNotBind(t *testing.T) {
 	g, binding, auth, _ := fixture(t, false, pod("apps", "payment-api", "uid"))
 	resolver := assistant.ResourceResolver{Authorization: auth, Graph: g}
