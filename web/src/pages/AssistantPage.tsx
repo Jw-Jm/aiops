@@ -1488,6 +1488,8 @@ export function AssistantPage({
                       )}
                     <Input.TextArea
                       placeholder="描述现象"
+                      aria-label={url.get("incidentId") ? "描述现象" : "描述现象（必填）"}
+                      aria-required={!url.get("incidentId")}
                       value={symptom}
                       onChange={(e) => setSymptom(e.target.value)}
                       maxLength={4000}
@@ -1593,7 +1595,7 @@ export function AssistantPage({
                     (!!logQuery && !linkedLog) ||
                     (mode === "troubleshoot" &&
                       !url.get("incidentId") &&
-                      !boundTarget)
+                      (!boundTarget || !symptom.trim()))
                   }
                   onClick={() => void create()}
                 >

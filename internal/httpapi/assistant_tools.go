@@ -67,6 +67,12 @@ func (a assistantGraphReader) Query(ctx context.Context, q graph.Query) (graph.R
 			if proof != nil {
 				return out, investigation.ErrDenied
 			}
+			// Resource resolution before admission has no persisted job. Use
+			// the same authenticated browser session for the signed Worker call
+			// that the API used to compute the current grant.
+			if a.Job.Assistant.AuthorizationSource == "" && a.Job.JobID == uuid.Nil {
+				proof = nativeProofFromContext(ctx)
+			}
 		default:
 			return out, investigation.ErrDenied
 		}
