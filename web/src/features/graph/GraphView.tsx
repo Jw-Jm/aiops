@@ -8,6 +8,8 @@ import type {
   ResourceRelationV2,
 } from "../../api/generated/models";
 import { record, list, text } from "../../components/data";
+import { V12Drawer } from "../../components/v12/Layer";
+import { AskAssistantEntry } from "../assistant/AskAssistantEntry";
 import { Details, FullText } from "../../components/Details";
 import { EnvelopeMeta } from "../../components/EnvelopeMeta";
 import { Status } from "../../components/Status";
@@ -16,6 +18,7 @@ import { edgeExpired, graphWithinBudget, graphLayout } from "./layout";
 export function GraphView({
   value,
   scopeKey,
+  incidentId,
   onExpand,
   canExpand,
   expanding = false,
@@ -23,6 +26,7 @@ export function GraphView({
 }: {
   value: unknown;
   scopeKey: string;
+  incidentId?: string;
   onExpand?: (id: string) => void;
   canExpand?: (id: string) => boolean;
   expanding?: boolean;
@@ -31,7 +35,37 @@ export function GraphView({
   const graph = value as DiagnosticGraphSnapshotV2 | undefined;
   const container = useRef<HTMLDivElement>(null);
   const instance = useRef<cytoscape.Core | null>(null);
-  const [selected, setSelected] = useState<unknown>();
+  const [selection, setSelection] = useState<{
+    item: unknown;
+    scopeKey: string;
+    snapshot: unknown;
+  }>();
+  const selected =
+    selection?.scopeKey === scopeKey && selection.snapshot === value
+      ? selection.item
+      : undefined;
+  const setSelected = (item: unknown) =>
+    setSelection(
+      item === undefined ? undefined : { item, scopeKey, snapshot: value },
+    );
+  const selectedNode = record(selected);
+  const selectedId =
+    typeof selectedNode.canonicalId === "string"
+      ? selectedNode.canonicalId
+      : "";
+  const selectedCluster =
+    typeof selectedNode.scope === "string" ? selectedNode.scope : "";
+  const zoom = (factor: number) => {
+    const cy = instance.current;
+    if (cy)
+      cy.zoom({
+        level: Math.max(
+          cy.minZoom(),
+          Math.min(cy.maxZoom(), cy.zoom() * factor),
+        ),
+        renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 },
+      });
+  };
   const [pathStart, setPathStart] = useState<string>();
   const [pathEnd, setPathEnd] = useState<string>();
   const [pathNote, setPathNote] = useState("");
@@ -278,7 +312,20 @@ export function GraphView({
           ]}
         />
         <Button
-          disabled={mode !== "graph"}
+          disabled={mode !== "graph" || !allowed || !!stale}
+          onClick={() => zoom(1.25)}
+        >
+          放大
+        </Button>
+        <Button
+          disabled={mode !== "graph" || !allowed || !!stale}
+          onClick={() => zoom(0.8)}
+        >
+          缩小
+        </Button>
+        <Button
+          disabled={mode !== "graph" || !allowed || !!stale}
+          aria-label="重置图谱视图"
           onClick={() => instance.current?.fit(undefined, 30)}
         >
           适配窗口
@@ -364,6 +411,17 @@ export function GraphView({
             ),
           },
           { title: "类型", dataIndex: "kind" },
+          {
+            title: "节点详情",
+            render: (_, node) => (
+              <Button
+                aria-label={`查看节点 ${node.name}`}
+                onClick={() => setSelected(node)}
+              >
+                查看节点
+              </Button>
+            ),
+          },
           ...(onExpand
             ? [
                 {
@@ -464,9 +522,50 @@ export function GraphView({
         ]}
       />
       {selected && (
-        <section className="section">
-          <h3>已选节点 / 关系</h3>
+        <V12Drawer
+          open
+          title={selectedId ? "节点详情" : "关系详情"}
+          onClose={() => setSelected(undefined)}
+        >
           <Details value={selected} />
+          {selectedId && selectedCluster && (
+            <Space wrap>
+              <Link
+                to={
+                  "/resources/detail?" +
+                  new URLSearchParams({
+                    canonicalId: selectedId,
+                    clusterUid: selectedCluster,
+                  })
+                }
+              >
+                打开资源详情
+              </Link>
+              <AskAssistantEntry
+                label="发起排查"
+                entry={{
+                  mode: "troubleshoot",
+                  canonicalId: selectedId,
+                  clusterUid: selectedCluster,
+                }}
+              />
+              {incidentId && (
+                <Link
+                  to={
+                    "/events/incidents/" +
+                    encodeURIComponent(incidentId) +
+                    "?" +
+                    new URLSearchParams({
+                      clusterUid: selectedCluster,
+                      tab: "investigation",
+                    })
+                  }
+                >
+                  返回本故障调查
+                </Link>
+              )}
+            </Space>
+          )}
           {onExpand && typeof record(selected).canonicalId === "string" && (
             <Button
               disabled={
@@ -480,7 +579,7 @@ export function GraphView({
               {expandLabel}
             </Button>
           )}
-        </section>
+        </V12Drawer>
       )}
     </>
   );

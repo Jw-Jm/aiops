@@ -72,6 +72,9 @@ def clients(config, identity=None):
         prepare(request)
         request.extensions["trace"]=trace_async
     settings=dict(timeout=5,follow_redirects=False,trust_env=False,limits=httpx.Limits(max_keepalive_connections=0))
+    # Server tool deadlines are up to 9s, before durable settlement and reply.
+    # Keep connect/write/pool bounded; allow the admitted MCP read to settle.
+    mcp_settings={**settings,"timeout":httpx.Timeout(5,read=20)}
     if identity:
         # A new transport captures the latest immutable certificate for each
         # request, including requests made by an already running Job.
@@ -109,7 +112,8 @@ def clients(config, identity=None):
                     await transport.aclose()
                     raise
         return (httpx.Client(transport=CurrentTransport(),event_hooks={"request":[prepare]},**settings),
-                httpx.AsyncClient(transport=CurrentAsyncTransport(),event_hooks={"request":[prepare_async]},**settings))
+                httpx.AsyncClient(transport=CurrentAsyncTransport(),event_hooks={"request":[prepare_async]},**mcp_settings))
     settings["verify"]=tls
+    mcp_settings["verify"]=tls
     return (httpx.Client(event_hooks={"request":[prepare]},**settings),
-            httpx.AsyncClient(event_hooks={"request":[prepare_async]},**settings))
+            httpx.AsyncClient(event_hooks={"request":[prepare_async]},**mcp_settings))

@@ -159,7 +159,6 @@ export function IncidentWorkspace() {
                   entry={{
                     clusterUid: incident?.clusterUid || "",
                     canonicalId,
-                    incidentId,
                     mode: "troubleshoot",
                   }}
                   label="发起排查"
@@ -335,6 +334,7 @@ export function IncidentWorkspace() {
                                 快照，也不表示原诊断已更新。
                               </p>
                               <ResourceGraphExplorer
+                                incidentId={incidentId}
                                 key={
                                   url.get("graphRoot") ||
                                   incident.resourceCanonicalId
@@ -355,6 +355,7 @@ export function IncidentWorkspace() {
                                 此图展示该次根因分析记录的资源关系。请核对观测版本和新鲜度，历史关系可能已经变化。
                               </p>
                               <GraphView
+                                incidentId={incidentId}
                                 expandLabel="查看该节点的当前关系"
                                 onExpand={(id) => {
                                   const n = new URLSearchParams(url);

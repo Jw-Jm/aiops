@@ -48,8 +48,10 @@ function edgeKey(edge: ResourceGraphV2["edges"][number]) {
 }
 export function ResourceGraphExplorer({
   canonicalId,
+  incidentId,
 }: {
   canonicalId: string;
+  incidentId?: string;
 }) {
   const [url, setUrl] = useSearchParams();
   const initialDepth = url.get("graphDepth") === "2" ? 2 : 1;
@@ -365,6 +367,7 @@ export function ResourceGraphExplorer({
       >
         <GraphView
           value={graph}
+          incidentId={incidentId}
           scopeKey={"progressive:" + scope}
           onExpand={(id) => void expand(id)}
           canExpand={canExpand}

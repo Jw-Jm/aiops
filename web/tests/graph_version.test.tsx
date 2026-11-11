@@ -1,6 +1,6 @@
 // Explicit diagram transport fixture. Real graph deployment is checked separately.
 import { expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { GraphView } from "../src/features/graph/GraphView";
 import { resource } from "./fixtures";
@@ -48,4 +48,34 @@ it("observes versions in list mode, rejects stale nodes and resets the baseline 
     screen.queryByText("收到过期图谱版本，请重新查询"),
   ).not.toBeInTheDocument();
   expect(screen.getByRole("link", { name: resource.name })).toBeVisible();
+});
+
+it("opens the exact graph node for read-only handoff and closes it when the scope changes", () => {
+  const snapshot = graph(1);
+  const view = render(
+    <MemoryRouter>
+      <GraphView value={snapshot} scopeKey="scope-A" incidentId="incident-a" />
+    </MemoryRouter>,
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: `查看节点 ${resource.name}` }),
+  );
+  const drawer = screen.getByRole("dialog");
+  const link = within(drawer).getByRole("link", { name: "发起排查" });
+  const url = new URL(link.getAttribute("href")!, "https://ops.invalid");
+  expect(url.searchParams.get("canonicalId")).toBe(resource.canonicalId);
+  expect(url.searchParams.get("clusterUid")).toBe(resource.scope);
+  expect(url.searchParams.has("incidentId")).toBe(false);
+  expect(
+    within(drawer).getByRole("link", { name: "返回本故障调查" }),
+  ).toHaveAttribute(
+    "href",
+    expect.stringContaining("/events/incidents/incident-a?"),
+  );
+  view.rerender(
+    <MemoryRouter>
+      <GraphView value={snapshot} scopeKey="scope-B" incidentId="incident-b" />
+    </MemoryRouter>,
+  );
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 });
