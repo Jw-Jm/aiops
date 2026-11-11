@@ -87,8 +87,14 @@ func TestProjectionRelistReusesOnlyVerifiedMatchingArchive(t *testing.T) {
 			archive := &evidence.ArchiveService{Pool: projectionReusePool{tx}, BackendLogicalID: "archive"}
 			got, err := prepareProjection(t.Context(), cluster, o, archive)
 			if tc == "verified" {
-				if err != nil || got != objectID {
+				if err != nil || got != uuid.Nil {
 					t.Fatalf("verified replay was resealed: %v", err)
+				}
+				g := graph.New(tenant, "cluster", "test", nil)
+				q := &projectionArchiveQueue{ctx: t.Context(), cluster: cluster, archive: archive, graph: g, jobs: make(chan projectionJob, 1), pending: map[string]bool{}, failed: map[string]bool{}}
+				q.jobs <- projectionJob{key: "unrelated", id: uuid.New()}
+				if err := q.enqueue(o); err != nil || len(q.jobs) != 1 || len(q.pending) != 0 {
+					t.Fatalf("verified replay filled archive queue: %v", err)
 				}
 			} else if err == nil {
 				t.Fatal("unverified or conflicting fact bypassed preparation")

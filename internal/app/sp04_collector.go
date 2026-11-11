@@ -133,6 +133,8 @@ func shortLivedOrHistorical(o unstructured.Unstructured) bool {
 	}
 	return false
 }
+
+// A nil ID with no error means the exact projection is already verified.
 func prepareProjection(ctx context.Context, cluster SP04Cluster, o unstructured.Unstructured, archive *evidence.ArchiveService) (uuid.UUID, error) {
 	if archive == nil {
 		return uuid.Nil, errors.New("archive unavailable")
@@ -178,7 +180,7 @@ func prepareProjection(ctx context.Context, cluster SP04Cluster, o unstructured.
 		}
 		// A verified immutable fact already has durable ciphertext; a relist must not reseal it.
 		if previous.ReplayState == "archived_verified" && previous.ArchiveRef != nil && previous.ArchiveRef.BackendLogicalID == archive.BackendLogicalID && previous.SourceScopeDigest == metadata.SourceScopeDigest && previous.QueryHash == metadata.QueryHash && previous.QueryTemplateVersion == metadata.QueryTemplateVersion && previous.BackendLogicalID == metadata.BackendLogicalID {
-			return objectID, nil
+			return uuid.Nil, nil
 		}
 		metadata = previous
 		metadata.Data = data

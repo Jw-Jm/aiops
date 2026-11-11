@@ -80,6 +80,11 @@ func (q *projectionArchiveQueue) enqueue(o unstructured.Unstructured) error {
 		return nil
 	}
 	delete(q.conflicts, key)
+	if id == uuid.Nil {
+		delete(q.failed, key)
+		q.healthLocked()
+		return nil
+	}
 	select {
 	case q.jobs <- projectionJob{key, id}:
 		q.pending[key] = true
@@ -109,6 +114,9 @@ func (q *projectionArchiveQueue) run() {
 			if err == nil {
 				delete(q.pending, job.key)
 				delete(q.failed, job.key)
+				if len(q.jobs) < cap(q.jobs) {
+					delete(q.failed, "backpressure")
+				}
 			}
 			if err != nil {
 				q.failed[job.key] = true
